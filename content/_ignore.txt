@@ -1,0 +1,7 @@
+# Data that changes all the time and is described by its page, not file by file.
+# The Stop hook (wiki hook-stop) ignores changes under these repo:path prefixes.
+workflow-memory:events
+workflow-memory:views
+workflow-memory:quarantine
+quiz-backups:
+german-quiz-releases:

@@ -112,6 +112,16 @@ defmodule Wiki.Content.BuildTest do
     end
 
     # REQ UP-1
+    test "ignores data folders listed in _ignore.txt", %{content: c, repo: repo} do
+      File.write!(Path.join(c, "_ignore.txt"), "# data\nr1:data\n")
+      Stale.mark_published(System.os_time(:second) - 60)
+      File.mkdir_p!(Path.join(repo, "data"))
+      File.write!(Path.join(repo, "data/event-1.md"), "x")
+      commit_all(repo, "data only", DateTime.utc_now() |> DateTime.to_iso8601())
+      assert Stale.hook_message(Store.load(c), %{"session_id" => "s"}) == nil
+    end
+
+    # REQ UP-1
     test "never blocks before the first publish or for repos the wiki does not cover", %{content: c, dir: dir} do
       store = Store.load(c)
       assert Stale.hook_message(store, %{"session_id" => "s"}) == nil

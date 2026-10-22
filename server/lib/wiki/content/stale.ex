@@ -54,8 +54,32 @@ defmodule Wiki.Content.Stale do
     |> Enum.uniq()
   end
 
+  @doc "repo:path prefixes listed in content/_ignore.txt: data the hook does not watch file by file."
+  def ignored(store) do
+    case File.read(Path.join(store.dir, "_ignore.txt")) do
+      {:ok, text} ->
+        text
+        |> String.split("\n", trim: true)
+        |> Enum.map(&String.trim/1)
+        |> Enum.reject(&(&1 == "" or String.starts_with?(&1, "#")))
+        |> Enum.map(fn line ->
+          [repo, path] = String.split(line <> ":", ":", parts: 3) |> Enum.take(2)
+          {repo, String.trim_trailing(path, "/")}
+        end)
+
+      _ ->
+        []
+    end
+  end
+
+  defp ignored?(ignores, repo, file) do
+    Enum.any?(ignores, fn {r, p} -> r == repo and (p == "" or file == p or String.starts_with?(file, p <> "/")) end)
+  end
+
   @doc "Changes since the last publish: `[{repo, [stale page ids], [uncovered new files]}]`."
   def changes(store, since) do
+    ignores = ignored(store)
+
     prefixes =
       for {id, p} <- store.pages, s <- Page.list(p, "sources"), [repo, path] <- [String.split(s, ":", parts: 2)],
           do: {repo, String.trim_trailing(path, "/"), id}
@@ -63,13 +87,18 @@ defmodule Wiki.Content.Stale do
     for repo <- covered_repos(store),
         dir = Path.join(Sources.dev_root(), repo),
         File.dir?(Path.join(dir, ".git")),
-        files = Git.changed_since(dir, since + 1),
+        files = Git.changed_since(dir, since + 1) |> Enum.reject(&ignored?(ignores, repo, &1)),
         files != [] do
       own = for {^repo, path, id} <- prefixes, do: {path, id}
       hit = fn f -> Enum.filter(own, fn {path, _} -> path == "." or f == path or String.starts_with?(f, path <> "/") end) end
       stale = files |> Enum.flat_map(fn f -> Enum.map(hit.(f), &elem(&1, 1)) end) |> Enum.uniq() |> Enum.sort()
       added = Git.cmd(dir, ["log", "--since=@#{since + 1}", "--diff-filter=A", "--name-only", "--format="]) || ""
-      uncovered = added |> String.split("\n", trim: true) |> Enum.uniq() |> Enum.filter(&(hit.(&1) == []))
+      uncovered =
+        added
+        |> String.split("\n", trim: true)
+        |> Enum.uniq()
+        |> Enum.reject(&ignored?(ignores, repo, &1))
+        |> Enum.filter(&(hit.(&1) == []))
       {repo, stale, uncovered}
     end
     |> Enum.reject(fn {_, s, u} -> s == [] and u == [] end)
