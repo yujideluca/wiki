@@ -18,7 +18,7 @@ The home screen's map: every page as a dot coloured by kind, lines for feeds (ar
 Hovering a dot lights it and its neighbours in gold and dims the rest; the boxes show What it is, What it does, Fed by and Who receives its output (and keep the last dot when the mouse leaves). Clicking a dot opens its article. Drag to pan, wheel or pinch to zoom; the project filter and timeline hide what does not belong.
 
 ## How it does it
-Positions are computed once with a force simulation (elm-visualization): connected pages pull together, all pages push apart, projects start in clusters. Filters are pure functions (`Filter.visible`).
+Positions are computed once with a force simulation (elm-visualization): connected pages pull together, all pages push apart, projects start in clusters. Filters are pure functions (`Filter.visible`). Zoom and pan come from elm-visualization's `Zoom`; the SVG declares a viewBox equal to its size and starts at the window's top-left (the search bar floats over it), so the mouse wheel, dragging and two-finger pinch all zoom around the pointer.
 
 ## Where it sits in the pipeline
 Inside [[wiki-frontend]], at `/`.
