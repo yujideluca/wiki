@@ -1,7 +1,7 @@
 ---
 id: quizapp-release
 lang: pt-BR
-source_hash: 31e1fe43f277
+source_hash: bf3a7b60acc2
 title: Publicação do QuizApp (beta → estável)
 aliases: [processo de publicação]
 ---
@@ -30,3 +30,4 @@ O Giovanni, no [[phone]].
 6. O [[update-client]] do app beta oferece a atualização; o Giovanni experimenta.
 7. `publish_apk.sh promote` (portão com [[mutation-check]] e [[check-tests-updated]]) leva ao estável `main` quando o Giovanni decide.
 8. A versão do [[quizweb]] que esperava em `web-<versão>` entra no `main`.
+9. Só perguntas novas não precisam de APK: editar o TSV, rodar o [[build-vocab]], commit, depois [[publish-content]] `beta` e, quando o Giovanni disser, `promote`.

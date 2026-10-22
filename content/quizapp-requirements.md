@@ -8,11 +8,11 @@ status: active
 location: QuizApp:docs/REQUIREMENTS.md
 fed_by: []
 feeds: [check-traceability]
-sources: [QuizApp:docs/REQUIREMENTS.md, QuizApp:docs/TESTING.md]
+sources: [QuizApp:docs/REQUIREMENTS.md, QuizApp:docs/TESTING.md, QuizApp:core/src/test, QuizApp:app/src/test]
 ---
 
 ## What it is
-The catalogue of every testable promise of [[quizapp]], each with an ID (SP-1 spacing, GR-1 grading, QU-1 queue, DG-* daily goal…), plus the test strategy in `docs/TESTING.md` (ADR-0008, requirements-first QA).
+The catalogue of every testable promise of [[quizapp]], each with an ID (SP-1 spacing, GR-1 grading, QU-1 queue, DG-* daily goal, QP-* question pool…), plus the test strategy in `docs/TESTING.md` (ADR-0008, requirements-first QA).
 
 ## What it does
 Says what must hold and at which level it is tested: unit, integration, property, cross-platform conformance, acceptance on a device, mutation-checked. `docs/TRACEABILITY.md` (generated) maps each requirement to its tests.

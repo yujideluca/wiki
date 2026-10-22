@@ -1,7 +1,7 @@
 ---
 id: build-vocab
 lang: de
-source_hash: abd65fc92bca
+source_hash: 9c5cdd6168eb
 title: build_vocab.py
 aliases: [Vokabel-Build]
 ---
@@ -10,7 +10,7 @@ aliases: [Vokabel-Build]
 Das Skript, das die TSV-Vokabeln prüft und das JSON schreibt, das die App mitliefert.
 
 ## What it does
-Prüft Struktur, Duplikate, erlaubte Artikel und Fälle, Hinweise bei mehrdeutigen Präpositionen und die Regel „genau ein falscher Teil“ der Fehlersätze; schreibt `assets/vocab/*.json`. Bricht bei jedem Problem mit Fehlercode ab, damit falsche Daten die App nie erreichen. `--verify-nouns` gleicht Genus und Plural mit de.wiktionary.org ab.
+Prüft Struktur, Duplikate, erlaubte Artikel und Fälle, Hinweise bei mehrdeutigen Präpositionen und die Regel „genau ein falscher Teil“ der Fehlersätze; schreibt `assets/vocab/*.json` und erneuert über [[content-manifest]] das Manifest des Bestands. Bricht bei jedem Problem mit Fehlercode ab, damit falsche Daten die App nie erreichen. `--verify-nouns` gleicht Genus und Plural mit de.wiktionary.org ab.
 
 ## How it does it
 Python; liest [[vocab-tsv]]; die korrigierten Fehlersätze prüft zusätzlich [[check-errors-languagetool]].

@@ -1,7 +1,7 @@
 ---
 id: quizapp-quality-gate
 lang: pt-BR
-source_hash: ec7973de999f
+source_hash: b81f57a5a3ea
 title: Portão de qualidade do QuizApp
 aliases: [portão]
 ---
@@ -10,7 +10,7 @@ aliases: [portão]
 `tools/quality_gate.sh`: a única definição de "passou" do [[quizapp]]. Uma publicação roda ele, e a CI roda exatamente o mesmo script.
 
 ## What it does
-Sete passos: testes unitários, de propriedade, de conformidade e de integração do core e do app com cobertura; limites de cobertura; os testes do gêmeo web; vetores de conformidade idênticos no app e na web ([[quizweb-conformance]]); rastreabilidade de requisitos ([[check-traceability]]); lint do Android; funções de aptidão ([[fitness-check]]). Com `--mutation` também roda o [[mutation-check]]. Falha se demorar mais de 1200 s.
+Sete passos: testes unitários, de propriedade, de conformidade e de integração do core e do app com cobertura; limites de cobertura; os testes do gêmeo web; vetores de conformidade idênticos no app e na web ([[quizweb-conformance]]); rastreabilidade de requisitos ([[check-traceability]]); lint do Android; funções de aptidão ([[fitness-check]]); o manifesto do pacote de perguntas bate com os arquivos ([[content-manifest]] `--check`). Com `--mutation` também roda o [[mutation-check]]. Falha se demorar mais de 1200 s.
 
 ## How it does it
 Bash, `set -euo pipefail`, carrega `~/dev/env.sh` ([[android-toolchain]]) no notebook; cada passo é um comando que sai com erro quando falha.

@@ -6,7 +6,7 @@ kind: script
 project: quizapp
 status: active
 location: QuizApp:tools/quality_gate.sh
-fed_by: [android-toolchain, check-traceability, fitness-check, mutation-check, quizweb-conformance, template-quality-gate]
+fed_by: [android-toolchain, check-traceability, content-manifest, fitness-check, mutation-check, quizweb-conformance, template-quality-gate]
 feeds: [publish-apk, quizapp-ci]
 sources: [QuizApp:tools/quality_gate.sh]
 ---
@@ -15,7 +15,7 @@ sources: [QuizApp:tools/quality_gate.sh]
 `tools/quality_gate.sh`: the one definition of "passing" for [[quizapp]]. A release runs it and CI runs exactly the same script.
 
 ## What it does
-Seven steps: core and app unit/property/conformance/integration tests with coverage; coverage thresholds; the web twin's tests; conformance vectors identical in app and web ([[quizweb-conformance]]); requirement traceability ([[check-traceability]]); Android lint; fitness functions ([[fitness-check]]). With `--mutation` it also runs [[mutation-check]]. It fails if it takes more than 1200 s.
+Seven steps: core and app unit/property/conformance/integration tests with coverage; coverage thresholds; the web twin's tests; conformance vectors identical in app and web ([[quizweb-conformance]]); requirement traceability ([[check-traceability]]); Android lint; fitness functions ([[fitness-check]]); the question pack manifest matches its files ([[content-manifest]] `--check`). With `--mutation` it also runs [[mutation-check]]. It fails if it takes more than 1200 s.
 
 ## How it does it
 Bash, `set -euo pipefail`, sources `~/dev/env.sh` ([[android-toolchain]]) on the laptop; every step is a command that exits non-zero on failure.

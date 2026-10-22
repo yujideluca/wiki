@@ -1,7 +1,7 @@
 ---
 id: update-client
 lang: pt-BR
-source_hash: 6a8e54fd84d8
+source_hash: 2dd2dc905f0b
 title: UpdateClient (atualização no app)
 aliases: [verificação de atualização]
 ---
@@ -10,7 +10,7 @@ aliases: [verificação de atualização]
 Como o [[quizapp]] se atualiza sem loja de apps (ADR-0004).
 
 ## What it does
-Toda vez que o app volta ao primeiro plano (no máximo a cada 30 s) ele lê o `latest.json` do [[release-feed]]; um versionCode maior abre um aviso na tela inicial (nunca durante uma sessão). Atualizar baixa o APK, confere o SHA-256 e entrega ao [[apk-installer]].
+Toda vez que o app volta ao primeiro plano (no máximo a cada 30 s) ele lê o `latest.json` do [[release-feed]]; um versionCode maior abre um aviso na tela inicial (nunca durante uma sessão). Atualizar baixa o APK, confere o SHA-256 e entrega ao [[apk-installer]]. A mesma verificação também pede ao [[question-pool-updater]] um pacote de perguntas mais novo.
 
 ## How it does it
 Lê pela API de conteúdo do GitHub (`Accept: application/vnd.github.raw+json`), porque o raw.githubusercontent.com guardava cache por 5 minutos; um 403 é informado como o limite por hora (60 pedidos por IP). A variante beta segue o branch `bleeding-edge` e a stable segue o `main` ([[release-channels]]).

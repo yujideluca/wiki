@@ -1,7 +1,7 @@
 ---
 id: quizapp-adrs
 lang: pt-BR
-source_hash: 235745b75611
+source_hash: 62f2358d7d92
 title: ADRs do QuizApp
 aliases: [registros de decisão de arquitetura]
 ---
@@ -10,7 +10,7 @@ aliases: [registros de decisão de arquitetura]
 Os registros de decisão de arquitetura do [[quizapp]] (`docs/adr/`): um arquivo curto por decisão estrutural, com contexto, decisão, alternativas e consequências.
 
 ## What it does
-0001 registrar decisões · 0002 Kotlin + Compose · 0003 agendador puro e determinístico · 0004 canal de atualização · 0005 canais de versão · 0006 gêmeo web · 0007 regras de espaçamento · 0008 qualidade começando pelos requisitos · 0009 módulo core puro · 0010 backup do progresso · 0011 promover depois de testes atualizados.
+0001 registrar decisões · 0002 Kotlin + Compose · 0003 agendador puro e determinístico · 0004 canal de atualização · 0005 canais de versão · 0006 gêmeo web · 0007 regras de espaçamento · 0008 qualidade começando pelos requisitos · 0009 módulo core puro · 0010 backup do progresso · 0011 promover depois de testes atualizados · 0012 banco de perguntas baixável ([[question-pack]]).
 
 ## How it does it
 Formato MADR (enxuto), a partir de `docs/adr/0000-template.md`; uma mudança estrutural ganha seu ADR no mesmo commit.

@@ -34,3 +34,4 @@ Giovanni, on the [[phone]].
 6. The beta app's [[update-client]] offers the update; Giovanni tries it.
 7. `publish_apk.sh promote` (gate with [[mutation-check]] and [[check-tests-updated]]) moves it to stable `main` when Giovanni decides.
 8. The [[quizweb]] port waiting on `web-<version>` is merged to `main`.
+9. New questions alone need no APK: edit the TSV, run [[build-vocab]], commit, then [[publish-content]] `beta` and, when Giovanni says so, `promote`.

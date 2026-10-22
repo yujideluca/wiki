@@ -6,7 +6,7 @@ kind: module
 project: quizweb
 status: active
 location: QuizWeb:src/content.js
-fed_by: [build-vocab]
+fed_by: [build-vocab, publish-content]
 feeds: [quizweb-app]
 sources: [QuizWeb:src/content.js, QuizWeb:vocab]
 ---

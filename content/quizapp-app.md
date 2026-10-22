@@ -8,7 +8,7 @@ status: active
 location: QuizApp:app/src/main/java/dev/yuji/quiz
 fed_by: [drachenkurve, quizapp-core]
 feeds: [phone]
-sources: [QuizApp:app/src/main/java/dev/yuji/quiz]
+sources: [QuizApp:app/src/main/java/dev/yuji/quiz, QuizApp:app/src/debug]
 ---
 
 ## What it is

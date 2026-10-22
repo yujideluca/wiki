@@ -6,7 +6,7 @@ kind: function
 project: quizapp
 status: active
 location: QuizApp:app/src/main/java/dev/yuji/quiz/ui/StudyViewModel.kt
-fed_by: [activity-calendar, daily-goal, settings-store, study-controller]
+fed_by: [activity-calendar, daily-goal, question-pool-updater, settings-store, study-controller]
 feeds: [phone]
 sources: [QuizApp:app/src/main/java/dev/yuji/quiz/ui/StudyViewModel.kt, QuizApp:app/src/main/java/dev/yuji/quiz/ui/Screens.kt]
 ---

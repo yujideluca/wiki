@@ -1,13 +1,13 @@
 ---
 id: quizapp-requirements
 lang: de
-source_hash: 7c28cdd98a15
+source_hash: 1502c78509ba
 title: QuizApp-Anforderungen und Rückverfolgbarkeit
 aliases: [REQ-Markierungen]
 ---
 
 ## What it is
-Der Katalog aller prüfbaren Versprechen von [[quizapp]], jedes mit einer ID (SP-1 Abstände, GR-1 Bewertung, QU-1 Warteschlange, DG-* Tagesziel…), dazu die Teststrategie in `docs/TESTING.md` (ADR-0008, QS mit Anforderungen zuerst).
+Der Katalog aller prüfbaren Versprechen von [[quizapp]], jedes mit einer ID (SP-1 Abstände, GR-1 Bewertung, QU-1 Warteschlange, DG-* Tagesziel, QP-* Fragenbestand…), dazu die Teststrategie in `docs/TESTING.md` (ADR-0008, QS mit Anforderungen zuerst).
 
 ## What it does
 Sagt, was gelten muss und auf welcher Ebene es getestet wird: Unit, Integration, Eigenschaft, plattformübergreifende Konformität, Abnahme auf einem Gerät, mutationsgeprüft. `docs/TRACEABILITY.md` (erzeugt) ordnet jeder Anforderung ihre Tests zu.
