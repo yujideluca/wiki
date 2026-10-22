@@ -1,7 +1,9 @@
-module Layout exposing (Positions, compute)
+module Layout exposing (Positions, compute, matchAspect)
 
 {-| Places the nodes once with a force simulation: connected pages pull together, all pages push apart.
-Nodes of the same project start near each other so projects form visible clusters. -}
+Nodes of the same project start near each other so projects form visible clusters.
+
+The simulation itself has no window in mind; `matchAspect` then reshapes the result to the map area. -}
 
 import Data exposing (Graph)
 import Dict exposing (Dict)
@@ -33,8 +35,8 @@ compute graph =
                     toFloat (modBy 17 (i * 7)) * 3 + 10
             in
             { id = node.id
-            , x = cos a * 260 + cos (toFloat i) * jitter
-            , y = sin a * 260 + sin (toFloat i) * jitter
+            , x = cos a * 700 + cos (toFloat i) * jitter
+            , y = sin a * 230 + sin (toFloat i) * jitter
             , vx = 0
             , vy = 0
             }
@@ -68,12 +70,45 @@ compute graph =
         sim =
             Force.simulation
                 [ Force.customLinks 1 links
-                , Force.manyBodyStrength -160 ids
-                , Force.collision 20 ids
+                , Force.manyBodyStrength -200 ids
+                , Force.collision 32 ids
                 , Force.center 0 0
+
+                -- A pull towards the horizontal axis that is much stronger than the one towards the vertical axis
+                -- makes the cloud settle wide and flat, like the map area, so nodes spread evenly in it.
+                , Force.towardsY (List.map (\id -> { node = id, strength = 0.09, target = 0 }) ids)
+                , Force.towardsX (List.map (\id -> { node = id, strength = 0.02, target = 0 }) ids)
                 ]
-                |> Force.iterations 320
+                |> Force.iterations 400
     in
     Force.computeSimulation sim entities
         |> List.map (\e -> ( e.id, ( e.x, e.y ) ))
         |> Dict.fromList
+
+
+{-| Reshapes a layout to the shape (width / height) of the area it is shown in: a wide area stretches the layout
+sideways, a tall one upwards, so the nodes use all the free space instead of crowding into a round clump in the middle.
+Only stretches (a factor of at most 3), so no two nodes ever get closer and the layout keeps its look. -}
+matchAspect : Float -> Positions -> Positions
+matchAspect aspect positions =
+    let
+        xs =
+            Dict.values positions |> List.map Tuple.first
+
+        ys =
+            Dict.values positions |> List.map Tuple.second
+
+        extent vs =
+            Maybe.map2 (-) (List.maximum vs) (List.minimum vs) |> Maybe.withDefault 0 |> max 1
+
+        factor =
+            clamp (1 / 3) 3 (aspect / (extent xs / extent ys))
+
+        ( sx, sy ) =
+            if factor >= 1 then
+                ( factor, 1 )
+
+            else
+                ( 1, 1 / factor )
+    in
+    Dict.map (\_ ( x, y ) -> ( x * sx, y * sy )) positions

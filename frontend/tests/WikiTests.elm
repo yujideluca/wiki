@@ -6,6 +6,8 @@ import Expect
 import Filter
 import Html.Attributes
 import I18n exposing (Lang(..))
+import Layout
+import MapSize
 import MapView
 import Search
 import Set
@@ -142,6 +144,132 @@ suite =
                         |> Expect.equal (Just [ "events/ (de)" ])
             ]
 
+        -- REQ MP-5
+        , describe "map size"
+            [ test "on a wide, tall enough window the map, the line under it and the boxes fill the window exactly" <|
+                \_ ->
+                    [ ( 1500, 900 ), ( 1600, 1000 ), ( 1920, 943 ), ( 1920, 1200 ), ( 2560, 1300 ) ]
+                        |> List.map
+                            (\( w, h ) ->
+                                let
+                                    sz =
+                                        MapSize.sizes w h
+                                in
+                                ( sz.box /= Nothing, sz.map + MapSize.boxesAbove + Maybe.withDefault 0 sz.box - h )
+                            )
+                        |> Expect.equal (List.repeat 5 ( True, 0 ))
+            , test "the map is taller than the old 58 % share on a big window, and grows with the window" <|
+                \_ ->
+                    Expect.all
+                        [ \_ -> (MapSize.sizes 1920 943).map |> Expect.greaterThan (0.58 * 943 + 50)
+                        , \_ -> (MapSize.sizes 1920 1200).map |> Expect.greaterThan (MapSize.sizes 1920 900).map
+                        ]
+                        ()
+            , test "the map is never smaller than before (58 % of the height, at least 320 px), on any window" <|
+                \_ ->
+                    [ 390, 900, 1101, 1280, 1366, 1920, 2560 ]
+                        |> List.concatMap (\w -> List.map (\h -> ( w, h )) [ 500, 720, 800, 943, 1300 ])
+                        |> List.all (\( w, h ) -> (MapSize.sizes w h).map >= max 320 (0.58 * h) - 0.001)
+                        |> Expect.equal True
+            , test "a window too short for the wanted boxes, or narrow, keeps the old layout: the share, and boxes that size themselves" <|
+                \_ ->
+                    Expect.all
+                        [ \_ -> (MapSize.sizes 1101 800).map |> Expect.within (Expect.Absolute 0.001) 464
+                        , \_ -> (MapSize.sizes 1101 800).box |> Expect.equal Nothing
+                        , \_ -> (MapSize.sizes 1366 768).box |> Expect.equal Nothing
+                        , \_ -> (MapSize.sizes 1000 1000).map |> Expect.within (Expect.Absolute 0.001) 580
+                        , \_ -> (MapSize.sizes 1000 1000).box |> Expect.equal Nothing
+                        , \_ -> (MapSize.sizes 400 500).map |> Expect.equal 320
+                        , \_ -> (MapSize.sizes 1920 500).map |> Expect.equal 320
+                        ]
+                        ()
+            , test "wide windows give every info box a fixed height that scrolls inside" <|
+                \_ ->
+                    MapView.infoBoxes En (Just 200) (Just { title = "t", kind = "k", what = "w", does = "d", fedBy = [], receives = [] })
+                        |> Query.fromHtml
+                        |> Query.findAll [ Selector.class "box" ]
+                        |> Query.each
+                            (Query.has [ Selector.style "height" "200px", Selector.style "overflow-y" "auto" ])
+            , test "without a height (narrow windows) the boxes size themselves" <|
+                \_ ->
+                    MapView.infoBoxes En Nothing (Just { title = "t", kind = "k", what = "w", does = "d", fedBy = [], receives = [] })
+                        |> Query.fromHtml
+                        |> Query.findAll [ Selector.class "box" ]
+                        |> Query.each (Query.hasNot [ Selector.style "height" "200px" ])
+            ]
+
+        -- REQ MP-6
+        , describe "layout shape"
+            [ test "a wide area stretches the layout sideways to its shape, a tall one stretches it upwards" <|
+                \_ ->
+                    Expect.all
+                        [ \_ -> aspectOf (Layout.matchAspect 2.5 square) |> Expect.within (Expect.Absolute 0.001) 2.5
+                        , \_ -> aspectOf (Layout.matchAspect 0.5 square) |> Expect.within (Expect.Absolute 0.001) 0.5
+                        , \_ -> Layout.matchAspect 1 square |> Expect.equal square
+                        ]
+                        ()
+            , test "distances only grow: no pair of nodes gets closer in either direction" <|
+                \_ ->
+                    let
+                        pairs d =
+                            [ ( "a", "b" ), ( "a", "c" ), ( "b", "d" ), ( "c", "d" ), ( "a", "e" ), ( "e", "d" ) ]
+                                |> List.filterMap
+                                    (\( p, q ) ->
+                                        Maybe.map2 (\( x1, y1 ) ( x2, y2 ) -> ( abs (x1 - x2), abs (y1 - y2) )) (Dict.get p d) (Dict.get q d)
+                                    )
+
+                        grown wide =
+                            List.map2 (\( dx0, dy0 ) ( dx1, dy1 ) -> dx1 >= dx0 - 0.0001 && dy1 >= dy0 - 0.0001) (pairs square) (pairs wide)
+                    in
+                    Expect.all
+                        [ \_ -> grown (Layout.matchAspect 2.5 square) |> List.all identity |> Expect.equal True
+                        , \_ -> grown (Layout.matchAspect 0.4 square) |> List.all identity |> Expect.equal True
+                        ]
+                        ()
+            , test "the stretch is capped at 3 and a flat or single layout never produces NaN or infinity" <|
+                \_ ->
+                    let
+                        sane d =
+                            Dict.values d |> List.all (\( x, y ) -> not (isNaN x || isInfinite x || isNaN y || isInfinite y))
+
+                        flat =
+                            Dict.fromList [ ( "a", ( 0, 0 ) ), ( "b", ( 100, 0 ) ) ]
+                    in
+                    Expect.all
+                        [ \_ -> aspectOf (Layout.matchAspect 100 square) |> Expect.within (Expect.Absolute 0.001) 3
+                        , \_ -> sane (Layout.matchAspect 3 flat) |> Expect.equal True
+                        , \_ -> sane (Layout.matchAspect 3 (Dict.fromList [ ( "a", ( 5, 5 ) ) ])) |> Expect.equal True
+                        , \_ -> Layout.matchAspect 3 Dict.empty |> Expect.equal Dict.empty
+                        ]
+                        ()
+            , test "the force layout keeps every page and keeps pages apart" <|
+                \_ ->
+                    let
+                        placed =
+                            Layout.compute graph |> Dict.toList
+
+                        gaps =
+                            placed
+                                |> List.concatMap
+                                    (\( i, ( x1, y1 ) ) ->
+                                        List.filterMap
+                                            (\( j, ( x2, y2 ) ) ->
+                                                if i < j then
+                                                    Just (sqrt ((x1 - x2) ^ 2 + (y1 - y2) ^ 2))
+
+                                                else
+                                                    Nothing
+                                            )
+                                            placed
+                                    )
+                    in
+                    Expect.all
+                        [ \_ -> List.length placed |> Expect.equal (List.length graph.nodes)
+                        , \_ -> List.minimum gaps |> Maybe.withDefault 0 |> Expect.greaterThan 40
+                        ]
+                        ()
+            ]
+
         -- REQ MP-3
         , describe "wiki links"
             [ test "[[id]] and [[id|label]] become links to /p/id" <|
@@ -197,3 +325,24 @@ suite =
                         |> Expect.equal [ "Who receives its output", "Wer seine Ausgabe erhält", "Quem recebe o que produz" ]
             ]
         ]
+
+
+{-| Five pages in a square, 100 apart (corners and centre). -}
+square : Layout.Positions
+square =
+    Dict.fromList [ ( "a", ( 0, 0 ) ), ( "b", ( 100, 0 ) ), ( "c", ( 0, 100 ) ), ( "d", ( 100, 100 ) ), ( "e", ( 50, 50 ) ) ]
+
+
+aspectOf : Layout.Positions -> Float
+aspectOf d =
+    let
+        xs =
+            Dict.values d |> List.map Tuple.first
+
+        ys =
+            Dict.values d |> List.map Tuple.second
+
+        extent vs =
+            Maybe.map2 (-) (List.maximum vs) (List.minimum vs) |> Maybe.withDefault 1
+    in
+    extent xs / extent ys

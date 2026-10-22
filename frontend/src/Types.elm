@@ -23,10 +23,12 @@ type alias Model =
     , lang : Lang
     , route : Route
     , graph : Load Graph
-    , positions : Positions
+    , layout : Positions -- the force layout as computed, in layout units
+    , positions : Positions -- the layout reshaped to the map area (see Layout.matchAspect)
     , zoom : Zoom
     , width : Float
     , height : Float
+    , boxHeight : Maybe Float -- height of the info boxes under the map; Nothing where they size themselves
     , hovered : Maybe String
     , focused : Maybe String
     , query : String

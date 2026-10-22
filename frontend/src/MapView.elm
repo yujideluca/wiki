@@ -194,6 +194,9 @@ node lang graph ( x, y ) isActive isDim showLabel labelSize n =
            else
             Svg.text ""
          , Svg.circle [ S.r (String.fromFloat r), S.fill (Data.kindColour graph n.kind), S.class "dot" ] []
+
+         -- A larger invisible disc around the dot, so the pointer reaches a node a few pixels early.
+         , Svg.circle [ S.r (String.fromFloat (r + 6)), S.fill "transparent", S.class "hit" ] []
          , if showLabel then
             Svg.text_
                 [ S.y (String.fromFloat (r + labelSize + 2))
@@ -209,14 +212,26 @@ node lang graph ( x, y ) isActive isDim showLabel labelSize n =
         )
 
 
-infoBoxes : Lang -> Maybe Info -> Html Msg
-infoBoxes lang maybeInfo =
+{-| The four boxes. [boxHeight] is their fixed height on wide windows (a longer text scrolls inside), `Nothing` on
+narrow ones where they size themselves (MP-5). -}
+infoBoxes : Lang -> Maybe Float -> Maybe Info -> Html Msg
+infoBoxes lang boxHeight maybeInfo =
     let
         s =
             I18n.strings lang
 
         box heading body =
-            div [ A.class "box" ] [ h4 [] [ text heading ], body ]
+            div
+                (A.class "box"
+                    :: (case boxHeight of
+                            Just h ->
+                                [ A.style "height" (String.fromFloat h ++ "px"), A.style "overflow-y" "auto" ]
+
+                            Nothing ->
+                                []
+                       )
+                )
+                [ h4 [] [ text heading ], body ]
 
         para str =
             p []

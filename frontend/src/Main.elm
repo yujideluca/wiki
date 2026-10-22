@@ -15,6 +15,7 @@ import Http
 import I18n exposing (Lang)
 import Json.Decode as D
 import Layout
+import MapSize
 import MapView
 import Route exposing (Route(..))
 import Search
@@ -51,10 +52,12 @@ init flags url key =
             , lang = I18n.fromCode flags.lang
             , route = route
             , graph = Loading
+            , layout = Dict.empty
             , positions = Dict.empty
             , zoom = Zoom.init { width = 800, height = 500 }
             , width = 800
             , height = 500
+            , boxHeight = Nothing
             , hovered = Nothing
             , focused = Nothing
             , query = ""
@@ -88,20 +91,35 @@ loadArticle model =
             Cmd.none
 
 
-mapHeight : Float -> Float
-mapHeight viewportHeight =
-    max 320 (viewportHeight * 0.58)
+{-| The window is [w] by [h]: size the map and the info boxes for it (MP-5). -}
+resized : Float -> Float -> Model -> Model
+resized w h model =
+    let
+        sz =
+            MapSize.sizes w h
+    in
+    { model | width = w, height = sz.map, boxHeight = sz.box }
 
 
-{-| Fit the whole map into the visible area. -}
+{-| Fit the whole map into the visible area: the layout is reshaped to the area's shape (clear of the floating controls
+at the top and the legend at the bottom), then zoomed and centred to fill it. -}
 fit : Model -> Model
 fit model =
     let
+        ( top, bottom ) =
+            MapSize.insets model.width
+
+        areaHeight =
+            max 100 (model.height - top - bottom)
+
+        shaped =
+            Layout.matchAspect (model.width / areaHeight) model.layout
+
         xs =
-            Dict.values model.positions |> List.map Tuple.first
+            Dict.values shaped |> List.map Tuple.first
 
         ys =
-            Dict.values model.positions |> List.map Tuple.second
+            Dict.values shaped |> List.map Tuple.second
 
         ( minX, maxX ) =
             ( List.minimum xs |> Maybe.withDefault -100, List.maximum xs |> Maybe.withDefault 100 )
@@ -110,15 +128,16 @@ fit model =
             ( List.minimum ys |> Maybe.withDefault -100, List.maximum ys |> Maybe.withDefault 100 )
 
         k =
-            clamp 0.15 1.6 (min (model.width / (maxX - minX + 140)) (model.height / (maxY - minY + 120)))
+            clamp 0.15 1.6 (min (model.width / (maxX - minX + 140)) (areaHeight / (maxY - minY + 90)))
     in
     { model
-        | zoom =
+        | positions = shaped
+        , zoom =
             Zoom.init { width = model.width, height = model.height }
                 |> Zoom.scaleExtent 0.1 6
                 |> Zoom.setTransform Zoom.instantly
                     { scale = k
-                    , translate = { x = model.width / 2 - k * (minX + maxX) / 2, y = model.height / 2 - k * (minY + maxY) / 2 }
+                    , translate = { x = model.width / 2 - k * (minX + maxX) / 2, y = top + areaHeight / 2 - k * (minY + maxY) / 2 }
                     }
     }
 
@@ -173,7 +192,7 @@ update msg model =
             ( m, Cmd.batch [ loadArticle m, Task.perform (always NoOp) (Browser.Dom.setViewport 0 0) ] )
 
         GotGraph (Ok g) ->
-            ( fit { model | graph = Loaded g, positions = Layout.compute g }, Cmd.none )
+            ( fit { model | graph = Loaded g, layout = Layout.compute g }, Cmd.none )
 
         GotGraph (Err _) ->
             ( { model | graph = Failed }, Cmd.none )
@@ -185,10 +204,10 @@ update msg model =
             ( { model | article = Failed }, Cmd.none )
 
         GotViewport vp ->
-            ( fit { model | width = vp.viewport.width, height = mapHeight vp.viewport.height }, Cmd.none )
+            ( fit (resized vp.viewport.width vp.viewport.height model), Cmd.none )
 
         Resized w h ->
-            ( fit { model | width = toFloat w, height = mapHeight (toFloat h) }, Cmd.none )
+            ( fit (resized (toFloat w) (toFloat h) model), Cmd.none )
 
         Hover id ->
             ( { model | hovered = Just id, focused = Just id }, Cmd.none )
@@ -532,7 +551,7 @@ mapScreen model g =
                 _ ->
                     []
             )
-        , MapView.infoBoxes model.lang focusInfo
+        , MapView.infoBoxes model.lang model.boxHeight focusInfo
         ]
 
 

@@ -74,14 +74,14 @@ button, select, input { font: inherit; }
 svg.map { display: block; cursor: grab; max-width: 100%; }
 html, body { overflow-x: hidden; }
 svg.map:active { cursor: grabbing; }
-.edge { stroke: #2f343c; stroke-width: 1.1; transition: stroke .25s, opacity .25s; }
+.edge { stroke: #2f343c; stroke-width: 1.1; transition: stroke .07s, opacity .07s; }
 .edge.mentions { stroke-dasharray: 3 4; }
 .edge.feeds { marker-end: url(#arrow); }
 .edge.lit { stroke: var(--gold); stroke-width: 2; opacity: 1; }
 .edge.dim { opacity: .25; }
 .arrowhead { fill: #4a4f57; }
-.node { cursor: pointer; transition: opacity .25s; }
-.node .dot { stroke: rgba(0,0,0,.6); stroke-width: 1.5; transition: r .2s; }
+.node { cursor: pointer; transition: opacity .07s; }
+.node .dot { stroke: rgba(0,0,0,.6); stroke-width: 1.5; transition: r .07s; }
 .node .halo { fill: none; stroke: var(--gold); stroke-width: 2; }
 .node .label { fill: #cfc9bb; pointer-events: none; paint-order: stroke; stroke: var(--bg); stroke-width: 3px; }
 .node.active .label { fill: #fff; font-weight: 600; }
@@ -101,6 +101,8 @@ svg.map:active { cursor: grabbing; }
 .boxes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; padding: 10px 16px 28px; }
 .boxes.empty { display: block; }
 .box { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px; min-height: 150px; }
+/* A box with a fixed height (set by the page on wide windows) scrolls inside itself; the scrollbar stays quiet. */
+.box { scrollbar-width: thin; scrollbar-color: #3a3f47 transparent; }
 .box h4 { margin: 0 0 10px; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
 .box p { margin: 0; font-size: 15px; line-height: 1.55; color: #d4cec2; }
 .box .name { white-space: nowrap; }

@@ -30,3 +30,6 @@ Source: G = stated by Giovanni, D = derived by Claude Code and accepted (design 
 | MP-2 | Hovering a node fills the four info boxes; clicking a node opens its article | G |
 | MP-3 | Links written [[id]] in an article lead to that article | G |
 | MP-4 | The map can be filtered by project and by date (timeline) | D |
+| MP-5 | On windows wider than 1100 px the map is as tall as the window allows and leaves only the height of the four info boxes below it, so hovering a node never makes the page scroll; a text longer than its box scrolls inside the box | G |
+| MP-6 | The map layout takes the shape of the map area: on a wide window the nodes spread over the full width, on a tall one over the full height; distances only grow, none shrinks, and every node keeps its place relative to the others | G |
+| MP-7 | Hovering a node lights it, its neighbours and its edges within 80 ms: every transition on the map is at most 0.08 s | G |

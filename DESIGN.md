@@ -49,7 +49,7 @@ flowchart TB
     end
     subgraph frontend["frontend/ (Elm)"]
         main[Main: routes, search bar, language]
-        mapv[MapView + Layout + Filter]
+        mapv[MapView + Layout + MapSize + Filter]
         art[ArticleView + WikiText]
         search[Search]
     end
@@ -82,6 +82,7 @@ Newest first. **Type** is the ISO/IEC/IEEE 14764 maintenance category: *correcti
 
 | Date | Type | Decision | Why |
 |---|---|---|---|
+| 2026-10-22 | Perfective | **Bigger map, quicker highlight, roomier layout** (MP-5..MP-7). On a wide, tall enough window (above 1100 px) the map takes all the height the four info boxes do not need: `MapSize` gives the boxes a fixed height from their text width (about 226 px at 1920 px, a longer text scrolls inside its box) and the map the rest, so the page fits the window and never scrolls on hover; on a shorter or narrower window nothing changes (58 % share, boxes size themselves), so the map is never smaller than before (1920x943: 623 px instead of 547). The layout is reshaped to the map area (`Layout.matchAspect`, stretch only, capped at 3) after a force simulation that settles wide and flat (a pull to a horizontal line, stronger repulsion, a collision radius), and the graph is centred below the floating controls (`MapSize.insets`). Every fade on the map lasts 0.07 s (was 0.25 s) and each dot has an invisible larger hit area. Measured on the 149 pages at 1920x943: median gap between dots 48 px (was 23), closest pair 31 px (was 10), pairs closer than 20 px none (was 37) | Giovanni: the map window should use the free screen, leaving only room for the boxes; dots lit up too slowly; dots were too close together. Elm's own work per hover is about 12 ms, so the delay was the CSS fades. Scaling a layout to fit changes nothing on screen, so spacing had to come from the layout's shape and the collision radius, not from bigger distances |
 | 2026-10-22 | Corrective | Map zoom and pan: the SVG declares a `viewBox` equal to its size, and on the map the top bar floats over it so the map starts at the window's top-left | Without a viewBox Chrome reports an empty one and elm-visualization turned every pointer position into (0,0): wheel zoom anchored at the corner and drag did not pan (Giovanni's report). Touch positions are measured from the window, wheel positions from the map; with the map at (0,0) they agree |
 | 2026-10-22 | Corrective | Google's certificate is checked with OTP's system trust store (`:public_key.cacerts_get()`) plus `ssl_verify_fun` for the host name | Assent refused an unverified HTTPS call to Google; certifi would add a second, separately updated CA list |
 | 2026-10-22 | Perfective | Map labels: only projects, the hovered dot and its neighbours until zoomed in; label size compensates zoom. Timeline stops are days, not months | With 145 pages the full-map labels piled up; all pages so far appeared in the same month |
