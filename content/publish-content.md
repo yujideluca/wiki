@@ -18,7 +18,7 @@ Publishes a new question pool without a new APK (ADR-0012).
 `publish_content.sh beta` checks the committed pool and puts it in the `content/` folder of [[release-feed]] on `bleeding-edge`, where the beta app finds it. `publish_content.sh promote` (Giovanni's call, like an APK) copies exactly that pack to `main` for the stable app and puts the same files on the web version ([[quizweb]]).
 
 ## How it does it
-Bash; the web step works in a temporary worktree of the web repo's `origin/main`, so a web port waiting on a `web-<version>` branch is not disturbed.
+Bash; the web step works in a temporary worktree of the web repo's `origin/main`, so a web port waiting on a `web-<version>` branch is not disturbed. `beta` first runs the core tests (the same checks the app runs on a download) and refuses a pool version that is already on `bleeding-edge`; `promote` refuses unless `bleeding-edge` holds a newer pool than `main`. With `FEED_DIR` (and `WEB_DIR`) it writes to a sandbox clone instead, which together with a debug build reading a local feed (`-PfeedUrl`) tests a pool on the phone without publishing it.
 
 ## Where it sits in the pipeline
 The content-only path of [[quizapp-release]]: edit TSV → [[build-vocab]] → commit → this script.
