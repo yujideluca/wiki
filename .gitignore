@@ -1,0 +1,7 @@
+/site/
+/server/_build/
+/server/deps/
+/server/wiki
+/frontend/elm-stuff/
+/.superpowers/
+erl_crash.dump

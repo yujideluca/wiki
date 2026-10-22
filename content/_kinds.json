@@ -1,0 +1,15 @@
+[
+  {"name": "project", "colour": "#d0706f", "description": "A project: a repository or an area of work with its own goals"},
+  {"name": "program", "colour": "#c9a14a", "description": "A program or command you can run"},
+  {"name": "module", "colour": "#6f9fd8", "description": "A part of a program's code with one responsibility"},
+  {"name": "function", "colour": "#9fc0ec", "description": "A function or class important enough to have its own page (rule D11)"},
+  {"name": "script", "colour": "#d8935a", "description": "A helper script, usually a check or a build step"},
+  {"name": "skill", "colour": "#b58ad8", "description": "A Claude skill: packaged instructions for one kind of task"},
+  {"name": "hook", "colour": "#e07a9b", "description": "Something that runs automatically on an event (a chat starts, a turn ends)"},
+  {"name": "service", "colour": "#5fc0a8", "description": "Something that keeps running in the background or in the cloud"},
+  {"name": "data", "colour": "#8fa0b8", "description": "Files or stored state that programs read and write"},
+  {"name": "actor", "colour": "#8fcf6a", "description": "Someone who acts: Giovanni or a Claude instance"},
+  {"name": "process", "colour": "#e8d27a", "description": "A sequence of steps across several parts of the system"},
+  {"name": "decision", "colour": "#c8c4bc", "description": "A recorded decision (ADR) or a rule with its reasons"},
+  {"name": "external", "colour": "#6e7681", "description": "A device or outside service the system depends on"}
+]

@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>∴</title>
+<link rel="icon" href="data:,">
+<style>
+  :root { color-scheme: dark; }
+  html, body { margin: 0; height: 100%; background: #030208; overflow: hidden; font-family: ui-sans-serif, system-ui, sans-serif; }
+  canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+  .gate {
+    position: fixed; left: 50%; bottom: 9vh; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center;
+    padding: 0 16px; width: min(420px, calc(100% - 32px)); box-sizing: border-box;
+  }
+  .glyph { color: #f3e9ff; letter-spacing: .5em; font-size: 12px; opacity: .55; text-transform: uppercase; }
+  a.signin {
+    display: inline-flex; align-items: center; gap: 12px; padding: 13px 22px; border-radius: 999px;
+    background: rgba(8, 6, 18, .72); color: #fff; text-decoration: none; font-size: 15px; font-weight: 500;
+    border: 1px solid rgba(255,255,255,.22); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 0 40px rgba(170, 90, 255, .35), inset 0 0 18px rgba(255,255,255,.05);
+    transition: box-shadow .3s, transform .3s;
+  }
+  a.signin:hover, a.signin:focus-visible { box-shadow: 0 0 70px rgba(255, 120, 220, .55); transform: translateY(-1px); outline: none; }
+  a.signin svg { width: 18px; height: 18px; flex: none; }
+  @media (prefers-reduced-motion: reduce) { a.signin { transition: none; } }
+</style>
+</head>
+<body>
+<canvas id="c" aria-hidden="true"></canvas>
+<div class="gate">
+  <div class="glyph" id="glyph">· · ·</div>
+  <a class="signin" href="/auth/google">
+    <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>
+    Sign in with Google
+  </a>
+</div>
+<script>
+// Decoy: every word below is generated here, at random, in the visitor's browser. Nothing real is on this page.
+(() => {
+  const c = document.getElementById('c'), x = c.getContext('2d');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const syl = ['zor','vex','qua','lin','thar','mo','kri','sel','dun','ix','ophe','ral','yth','ume','gar','plo','fen','ziv','aur','nek','sha','tro','vim','eld','quo','bry','xal','ri','um','os'];
+  const rnd = (a, b) => a + Math.random() * (b - a), pick = a => a[Math.floor(Math.random() * a.length)];
+  const word = () => { let w = ''; for (let i = 0, n = 2 + Math.floor(Math.random() * 3); i < n; i++) w += pick(syl); return Math.random() < .3 ? w + '_' + pick(syl) : w; };
+  let W, H, D, nodes = [], t = 0, mx = -1e4, my = -1e4;
+  function size() {
+    D = Math.min(devicePixelRatio || 1, 2); W = innerWidth; H = innerHeight;
+    c.width = W * D; c.height = H * D; x.setTransform(D, 0, 0, D, 0, 0);
+    const n = Math.round(Math.min(90, Math.max(34, W * H / 16000)));
+    nodes = Array.from({ length: n }, () => ({ x: rnd(0, W), y: rnd(0, H), vx: rnd(-.3, .3), vy: rnd(-.3, .3), r: rnd(2, 7), h: rnd(0, 360), w: word(), p: rnd(0, 6.28) }));
+  }
+  function frame() {
+    t += reduce ? 0 : 1;
+    x.fillStyle = 'rgba(3, 2, 8, 0.22)'; x.fillRect(0, 0, W, H);
+    const link = Math.min(W, H) * .2;
+    for (const n of nodes) {
+      const dx = mx - n.x, dy = my - n.y, d2 = dx * dx + dy * dy;
+      if (d2 < 40000) { n.vx += dx / 9000; n.vy += dy / 9000; }
+      n.vx += Math.sin(t * .004 + n.p) * .006; n.vy += Math.cos(t * .005 + n.p) * .006;
+      n.vx *= .985; n.vy *= .985; n.x += n.vx; n.y += n.vy;
+      if (n.x < -40) n.x = W + 40; if (n.x > W + 40) n.x = -40; if (n.y < -40) n.y = H + 40; if (n.y > H + 40) n.y = -40;
+    }
+    x.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < nodes.length; i++) for (let j = i + 1; j < nodes.length; j++) {
+      const a = nodes[i], b = nodes[j], d = Math.hypot(a.x - b.x, a.y - b.y);
+      if (d < link) {
+        const g = x.createLinearGradient(a.x, a.y, b.x, b.y), al = (1 - d / link) * .55;
+        g.addColorStop(0, `hsla(${(a.h + t) % 360},100%,62%,${al})`); g.addColorStop(1, `hsla(${(b.h + t) % 360},100%,62%,${al})`);
+        x.strokeStyle = g; x.lineWidth = 1.2; x.beginPath(); x.moveTo(a.x, a.y);
+        const mxp = (a.x + b.x) / 2 + Math.sin(t * .01 + i) * 18, myp = (a.y + b.y) / 2 + Math.cos(t * .012 + j) * 18;
+        x.quadraticCurveTo(mxp, myp, b.x, b.y); x.stroke();
+      }
+    }
+    for (const n of nodes) {
+      const hue = (n.h + t * 1.3) % 360, pulse = n.r * (1.4 + Math.sin(t * .05 + n.p) * .6);
+      const g = x.createRadialGradient(n.x, n.y, 0, n.x, n.y, pulse * 5);
+      g.addColorStop(0, `hsla(${hue},100%,70%,.9)`); g.addColorStop(.3, `hsla(${(hue + 60) % 360},100%,55%,.35)`); g.addColorStop(1, 'hsla(0,0%,0%,0)');
+      x.fillStyle = g; x.beginPath(); x.arc(n.x, n.y, pulse * 5, 0, 6.283); x.fill();
+      x.fillStyle = `hsla(${(hue + 180) % 360},100%,85%,.75)`; x.font = `${10 + n.r}px ui-monospace, monospace`;
+      x.fillText(n.w, n.x + pulse + 6, n.y + 4);
+    }
+    x.globalCompositeOperation = 'source-over';
+    if (t % 160 === 0) { const n = pick(nodes); n.w = word(); document.getElementById('glyph').textContent = word() + ' · ' + word(); }
+    if (!reduce) requestAnimationFrame(frame);
+  }
+  addEventListener('resize', size);
+  addEventListener('pointermove', e => { mx = e.clientX; my = e.clientY; });
+  addEventListener('pointerleave', () => { mx = my = -1e4; });
+  size(); frame();
+})();
+</script>
+</body>
+</html>

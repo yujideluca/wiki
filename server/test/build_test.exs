@@ -1,0 +1,152 @@
+defmodule Wiki.Content.BuildTest do
+  use Wiki.ContentCase, async: false
+
+  defp git(dir, args, env \\ []) do
+    {_, 0} = System.cmd("git", ["-C", dir | args], env: env, stderr_to_stdout: true)
+  end
+
+  defp init_repo(dir) do
+    File.mkdir_p!(dir)
+    git(dir, ["init", "-q", "-b", "main"])
+    git(dir, ["config", "user.email", "test@example.invalid"])
+    git(dir, ["config", "user.name", "test"])
+  end
+
+  defp commit_all(dir, msg, date) do
+    git(dir, ["add", "-A"])
+    git(dir, ["commit", "-q", "-m", msg], [{"GIT_AUTHOR_DATE", date}, {"GIT_COMMITTER_DATE", date}])
+  end
+
+  # REQ BU-1
+  test "graph.json has nodes, feeds and mentions edges; one article per page per language", %{content: c, dir: dir} do
+    valid_wiki(c)
+    out = Path.join(dir, "site")
+    :ok = Build.run(Store.load(c), out, today: ~D[2026-10-22])
+
+    graph = out |> Path.join("data/graph.json") |> File.read!() |> JSON.decode!()
+    assert graph["nodes"] |> Enum.map(& &1["id"]) |> Enum.sort() == ~w(a b proj)
+    assert %{"from" => "a", "to" => "b", "type" => "feeds"} in graph["edges"]
+    assert %{"from" => "a", "to" => "proj", "type" => "mentions"} in graph["edges"]
+    refute Enum.any?(graph["edges"], &(&1["type"] == "mentions" and Enum.sort([&1["from"], &1["to"]]) == ["a", "b"]))
+    a = Enum.find(graph["nodes"], &(&1["id"] == "a"))
+    assert a["text"]["de"]["title"] == "a (de)"
+    assert a["text"]["en"]["what"] == "A thing."
+
+    for id <- ~w(a b proj), lang <- ~w(en de pt-BR) do
+      art = out |> Path.join("data/pages/#{id}.#{lang}.json") |> File.read!() |> JSON.decode!()
+      assert art["lang"] == lang
+      assert Enum.map(art["sections"], & &1["key"]) == ~w(what does how where receives)
+    end
+  end
+
+  # REQ BU-2
+  test "since comes from the header, else from the first commit of the sources", %{content: c, dir: dir} do
+    repo = Path.join(dir, "dev/r1")
+    init_repo(repo)
+    File.write!(Path.join(repo, "f.txt"), "1")
+    commit_all(repo, "first", "2025-03-04T10:00:00")
+    System.put_env("WIKI_DEV_ROOT", Path.join(dir, "dev"))
+
+    valid_wiki(c)
+    write_page(c, "a", base_header("a", feeds: ["b"], sources: ["r1:f.txt"]))
+    write_page(c, "b", base_header("b", fed_by: ["a"], since: "2020-01-01"))
+    out = Path.join(dir, "site")
+    :ok = Build.run(Store.load(c), out, today: ~D[2026-10-22])
+    nodes = Path.join(out, "data/graph.json") |> File.read!() |> JSON.decode!() |> Map.fetch!("nodes")
+    assert Enum.find(nodes, &(&1["id"] == "a"))["since"] == "2025-03-04"
+    assert Enum.find(nodes, &(&1["id"] == "b"))["since"] == "2020-01-01"
+  after
+    System.delete_env("WIKI_DEV_ROOT")
+  end
+
+  # REQ CO-6
+  test "a page without sources is marked may-be-stale 30 days after its review", %{content: c, dir: dir} do
+    valid_wiki(c)
+    write_page(c, "a", base_header("a", feeds: ["b"], reviewed: "2026-09-01"))
+    out = Path.join(dir, "site")
+    :ok = Build.run(Store.load(c), out, today: ~D[2026-10-22])
+    read = &(Path.join(out, "data/pages/#{&1}.en.json") |> File.read!() |> JSON.decode!())
+    assert read.("a")["mayBeStale"] == true
+    assert read.("b")["mayBeStale"] == false
+  end
+
+  describe "Stop hook" do
+    setup %{dir: dir, content: c} do
+      repo = Path.join(dir, "dev/r1")
+      init_repo(repo)
+      File.mkdir_p!(Path.join(repo, "lib"))
+      File.write!(Path.join(repo, "lib/x.ex"), "1")
+      commit_all(repo, "first", "2026-01-01T10:00:00")
+      System.put_env("WIKI_DEV_ROOT", Path.join(dir, "dev"))
+      System.put_env("WIKI_STATE_DIR", Path.join(dir, "state"))
+      valid_wiki(c)
+      write_page(c, "a", base_header("a", feeds: ["b"], sources: ["r1:lib"]))
+
+      on_exit(fn ->
+        System.delete_env("WIKI_DEV_ROOT")
+        System.delete_env("WIKI_STATE_DIR")
+      end)
+
+      {:ok, repo: repo}
+    end
+
+    # REQ UP-1
+    test "blocks once when covered code changed after the last publish", %{content: c, repo: repo} do
+      Stale.mark_published(System.os_time(:second) - 60)
+      store = Store.load(c)
+      assert Stale.hook_message(store, %{"session_id" => "s"}) == nil
+
+      File.write!(Path.join(repo, "lib/x.ex"), "2")
+      File.write!(Path.join(repo, "NEW.md"), "new")
+      commit_all(repo, "change", DateTime.utc_now() |> DateTime.to_iso8601())
+
+      msg = Stale.hook_message(store, %{"session_id" => "s"})
+      assert msg =~ "r1: update pages a"
+      assert msg =~ "new files no page covers: NEW.md"
+      assert Stale.hook_message(store, %{"session_id" => "s"}) == nil, "must not block twice in a session"
+      assert Stale.hook_message(store, %{"session_id" => "other", "stop_hook_active" => true}) == nil
+      assert Stale.hook_message(store, %{"session_id" => "other"}) =~ "update pages a"
+
+      Stale.mark_published()
+      assert Stale.hook_message(store, %{"session_id" => "third"}) == nil
+    end
+
+    # REQ UP-1
+    test "never blocks before the first publish or for repos the wiki does not cover", %{content: c, dir: dir} do
+      store = Store.load(c)
+      assert Stale.hook_message(store, %{"session_id" => "s"}) == nil
+
+      Stale.mark_published(System.os_time(:second) - 60)
+      other = Path.join(dir, "dev/unrelated")
+      init_repo(other)
+      File.write!(Path.join(other, "y"), "1")
+      commit_all(other, "c", DateTime.utc_now() |> DateTime.to_iso8601())
+      assert Stale.hook_message(store, %{"session_id" => "s"}) == nil
+    end
+  end
+
+  # REQ UP-2
+  test "publish refuses when the local check fails and commits only content/", %{dir: dir, content: c} do
+    root = Path.join(dir, "wiki")
+    init_repo(root)
+    valid_wiki(c)
+    File.write!(Path.join(root, "other.txt"), "unrelated work in progress")
+    write_page(c, "a", base_header("a", feeds: ["b", "ghost"]))
+    System.put_env("WIKI_ROOT", root)
+    System.put_env("WIKI_STATE_DIR", Path.join(dir, "state"))
+
+    ExUnit.CaptureIO.capture_io(fn -> assert Wiki.CLI.run(["publish"], message: "t") == 1 end)
+    assert Wiki.Content.Git.cmd(root, ["log", "--oneline"]) in [nil, ""]
+
+    # Valid content: check passes; build needs Elm, so test the commit step directly.
+    valid_wiki(c)
+    ExUnit.CaptureIO.capture_io(fn -> assert Wiki.CLI.run(["check"], local: true) == 0 end)
+    ExUnit.CaptureIO.capture_io(fn -> Wiki.CLI.commit_only_content(root, "t") end)
+    files = Wiki.Content.Git.cmd(root, ["show", "--name-only", "--format=", "HEAD"]) |> String.split("\n")
+    assert Enum.all?(files, &String.starts_with?(&1, "content/"))
+    refute "other.txt" in files
+  after
+    System.delete_env("WIKI_ROOT")
+    System.delete_env("WIKI_STATE_DIR")
+  end
+end
