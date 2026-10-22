@@ -10,6 +10,8 @@ import MapView
 import Search
 import Set
 import Svg
+import Svg.Attributes
+import Zoom
 import Test exposing (Test, describe, test)
 import Test.Html.Event as Event
 import Test.Html.Query as Query
@@ -106,6 +108,11 @@ suite =
                         |> Query.find [ Selector.attribute (Html.Attributes.attribute "data-id" "mem") ]
                         |> Event.simulate Event.mouseOver
                         |> Event.expect (Hover "mem")
+            , test "the map declares a viewBox matching its size, so zoom and drag use real pointer positions" <|
+                \_ ->
+                    MapView.map En graph Dict.empty (Zoom.init { width = 800, height = 500 }) 800 500 Set.empty Nothing
+                        |> Query.fromHtml
+                        |> Query.has [ Selector.attribute (Svg.Attributes.viewBox "0 0 800 500") ]
             , test "clicking a node opens its page" <|
                 \_ ->
                     MapView.node En graph ( 0, 0 ) False False True 12 (mkNode "mem" "mem" "p" [] [])

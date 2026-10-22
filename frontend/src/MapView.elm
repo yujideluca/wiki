@@ -130,6 +130,9 @@ map lang graph positions zoom width height visibleIds active =
         ([ S.class "map"
          , S.width (String.fromFloat width)
          , S.height (String.fromFloat height)
+           -- Zoom reads pointer positions through the viewBox; without one Chrome reports an empty box and every
+           -- position becomes (0,0), so wheel zoom anchors at the corner and dragging does not pan.
+         , S.viewBox ("0 0 " ++ String.fromFloat width ++ " " ++ String.fromFloat height)
          , A.attribute "role" "img"
          , A.attribute "aria-label" "System map"
          ]
