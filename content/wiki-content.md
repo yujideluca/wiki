@@ -8,7 +8,7 @@ status: active
 location: wiki:content
 fed_by: [claude-code]
 feeds: [wiki-build, wiki-check]
-sources: [wiki:content/_kinds.json]
+sources: [wiki:content/_kinds.json, wiki:content/_ignore.txt]
 ---
 
 ## What it is
