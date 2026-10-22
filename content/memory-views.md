@@ -8,7 +8,7 @@ status: active
 location: workflow-memory:views
 fed_by: [mem-action, memory-fold]
 feeds: [claude-app, giovanni]
-sources: [workflow-memory:views]
+sources: [workflow-memory:mem/project.py]
 ---
 
 ## What it is

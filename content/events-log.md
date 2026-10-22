@@ -8,7 +8,7 @@ status: active
 location: workflow-memory:events
 fed_by: [mem, mem-add, mem-github-connector, mem-harvester, mem-task, mem-use]
 feeds: [mem-action, mem-search, mem-validator, memory-fold]
-sources: [workflow-memory:events]
+sources: [workflow-memory:mem/events.py, workflow-memory:docs/DESIGN.md]
 ---
 
 ## What it is
