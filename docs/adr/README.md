@@ -10,3 +10,4 @@ rewritten: a new decision supersedes it.
 | [0002](0002-elm-and-elixir.md) | Front end in Elm, back end in Elixir | accepted |
 | [0003](0003-login-gate-and-decoy.md) | One Elixir login gate, Google sign-in for one account, decoy, Tailscale Funnel | accepted |
 | [0004](0004-content-format.md) | Content as Markdown pages with a header, checked before publishing | accepted |
+| [0005](0005-program-measures-skill-judges.md) | A program measures and blocks, a skill judges and proposes | accepted |

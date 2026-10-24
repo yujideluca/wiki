@@ -13,14 +13,15 @@ Tailscale Funnel, behind Google sign-in for yujideluca@gmail.com only. Design: `
    `server/test/router_test.exs` (AU-1..AU-6) and `server/test/decoy_test.exs` (DC-1).
 3. **Content follows the rules before it is published**: `wiki check` (links, symmetry, sections, privacy,
    promotion, translations). `wiki publish` refuses on any problem.
-4. **The gate decides**: `tools/quality_gate.sh` is the only definition of passing; CI runs it on every push.
+4. **The gate decides**: `tools/quality_gate.sh` is the only definition of passing; CI runs it through `tools/pipeline-check` on every push (limits in `pipeline-check.toml`, ADR-0005).
 5. **Decisions are written where the code is**: decision-log row with its Type in `DESIGN.md`, an ADR for
    structural ones.
 
 ## Working rules
 
-- Languages (Giovanni's choice): front end **Elm** (`frontend/`), back end **Elixir** (`server/`). Do not add code
-  in another language without asking (memory key `work.ask-language`).
+- Languages (Giovanni's choice): front end **Elm** (`frontend/`), back end **Elixir** (`server/`), and the maintenance
+  tool `tools/pipeline-check` in **Rust** (Giovanni's choice, ADR-0005). Do not add code in another language without
+  asking (memory key `work.ask-language`).
 - Build and test: `tools/quality_gate.sh`. Reinstall the server, the `wiki` command and the service:
   `tools/install.sh`. After pushing, the CI run must be green.
 - Content: `content/<id>.md` (English, source of truth) plus `<id>.de.md` and `<id>.pt-BR.md`, each translation

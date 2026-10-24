@@ -1,0 +1,31 @@
+# Limits for tools/pipeline-check (ADR-0005). Changed only by Giovanni, in a commit with a decision-log row saying why.
+projeto = "wiki"
+aviso_a = 0.8
+
+[gate]
+command = "tools/quality_gate.sh"
+required = true
+
+[architecture]
+pure_dirs = []                       # the wiki has no pure/framework split to enforce from imports
+
+[[fitness]]
+id = "arquivo-maior"                 # no Elixir or Elm file with several jobs (largest today: Main.elm, 578)
+kind = "max_file_lines"
+limit = 800
+dirs = ["server/lib", "frontend/src"]
+extensions = ["ex", "elm"]
+
+[[fitness]]
+id = "gate-segundos"
+kind = "gate_seconds"
+limit = 1200
+
+[github]
+repo = "yujideluca/wiki"
+branch = "main"
+required_check = "gate"
+
+[dora]
+days = 30
+decision_log = "DESIGN.md"

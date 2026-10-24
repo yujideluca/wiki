@@ -1,6 +1,6 @@
 name: quality-gate
 
-# Runs tools/quality_gate.sh, the same script used on the laptop, on every push and pull request.
+# Runs tools/pipeline-check, which runs tools/quality_gate.sh (the same script used on the laptop) once, on every push and pull request.
 # CI mode: the checks that need the laptop (sources in other private repos, memory refs) are skipped there.
 on:
   push:
@@ -22,4 +22,15 @@ jobs:
           node-version: 22
       - run: npm install -g elm@0.19.1-6 elm-test@0.19.1-revision12
       - run: cd server && mix deps.get
-      - run: WIKI_GATE_MODE=ci tools/quality_gate.sh
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: tools/pipeline-check
+      # pipeline-check runs tools/quality_gate.sh once, then the fitness checks, and writes report.json (ADR-0005)
+      - run: WIKI_GATE_MODE=ci tools/pipeline-check.sh --mode ci
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipeline-report
+          path: build/pipeline-check/report.json
+          retention-days: 14
