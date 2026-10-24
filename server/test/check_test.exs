@@ -140,4 +140,67 @@ defmodule Wiki.Content.CheckTest do
     assert Enum.any?(errs, &(&1 =~ "b.de.md: outdated"))
     assert Enum.any?(errs, &(&1 =~ "b.pt-BR.md: outdated"))
   end
+
+  # REQ CO-8
+  test "a skill page must carry the skill's own definition in a Steps section", %{content: c} do
+    valid_wiki(c)
+    write_page(c, "skill-x", base_header("skill-x", kind: "skill", feeds: ["b"]))
+    write_page(c, "b", base_header("b", fed_by: ["a", "skill-x"]))
+    assert Enum.any?(errors(c), &(&1 =~ "skill-x.md: a skill page needs a ## Steps section"))
+
+    write_page(c, "skill-x", base_header("skill-x", kind: "skill", feeds: ["b"]), %{"steps" => "1. Do the first thing."})
+    refute Enum.any?(errors(c), &(&1 =~ "needs a ## Steps section"))
+  end
+
+  # REQ CO-8
+  test "only skill pages need Steps", %{content: c} do
+    valid_wiki(c)
+    refute Enum.any?(errors(c), &(&1 =~ "needs a ## Steps section"))
+  end
+
+  defp acronyms(c, rows), do: File.write!(Path.join(c, "_acronyms.tsv"), Enum.join(rows, "\n") <> "\n")
+
+  # REQ CO-9
+  test "an acronym on the list must come with its full name at its first use", %{content: c} do
+    valid_wiki(c)
+    acronyms(c, ["# comment", "CI\tcontinuous integration"])
+
+    write_page(c, "a", base_header("a", feeds: ["b"]), %{"what" => "Runs on CI every day."})
+    assert Enum.any?(errors(c), &(&1 =~ "a.md: CI is used without its full name (continuous integration)"))
+
+    for ok <- ["Runs on continuous integration (CI) every day.", "Runs on CI (Continuous Integration) every day.",
+               "Continuous integration is great. Later, CI runs again."] do
+      write_page(c, "a", base_header("a", feeds: ["b"]), %{"what" => ok})
+      refute Enum.any?(errors(c), &(&1 =~ "full name")), ok
+    end
+  end
+
+  # REQ CO-9
+  test "the full name must be at the first use, not far after it", %{content: c} do
+    valid_wiki(c)
+    acronyms(c, ["CI\tcontinuous integration"])
+    far = "Runs on CI. " <> String.duplicate("Filler words here. ", 12) <> "That is continuous integration."
+    write_page(c, "a", base_header("a", feeds: ["b"]), %{"what" => far})
+    assert Enum.any?(errors(c), &(&1 =~ "a.md: CI is used without its full name"))
+  end
+
+  # REQ CO-9
+  test "a link address that contains the letters is not an acronym use", %{content: c} do
+    valid_wiki(c)
+    acronyms(c, ["API\tapplication programming interface"])
+    write_page(c, "a", base_header("a", feeds: ["b"]), %{"what" => "See [docs](https://x.org/Web/API/Thing)."})
+    refute Enum.any?(errors(c), &(&1 =~ "full name"))
+  end
+
+  # REQ CO-9
+  test "code quotes, other words containing the letters and a missing list are not acronym uses", %{content: c} do
+    valid_wiki(c)
+    acronyms(c, ["CI\tcontinuous integration"])
+    write_page(c, "a", base_header("a", feeds: ["b"]), %{"what" => "Type `CI` and read CIA, ACID and ci."})
+    refute Enum.any?(errors(c), &(&1 =~ "full name"))
+
+    File.rm!(Path.join(c, "_acronyms.tsv"))
+    write_page(c, "a", base_header("a", feeds: ["b"]), %{"what" => "Runs on CI."})
+    refute Enum.any?(errors(c), &(&1 =~ "full name"))
+  end
 end

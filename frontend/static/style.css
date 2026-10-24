@@ -67,6 +67,8 @@ button, select, input { font: inherit; }
 }
 .logout { color: var(--muted); font-size: 13px; text-decoration: none; white-space: nowrap; }
 .logout:hover { color: var(--text); }
+.glossary { color: var(--muted); font-size: 13px; text-decoration: none; white-space: nowrap; }
+.glossary:hover { color: var(--text); }
 .status { padding: 40px 16px; color: var(--muted); text-align: center; }
 
 /* Map */

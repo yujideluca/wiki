@@ -39,6 +39,19 @@ defmodule Wiki.Content.BuildTest do
     end
   end
 
+  # REQ BU-3
+  test "a reference page (the glossary) links anywhere without drawing edges on the map", %{content: c, dir: dir} do
+    valid_wiki(c)
+    write_page(c, "glossary", base_header("glossary", kind: "reference", project: "none"), %{"what" => "Terms: [[a]], [[b]]."})
+    write_page(c, "proj", base_header("proj", kind: "project", project: "none"), %{"what" => "Has [[a]], [[b]] and [[glossary]]."})
+    out = Path.join(dir, "site")
+    :ok = Build.run(Store.load(c), out, today: ~D[2026-10-22])
+    edges = out |> Path.join("data/graph.json") |> File.read!() |> JSON.decode!() |> Map.fetch!("edges")
+    pair = &Enum.sort([&1["from"], &1["to"]])
+    refute Enum.any?(edges, &(pair.(&1) in [["a", "glossary"], ["b", "glossary"]]))
+    assert Enum.any?(edges, &(pair.(&1) == ["glossary", "proj"]))
+  end
+
   # REQ BU-2
   test "since comes from the header, else from the first commit of the sources", %{content: c, dir: dir} do
     repo = Path.join(dir, "dev/r1")

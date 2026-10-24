@@ -84,6 +84,7 @@ type alias Strings =
     , loading : String
     , loadError : String
     , logout : String
+    , glossary : String
     , notTranslated : String
     , legend : String
     }
@@ -123,6 +124,7 @@ strings lang =
             , loading = "Loading…"
             , loadError = "Could not load the wiki data."
             , logout = "Log out"
+            , glossary = "Glossary"
             , notTranslated = "This page has no translation yet; showing English."
             , legend = "Kinds"
             }
@@ -158,6 +160,7 @@ strings lang =
             , loading = "Wird geladen…"
             , loadError = "Die Wiki-Daten konnten nicht geladen werden."
             , logout = "Abmelden"
+            , glossary = "Glossar"
             , notTranslated = "Diese Seite ist noch nicht übersetzt; Anzeige auf Englisch."
             , legend = "Arten"
             }
@@ -193,6 +196,7 @@ strings lang =
             , loading = "Carregando…"
             , loadError = "Não foi possível carregar os dados do wiki."
             , logout = "Sair"
+            , glossary = "Glossário"
             , notTranslated = "Esta página ainda não foi traduzida; exibindo em inglês."
             , legend = "Tipos"
             }

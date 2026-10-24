@@ -101,13 +101,44 @@ toHtml titleOf markdown =
         rewriteLinks titleOf markdown
             |> Markdown.Parser.parse
             |> Result.mapError (always "parse")
-            |> Result.andThen (Markdown.Renderer.render Markdown.Renderer.defaultHtmlRenderer)
+            |> Result.andThen (Markdown.Renderer.render renderer)
     of
         Ok html ->
             html
 
         Err _ ->
             [ Html.pre [ A.class "raw" ] [ Html.text markdown ] ]
+
+
+{-| The default renderer, except that a link to another site opens in a new tab, so reading a definition never
+loses the page being read. -}
+renderer : Markdown.Renderer.Renderer (Html msg)
+renderer =
+    let
+        base =
+            Markdown.Renderer.defaultHtmlRenderer
+    in
+    { base
+        | link =
+            \link content ->
+                let
+                    external =
+                        if String.startsWith "http://" link.destination || String.startsWith "https://" link.destination then
+                            [ A.target "_blank", A.rel "noopener noreferrer" ]
+
+                        else
+                            []
+
+                    title =
+                        case link.title of
+                            Just t ->
+                                [ A.title t ]
+
+                            Nothing ->
+                                []
+                in
+                Html.a (A.href link.destination :: title ++ external) content
+    }
 
 
 {-| A process page's `Steps` section: one numbered line per step. -}

@@ -5,7 +5,7 @@ defmodule Wiki.Content.Build do
       <out>/data/graph.json             nodes, edges, kinds, projects (all languages)
       <out>/data/pages/<id>.<lang>.json one article per language
 
-  Pipeline edges come from `feeds`; every `[[link]]` that is not already a pipeline edge becomes a
+  Pipeline edges come from `feeds`; every `[[link]]` (except from a page of kind `reference`, the glossary, which links to anything to explain it) that is not already a pipeline edge becomes a
   `mentions` edge. `since` is the header value, else the first commit of the page's sources, else the
   first commit of the page file itself.
   """
@@ -87,7 +87,8 @@ defmodule Wiki.Content.Build do
     pipe_set = MapSet.new(pipeline, fn {a, b} -> Enum.sort([a, b]) end)
 
     mentions =
-      for {id, p} <- store.pages, to <- Page.links(p), to != id, Map.has_key?(store.pages, to),
+      for {id, p} <- store.pages, p.header["kind"] != "reference",
+          to <- Page.links(p), to != id, Map.has_key?(store.pages, to),
           !MapSet.member?(pipe_set, Enum.sort([id, to])),
           uniq: true,
           do: Enum.sort([id, to])

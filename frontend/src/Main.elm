@@ -428,6 +428,7 @@ topBar model =
               else
                 text ""
             ]
+        , a [ A.class "glossary", A.href "/p/glossary" ] [ text s.glossary ]
         , select [ A.class "lang", E.onInput SetLang, A.attribute "aria-label" "Language" ]
             (List.map
                 (\l -> option [ A.value (I18n.code l), A.selected (l == model.lang) ] [ text (I18n.label l) ])

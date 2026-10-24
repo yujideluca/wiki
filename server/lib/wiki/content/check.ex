@@ -53,6 +53,8 @@ defmodule Wiki.Content.Check do
         Enum.map(Page.required_sections(), fn k ->
           Page.section(p, k) == "" && "section ## #{Page.heading(k)} is missing or empty"
         end) ++
+        [skill_definition(p)] ++
+        acronyms(p, store.acronyms) ++
         Enum.map(Page.links(p), &(!MapSet.member?(ids, &1) && "link [[#{&1}]] points to no page")) ++
         Enum.map(Page.list(p, "fed_by"), &(!MapSet.member?(ids, &1) && "fed_by #{&1} points to no page")) ++
         Enum.map(Page.list(p, "feeds"), &(!MapSet.member?(ids, &1) && "feeds #{&1} points to no page")) ++
@@ -61,6 +63,35 @@ defmodule Wiki.Content.Check do
         Privacy.scan(p)
 
     errs |> Enum.filter(&is_binary/1) |> Enum.map(&prefix(p, &1))
+  end
+
+  # A skill page holds the skill's own definition (its rules or steps), so a reader never needs the SKILL.md file.
+  defp skill_definition(p) do
+    p.header["kind"] == "skill" && Page.section(p, "steps") == "" &&
+      "a skill page needs a ## Steps section with the skill's own rules or steps"
+  end
+
+  @acronym_gap 100
+
+  # The first use of a listed acronym must be next to its full name: the name appears before it or within
+  # @acronym_gap characters after it. Code quotes and link addresses are skipped; matching is on whole words, case-sensitive.
+  defp acronyms(p, list) do
+    prose =
+      p.sections |> Enum.map_join("\n", &elem(&1, 1)) |> Page.strip_code() |> String.replace(~r/\]\([^)]*\)/, "]")
+
+    for {acronym, name} <- list,
+        [{at, _}] <- [Regex.run(~r/(?<![A-Za-z0-9])#{Regex.escape(acronym)}(?![A-Za-z0-9])/, prose, return: :index) || [nil]],
+        at != nil,
+        not full_name_near?(prose, name, at) do
+      "#{acronym} is used without its full name (#{name}) at its first use"
+    end
+  end
+
+  defp full_name_near?(prose, name, at) do
+    case :binary.match(String.downcase(prose), String.downcase(name)) do
+      {pos, _} -> pos <= at + @acronym_gap
+      :nomatch -> false
+    end
   end
 
   defp missing_fields(p) do

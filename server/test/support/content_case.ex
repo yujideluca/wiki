@@ -15,7 +15,7 @@ defmodule Wiki.ContentCase do
     content = Path.join(dir, "wiki/content")
     File.mkdir_p!(content)
     File.write!(Path.join(content, "_kinds.json"), ~s([{"name":"project","colour":"#c97a7a"},
-      {"name":"program","colour":"#c9a14a"},{"name":"module","colour":"#7aa2c9"},{"name":"actor","colour":"#8fc97a"}]))
+      {"name":"program","colour":"#c9a14a"},{"name":"module","colour":"#7aa2c9"},{"name":"actor","colour":"#8fc97a"},{"name":"skill","colour":"#b58ad8"},{"name":"reference","colour":"#a9b4c0"}]))
     on_exit(fn -> File.rm_rf!(dir) end)
     {:ok, dir: dir, content: content}
   end

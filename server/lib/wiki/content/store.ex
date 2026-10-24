@@ -3,7 +3,8 @@ defmodule Wiki.Content.Store do
   Loads every page and the kinds registry from a content folder.
 
   `content/<id>.md` is English; `content/<id>.de.md` and `content/<id>.pt-BR.md` are translations;
-  `content/_kinds.json` lists the kinds of concept (name, colour, description).
+  `content/_kinds.json` lists the kinds of concept (name, colour, description);
+  `content/_acronyms.tsv` lists the acronyms whose first use on a page must come with the full name.
   """
   alias Wiki.Content.Page
 
@@ -11,7 +12,7 @@ defmodule Wiki.Content.Store do
   def langs, do: @langs
   def translation_langs, do: tl(@langs)
 
-  defstruct dir: nil, pages: %{}, translations: %{}, kinds: %{}, errors: []
+  defstruct dir: nil, pages: %{}, translations: %{}, kinds: %{}, acronyms: [], errors: []
 
   def load(dir) do
     files = dir |> File.ls!() |> Enum.filter(&String.ends_with?(&1, ".md")) |> Enum.sort()
@@ -24,6 +25,7 @@ defmodule Wiki.Content.Store do
       pages: Map.new(en, &{&1.id, &1}),
       translations: Map.new(tr, &{{&1.id, &1.lang}, &1}),
       kinds: kinds,
+      acronyms: load_acronyms(Path.join(dir, "_acronyms.tsv")),
       errors: kerrs
     }
   end
@@ -34,6 +36,19 @@ defmodule Wiki.Content.Store do
       {Map.new(list, &{&1["name"], &1}), []}
     else
       _ -> {%{}, ["content/_kinds.json missing or not a JSON list"]}
+    end
+  end
+
+  # `_acronyms.tsv`: one `ACRONYM<TAB>full name` per line, `#` starts a comment. Missing file = no acronym rule.
+  defp load_acronyms(path) do
+    case File.read(path) do
+      {:ok, text} ->
+        for line <- String.split(text, "\n", trim: true), not String.starts_with?(line, "#"),
+            [acronym, name] <- [String.split(line, "\t", parts: 2)],
+            do: {String.trim(acronym), String.trim(name)}
+
+      _ ->
+        []
     end
   end
 

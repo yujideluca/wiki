@@ -4,6 +4,7 @@ import Data exposing (EdgeType(..), Graph, Node)
 import Dict
 import Expect
 import Filter
+import Html
 import Html.Attributes
 import I18n exposing (Lang(..))
 import Layout
@@ -283,6 +284,20 @@ suite =
             , test "link ids are collected for a step" <|
                 \_ ->
                     WikiText.linkIds "Run [[mem]] then [[ events |x]]" |> Expect.equal [ "mem", "events" ]
+            -- REQ MP-8
+            , test "external links open in a new tab, wiki links stay in the tab" <|
+                \_ ->
+                    let
+                        html =
+                            WikiText.toHtml identity "[Wikipedia](https://en.wikipedia.org/wiki/Hook) and [[mem]]"
+                                |> Html.div []
+                                |> Query.fromHtml
+                    in
+                    Expect.all
+                        [ \_ -> html |> Query.find [ Selector.attribute (Html.Attributes.href "https://en.wikipedia.org/wiki/Hook") ] |> Query.has [ Selector.attribute (Html.Attributes.target "_blank"), Selector.attribute (Html.Attributes.rel "noopener noreferrer") ]
+                        , \_ -> html |> Query.find [ Selector.attribute (Html.Attributes.href "/p/mem") ] |> Query.hasNot [ Selector.attribute (Html.Attributes.target "_blank") ]
+                        ]
+                        ()
             , test "steps are the numbered lines" <|
                 \_ ->
                     WikiText.steps "Intro\n1. First [[mem]]\n2) Second\n- not a step" |> Expect.equal [ "First [[mem]]", "Second" ]
@@ -319,6 +334,11 @@ suite =
                 \_ ->
                     List.map (\l -> (I18n.strings l).whatItDoes) I18n.all
                         |> Expect.equal [ "What it does", "Was es tut", "O que faz" ]
+            -- REQ MP-9
+            , test "the glossary link is named in each language" <|
+                \_ ->
+                    List.map (\l -> (I18n.strings l).glossary) I18n.all
+                        |> Expect.equal [ "Glossary", "Glossar", "Glossário" ]
             , test "section headings are translated" <|
                 \_ ->
                     List.map (\l -> I18n.sectionHeading l "receives") I18n.all

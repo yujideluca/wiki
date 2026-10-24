@@ -31,6 +31,7 @@ Tailscale Funnel, behind Google sign-in for yujideluca@gmail.com only. Design: `
   process, and for a function that is an entry point, passes data between modules, or came up in a decision or
   conversation. Other functions go in the `## Functions` list of their module page. Anything that grows past
   that line gets its own page (D12; `wiki check` enforces the "mentioned by two pages" part).
+- Write every page for a reader who knows nothing about the system or its technical language: explain a term where it first appears and link complex ones to a definition (an outside source or the `glossary` page); spell out an acronym at its first use on each page (add new ones to `content/_acronyms.tsv`); a skill page carries the skill's own rules or steps in `## Steps`. `wiki check` enforces the acronym and Steps rules.
 - Pages say what exists and how it works; rules and preferences stay in workflow-memory and are linked by
   `#code` in the `memory:` field. No secrets, keys, or clinical, secret or contact data about other people.
 - Secrets live only in `~/.config/wiki/oauth.env` and `secret.env` (mode 600). Never print or commit them.
