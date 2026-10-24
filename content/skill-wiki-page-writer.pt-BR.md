@@ -1,7 +1,7 @@
 ---
 id: skill-wiki-page-writer
 lang: pt-BR
-source_hash: 215a442a613f
+source_hash: 17c0888a2db2
 title: Skill: wiki-page-writer
 ---
 
@@ -9,7 +9,7 @@ title: Skill: wiki-page-writer
 A skill "wiki-page-writer" é o método que o [[claude-code]] segue para escrever ou atualizar as páginas desta wiki. Uma skill é um conjunto empacotado de instruções que o Claude carrega quando um pedido combina com a sua descrição, para que um tipo de tarefa seja feito sempre com o mesmo cuidado (veja [[skills]] e o [[glossary]]). Esta cobre uma única tarefa: transformar o que existe nos sistemas do Giovanni em páginas verdadeiras que um estranho consiga entender, em inglês, alemão e português do Brasil.
 
 ## What it does
-É usada depois de qualquer tarefa que mudou algo nos sistemas, quando o hook Stop (um programa pequeno que roda quando o Claude termina uma vez, veja [[wiki-hook-stop]]) avisa "Wiki update needed", ou quando o Giovanni pede uma página da wiki. A descrição também diz para que ela não serve: artigos gerais de enciclopédia, comentários de código, `DESIGN.md`, registros de decisão e entradas de memória. Seu papel é "processo": ela é dona do conteúdo das páginas e das três versões de idioma; segue as regras da própria wiki em [[wiki-content]] e o verificador [[wiki-check]], que as faz valer; e respeita a regra do idioma da resposta e a regra da linguagem simples. A skill produz páginas em `~/dev/wiki/content`, publicadas com `wiki publish`.
+É usada depois de qualquer tarefa que mudou algo nos sistemas, quando o hook Stop (um programa pequeno que roda quando o Claude termina uma vez, veja [[wiki-hook-stop]]) avisa "Wiki update needed", ou quando o Giovanni pede uma página da wiki. A descrição também cita o trabalho de tradução (as versões em alemão e português, correções de `source_hash`) como parte da tarefa e diz para que ela não serve: artigos gerais de enciclopédia, comentários de código, `DESIGN.md`, registros de decisão, entradas de memória e depurar ou explicar a própria ferramenta da wiki. Seu papel é "processo": ela é dona do conteúdo das páginas e das três versões de idioma; segue as regras da própria wiki em [[wiki-content]] e o verificador [[wiki-check]], que as faz valer; e respeita a regra do idioma da resposta e a regra da linguagem simples. A skill produz páginas em `~/dev/wiki/content`, publicadas com `wiki publish`.
 
 ## How it does it
 Um arquivo `SKILL.md` em `~/.claude/skills/wiki-page-writer`; o Claude o carrega quando um pedido combina. Ela não copia as regras de formato: o verificador as conhece e falha diante de uma violação, então a skill manda o Claude ler as regras atuais a cada vez, em vez de confiar na memória. Foi construída com a [[skill-skill-forge]] a partir de três versões concorrentes. A versão vencedora foi testada em duas tarefas reais (uma página para um arquivo novo e uma página desatualizada) numa cópia da wiki em área isolada; depois, um leitor sem contexto conseguiu responder perguntas sobre a página nova, que é o "teste de paráfrase" da linguagem simples.
@@ -36,4 +36,5 @@ O conteúdo da wiki ([[wiki-content]]), que o [[wiki-check]] valida em seguida.
 
 ## Notes
 - Limites encontrados nos testes: a regra de proteger a árvore precisou dizer "sempre rodar", porque os executores a pulavam quando esperavam uma árvore limpa; leitores novos ainda deixaram passar alguns termos (gate, códigos de achados), por isso a skill lista as lacunas mais comuns.
+- O otimizador de descrição (description optimizer) foi executado em 2026-10-24 (o script `run_loop.py` da skill skill-creator: ele coloca a descrição como um comando temporário, faz cada pergunta de teste a uma sessão `claude -p` aninhada e conta se a sessão chama a skill). A descrição instalada acertou 11 de 12 nas perguntas de treino e 8 de 8 nas reservadas; o único erro foi um pedido que só falava das traduções. Uma reescrita acertou 12 de 12 e 8 de 8. Como as notas reservadas empataram, as duas foram comparadas em 16 perguntas novas (8 que devem acionar, 8 que não devem, 3 execuções cada): a descrição antiga acertou 14 de 16 (os dois erros eram pedidos só de tradução) e a nova 16 de 16, por isso a nova está instalada. A amostra é pequena. A montagem do teste precisou ser isolada para valer: a skill real e os hooks escondidos, só `Skill` e `Read` permitidos e acerto em qualquer nome de comando temporário, porque trabalhadores em paralelo criam comandos idênticos e o modelo escolhe um ao acaso.
 - Lacuna conhecida: a página [[skills]] da wiki não tem tabela de registro, embora a [[skill-skill-forge]] mande atualizar uma.
