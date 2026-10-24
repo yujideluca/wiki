@@ -16,6 +16,9 @@ defmodule Wiki.Content.PrivacyTest do
       "AKIA" <> "ABCDEFGHIJKLMNOP",
       "sk-" <> String.duplicate("a1B2", 6),
       "xoxb-1234567890-abc",
+      "Bearer " <> String.duplicate("a1B2", 6),
+      "GOCSPX-" <> "a1B2c3D4e5F6g7",
+      "password: hunter2hunter2",
       "-----BEGIN OPENSSH PRIVATE KEY-----"
     ]
 

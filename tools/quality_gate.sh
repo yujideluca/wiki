@@ -21,6 +21,11 @@ tools/pipeline-check.sh --traceability
 git diff --quiet -- docs/TRACEABILITY.md || { echo "docs/TRACEABILITY.md changed: commit the regenerated matrix"; exit 1; }
 
 step "4/5 content rules (wiki check, $mode mode)"
+# The privacy patterns are one list shared with workflow-memory; server/priv holds its copy (only visible on the laptop).
+shared=~/dev/workflow-memory/mem/privacy-patterns.tsv
+if [ "$mode" != ci ] && [ -f "$shared" ]; then
+  cmp "$shared" server/priv/privacy-patterns.tsv || { echo "server/priv/privacy-patterns.tsv differs from workflow-memory's: copy it over"; exit 1; }
+fi
 (cd server && mix escript.build >/dev/null)
 if [ "$mode" = ci ]; then WIKI_ROOT="$PWD" server/wiki check; else WIKI_ROOT="$PWD" server/wiki check --local; fi
 

@@ -12,7 +12,7 @@ sources: [workflow-memory:mem/validate.py]
 ---
 
 ## What it is
-The privacy and format guard of the memory, whoever the writer is.
+The privacy and format guard of the memory, whoever the writer is. Its patterns for secrets, phone numbers and CPF live in `mem/privacy-patterns.tsv`, the one list that the wiki's privacy scan ([[wiki-check]]) also uses.
 
 ## What it does
 Rejects tokens and keys, e-mail addresses, phone numbers and CPF numbers, and malformed events. Rejected files move to `quarantine/` with a `.reason` note and appear in REVIEW. There is deliberately no health-vocabulary filter (Giovanni's decision, 2026-10-19); not storing clinical data about other people is a standing rule, not an automatic check.

@@ -15,7 +15,7 @@ sources: [wiki:server/lib/wiki/content/check.ex, wiki:server/lib/wiki/content/pr
 Every rule a page must follow before it can be published (Elixir module `Wiki.Content.Check`).
 
 ## What it does
-Header fields and kinds valid; the five sections present and non-empty; every `[[link]]`, `fed_by` and `feeds` resolves; `fed_by`/`feeds` symmetric; no orphan pages (except actors and external things); privacy scan (keys, tokens, passwords, phone numbers, e-mails other than Giovanni's); promotion (a function listed on a page and mentioned by two other pages must get its own page); a page without sources needs a review date; German and Portuguese translations exist and match the current English. `--local` also checks that sources and memory refs exist.
+Header fields and kinds valid; the five sections present and non-empty; every `[[link]]`, `fed_by` and `feeds` resolves; `fed_by`/`feeds` symmetric; no orphan pages (except actors and external things); privacy scan (keys, tokens, passwords, phone numbers, e-mails other than Giovanni's; the patterns are workflow-memory's `privacy-patterns.tsv`, copied to `server/priv/` and compared by the gate); promotion (a function listed on a page and mentioned by two other pages must get its own page); a page without sources needs a review date; German and Portuguese translations exist and match the current English. `--local` also checks that sources and memory refs exist.
 
 ## How it does it
 Pure functions over the loaded content; returns a sorted list of `file: problem` lines. CI runs it without `--local` because GitHub cannot see the other private repos.
