@@ -5,7 +5,7 @@ aliases: [architecture review, monthly review]
 kind: process
 project: project-template
 status: active
-fed_by: [maintenance-policy]
+fed_by: [maintenance-policy, skill-revisao-manutencao]
 feeds: []
 sources: [project-template:docs/MAINTENANCE.md]
 ---
@@ -14,7 +14,7 @@ sources: [project-template:docs/MAINTENANCE.md]
 One session a month that plays the role a staff engineer has in a company: checking coherence across all projects (workflow-memory ADR-0003). It is an open item in memory, so every chat shows it until done.
 
 ## What it does
-Walks the checklist of [[maintenance-policy]] for each active project in `~/dev` and records the outcome.
+Walks the checklist of [[maintenance-policy]] for each active project in `~/dev` and records the outcome. Since 2026-10-24 it is run by [[skill-revisao-manutencao]] on the report of [[pipeline-check]] ([[maintenance-pipeline]]).
 
 ## How it does it
 Uses each project's gate, metrics (`tools/metrics.py` where present), fitness functions, DESIGN.md, ADRs and debt list.

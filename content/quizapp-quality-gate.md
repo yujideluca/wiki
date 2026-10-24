@@ -15,7 +15,7 @@ sources: [QuizApp:tools/quality_gate.sh]
 `tools/quality_gate.sh`: the one definition of "passing" for [[quizapp]]. A release runs it and CI runs exactly the same script.
 
 ## What it does
-Seven steps: core and app unit/property/conformance/integration tests with coverage; coverage thresholds; the web twin's tests; conformance vectors identical in app and web ([[quizweb-conformance]]); requirement traceability ([[check-traceability]]); Android lint; fitness functions ([[fitness-check]]); the question pack manifest matches its files ([[content-manifest]] `--check`). With `--mutation` it also runs [[mutation-check]]. It fails if it takes more than 1200 s.
+Seven steps: core and app unit/property/conformance/integration tests with coverage; coverage thresholds; the web twin's tests; conformance vectors identical in app and web ([[quizweb-conformance]]); requirement traceability ([[check-traceability]]); Android lint; `pipeline-check --measure-only` with the crate's tests ([[pipeline-check]], limits in [[fitness-check]]); the question pack manifest matches its files ([[content-manifest]] `--check`). With `--mutation` it also runs [[mutation-check]]. It fails if it takes more than 1200 s.
 
 ## How it does it
 Bash, `set -euo pipefail`, sources `~/dev/env.sh` ([[android-toolchain]]) on the laptop; every step is a command that exits non-zero on failure.
@@ -29,6 +29,5 @@ Before every publish ([[publish-apk]]) and on every push ([[quizapp-ci]]); deriv
 ## Functions
 - `check_coverage.py`: logic packages at 90 % line coverage, no file below 80 %
 - `check_traceability.py`: every requirement has a tagged test
-- `fitness_check.py`: architecture limits
 - `mutation_check.py`: planted faults must be caught (`--mutation` only)
 - `metrics.py`: DORA-style delivery metrics for the monthly review (not part of the gate)

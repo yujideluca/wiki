@@ -1,7 +1,7 @@
 ---
 id: monthly-architecture-review
 lang: pt-BR
-source_hash: 9babdd21a680
+source_hash: 49982297d165
 title: Revisão mensal de arquitetura
 aliases: [revisão de arquitetura]
 ---
@@ -10,7 +10,7 @@ aliases: [revisão de arquitetura]
 Uma sessão por mês que faz o papel que um staff engineer tem numa empresa: conferir a coerência entre todos os projetos (ADR-0003 do workflow-memory). É um item em aberto na memória, então toda conversa a mostra até ser feita.
 
 ## What it does
-Percorre a lista da [[maintenance-policy]] para cada projeto ativo em `~/dev` e registra o resultado.
+Percorre a lista da [[maintenance-policy]] para cada projeto ativo em `~/dev` e registra o resultado. Desde 2026-10-24 ela é conduzida pela [[skill-revisao-manutencao]] sobre o relatório do [[pipeline-check]] ([[maintenance-pipeline]]).
 
 ## How it does it
 Usa o portão, as métricas (`tools/metrics.py` onde houver), as funções de aptidão, o DESIGN.md, os ADRs e a lista de dívidas de cada projeto.

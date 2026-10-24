@@ -1,7 +1,7 @@
 ---
 id: monthly-architecture-review
 lang: de
-source_hash: 9babdd21a680
+source_hash: 49982297d165
 title: Monatliche Architekturüberprüfung
 aliases: [Architekturüberprüfung]
 ---
@@ -10,7 +10,7 @@ aliases: [Architekturüberprüfung]
 Eine Sitzung pro Monat in der Rolle, die in einer Firma ein Staff Engineer hat: Stimmigkeit über alle Projekte prüfen (workflow-memory ADR-0003). Sie ist ein offener Punkt im Gedächtnis, also zeigt jeder Chat sie, bis sie erledigt ist.
 
 ## What it does
-Geht für jedes aktive Projekt in `~/dev` die Checkliste von [[maintenance-policy]] durch und hält das Ergebnis fest.
+Geht für jedes aktive Projekt in `~/dev` die Checkliste von [[maintenance-policy]] durch und hält das Ergebnis fest. Seit 2026-10-24 führt [[skill-revisao-manutencao]] sie auf dem Bericht von [[pipeline-check]] aus ([[maintenance-pipeline]]).
 
 ## How it does it
 Nutzt Tor, Metriken (`tools/metrics.py`, wo vorhanden), Fitnessfunktionen, DESIGN.md, ADRs und Schuldenliste jedes Projekts.
