@@ -1,7 +1,7 @@
 ---
 id: remote-terminal
 lang: de
-source_hash: dd80b6955bc1
+source_hash: 1dbfbd11b9de
 title: remote-terminal-Einrichtung (SSH + Tailscale)
 ---
 
@@ -12,7 +12,7 @@ title: remote-terminal-Einrichtung (SSH + Tailscale)
 Es installiert drei Dinge aus offiziellen Quellen: einen OpenSSH-Server (das Programm, das [SSH](https://en.wikipedia.org/wiki/Secure_Shell), Secure Shell, verschlüsselte Fernanmeldungen annimmt), [[tailscale]] (ein privates Netzwerk zwischen Giovannis Geräten) und tmux (ein Terminal, das beim Trennen weiterläuft). Danach sperrt es SSH ab: nur Schlüssel (keine Passwörter), nur der Benutzer `yuji`, keine Root-Anmeldung. Wird der öffentliche Schlüssel des Handys mitgegeben, erlaubt es das Handy.
 
 ## How it does it
-Es ist ein [Bash](https://www.gnu.org/software/bash/)-Skript, das Giovanni mit Administratorrechten ausführt: `sudo bash ~/dev/remote-terminal/setup-sudo.sh ["ssh-ed25519 … phone"]`. Es hält beim ersten Fehler an (`set -euxo pipefail`) und prüft die SSH-Konfiguration mit `sshd -t`, bevor es den Dienst neu startet, damit ein Tippfehler Giovanni nicht aussperren kann. Seit 2026-10-24 ist es ein privates GitHub-Repository (`yujideluca/remote-terminal`) mit Quality Gate, Continuous Integration (CI, automatische Prüfungen bei jedem Push) und der [[pipeline-check]]-Prüfung vor dem Push.
+Es ist ein [Bash](https://www.gnu.org/software/bash/)-Skript, das Giovanni mit Administratorrechten ausführt: `sudo bash ~/dev/remote-terminal/setup-sudo.sh ["ssh-ed25519 … phone"]`. Es hält beim ersten Fehler an (`set -euxo pipefail`) und prüft die SSH-Konfiguration mit `sshd -t`, bevor es den Dienst neu startet, damit ein Tippfehler Giovanni nicht aussperren kann. Seit 2026-10-24 ist es ein privates GitHub-Repository (`yujideluca/remote-terminal`) mit Quality Gate, Continuous Integration (CI, automatische Prüfungen bei jedem Push) und der [[pipeline-check]]-Prüfung vor dem Push. Das Skript wird in einer Wegwerf-Sandbox getestet (`tests/setup-sudo-sandbox.sh`, auf Basis von bubblewrap, einem Linux-Werkzeug, das einen privaten Wurzelordner vortäuscht); apt, systemctl, sshd und tailscale sind dort Attrappen, das echte System bleibt unverändert. Geprüft werden ein falscher Schlüssel, ein richtiger Schlüssel, ein zweiter Lauf und der Start ohne Administratorrechte.
 
 ## Where it sits in the pipeline
 Es ist die Grundlage des gesamten Fernzugriffs auf den [[acer-nitro]].
