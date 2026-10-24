@@ -28,6 +28,6 @@ Before every publish ([[publish-apk]]) and on every push ([[quizapp-ci]]); deriv
 
 ## Functions
 - `check_coverage.py`: logic packages at 90 % line coverage, no file below 80 %
-- `check_traceability.py`: every requirement has a tagged test
+- `pipeline-check --traceability`: every requirement has a tagged test
 - `mutation_check.py`: planted faults must be caught (`--mutation` only)
 - `metrics.py`: DORA-style delivery metrics for the monthly review (not part of the gate)

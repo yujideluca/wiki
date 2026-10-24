@@ -1,7 +1,7 @@
 ---
 id: quizapp-quality-gate
 lang: de
-source_hash: fc5f607628c9
+source_hash: 9f173b026398
 title: QuizApp-Qualitätstor
 aliases: [Tor]
 ---
@@ -23,6 +23,6 @@ Vor jeder Veröffentlichung ([[publish-apk]]) und bei jedem Push ([[quizapp-ci]]
 
 ## Functions
 - `check_coverage.py`: logic packages at 90 % line coverage, no file below 80 %
-- `check_traceability.py`: every requirement has a tagged test
+- `pipeline-check --traceability`: every requirement has a tagged test
 - `mutation_check.py`: planted faults must be caught (`--mutation` only)
 - `metrics.py`: DORA-style delivery metrics for the monthly review (not part of the gate)
