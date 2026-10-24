@@ -21,7 +21,7 @@ Writes `build/pipeline-check/report.json` (project, date, mode `local` or `ci`, 
 Rust with `serde`, `toml` and `clap`; `git` and `gh` are called as processes. Limits live in `pipeline-check.toml`, changed only by Giovanni with a decision-log row. `tools/pipeline-check.sh` builds and runs it; the gate calls it with `--measure-only` (no recursion). Requirements PC-1..PC-11, tests tagged `REQ`. It went through its own process first: the skill [[skill-gerar-teste-automatizado]] wrote bug-finding tests (`tools/pipeline-check/docs/TESTES-AUTOMATIZADOS.md`) that found six defects, all fixed, and a hand-made mutation check (`mutants.py`) catches every planted fault.
 
 ## Where it sits in the pipeline
-CI runs it instead of the bare gate ([[quizapp-ci]]); Claude runs it at the start of every [[skill-revisao-manutencao]]. Part of the [[maintenance-pipeline]].
+CI runs it instead of the bare gate ([[quizapp-ci]]); Claude runs it at the start of every [[skill-revisao-manutencao]]. Part of the [[maintenance-pipeline]]. Since 2026-10-24 a copy runs in [[project-template]], [[quizapp]], [[wiki]], [[quizweb]] and [[workflow-memory]], each with its own `pipeline-check.toml`.
 
 ## Who receives its output
 [[quizapp-ci]] (the red or green mark) and [[skill-revisao-manutencao]] (reads `report.json`, never re-measures).

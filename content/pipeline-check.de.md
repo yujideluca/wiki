@@ -1,7 +1,7 @@
 ---
 id: pipeline-check
 lang: de
-source_hash: 44568e49fd2c
+source_hash: f420465f50c7
 title: pipeline-check
 aliases: [report.json]
 ---
@@ -16,7 +16,7 @@ Schreibt `build/pipeline-check/report.json` (Projekt, Datum, Modus `local` oder 
 Rust mit `serde`, `toml` und `clap`; `git` und `gh` werden als Prozesse aufgerufen. Die Grenzen stehen in `pipeline-check.toml` und ändern sich nur durch Giovanni mit einer Zeile im Entscheidungslog. `tools/pipeline-check.sh` baut und startet es; das Tor ruft es mit `--measure-only` auf (keine Rekursion). Anforderungen PC-1..PC-11, Tests mit `REQ` markiert. Es hat zuerst den eigenen Prozess durchlaufen: Der Skill [[skill-gerar-teste-automatizado]] schrieb fehlersuchende Tests (`tools/pipeline-check/docs/TESTES-AUTOMATIZADOS.md`), die sechs Fehler fanden (alle behoben), und eine handgemachte Mutationsprüfung (`mutants.py`) fängt jeden eingepflanzten Fehler.
 
 ## Where it sits in the pipeline
-Die CI führt es statt des bloßen Tors aus ([[quizapp-ci]]); Claude startet es zu Beginn jeder [[skill-revisao-manutencao]]. Teil der [[maintenance-pipeline]].
+Die CI führt es statt des bloßen Tors aus ([[quizapp-ci]]); Claude startet es zu Beginn jeder [[skill-revisao-manutencao]]. Teil der [[maintenance-pipeline]]. Seit 2026-10-24 läuft eine Kopie in [[project-template]], [[quizapp]], [[wiki]], [[quizweb]] und [[workflow-memory]], jeweils mit eigener `pipeline-check.toml`.
 
 ## Who receives its output
 [[quizapp-ci]] (rote oder grüne Markierung) und [[skill-revisao-manutencao]] (liest `report.json`, misst nie neu).
