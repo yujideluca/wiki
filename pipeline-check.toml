@@ -40,3 +40,6 @@ extensions = ["exs", "ex", "elm", "js", "rs"]
 [[traceability.sources]]
 dir = "frontend/tests"
 extensions = ["exs", "ex", "elm", "js", "rs"]
+
+[shellcheck]
+extra_files = ["tools/hooks/pre-push"]

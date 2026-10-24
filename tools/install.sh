@@ -32,5 +32,6 @@ if [ -s "$cfg/oauth.env" ] && grep -q '^GOOGLE_CLIENT_ID=.\+' "$cfg/oauth.env" &
   systemctl --user restart wiki.service
   echo "wiki.service running"
 else
+  # shellcheck disable=SC2088  # the tilde is part of the message, not a path to expand
   echo "~/.config/wiki/oauth.env is missing or incomplete: wiki.service not started (see docs/SETUP.md)"
 fi
