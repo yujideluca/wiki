@@ -10,13 +10,19 @@ defmodule Wiki.Content.Privacy do
   @patterns [
     {~r/-----BEGIN [A-Z ]*PRIVATE KEY-----/, "a private key"},
     {~r/\bgh[pousr]_[A-Za-z0-9]{20,}/, "a GitHub token"},
+    {~r/\bgithub_pat_[A-Za-z0-9_]{20,}/, "a GitHub token"},
+    {~r/\bglpat-[A-Za-z0-9_-]{20,}/, "a GitLab token"},
+    {~r/\bAIza[0-9A-Za-z_-]{30,}/, "a Google API key"},
     {~r/\bsk-[A-Za-z0-9_-]{20,}/, "an API key"},
     {~r/\bAKIA[0-9A-Z]{16}\b/, "an AWS key"},
     {~r/\bxox[abposr]-[A-Za-z0-9-]{10,}/, "a Slack token"},
     {~r/\bGOCSPX-[A-Za-z0-9_-]{10,}/, "a Google client secret"},
     {~r/\b\d{8,10}:[A-Za-z0-9_-]{30,}\b/, "a Telegram bot token"},
     {~r/(?i)\b(password|passwd|senha|secret|token)\s*[:=]\s*\S{6,}/, "a password or secret value"},
-    {~r/\+\d{1,3}[\s.-]?\(?\d{2,3}\)?[\s.-]?\d{4,5}[\s.-]?\d{4}\b/, "a phone number"}
+    {~r/\+\d{1,3}[\s.-]?\(?\d{2,3}\)?[\s.-]?\d{4,5}[\s.-]?\d{4}\b/, "a phone number"},
+    {~r/\+\d{1,3}(?:[\s.()-]?\d){8,}/, "a phone number"},
+    {~r/(?<![\d.])\(?\d{2}\)?[\s.-]\d{4,5}[\s.-]\d{4}\b/, "a phone number"},
+    {~r/\b\d{3}\.\d{3}\.\d{3}-\d{2}\b/, "a CPF number"}
   ]
 
   def scan(%Page{} = p) do
