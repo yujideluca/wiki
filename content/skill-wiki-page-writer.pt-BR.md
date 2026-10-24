@@ -1,0 +1,39 @@
+---
+id: skill-wiki-page-writer
+lang: pt-BR
+source_hash: 215a442a613f
+title: Skill: wiki-page-writer
+---
+
+## What it is
+A skill "wiki-page-writer" é o método que o [[claude-code]] segue para escrever ou atualizar as páginas desta wiki. Uma skill é um conjunto empacotado de instruções que o Claude carrega quando um pedido combina com a sua descrição, para que um tipo de tarefa seja feito sempre com o mesmo cuidado (veja [[skills]] e o [[glossary]]). Esta cobre uma única tarefa: transformar o que existe nos sistemas do Giovanni em páginas verdadeiras que um estranho consiga entender, em inglês, alemão e português do Brasil.
+
+## What it does
+É usada depois de qualquer tarefa que mudou algo nos sistemas, quando o hook Stop (um programa pequeno que roda quando o Claude termina uma vez, veja [[wiki-hook-stop]]) avisa "Wiki update needed", ou quando o Giovanni pede uma página da wiki. A descrição também diz para que ela não serve: artigos gerais de enciclopédia, comentários de código, `DESIGN.md`, registros de decisão e entradas de memória. Seu papel é "processo": ela é dona do conteúdo das páginas e das três versões de idioma; segue as regras da própria wiki em [[wiki-content]] e o verificador [[wiki-check]], que as faz valer; e respeita a regra do idioma da resposta e a regra da linguagem simples. A skill produz páginas em `~/dev/wiki/content`, publicadas com `wiki publish`.
+
+## How it does it
+Um arquivo `SKILL.md` em `~/.claude/skills/wiki-page-writer`; o Claude o carrega quando um pedido combina. Ela não copia as regras de formato: o verificador as conhece e falha diante de uma violação, então a skill manda o Claude ler as regras atuais a cada vez, em vez de confiar na memória. Foi construída com a [[skill-skill-forge]] a partir de três versões concorrentes. A versão vencedora foi testada em duas tarefas reais (uma página para um arquivo novo e uma página desatualizada) numa cópia da wiki em área isolada; depois, um leitor sem contexto conseguiu responder perguntas sobre a página nova, que é o "teste de paráfrase" da linguagem simples.
+
+## Where it sits in the pipeline
+É o passo de escrita dentro de [[end-of-task]]: depois que o trabalho está provado ([[skill-verification-before-completion]]) e antes do relatório de memória. A [[skill-revisao-manutencao]] a usa para as páginas que uma revisão de manutenção muda, e a [[skill-skill-forge]] a usa para escrever a página de cada skill nova.
+
+## Who receives its output
+O conteúdo da wiki ([[wiki-content]]), que o [[wiki-check]] valida em seguida.
+
+## Steps
+1. **Proteger a árvore de trabalho.** Sempre rodar `git status` em `~/dev/wiki`. O `wiki publish` leva tudo o que está em `content/`, então uma mudança que o Claude não fez (outra sessão do Claude ou o Giovanni) nunca deve ser publicada por ele. Mudanças alheias em páginas que a tarefa não toca: escrever as páginas, mas não publicar, e avisar o Giovanni. Mudanças alheias em páginas de que a tarefa precisa: parar e perguntar. Uma falha do verificador causada pela edição deles é relatada, não corrigida.
+2. **Ler as regras atuais.** Ler o `CLAUDE.md` da wiki, a página [[wiki-content]], a lista de tipos e a lista de siglas, e rodar `wiki check --local` uma vez para ver o estado inicial.
+3. **Achar o trabalho.** A partir do pedido, ou do `wiki stale` e da mensagem do hook. O hook compara o código com a última publicação, então pode apontar páginas que o `wiki stale` considera em dia; nesse caso, ler o `git log` do repositório de origem desde a última mudança da página. Decidir se o assunto ganha página própria ou uma linha numa página de módulo; editar uma página existente em vez de criar uma quase duplicata.
+4. **Verificar antes de escrever.** Cada frase vem de algo lido ou executado nesta sessão: código, configuração, `git log`, testes, uma execução real. O texto antigo da página é conferido de novo, porque versões fixadas, faixas de requisitos e nomes de arquivos ficam desatualizados. O que não puder ser verificado é escrito como "not verified" ou fica de fora.
+5. **Escrever para um estranho.** Primeiro a finalidade em palavras do dia a dia, depois o mecanismo; presente, voz ativa, palavras curtas. A primeira menção de um termo técnico, ferramenta, nome interno ou sigla traz o seu significado (siglas com o nome completo) e um link para a página da wiki, o glossário ou uma página oficial que foi aberta. Os termos que leitores novos mais deixam passar (gate, etiqueta de requisito, palavras de status, nomes de arquivos de configuração) são definidos em toda página que os usa.
+6. **Dar forma à página.** O cabeçalho e as cinco seções de [[wiki-content]]; `fed_by` e `feeds` concordam nos dois sentidos; todo arquivo de origem está em `sources`; uma página nova é ligada por pelo menos duas outras. Páginas de skill guardam as regras ou os passos da própria skill numa seção `## Steps`; páginas de processo listam seus passos em ordem.
+7. **Manter a privacidade.** Nenhum segredo e nenhum dado sobre outras pessoas.
+8. **Checar a compreensão.** Ler a página como quem não sabe nada; para uma página nova, um leitor sem contexto responde quatro perguntas sobre ela, e cada palavra que ele não conseguiu entender é corrigida.
+9. **Traduzir.** As páginas em alemão e português mantêm os títulos e links em inglês, traduzem o texto e as definições e levam o `source_hash` do texto em inglês.
+10. **Verificar e corrigir.** `wiki check --local` até passar; nunca afrouxar nem contornar a verificação.
+11. **Publicar.** `wiki publish -m "what changed"`. "review: no page change" só depois de revisar as páginas apontadas e achá-las corretas.
+12. **Fechar.** `mem use` para as entradas de memória que moldaram o trabalho, depois uma resposta curta: páginas mudadas, o que não foi verificado, os resultados da verificação e da publicação e uma linha `Verified by:`.
+
+## Notes
+- Limites encontrados nos testes: a regra de proteger a árvore precisou dizer "sempre rodar", porque os executores a pulavam quando esperavam uma árvore limpa; leitores novos ainda deixaram passar alguns termos (gate, códigos de achados), por isso a skill lista as lacunas mais comuns.
+- Lacuna conhecida: a página [[skills]] da wiki não tem tabela de registro, embora a [[skill-skill-forge]] mande atualizar uma.

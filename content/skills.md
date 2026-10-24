@@ -32,6 +32,7 @@ Beside every task: a skill is loaded by the Claude instance when its description
 - [[skill-verification-before-completion]]
 - [[skill-adb-android-control]]
 - [[skill-skill-forge]]
+- [[skill-wiki-page-writer]]
 - [[skill-revisao-manutencao]]
 - [[skill-gerar-teste-automatizado]]
 - [[skill-alemao-goethe-fsp]]

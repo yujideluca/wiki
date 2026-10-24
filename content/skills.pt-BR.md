@@ -1,7 +1,7 @@
 ---
 id: skills
 lang: pt-BR
-source_hash: 18be4ef4b712
+source_hash: 22aaae483c68
 title: Skills
 ---
 
@@ -26,6 +26,7 @@ O [[claude-code]], o [[remote-assistant]] e, por suas cópias, o [[claude-app]].
 - [[skill-verification-before-completion]]
 - [[skill-adb-android-control]]
 - [[skill-skill-forge]]
+- [[skill-wiki-page-writer]]
 - [[skill-revisao-manutencao]]
 - [[skill-gerar-teste-automatizado]]
 - [[skill-alemao-goethe-fsp]]

@@ -6,7 +6,7 @@ kind: data
 project: wiki
 status: active
 location: wiki:content
-fed_by: [claude-code]
+fed_by: [claude-code, skill-wiki-page-writer]
 feeds: [wiki-build, wiki-check]
 sources: [wiki:content/_kinds.json, wiki:content/_ignore.txt]
 ---

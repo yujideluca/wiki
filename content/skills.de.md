@@ -1,7 +1,7 @@
 ---
 id: skills
 lang: de
-source_hash: 18be4ef4b712
+source_hash: 22aaae483c68
 title: Skills
 ---
 
@@ -26,6 +26,7 @@ Neben jeder Aufgabe: Eine Skill wird von der Claude-Instanz geladen, wenn ihre B
 - [[skill-verification-before-completion]]
 - [[skill-adb-android-control]]
 - [[skill-skill-forge]]
+- [[skill-wiki-page-writer]]
 - [[skill-revisao-manutencao]]
 - [[skill-gerar-teste-automatizado]]
 - [[skill-alemao-goethe-fsp]]
