@@ -28,7 +28,7 @@ The inner layer: `ui → StudyController → domain/content/data`. Nothing in `:
 
 ## Functions
 - `Clock`: injected time source, so tests control time
-- `CardAvailability` / `foldForSearch`: which cards are suspended or removed; accent-free search
+- `CardAvailability` / `foldForSearch`: which cards are suspended or removed; accent-free search ("stuhle" finds "Stühle", and the sharp s counts as "ss": "strasse" finds "Straße")
 - `HeatColor`: colour ramp of the streak calendar
 - `AppUpdate` / `shouldCheckForUpdate`: update rules (at most once per 30 s)
 - `SchedulerConfig`, `GraderConfig`: the tunable numbers

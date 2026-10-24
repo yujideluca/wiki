@@ -15,7 +15,7 @@ sources: [QuizApp:core/src/main/java/dev/yuji/quiz/domain/DailyGoal.kt]
 The daily goal is a purely motivational target: "answer N questions today". N is set with a slider in Settings, from 10 to 100 in steps of 10 (default 20).
 
 ## What it does
-Every answer in any quiz counts toward one shared count per local day. The home screen shows `answered / goal` as a progress bar held between 0 and 1. Reaching the goal only changes the display ("Daily goal reached ✓"); nothing stops the player from continuing.
+Every answer in any quiz counts toward one shared count per local day. The home screen shows `answered / goal` as a progress bar held between 0 and 1 (with a goal of 0 the bar is never undefined: full once anything was answered, empty otherwise, requirement DG-2). The goal is always clamped to the allowed range before it is snapped to steps of 10; an earlier order of those two operations let a huge value overflow and turn the maximum into the minimum (fixed in the first maintenance review, 2026-10-24). Reaching the goal only changes the display ("Daily goal reached ✓"); nothing stops the player from continuing.
 
 ## How it does it
 Today's count is today's entry in the [[training-store]]. `MainActivity` refreshes the home screen every time the app is resumed, which fixed a bar that stayed stale after midnight (2026-10-20; requirements DG-2 to DG-5, checked by property tests, which try many random inputs, and by shared test vectors with [[quizweb]]).

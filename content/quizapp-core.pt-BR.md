@@ -1,7 +1,7 @@
 ---
 id: quizapp-core
 lang: pt-BR
-source_hash: 18212cafeb25
+source_hash: 926bdc729642
 title: Módulo :core do QuizApp
 ---
 
@@ -22,7 +22,7 @@ O [[quizapp-app]], sobretudo o [[study-controller]].
 
 ## Functions
 - `Clock`: fonte de tempo injetada, para os testes controlarem o tempo
-- `CardAvailability` / `foldForSearch`: quais cartas estão suspensas ou removidas; busca sem acentos
+- `CardAvailability` / `foldForSearch`: quais cartas estão suspensas ou removidas; busca sem acentos ("stuhle" encontra "Stühle" e o ß conta como "ss": "strasse" encontra "Straße")
 - `HeatColor`: gradiente de cores do calendário de sequência
 - `AppUpdate` / `shouldCheckForUpdate`: regras de atualização (no máximo uma vez por 30 s)
 - `SchedulerConfig`, `GraderConfig`: os números ajustáveis

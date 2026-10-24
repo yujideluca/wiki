@@ -1,7 +1,7 @@
 ---
 id: quizapp-core
 lang: de
-source_hash: 18212cafeb25
+source_hash: 926bdc729642
 title: QuizApp-Modul :core
 ---
 
@@ -22,7 +22,7 @@ Die innere Schicht: `ui → StudyController → domain/content/data`. Nichts in 
 
 ## Functions
 - `Clock`: eingereichte Zeitquelle, damit Tests die Zeit steuern
-- `CardAvailability` / `foldForSearch`: welche Karten pausiert oder entfernt sind; akzentfreie Suche
+- `CardAvailability` / `foldForSearch`: welche Karten pausiert oder entfernt sind; akzentfreie Suche („stuhle“ findet „Stühle“, und das ß zählt als „ss“: „strasse“ findet „Straße“)
 - `HeatColor`: Farbverlauf des Serienkalenders
 - `AppUpdate` / `shouldCheckForUpdate`: Update-Regeln (höchstens einmal pro 30 s)
 - `SchedulerConfig`, `GraderConfig`: die einstellbaren Zahlen
