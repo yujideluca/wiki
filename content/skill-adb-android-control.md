@@ -9,6 +9,7 @@ location: home:.claude/skills/adb-android-control
 fed_by: [android-toolchain, study-debug-log]
 feeds: []
 sources: [home:.claude/skills/adb-android-control/SKILL.md]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

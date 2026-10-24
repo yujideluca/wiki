@@ -9,6 +9,7 @@ location: QuizApp:app/src/main/java/dev/yuji/quiz/android/ApkInstaller.kt
 fed_by: [update-client]
 feeds: [phone]
 sources: [QuizApp:app/src/main/java/dev/yuji/quiz/android/ApkInstaller.kt]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

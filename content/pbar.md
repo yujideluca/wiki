@@ -9,6 +9,7 @@ location: home:.claude/tools/pbar.py
 fed_by: [claude-code-settings]
 feeds: []
 sources: [home:.claude/tools/pbar.py]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

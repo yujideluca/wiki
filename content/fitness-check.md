@@ -9,6 +9,7 @@ location: QuizApp:pipeline-check.toml
 fed_by: []
 feeds: [quizapp-quality-gate, pipeline-check]
 sources: [QuizApp:pipeline-check.toml]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

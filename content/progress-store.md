@@ -9,6 +9,7 @@ location: QuizApp:app/src/main/java/dev/yuji/quiz/data/ProgressStore.kt
 fed_by: [study-controller]
 feeds: [progress-backup, study-controller, study-pipeline]
 sources: [QuizApp:app/src/main/java/dev/yuji/quiz/data/ProgressStore.kt, QuizApp:core/src/main/java/dev/yuji/quiz/domain/CardProgress.kt]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

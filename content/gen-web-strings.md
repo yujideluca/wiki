@@ -9,6 +9,7 @@ location: QuizApp:tools/gen_web_strings.py
 fed_by: []
 feeds: [quizweb-i18n]
 sources: [QuizApp:tools/gen_web_strings.py]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

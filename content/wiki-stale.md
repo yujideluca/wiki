@@ -9,6 +9,7 @@ location: wiki:server/lib/wiki/content/stale.ex
 fed_by: []
 feeds: [wiki-cli]
 sources: [wiki:server/lib/wiki/content/stale.ex]
+reviewed: 2026-10-24T21:05Z
 ---
 
 ## What it is

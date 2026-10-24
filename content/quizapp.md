@@ -9,6 +9,7 @@ location: QuizApp:
 fed_by: [claude-code, project-template]
 feeds: [quizweb]
 sources: [QuizApp:DESIGN.md, QuizApp:CLAUDE.md]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

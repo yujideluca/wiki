@@ -9,6 +9,7 @@ location: wiki:server/lib/wiki/cli.ex
 fed_by: [wiki-build, wiki-check, wiki-stale]
 feeds: [github]
 sources: [wiki:server/lib/wiki/cli.ex]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

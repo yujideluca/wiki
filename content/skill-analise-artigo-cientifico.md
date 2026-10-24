@@ -9,6 +9,7 @@ location: home:.claude/skills/analise-artigo-cientifico
 fed_by: []
 feeds: []
 sources: [home:.claude/skills/analise-artigo-cientifico/SKILL.md]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

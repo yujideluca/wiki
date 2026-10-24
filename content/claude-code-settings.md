@@ -9,6 +9,7 @@ location: home:.claude/settings.json
 fed_by: []
 feeds: [hook-prompt, hook-session-start, hook-stop, pbar, wiki-hook-stop]
 sources: [home:.claude/settings.json]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

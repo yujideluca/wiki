@@ -9,6 +9,7 @@ location: workflow-memory:mem/hooks.py
 fed_by: [claude-code-settings]
 feeds: [mem-harvester]
 sources: [workflow-memory:mem/hooks.py]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

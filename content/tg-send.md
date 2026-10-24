@@ -10,6 +10,7 @@ fed_by: []
 feeds: []
 sources: [home:.local/bin/tg-send]
 memory: [#c09dc8]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

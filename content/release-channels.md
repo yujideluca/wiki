@@ -9,6 +9,7 @@ location: QuizApp:docs/adr/0005-release-channels.md
 fed_by: []
 feeds: [update-client]
 sources: [QuizApp:docs/adr/0005-release-channels.md, QuizApp:docs/adr/0011-promote-after-updated-tests.md]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

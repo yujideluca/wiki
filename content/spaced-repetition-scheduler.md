@@ -9,6 +9,7 @@ location: QuizApp:core/src/main/java/dev/yuji/quiz/domain/SpacedRepetitionSchedu
 fed_by: [answer-grader]
 feeds: [study-controller]
 sources: [QuizApp:core/src/main/java/dev/yuji/quiz/domain/SpacedRepetitionScheduler.kt, QuizApp:core/src/main/java/dev/yuji/quiz/domain/SchedulerConfig.kt]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

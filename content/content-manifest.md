@@ -9,6 +9,7 @@ location: QuizApp:tools/content_manifest.py
 fed_by: [build-vocab]
 feeds: [question-pack, quizapp-quality-gate]
 sources: [QuizApp:tools/content_manifest.py]
+reviewed: 2026-10-22T17:29Z
 ---
 
 ## What it is

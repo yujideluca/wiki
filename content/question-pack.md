@@ -9,6 +9,7 @@ location: QuizApp:core/src/main/java/dev/yuji/quiz/content/ContentPack.kt
 fed_by: [content-manifest]
 feeds: [question-pool-updater]
 sources: [QuizApp:core/src/main/java/dev/yuji/quiz/content/ContentPack.kt, QuizApp:app/src/main/assets/content.json, QuizApp:docs/adr/0012-downloadable-question-pool.md]
+reviewed: 2026-10-22T17:29Z
 ---
 
 ## What it is

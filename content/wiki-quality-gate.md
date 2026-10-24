@@ -9,6 +9,7 @@ location: wiki:tools/quality_gate.sh
 fed_by: [template-quality-gate, wiki-requirements]
 feeds: [github]
 sources: [wiki:tools/quality_gate.sh, wiki:.github/workflows/quality-gate.yml]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

@@ -1,22 +1,6 @@
 defmodule Wiki.Content.BuildTest do
   use Wiki.ContentCase, async: false
 
-  defp git(dir, args, env \\ []) do
-    {_, 0} = System.cmd("git", ["-C", dir | args], env: env, stderr_to_stdout: true)
-  end
-
-  defp init_repo(dir) do
-    File.mkdir_p!(dir)
-    git(dir, ["init", "-q", "-b", "main"])
-    git(dir, ["config", "user.email", "test@example.invalid"])
-    git(dir, ["config", "user.name", "test"])
-  end
-
-  defp commit_all(dir, msg, date) do
-    git(dir, ["add", "-A"])
-    git(dir, ["commit", "-q", "-m", msg], [{"GIT_AUTHOR_DATE", date}, {"GIT_COMMITTER_DATE", date}])
-  end
-
   # REQ BU-1
   test "graph.json has nodes, feeds and mentions edges; one article per page per language", %{content: c, dir: dir} do
     valid_wiki(c)
@@ -83,6 +67,18 @@ defmodule Wiki.Content.BuildTest do
     assert read.("b")["mayBeStale"] == false
   end
 
+  # REQ CO-6
+  test "the may-be-stale mark reads a review time given with minutes too", %{content: c, dir: dir} do
+    valid_wiki(c)
+    write_page(c, "a", base_header("a", feeds: ["b"], reviewed: "2026-09-01T23:59Z"))
+    write_page(c, "b", base_header("b", fed_by: ["a"], reviewed: "2026-10-01T00:00Z"))
+    out = Path.join(dir, "site")
+    :ok = Build.run(Store.load(c), out, today: ~D[2026-10-22])
+    read = &(Path.join(out, "data/pages/#{&1}.en.json") |> File.read!() |> JSON.decode!())
+    assert read.("a")["mayBeStale"] == true
+    assert read.("b")["mayBeStale"] == false
+  end
+
   describe "Stop hook" do
     setup %{dir: dir, content: c} do
       repo = Path.join(dir, "dev/r1")
@@ -104,6 +100,7 @@ defmodule Wiki.Content.BuildTest do
     end
 
     # REQ UP-1
+    # REQ UP-3
     test "blocks once when covered code changed after the last publish", %{content: c, repo: repo} do
       Stale.mark_published(System.os_time(:second) - 60)
       store = Store.load(c)
@@ -116,6 +113,8 @@ defmodule Wiki.Content.BuildTest do
       msg = Stale.hook_message(store, %{"session_id" => "s"})
       assert msg =~ "r1: update pages a"
       assert msg =~ "new files no page covers: NEW.md"
+      assert msg =~ "reviewed: <UTC time>", "UP-3: a page checked and found right is recorded by its reviewed time"
+      assert msg =~ ~r/only when\s+what\s+changed is described by no page/
       assert Stale.hook_message(store, %{"session_id" => "s"}) == nil, "must not block twice in a session"
       assert Stale.hook_message(store, %{"session_id" => "other", "stop_hook_active" => true}) == nil
       assert Stale.hook_message(store, %{"session_id" => "other"}) =~ "update pages a"

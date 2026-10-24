@@ -9,6 +9,7 @@ location: remote-terminal:setup-sudo.sh
 fed_by: []
 feeds: [tailscale]
 sources: [remote-terminal:setup-sudo.sh]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

@@ -8,6 +8,7 @@ status: active
 fed_by: [hook-session-start, mem-pendency, memory-fold]
 feeds: [claude-code, remote-assistant]
 sources: [workflow-memory:mem/hooks.py, workflow-memory:mem/project.py]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

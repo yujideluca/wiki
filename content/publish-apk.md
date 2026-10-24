@@ -9,6 +9,7 @@ location: QuizApp:tools/publish_apk.sh
 fed_by: [check-tests-updated, check-web-sync, quizapp-quality-gate, signing-key]
 feeds: [release-feed]
 sources: [QuizApp:tools/publish_apk.sh]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

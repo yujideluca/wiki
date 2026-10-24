@@ -8,6 +8,7 @@ status: active
 fed_by: [maintenance-policy, skill-revisao-manutencao]
 feeds: []
 sources: [project-template:docs/MAINTENANCE.md]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

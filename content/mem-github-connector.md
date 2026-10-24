@@ -8,6 +8,7 @@ status: active
 fed_by: [claude-ai-settings-pointer, claude-app]
 feeds: [events-log]
 sources: [workflow-memory:docs/CLAUDE-AI.md, workflow-memory:README.md]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

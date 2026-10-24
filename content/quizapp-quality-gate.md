@@ -9,6 +9,7 @@ location: QuizApp:tools/quality_gate.sh
 fed_by: [android-toolchain, check-traceability, content-manifest, fitness-check, mutation-check, quizweb-conformance, template-quality-gate]
 feeds: [publish-apk, quizapp-ci]
 sources: [QuizApp:tools/quality_gate.sh]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

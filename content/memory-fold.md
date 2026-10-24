@@ -9,6 +9,7 @@ location: workflow-memory:mem/core.py
 fed_by: [events-log]
 feeds: [memory-views, session-brief]
 sources: [workflow-memory:mem/core.py]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

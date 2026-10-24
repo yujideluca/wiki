@@ -9,6 +9,7 @@ location: QuizWeb:src/controller.js
 fed_by: [quizweb-domain, quizweb-store]
 feeds: [quizweb-app]
 sources: [QuizWeb:src/controller.js]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

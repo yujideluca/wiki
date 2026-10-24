@@ -2,7 +2,8 @@ defmodule Wiki.Content.Stale do
   @moduledoc """
   Keeps the wiki from falling behind the code.
 
-  * `pages/1`: pages whose sources have a commit newer than the page's own last commit.
+  * `pages/1`: pages with a source that changed after the page's `reviewed` time (ADR-0006). The page file's own
+    commits are never used: a rewrite or a translation fix is not a review. A source outside git counts by modification time.
   * `hook_message/2`: the Claude Code Stop hook. It returns a message (and the hook blocks the stop, exit 2)
     only when, since the last `wiki publish`, a repo under ~/dev got commits that touch some page's sources
     or add files no page covers. It blocks at most once per session for the same set of changes, and never
@@ -27,20 +28,32 @@ defmodule Wiki.Content.Stale do
   end
 
   def pages(store) do
-    wiki_repo = Path.dirname(store.dir)
-
-    for {id, p} <- Enum.sort(store.pages),
-        page_time = Git.last_time(wiki_repo, Path.join("content", p.file)) || 0,
-        source <- Page.list(p, "sources"),
-        {repo, path} = Sources.git_location(source) || {nil, nil},
-        repo != nil,
-        t = Git.last_time(repo, path),
-        t != nil and t > page_time,
-        uniq: true do
-      %{id: id, reason: "#{source} changed after the page"}
-    end
-    |> Enum.uniq_by(& &1.id)
+    for {id, page} <- Enum.sort(store.pages),
+        sources = Page.list(page, "sources"),
+        sources != [],
+        entry = stale_entry(id, page, sources),
+        do: entry
   end
+
+  defp stale_entry(id, page, sources) do
+    case Page.reviewed_at(page) do
+      nil ->
+        %{id: id, reason: "has no reviewed time (missing or not understood), so it was never compared with its sources"}
+
+      reviewed ->
+        changed = for source <- sources, time = Sources.last_change(source), time > reviewed, do: {time, source}
+
+        case Enum.sort(changed, :desc) do
+          [{time, source} | _] ->
+            %{id: id, reason: "#{source} changed #{stamp(time)}, after the review of #{stamp(reviewed)}"}
+
+          [] ->
+            nil
+        end
+    end
+  end
+
+  defp stamp(unix), do: unix |> DateTime.from_unix!() |> Calendar.strftime("%Y-%m-%d %H:%M UTC")
 
   @doc "Repo folders under ~/dev that some page names as a source."
   def covered_repos(store) do
@@ -145,9 +158,10 @@ defmodule Wiki.Content.Stale do
     """
     Wiki update needed: code changed since the last `wiki publish`.
     #{Enum.join(lines, "\n")}
-    Update or create those pages in ~/dev/wiki/content (English, then de and pt-BR), run `wiki publish -m "..."`,
-    then `mem use`. If no page needs to change (for example only a data file changed), still run
-    `wiki publish -m "review: no page change"` so the wiki records that it was checked.
+    Update or create those pages in ~/dev/wiki/content (English, then de and pt-BR). A page you compared with its
+    sources and found right still needs `reviewed: <UTC time>` (date -u +%Y-%m-%dT%H:%MZ): that edit is the review.
+    Then run `wiki publish -m "..."`, then `mem use`. Use `wiki publish -m "review: no page change"` only when what
+    changed is described by no page (for example a data file).
     """
   end
 end

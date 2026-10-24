@@ -9,6 +9,7 @@ location: wiki:server/lib/wiki/content/check.ex
 fed_by: [wiki-content]
 feeds: [wiki-cli]
 sources: [wiki:server/lib/wiki/content/check.ex, wiki:server/lib/wiki/content/privacy.ex]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

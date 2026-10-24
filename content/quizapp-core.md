@@ -9,6 +9,7 @@ location: QuizApp:core/src/main/java/dev/yuji/quiz
 fed_by: []
 feeds: [quizapp-app]
 sources: [QuizApp:core/src/main/java/dev/yuji/quiz]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

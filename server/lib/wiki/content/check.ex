@@ -45,10 +45,8 @@ defmodule Wiki.Content.Check do
             store.pages[h["project"]].header["kind"] != "project" && "project #{h["project"]} is not of kind project",
           bad_date(h, "since"),
           bad_date(h, "until"),
-          bad_date(h, "reviewed"),
           h["status"] == "retired" && !h["until"] && "a retired page needs until: <date>",
-          Page.list(p, "sources") == [] && !h["reviewed"] &&
-            "a page without sources needs reviewed: <date> (things that live off the laptop)"
+          reviewed_problem(h)
         ] ++
         Enum.map(Page.required_sections(), fn k ->
           Page.section(p, k) == "" && "section ## #{Page.heading(k)} is missing or empty"
@@ -96,6 +94,21 @@ defmodule Wiki.Content.Check do
 
   defp missing_fields(p) do
     for f <- ~w(id title kind project status), !p.header[f] or p.header[f] == "", do: "header field #{f} missing"
+  end
+
+  # CO-6 (ADR-0006): every page records when it was last compared with its sources, in UTC and not in the future.
+  defp reviewed_problem(h) do
+    if h["reviewed"] in [nil, ""] do
+      "a page needs reviewed: <UTC date or date and minute> (when it was last compared with its sources)"
+    else
+      now = System.os_time(:second)
+
+      case Page.parse_reviewed(h["reviewed"]) do
+        nil -> "reviewed must be YYYY-MM-DD or YYYY-MM-DDTHH:MMZ (UTC)"
+        time when time > now -> "reviewed is in the future"
+        _ -> nil
+      end
+    end
   end
 
   defp bad_date(h, key), do: h[key] && !Regex.match?(@date, h[key]) && "#{key} must be YYYY-MM-DD"

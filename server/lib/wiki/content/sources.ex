@@ -6,6 +6,8 @@ defmodule Wiki.Content.Sources do
   so pages stay valid on any machine.
   """
 
+  alias Wiki.Content.Git
+
   def dev_root, do: System.get_env("WIKI_DEV_ROOT") || Path.expand("~/dev")
   def home_root, do: System.get_env("WIKI_HOME_ROOT") || Path.expand("~")
 
@@ -25,6 +27,39 @@ defmodule Wiki.Content.Sources do
     case resolve(source) do
       {_, dir, path} -> File.exists?(Path.join(dir, path))
       nil -> false
+    end
+  end
+
+  @doc """
+  Unix time of the last change to a source (ADR-0006): the last commit that touches it when it is in a git
+  repository, otherwise the newest modification time of the file, or of the folder and everything inside it.
+  nil when it cannot be told (the source does not exist, or is not `repo:path`).
+  """
+  def last_change(source) do
+    case git_location(source) do
+      {repo, path} -> Git.last_time(repo, path) || modified_at(source)
+      nil -> modified_at(source)
+    end
+  end
+
+  defp modified_at(source) do
+    case resolve(source) do
+      {_, dir, path} -> newest_mtime(Path.expand(Path.join(dir, path)))
+      nil -> nil
+    end
+  end
+
+  defp newest_mtime(path) do
+    case File.lstat(path, time: :posix) do
+      {:ok, %File.Stat{type: :directory, mtime: own}} ->
+        names = case File.ls(path), do: ({:ok, names} -> names; _ -> [])
+        Enum.reduce(names -- [".git"], own, fn name, newest -> max(newest, newest_mtime(Path.join(path, name)) || 0) end)
+
+      {:ok, %File.Stat{mtime: time}} ->
+        time
+
+      {:error, _} ->
+        nil
     end
   end
 

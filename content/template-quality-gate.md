@@ -9,6 +9,7 @@ location: project-template:tools/quality_gate.sh
 fed_by: [check-traceability]
 feeds: [quizapp-quality-gate, wiki-quality-gate]
 sources: [project-template:tools/quality_gate.sh]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

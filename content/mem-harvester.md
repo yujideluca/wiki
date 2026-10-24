@@ -9,6 +9,7 @@ location: workflow-memory:mem/harvest.py
 fed_by: [hook-prompt]
 feeds: [events-log]
 sources: [workflow-memory:mem/harvest.py]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

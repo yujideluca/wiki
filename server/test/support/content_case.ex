@@ -20,6 +20,24 @@ defmodule Wiki.ContentCase do
     {:ok, dir: dir, content: content}
   end
 
+  @doc "Runs git in `dir` and fails the test unless it exits 0."
+  def git(dir, args, env \\ []) do
+    {_, 0} = System.cmd("git", ["-C", dir | args], env: env, stderr_to_stdout: true)
+  end
+
+  def init_repo(dir) do
+    File.mkdir_p!(dir)
+    git(dir, ["init", "-q", "-b", "main"])
+    git(dir, ["config", "user.email", "test@example.invalid"])
+    git(dir, ["config", "user.name", "test"])
+  end
+
+  @doc "Commits everything in `dir` with the given author and committer date (ISO 8601; end it with Z for UTC)."
+  def commit_all(dir, msg, date) do
+    git(dir, ["add", "-A"])
+    git(dir, ["commit", "-q", "-m", msg], [{"GIT_AUTHOR_DATE", date}, {"GIT_COMMITTER_DATE", date}])
+  end
+
   @doc "Header map + sections map -> file text."
   def page_text(header, sections \\ %{}) do
     sections =

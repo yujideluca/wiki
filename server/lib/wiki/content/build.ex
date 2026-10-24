@@ -37,9 +37,12 @@ defmodule Wiki.Content.Build do
         Git.first_date(wiki_repo, rel) || Date.to_iso8601(today)
 
     may_be_stale =
-      case p.header["reviewed"] && Page.list(p, "sources") == [] && Date.from_iso8601(p.header["reviewed"]) do
-        {:ok, d} -> Date.diff(today, d) > Check.review_days()
-        _ -> false
+      case Page.list(p, "sources") == [] && Page.reviewed_at(p) do
+        reviewed when is_integer(reviewed) ->
+          Date.diff(today, reviewed |> DateTime.from_unix!() |> DateTime.to_date()) > Check.review_days()
+
+        _ ->
+          false
       end
 
     %{since: since, history: Git.history(wiki_repo, rel), may_be_stale: may_be_stale}

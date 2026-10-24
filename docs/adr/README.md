@@ -11,3 +11,4 @@ rewritten: a new decision supersedes it.
 | [0003](0003-login-gate-and-decoy.md) | One Elixir login gate, Google sign-in for one account, decoy, Tailscale Funnel | accepted |
 | [0004](0004-content-format.md) | Content as Markdown pages with a header, checked before publishing | accepted |
 | [0005](0005-program-measures-skill-judges.md) | A program measures and blocks, a skill judges and proposes | accepted |
+| [0006](0006-review-time-in-the-page.md) | The page records its review time; stale means a source changed after it | accepted |

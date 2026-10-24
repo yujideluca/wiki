@@ -9,6 +9,7 @@ location: QuizApp:app/src/main/java/dev/yuji/quiz/data/TrainingStore.kt
 fed_by: [study-controller]
 feeds: [activity-calendar, daily-goal, progress-backup, study-controller]
 sources: [QuizApp:app/src/main/java/dev/yuji/quiz/data/TrainingStore.kt]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

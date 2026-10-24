@@ -9,6 +9,7 @@ location: QuizApp:tools/check_web_sync.sh
 fed_by: [quizweb]
 feeds: [publish-apk]
 sources: [QuizApp:tools/check_web_sync.sh]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

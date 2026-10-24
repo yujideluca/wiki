@@ -10,6 +10,7 @@ location: home:.claude/skills/wiki-page-writer
 fed_by: []
 feeds: [wiki-content]
 sources: [home:.claude/skills/wiki-page-writer/SKILL.md]
+reviewed: 2026-10-24T18:10Z
 ---
 
 ## What it is

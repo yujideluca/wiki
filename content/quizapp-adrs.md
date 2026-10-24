@@ -9,6 +9,7 @@ location: QuizApp:docs/adr
 fed_by: []
 feeds: []
 sources: [QuizApp:docs/adr]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

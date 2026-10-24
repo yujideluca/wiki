@@ -9,6 +9,7 @@ location: QuizApp:core/src/main/java/dev/yuji/quiz/debug
 fed_by: []
 feeds: [skill-adb-android-control]
 sources: [QuizApp:core/src/main/java/dev/yuji/quiz/debug, QuizApp:app/src/main/java/dev/yuji/quiz/android/AndroidStudyLog.kt]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

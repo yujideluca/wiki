@@ -9,6 +9,7 @@ location: home:.claude/skills/ligamagic-replicar-carrinho-nas-lojas
 fed_by: [skill-ligamagic-listas]
 feeds: []
 sources: [home:.claude/skills/ligamagic-replicar-carrinho-nas-lojas/SKILL.md]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

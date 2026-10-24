@@ -9,6 +9,7 @@ location: workflow-memory:mem/pendency.py
 fed_by: []
 feeds: [session-brief]
 sources: [workflow-memory:mem/pendency.py]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

@@ -9,6 +9,7 @@ location: QuizApp:tools/check_tests_updated.sh
 fed_by: []
 feeds: [publish-apk]
 sources: [QuizApp:tools/check_tests_updated.sh]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

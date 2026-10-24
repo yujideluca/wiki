@@ -9,6 +9,7 @@ location: home:.config/systemd/user/wiki.service
 fed_by: [google-oauth-client]
 feeds: [wiki-server]
 sources: [wiki:tools/wiki.service]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

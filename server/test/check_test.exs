@@ -103,10 +103,32 @@ defmodule Wiki.Content.CheckTest do
   end
 
   # REQ CO-6
-  test "a page without sources needs a reviewed date", %{content: c} do
+  test "a page without sources needs a reviewed time", %{content: c} do
     valid_wiki(c)
     write_page(c, "a", Keyword.delete(base_header("a", feeds: ["b"]), :reviewed))
-    assert Enum.any?(errors(c), &(&1 =~ "a.md: a page without sources needs reviewed"))
+    assert Enum.any?(errors(c), &(&1 =~ "a.md: a page needs reviewed: <UTC date or date and minute>"))
+  end
+
+  # REQ CO-6
+  test "a page with sources needs a reviewed time too", %{content: c} do
+    valid_wiki(c)
+    write_page(c, "a", Keyword.delete(base_header("a", feeds: ["b"], sources: ["repo1:real.txt"]), :reviewed))
+    assert Enum.any?(errors(c), &(&1 =~ "a.md: a page needs reviewed: <UTC date or date and minute>"))
+  end
+
+  # REQ CO-6
+  test "reviewed is a UTC date or a UTC date and minute, and not in the future", %{content: c} do
+    valid_wiki(c)
+
+    for ok <- ["2026-10-24", "2026-10-24T18:30Z"] do
+      write_page(c, "a", base_header("a", feeds: ["b"], reviewed: ok))
+      refute Enum.any?(errors(c), &(&1 =~ "reviewed")), "#{ok} should be accepted"
+    end
+
+    for bad <- ["24/10/2026", "2026-10-24T18:30", "2026-10-24T18:30:00Z", "2026-13-01", "2026-10-24T25:00Z", "2999-01-01", "2999-01-01T00:00Z"] do
+      write_page(c, "a", base_header("a", feeds: ["b"], reviewed: bad))
+      assert Enum.any?(errors(c), &(&1 =~ "a.md: reviewed")), "#{bad} should be refused"
+    end
   end
 
   # REQ CO-7

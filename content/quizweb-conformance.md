@@ -9,6 +9,7 @@ location: QuizWeb:tests/conformance
 fed_by: []
 feeds: [quizapp-quality-gate]
 sources: [QuizWeb:tests/conformance, QuizApp:core/src/test/resources/conformance]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

@@ -117,6 +117,29 @@ defmodule Wiki.Content.Page do
     |> Enum.map(fn [_, name] -> name end)
   end
 
+  @doc """
+  Unix time of a page's `reviewed` value, or nil when it is missing or not understood. The value is a UTC date
+  (`2026-10-24`, meaning the start of that day) or a UTC date and minute (`2026-10-24T18:30Z`); see ADR-0006.
+  """
+  def reviewed_at(%__MODULE__{header: header}), do: parse_reviewed(header["reviewed"])
+
+  def parse_reviewed(value) when is_binary(value) do
+    case Regex.run(~r/^(\d{4}-\d{2}-\d{2})(?:T(\d{2}:\d{2})Z)?$/, value) do
+      [_, date] -> to_unix(date, "00:00")
+      [_, date, time] -> to_unix(date, time)
+      nil -> nil
+    end
+  end
+
+  def parse_reviewed(_), do: nil
+
+  defp to_unix(date, time) do
+    case DateTime.from_iso8601("#{date}T#{time}:00Z") do
+      {:ok, datetime, 0} -> DateTime.to_unix(datetime)
+      _ -> nil
+    end
+  end
+
   @doc "First paragraph of a section, for the map's hover boxes."
   def first_paragraph(page, key) do
     page |> section(key) |> String.split(~r/\n\s*\n/, parts: 2) |> List.first("") |> String.trim()

@@ -9,6 +9,7 @@ location: project-template:docs/MAINTENANCE.md
 fed_by: []
 feeds: [monthly-architecture-review]
 sources: [project-template:docs/MAINTENANCE.md]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

@@ -8,6 +8,7 @@ status: active
 fed_by: []
 feeds: []
 sources: [QuizApp:docs/2026-10-24-pipeline-check-design.md, QuizApp:docs/adr/0013-program-measures-skill-judges.md]
+reviewed: 2026-10-24T12:43Z
 ---
 
 ## What it is

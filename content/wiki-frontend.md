@@ -9,6 +9,7 @@ location: wiki:frontend
 fed_by: [wiki-article-view, wiki-map-view, wiki-router, wiki-search]
 feeds: [giovanni]
 sources: [wiki:frontend/src/Main.elm, wiki:frontend/static/style.css]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

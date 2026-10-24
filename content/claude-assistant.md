@@ -9,6 +9,7 @@ location: home:.local/bin/claude-assistant
 fed_by: [user-space-tools]
 feeds: [remote-assistant]
 sources: [home:.local/bin/claude-assistant, home:.config/systemd/user/claude-assistant.service]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

@@ -9,6 +9,7 @@ location: home:.claude/skills/revisao-manutencao
 fed_by: [pipeline-check]
 feeds: [monthly-architecture-review, skill-gerar-teste-automatizado]
 sources: [home:.claude/skills/revisao-manutencao/SKILL.md]
+reviewed: 2026-10-24T12:43Z
 ---
 
 ## What it is

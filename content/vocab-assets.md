@@ -9,6 +9,7 @@ location: QuizApp:app/src/main/assets
 fed_by: [build-vocab]
 feeds: [card-factory]
 sources: [QuizApp:app/src/main/assets]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

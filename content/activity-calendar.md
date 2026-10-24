@@ -9,6 +9,7 @@ location: QuizApp:core/src/main/java/dev/yuji/quiz/domain/ActivityCalendar.kt
 fed_by: [training-store]
 feeds: [study-view-model]
 sources: [QuizApp:core/src/main/java/dev/yuji/quiz/domain/ActivityCalendar.kt, QuizApp:core/src/main/java/dev/yuji/quiz/domain/HeatColor.kt]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

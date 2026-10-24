@@ -9,6 +9,7 @@ location: QuizApp:core/src/main/java/dev/yuji/quiz/domain/StudyPipeline.kt
 fed_by: [card-factory, progress-store]
 feeds: [study-controller]
 sources: [QuizApp:core/src/main/java/dev/yuji/quiz/domain/StudyPipeline.kt]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

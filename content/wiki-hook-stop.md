@@ -9,6 +9,7 @@ location: wiki:server/lib/wiki/content/stale.ex
 fed_by: [claude-code-settings]
 feeds: [claude-code]
 sources: [wiki:server/lib/wiki/content/stale.ex]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

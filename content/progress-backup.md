@@ -9,6 +9,7 @@ location: QuizApp:core/src/main/java/dev/yuji/quiz/domain/ProgressBackup.kt
 fed_by: [progress-store, training-store]
 feeds: [quiz-backups]
 sources: [QuizApp:core/src/main/java/dev/yuji/quiz/domain/ProgressBackup.kt, QuizApp:app/src/main/java/dev/yuji/quiz/ui/BackupSection.kt]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

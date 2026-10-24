@@ -4,7 +4,7 @@ defmodule Wiki.CLI do
 
       wiki check [--local]   validate content/ (exit 1 on any problem)
       wiki build             content -> site/data, Elm -> site/assets
-      wiki stale             pages whose sources changed after the page did
+      wiki stale             pages with a source changed after their reviewed time (exit 1 when any)
       wiki publish -m MSG    check --local, build, commit content/, push
       wiki hook-stop         Claude Code Stop hook (reads the hook JSON on stdin)
   """
@@ -49,8 +49,13 @@ defmodule Wiki.CLI do
 
   def run(["stale"], _opts) do
     case Stale.pages(Store.load(content_dir())) do
-      [] -> IO.puts("no stale pages") && 0
-      list -> Enum.each(list, &IO.puts("#{&1.id}: #{&1.reason}")) && 0
+      [] ->
+        IO.puts("no stale pages")
+        0
+
+      list ->
+        Enum.each(list, &IO.puts("#{&1.id}: #{&1.reason}"))
+        1
     end
   end
 

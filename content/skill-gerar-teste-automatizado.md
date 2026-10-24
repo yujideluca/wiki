@@ -9,6 +9,7 @@ location: home:.claude/skills/gerar-teste-automatizado
 fed_by: [skill-revisao-manutencao]
 feeds: []
 sources: [home:.claude/skills/gerar-teste-automatizado/SKILL.md]
+reviewed: 2026-10-24T12:43Z
 ---
 
 ## What it is

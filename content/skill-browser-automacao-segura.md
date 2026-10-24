@@ -9,6 +9,7 @@ location: home:.claude/skills/browser-automacao-segura
 fed_by: []
 feeds: []
 sources: [home:.claude/skills/browser-automacao-segura/SKILL.md]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

@@ -9,6 +9,7 @@ location: QuizApp:app/src/main/java/dev/yuji/quiz/data/SettingsStore.kt
 fed_by: []
 feeds: [study-view-model]
 sources: [QuizApp:app/src/main/java/dev/yuji/quiz/data/SettingsStore.kt, QuizApp:app/src/main/java/dev/yuji/quiz/data/AppLanguage.kt]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

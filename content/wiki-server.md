@@ -9,6 +9,7 @@ location: wiki:server
 fed_by: [tailscale-funnel, wiki-service]
 feeds: [wiki-router]
 sources: [wiki:server/mix.exs, wiki:server/lib/wiki/application.ex]
+reviewed: 2026-10-22T16:33Z
 ---
 
 ## What it is

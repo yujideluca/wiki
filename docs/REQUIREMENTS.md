@@ -18,10 +18,13 @@ Source: G = stated by Giovanni, D = derived by Claude Code and accepted (design 
 | CO-3 | No orphan pages, except actors and external things | D |
 | CO-4 | The privacy scan blocks keys, tokens, passwords, phone numbers and e-mails other than Giovanni's | G |
 | CO-5 | A function listed on a page and mentioned by two or more other pages must get its own page | G |
-| CO-6 | A page without sources needs a reviewed date and is shown as "may be stale" 30 days after it | D |
+| CO-6 | Every page has a reviewed date or date-and-time in UTC that is not in the future; a page without sources is shown as "may be stale" 30 days after it | D |
 | CO-7 | Sources are written repo:path; local mode checks that they and the memory refs exist | D |
 | CO-8 | A page of kind skill has a non-empty Steps section: the skill's own definition (rules or steps), so the page is enough to understand the skill | G |
 | CO-9 | The first use of every acronym listed in content/_acronyms.tsv is next to its full name (the name appears before it or within 100 characters after it), outside code quotes | G |
+| ST-1 | `wiki stale` lists a page when any of its sources changed after the page's reviewed time; commits that touch only the page file never clear it | G |
+| ST-2 | A source outside git (home:) counts as changed at the newest modification time of its file or folder | G |
+| ST-3 | `wiki stale` prints for each page the source and both times, and exits 1 when it lists a page and 0 when it lists none | D |
 | LG-1 | Every English page has German and Brazilian Portuguese versions made from its current English text | G |
 | LG-2 | The interface is in English by default and switchable to German and Brazilian Portuguese | G |
 | BU-1 | The build writes graph.json (nodes, feeds and mentions edges) and one article per page per language | D |
@@ -29,6 +32,7 @@ Source: G = stated by Giovanni, D = derived by Claude Code and accepted (design 
 | BU-3 | A page of kind reference (the glossary) can link to any page without drawing edges on the map | G |
 | UP-1 | The Stop hook blocks only for code changes the wiki covers (or new files) since the last publish, at most once per session per change set, never when a stop hook is already active | G |
 | UP-2 | wiki publish refuses when the local check fails, and commits only content/ | G |
+| UP-3 | The Stop hook message tells Claude to record a page it checked and found right by setting its reviewed time, and keeps "review: no page change" for changes no page describes | G |
 | MP-1 | Search suggests matching pages (title and aliases) while typing, best match first | G |
 | MP-2 | Hovering a node fills the four info boxes; clicking a node opens its article | G |
 | MP-3 | Links written [[id]] in an article lead to that article | G |
