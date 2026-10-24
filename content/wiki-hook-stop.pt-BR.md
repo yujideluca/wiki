@@ -1,7 +1,7 @@
 ---
 id: wiki-hook-stop
 lang: pt-BR
-source_hash: 889b2229c8fc
+source_hash: 199f7cc67cef
 title: Hook Stop do wiki (rede de segurança)
 ---
 
@@ -19,3 +19,6 @@ Roda no fim de cada rodada, ao lado do [[hook-stop]] da memória.
 
 ## Who receives its output
 O [[claude-code]] (a mensagem).
+
+## Notes
+O `wiki stale` e este hook respondem a duas perguntas diferentes, por isso podem discordar. O `wiki stale` pergunta, página por página: "algum arquivo de origem recebeu um commit (uma mudança salva no git) depois do último commit da própria página?" O hook pergunta: "desde o último `wiki publish`, algum projeto recebeu commits que tocam as origens de uma página ou acrescentam arquivos que nenhuma página cobre?" Como o `wiki stale` olha para horários de commit e não para o que a página diz, qualquer commit posterior da página (por exemplo uma reescrita de muitas páginas, ou uma publicação) a faz parecer em dia mesmo que o texto não acompanhe a mudança; ele também nunca lista arquivos novos que nenhuma página cobre. O hook compara com o horário da última publicação e por isso ainda vê essas mudanças, mas um `wiki publish -m "review: no page change"` o silencia para elas, estejam as páginas certas ou não. As páginas não têm data de revisão própria (nenhuma das 139 páginas com origens tem o campo `reviewed:`), então a wiki não distingue "revisada e correta" de "tocada". Quando o hook aponta uma página que o `wiki stale` considera em dia, leia o `git log` do repositório de origem desde a última mudança da página e compare com o texto da página.

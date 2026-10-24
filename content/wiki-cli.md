@@ -6,7 +6,7 @@ kind: program
 project: wiki
 status: active
 location: wiki:server/lib/wiki/cli.ex
-fed_by: [wiki-build, wiki-check]
+fed_by: [wiki-build, wiki-check, wiki-stale]
 feeds: [github]
 sources: [wiki:server/lib/wiki/cli.ex]
 ---
@@ -29,6 +29,6 @@ Called at [[end-of-task]], before `mem use`.
 ## Functions
 - `wiki check [--local]`: validate the content
 - `wiki build`: content → site/data, Elm → site/assets
-- `wiki stale`: pages whose sources changed after the page
+- `wiki stale` ([[wiki-stale]]): pages whose sources changed after the page
 - `wiki publish -m "msg"`: check --local, build, commit only content/, push
 - `wiki hook-stop`: the Claude Code Stop hook

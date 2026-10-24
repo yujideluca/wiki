@@ -1,7 +1,7 @@
 ---
 id: wiki-hook-stop
 lang: de
-source_hash: 889b2229c8fc
+source_hash: 199f7cc67cef
 title: Wiki-Stop-Hook (Sicherheitsnetz)
 ---
 
@@ -19,3 +19,6 @@ Er läuft am Ende jedes Durchgangs, neben dem [[hook-stop]] des Gedächtnisses.
 
 ## Who receives its output
 [[claude-code]] (die Nachricht).
+
+## Notes
+`wiki stale` und dieser Hook beantworten zwei verschiedene Fragen und können deshalb voneinander abweichen. `wiki stale` fragt Seite für Seite: „Hat eine Quelldatei einen Commit (eine gespeicherte Änderung in git) nach dem letzten Commit der Seite selbst bekommen?“ Der Hook fragt: „Haben seit dem letzten `wiki publish` Projekte Commits bekommen, die die Quellen einer Seite berühren oder Dateien hinzufügen, die keine Seite abdeckt?“ Weil `wiki stale` auf Commit-Zeiten schaut und nicht darauf, was die Seite sagt, lässt jeder spätere Commit der Seite (zum Beispiel eine Überarbeitung vieler Seiten oder eine Veröffentlichung) sie aktuell aussehen, auch wenn der Text die Änderung verpasst; außerdem listet es nie neue Dateien, die keine Seite abdeckt. Der Hook vergleicht mit dem Zeitpunkt der letzten Veröffentlichung und sieht diese Änderungen daher noch, aber ein `wiki publish -m "review: no page change"` bringt ihn für sie zum Schweigen, egal ob die Seiten stimmen. Seiten tragen kein eigenes Prüfdatum (keine der 139 Seiten mit Quellen hat ein Feld `reviewed:`), das Wiki kann also „geprüft und richtig“ nicht von „angefasst“ unterscheiden. Meldet der Hook eine Seite, die `wiki stale` für aktuell hält, das `git log` des Quell-Repositorys seit der letzten Änderung der Seite lesen und mit dem Seitentext vergleichen.
