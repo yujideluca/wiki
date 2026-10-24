@@ -1,7 +1,7 @@
 ---
 id: pipeline-check
 lang: de
-source_hash: f420465f50c7
+source_hash: 982d0c28d29d
 title: pipeline-check
 aliases: [report.json]
 ---
@@ -16,7 +16,7 @@ Schreibt `build/pipeline-check/report.json` (Projekt, Datum, Modus `local` oder 
 Rust mit `serde`, `toml` und `clap`; `git` und `gh` werden als Prozesse aufgerufen. Die Grenzen stehen in `pipeline-check.toml` und ändern sich nur durch Giovanni mit einer Zeile im Entscheidungslog. `tools/pipeline-check.sh` baut und startet es; das Tor ruft es mit `--measure-only` auf (keine Rekursion). Anforderungen PC-1..PC-11, Tests mit `REQ` markiert. Es hat zuerst den eigenen Prozess durchlaufen: Der Skill [[skill-gerar-teste-automatizado]] schrieb fehlersuchende Tests (`tools/pipeline-check/docs/TESTES-AUTOMATIZADOS.md`), die sechs Fehler fanden (alle behoben), und eine handgemachte Mutationsprüfung (`mutants.py`) fängt jeden eingepflanzten Fehler.
 
 ## Where it sits in the pipeline
-Die CI führt es statt des bloßen Tors aus ([[quizapp-ci]]); Claude startet es zu Beginn jeder [[skill-revisao-manutencao]]. Teil der [[maintenance-pipeline]]. Seit 2026-10-24 läuft eine Kopie in [[project-template]], [[quizapp]], [[wiki]], [[quizweb]] und [[workflow-memory]], jeweils mit eigener `pipeline-check.toml`.
+Die CI führt es statt des bloßen Tors aus ([[quizapp-ci]]); Claude startet es zu Beginn jeder [[skill-revisao-manutencao]]. Teil der [[maintenance-pipeline]]. Das Programm liegt nur einmal in einem eigenen öffentlichen Repository (`yujideluca/pipeline-check`); [[project-template]], [[quizapp]], [[wiki]], [[quizweb]], [[workflow-memory]], [[remote-terminal]] und [[processing-sketches]] legen einen Tag in `pipeline-check.version` fest (jetzt v0.2.0) und behalten nur ihre eigene `pipeline-check.toml` und ein kleines Startskript. Es läuft auch als Git-Pre-Push-Hook (`--pre-push`), der einen Push von `main` stoppt, wenn eine Prüfung fehlschlägt, weil der Branch-Schutz bei privaten Repositories im kostenlosen Tarif nicht verfügbar ist. Warum ein Repository statt Kopien: ADR-0003 in diesem Repository.
 
 ## Who receives its output
 [[quizapp-ci]] (rote oder grüne Markierung) und [[skill-revisao-manutencao]] (liest `report.json`, misst nie neu).

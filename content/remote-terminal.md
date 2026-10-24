@@ -18,7 +18,7 @@ sources: [remote-terminal:setup-sudo.sh]
 Installs OpenSSH server, [[tailscale]] and tmux from official repositories; configures SSH for keys only, only user `yuji`, no root and no passwords; adds the phone's public key if given.
 
 ## How it does it
-Bash run with sudo by Giovanni (`sudo bash ~/dev/remote-terminal/setup-sudo.sh ["ssh-ed25519 … phone"]`); `set -euxo pipefail` and `sshd -t` before restarting.
+Bash run with sudo by Giovanni (`sudo bash ~/dev/remote-terminal/setup-sudo.sh ["ssh-ed25519 … phone"]`); `set -euxo pipefail` and `sshd -t` before restarting. Since 2026-10-24 it is a private GitHub repository (`yujideluca/remote-terminal`) with a gate, CI and the [[pipeline-check]] pre-push check.
 
 ## Where it sits in the pipeline
 The base of remote access to the [[acer-nitro]].

@@ -17,7 +17,7 @@ The way Giovanni's software projects are kept maintainable: a program measures a
 Turns the rules of [[maintenance-policy]] into something a machine enforces: the CI job fails on a `falha`, and the monthly review reads the same numbers instead of measuring by hand.
 
 ## How it does it
-[[pipeline-check]] runs in CI and on the laptop; [[skill-revisao-manutencao]] reads the report. Blocking a merge also needs branch protection that requires the CI job; only Giovanni changes it. On a private repository of a free GitHub plan this protection is not available (GitHub answers 403), so a red CI run alone does not yet stop a merge; the options are GitHub Pro, a public repository, or a local pre-push check. Applied first to [[quizapp]], then copied to the other projects and to [[project-template]].
+[[pipeline-check]] runs in CI and on the laptop; [[skill-revisao-manutencao]] reads the report. Blocking a merge also needs branch protection that requires the CI job; only Giovanni changes it. On a private repository of a free GitHub plan this protection is not available (GitHub answers 403), so a local pre-push check (`pipeline-check --pre-push`, enabled with `git config core.hooksPath tools/hooks`) stops the push of `main` when a check fails. Giovanni chose the local check on 2026-10-24. Applied first to [[quizapp]], then copied to the other projects and to [[project-template]].
 
 ## Where it sits in the pipeline
 Between every push and the monthly review: [[quizapp-ci]], then [[monthly-architecture-review]].
