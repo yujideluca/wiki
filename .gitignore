@@ -5,5 +5,4 @@
 /frontend/elm-stuff/
 /.superpowers/
 erl_crash.dump
-tools/pipeline-check/target/
 build/

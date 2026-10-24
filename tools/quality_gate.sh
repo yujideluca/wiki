@@ -24,8 +24,7 @@ step "4/5 content rules (wiki check, $mode mode)"
 (cd server && mix escript.build >/dev/null)
 if [ "$mode" = ci ]; then WIKI_ROOT="$PWD" server/wiki check; else WIKI_ROOT="$PWD" server/wiki check --local; fi
 
-step "5/5 pipeline-check tests and fitness functions (limits in pipeline-check.toml)"
-cargo test --quiet --manifest-path tools/pipeline-check/Cargo.toml
+step "5/5 fitness functions (limits in pipeline-check.toml)"
 tools/pipeline-check.sh --measure-only
 size=$(gzip -c /tmp/wiki-gate-app.js | wc -c)
 [ "$size" -le "$MAX_APP_JS_GZIP" ] || { echo "FAIL app.js is $size bytes gzipped (> $MAX_APP_JS_GZIP)"; exit 1; }

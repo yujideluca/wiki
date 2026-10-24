@@ -5,10 +5,10 @@ aliases: [pipeline-check.sh, report.json]
 kind: program
 project: quizapp
 status: active
-location: QuizApp:tools/pipeline-check
+location: pipeline-check:src
 fed_by: [fitness-check]
 feeds: [quizapp-ci, skill-revisao-manutencao]
-sources: [QuizApp:tools/pipeline-check/src/lib.rs, QuizApp:pipeline-check.toml, QuizApp:tools/pipeline-check.sh, QuizApp:docs/adr/0013-program-measures-skill-judges.md]
+sources: [pipeline-check:src/lib.rs, pipeline-check:docs/adr/0003-one-repository-consumed-by-version.md, QuizApp:pipeline-check.toml, QuizApp:tools/pipeline-check.sh, QuizApp:docs/adr/0013-program-measures-skill-judges.md]
 ---
 
 ## What it is

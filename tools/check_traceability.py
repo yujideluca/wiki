@@ -7,7 +7,7 @@ Writes docs/TRACEABILITY.md (requirement -> test files) so the matrix is always 
 """
 import os, re, sys
 
-TEST_DIRS = ["server/test", "frontend/tests", "tools/pipeline-check/src", "tools/pipeline-check/tests"]
+TEST_DIRS = ["server/test", "frontend/tests"]
 EXTENSIONS = (".exs", ".ex", ".elm", ".js", ".rs")
 
 root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

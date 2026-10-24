@@ -23,9 +23,10 @@ jobs:
       - run: npm install -g elm@0.19.1-6 elm-test@0.19.1-revision12
       - run: cd server && mix deps.get
       - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
+      - uses: actions/cache@v4
         with:
-          workspaces: tools/pipeline-check
+          path: ~/.cache/pipeline-check
+          key: pipeline-check-${{ hashFiles('pipeline-check.version') }}
       # pipeline-check runs tools/quality_gate.sh once, then the fitness checks, and writes report.json (ADR-0005)
       - run: WIKI_GATE_MODE=ci tools/pipeline-check.sh --mode ci
       - if: always()
