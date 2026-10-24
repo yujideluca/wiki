@@ -32,3 +32,11 @@ decision_log = "DESIGN.md"
 
 [pre_push]
 guard = ["server/", "frontend/", "tools/", "docs/", ".github/", "pipeline-check"]   # path prefixes whose change makes a push of main worth checking; [] = every push
+
+[traceability]
+[[traceability.sources]]
+dir = "server/test"
+extensions = ["exs", "ex", "elm", "js", "rs"]
+[[traceability.sources]]
+dir = "frontend/tests"
+extensions = ["exs", "ex", "elm", "js", "rs"]

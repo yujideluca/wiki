@@ -1,7 +1,7 @@
 # Requirements
 
 Every promise the software makes, with an ID. A test that checks it carries the tag `REQ <ID>` in a comment;
-`tools/check_traceability.py` fails when a requirement has no test or a tag names an unknown requirement.
+`tools/pipeline-check.sh --traceability` fails when a requirement has no test or a tag names an unknown requirement.
 Source: G = stated by Giovanni, D = derived by Claude Code and accepted (design of 2026-10-22).
 
 | ID | Requirement | Source |

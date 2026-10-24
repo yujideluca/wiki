@@ -17,7 +17,7 @@ step "2/5 Elm tests and optimized build"
 (cd frontend && elm-test && elm make src/Main.elm --optimize --output=/tmp/wiki-gate-app.js >/dev/null)
 
 step "3/5 requirement traceability"
-python3 tools/check_traceability.py
+tools/pipeline-check.sh --traceability
 git diff --quiet -- docs/TRACEABILITY.md || { echo "docs/TRACEABILITY.md changed: commit the regenerated matrix"; exit 1; }
 
 step "4/5 content rules (wiki check, $mode mode)"

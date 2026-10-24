@@ -8,7 +8,7 @@ Tailscale Funnel, behind Google sign-in for yujideluca@gmail.com only. Design: `
 ## Principles (each one is checked by something)
 
 1. **Requirement, then test, then code**: `docs/REQUIREMENTS.md` → test tagged `REQ <ID>` → code. Checked by
-   `tools/check_traceability.py` in the gate.
+   `tools/pipeline-check.sh --traceability` in the gate.
 2. **Default deny**: without Giovanni's verified Google session nothing real is served (decoy or 404). Checked by
    `server/test/router_test.exs` (AU-1..AU-6) and `server/test/decoy_test.exs` (DC-1).
 3. **Content follows the rules before it is published**: `wiki check` (links, symmetry, sections, privacy,
