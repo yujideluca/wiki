@@ -1,21 +1,21 @@
 ---
 id: wiki-service
 lang: de
-source_hash: 538b5e944626
+source_hash: 9bdbf96d15ac
 title: wiki.service (systemd)
 ---
 
 ## What it is
-Die systemd-Benutzereinheit, die den [[wiki-server]] auf dem Laptop am Laufen hält.
+Das ist die systemd-Benutzereinheit (eine Konfiguration für [systemd](https://en.wikipedia.org/wiki/Systemd), das Linux-Programm, das Hintergrunddienste startet und überwacht), die den [[wiki-server]] auf dem Laptop am Laufen hält.
 
 ## What it does
-Startet das Elixir-Release beim Booten (Linger ist an, keine Anmeldung nötig), startet es neu, wenn es stoppt, und lädt die Geheimnisse aus `~/.config/wiki/oauth.env` und `secret.env`.
+Sie startet das Elixir-Release beim Hochfahren („Linger“ des Benutzers ist an, es braucht also keine Anmeldung), startet es neu, wenn es anhält, und lädt die Geheimnisse aus `~/.config/wiki/oauth.env` und `secret.env`.
 
 ## How it does it
-Prüfen mit `systemctl --user status wiki`; Protokolle mit `journalctl --user -u wiki`.
+Zum Prüfen `systemctl --user status wiki` ausführen; um die Logs zu lesen `journalctl --user -u wiki`.
 
 ## Where it sits in the pipeline
-Auf dem [[acer-nitro]], unter [[tailscale-funnel]].
+Auf dem [[acer-nitro]], unter dem [[tailscale-funnel]].
 
 ## Who receives its output
-[[wiki-server]].
+Der [[wiki-server]].

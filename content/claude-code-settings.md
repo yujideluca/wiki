@@ -12,13 +12,13 @@ sources: [home:.claude/settings.json]
 ---
 
 ## What it is
-`~/.claude/settings.json`: the user-level configuration of Claude Code on the laptop.
+`~/.claude/settings.json` is the user-level settings file of Claude Code on the laptop. It is a [JSON](https://en.wikipedia.org/wiki/JSON) file (JavaScript Object Notation, a plain-text format for structured data) that Claude Code reads when it starts. See the [settings documentation](https://docs.claude.com/en/docs/claude-code/settings).
 
 ## What it does
-Registers the hooks (SessionStart → [[hook-session-start]], UserPromptSubmit → [[hook-prompt]], Stop → [[hook-stop]] and [[wiki-hook-stop]]), the status line ([[pbar]]), environment (`ANDROID_HOME`), enabled plugins ([[claude-plugins]]), model and theme.
+It registers the hooks, which are small programs that Claude Code runs automatically at certain moments ([hooks explained](https://docs.claude.com/en/docs/claude-code/hooks-guide)): at the start of a chat ([[hook-session-start]]), whenever Giovanni sends a message ([[hook-prompt]]) and when Claude finishes a reply ([[hook-stop]] and [[wiki-hook-stop]]). It also sets the status line ([[pbar]]), an environment variable (`ANDROID_HOME`), the enabled plugins ([[claude-plugins]]), the model and the colour theme.
 
 ## How it does it
-JSON read by Claude Code at start; the memory hooks were added by `mem install-hooks`, the wiki hook by its setup. Changed only on purpose (the update-config skill exists for this).
+Claude Code reads the file at startup. The memory hooks were added by the command `mem install-hooks`, and the wiki hook by its own setup. The file is changed only on purpose; there is a skill called update-config for this job.
 
 ## Where it sits in the pipeline
 Read at the start of every Claude Code session ([[chat-start]]).

@@ -1,29 +1,28 @@
 ---
 id: mem-github-connector
 lang: pt-BR
-source_hash: 4d554d53348a
-title: Gravando memória pelo app do Claude
-aliases: [conector do GitHub]
+source_hash: 4442edf5d172
+title: Escrevendo na memória pelo app Claude
 ---
 
 ## What it is
-Como o [[claude-app]], que não pode rodar o `mem`, ainda lê e grava a memória compartilhada.
+O [[claude-app]] não consegue executar programas, então não pode usar o comando `mem`. Esta página explica como ele mesmo assim lê e escreve a memória compartilhada: pelo conector do GitHub, um complemento que dá ao app ferramentas para ler e escrever arquivos em repositórios do GitHub.
 
 ## What it does
-Lê o `views/BRIEF.md` no início de cada conversa e registra uma correção criando um arquivo de evento novo.
+No início de cada conversa lê `views/BRIEF.md`; quando o Giovanni o corrige, registra a correção criando um novo arquivo de evento.
 
 ## How it does it
-Pelo conector do GitHub (as ferramentas ficam adiadas no app e precisam ser carregadas pelo nome), seguindo o passo a passo do fim do BRIEF.md. Testado no app do celular (conversa simples e de projeto).
+As ferramentas do GitHub ficam "adiadas" (deferred) no app, ou seja, precisam ser carregadas pelo nome antes de poder ser usadas; o texto-ponteiro nas configurações do app ([[claude-ai-settings-pointer]]) manda fazer isso. Depois ele segue o passo a passo impresso no fim do BRIEF.md. Foi testado no app do celular, em conversas simples e em conversas de projeto.
 
 ## Where it sits in the pipeline
-O lado do app do Claude no [[workflow-memory]].
+O lado do app Claude no [[workflow-memory]].
 
 ## Who receives its output
-O [[events-log]].
+[[events-log]].
 
 ## Steps
-1. A conversa começa; o texto nas Configurações do claude.ai ([[claude-ai-settings-pointer]]) manda carregar as ferramentas do GitHub.
-2. Ela lê o `views/BRIEF.md` de `yujideluca/workflow-memory` (branch main) — [[memory-views]].
-3. O Giovanni dá uma correção; a conversa cria um arquivo de evento em `events/` no formato do passo a passo ([[events-log]]).
-4. O push dispara a [[mem-action]], que valida o arquivo ([[mem-validator]]) e refaz as [[memory-views]].
-5. A próxima sessão do Claude Code traz isso no resumo ([[hook-session-start]]).
+1. A conversa começa; o ponteiro nas configurações do claude.ai ([[claude-ai-settings-pointer]]) manda carregar as ferramentas do GitHub.
+2. Lê `views/BRIEF.md` de `yujideluca/workflow-memory` (branch main) — veja [[memory-views]].
+3. O Giovanni faz uma correção; a conversa cria um arquivo de evento em `events/` no formato descrito no fim do brief ([[events-log]]).
+4. O push dispara o [[mem-action]], que valida o arquivo ([[mem-validator]]) e reconstrói o [[memory-views]].
+5. A próxima sessão do Claude Code o baixa e o mostra no seu brief ([[hook-session-start]]).

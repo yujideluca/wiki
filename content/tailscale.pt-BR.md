@@ -1,21 +1,21 @@
 ---
 id: tailscale
 lang: pt-BR
-source_hash: b0656788e52a
+source_hash: d41f39d9fb2b
 title: Tailscale
 ---
 
 ## What it is
-Uma rede privada entre os aparelhos do Giovanni (uma "tailnet") que funciona através de qualquer roteador; nela o notebook é `yuji-nitro.tailed3a22.ts.net`.
+O [Tailscale](https://tailscale.com/) cria uma rede privada entre os dispositivos do próprio Giovanni, chamada "tailnet" (um tipo de [rede privada virtual](https://en.wikipedia.org/wiki/Virtual_private_network), VPN: um link criptografado que faz dispositivos distantes se comportarem como se estivessem na mesma rede local). Funciona atrás de qualquer roteador doméstico, sem configurações especiais. Nela, o notebook é alcançável como `yuji-nitro.tailed3a22.ts.net`.
 
 ## What it does
-Deixa o celular acessar o notebook por SSH ([[remote-terminal]]) e, pelo [[tailscale-funnel]], publica este wiki na internet.
+Permite ao celular alcançar o notebook por SSH (Secure Shell, um login remoto criptografado; veja [[remote-terminal]]) e, pelo recurso Funnel ([[tailscale-funnel]]), publica este wiki na internet.
 
 ## How it does it
-Instalado do repositório apt assinado da Tailscale pelo `setup-sudo.sh`; conectado com a conta do Giovanni.
+Foi instalado do repositório apt assinado do Tailscale pelo script `setup-sudo.sh`, e o notebook está conectado com a conta do Giovanni.
 
 ## Where it sits in the pipeline
-A camada de rede por baixo do acesso remoto e do wiki.
+A camada de rede sob o acesso remoto e o wiki.
 
 ## Who receives its output
-O [[tailscale-funnel]] e a conexão SSH do celular.
+O [[tailscale-funnel]] e a conexão SSH vinda do celular.

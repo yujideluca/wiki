@@ -1,21 +1,21 @@
 ---
 id: study-pipeline
 lang: pt-BR
-source_hash: f8d6f1dc37f0
-title: StudyPipeline (montagem da fila)
+source_hash: efa4c9fdee50
+title: StudyPipeline (montador da fila)
 ---
 
 ## What it is
-Monta a fila de cartas de uma sessão de estudo no [[quizapp]].
+Antes de cada sessão de estudo, o [[quizapp]] precisa decidir quais cartas perguntar e em que ordem. O StudyPipeline monta essa fila de cartas. Um pipeline aqui é uma cadeia de pequenos passos em que cada passo recebe o resultado do anterior.
 
 ## What it does
-`buildQueue` = `attachProgress → excludeUnavailable → selectLearningDue → selectReviewsDue → selectNewCards → interleave`. Cartas em aprendizado primeiro, quando a espera acaba; revisões das mais atrasadas para as menos, no máximo 100; cartas novas sem limite diário, uma a cada 3 revisões.
+`buildQueue` é a cadeia `attachProgress → excludeUnavailable → selectLearningDue → selectReviewsDue → selectNewCards → interleave`. Em palavras: anexar o progresso salvo de cada carta; descartar cartas suspensas ou removidas; pegar primeiro as cartas em aprendizado cujo tempo de espera acabou; depois as revisões, as mais atrasadas primeiro, no máximo 100; depois as cartas novas (sem limite diário), intercaladas uma a cada 3 revisões.
 
 ## How it does it
-Uma cadeia de passos puros pequenos, testados um a um; cartas suspensas e removidas saem em `excludeUnavailable`.
+É uma cadeia de pequenos passos puros, cada um testado separadamente (uma função é "pura" quando a mesma entrada sempre dá a mesma saída e nada mais muda).
 
 ## Where it sits in the pipeline
 No início de cada sessão, entre as cartas ([[card-factory]]) com seu progresso salvo ([[progress-store]]) e a sessão em andamento ([[study-session]]).
 
 ## Who receives its output
-O [[study-controller]], que entrega a fila ao [[study-session]].
+O [[study-controller]], que entrega a fila à [[study-session]].

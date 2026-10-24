@@ -1,18 +1,18 @@
 ---
 id: wiki-site
 lang: pt-BR
-source_hash: 2c57f1f81e0e
-title: site/ (wiki gerado)
+source_hash: ccfb383e550a
+title: site/ (wiki compilado)
 ---
 
 ## What it is
-A saída gerada: `index.html`, `assets/` (o app Elm compilado `app.js`, `boot.js`, `style.css`) e `data/` (JSON do grafo e das páginas).
+A pasta `site/` é o wiki compilado, pronto para ser exibido: `index.html`, `assets/` (o app Elm compilado `app.js`, `boot.js` e `style.css`) e `data/` (os arquivos de grafo e de páginas em [JSON](https://en.wikipedia.org/wiki/JSON), JavaScript Object Notation, um formato de dados em texto simples).
 
 ## What it does
-Tudo o que o navegador precisa depois do login; nada disso é enviado antes do login.
+É tudo o que o navegador precisa depois do login. Nada disso é enviado antes do login.
 
 ## How it does it
-Gerado pelo [[wiki-build]], não vai para o commit (é derivado); servido do disco pelo [[wiki-router]], então uma publicação aparece sem reiniciar o servidor.
+É gerado pelo [[wiki-build]] e não vai para o git (é derivado, então sempre pode ser regenerado). É servido do disco pelo [[wiki-router]], então uma publicação aparece sem reiniciar o servidor.
 
 ## Where it sits in the pipeline
 Entre o [[wiki-build]] e o [[wiki-router]].

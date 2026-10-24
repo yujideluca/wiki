@@ -1,18 +1,18 @@
 ---
 id: quizweb-app
 lang: de
-source_hash: 44a76e50bfb6
-title: QuizWeb app.js (Oberfläche)
+source_hash: 8ddd998275e8
+title: QuizWeb app.js (UI)
 ---
 
 ## What it is
-Die Oberflächenschicht von [[quizweb]]: zeichnet die Bildschirme und verbindet Tipps mit dem Controller.
+`app.js` ist die Benutzeroberflächen-Schicht von [[quizweb]]: Sie zeichnet die Bildschirme und verbindet Tipps mit dem Controller. (Zusammen mit `index.html` und `style.css` ist es das, was der Browser tatsächlich zeigt.)
 
 ## What it does
-Start (Kalender, Tagesziel, Modi), Fragen mit Rückmeldung und automatischem Weiter nach 0,5 s, Einstellungen, Sicherung, Liste entfernter Karten mit Suche.
+Sie zeigt den Startbildschirm (Kalender, Tagesziel, Modi), die Fragen mit Feedback und automatischem Weiter nach 0,5 Sekunden, die Einstellungen, die Sicherung und die Liste der entfernten Karten mit Suchfeld.
 
 ## How it does it
-Reines DOM; zusammen mit [[quizweb-store]] der einzige Code, der den Browser berührt (ein Architekturtest erzwingt das). Alle Logik liegt in [[quizweb-domain]].
+Sie arbeitet direkt am DOM (Document Object Model: das lebendige Modell des Browsers von einer Webseite, siehe [die Dokumentation](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model)), ohne Framework. Zusammen mit dem [[quizweb-store]] ist sie der einzige Code, der den Browser berührt, und ein Architekturtest erzwingt das. Die gesamte Logik liegt in [[quizweb-domain]].
 
 ## Where it sits in the pipeline
 Die Spitze des Web-Zwillings, ausgeliefert von [[github-pages]].

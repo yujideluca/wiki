@@ -1,21 +1,21 @@
 ---
 id: quizapp
 lang: de
-source_hash: 47dd00ad5310
+source_hash: d475a94d63d5
 title: QuizApp (German Quiz, Android)
 ---
 
 ## What it is
-Eine Offline-Android-App zum Üben von B2-Deutsch mit Anki-artiger verteilter Wiederholung. Repo `yujideluca/german-quiz`, Ordner `~/dev/QuizApp`, Paket `dev.yuji.quiz`. Sie ist das Referenzprojekt dafür, wie Giovannis Projekte gebaut werden.
+QuizApp („German Quiz“) ist eine Android-App, mit der Giovanni Deutsch für das Niveau B2 der Goethe-Prüfung paukt. Sie funktioniert offline und nutzt Spaced Repetition im Stil von [Anki](https://apps.ankiweb.net/): ein Verfahren, bei dem gut beantwortete Fragen nach immer längeren Pausen wiederkommen und falsch beantwortete bald ([Spaced Repetition](https://en.wikipedia.org/wiki/Spaced_repetition)). Das Repository ist `yujideluca/german-quiz`, der Ordner `~/dev/QuizApp`, der Paketname der App `dev.yuji.quiz`. Sie ist außerdem das Referenzprojekt dafür, wie Giovannis Projekte gebaut werden.
 
 ## What it does
-Fünf Lernmodi über einen festen B2-Bestand ([[game-modes]]): der/die/das, Präpositionen, Pluralformen, Präteritum und Fehler finden. Falsche oder langsame Antworten kommen bald wieder; bekannte Karten rücken auf Tage, Wochen und Monate ([[spaced-repetition-scheduler]]). Tagesziel und Serienkalender ([[daily-goal]], [[activity-calendar]]), Sicherung ([[progress-backup]]) und Updates in der App ([[update-client]]). Seit 22.10.2026 kann der Fragenbestand ohne App-Release wachsen: neue [[question-pack]]s kommen aus dem Feed ([[question-pool-updater]], [[publish-content]]).
+Sie bietet fünf Lernmodi über einen festen B2-Inhaltspool ([[game-modes]]): der/die/das, Präpositionen, Pluralformen, Präteritum und „Fehler finden“. Falsche oder langsame Antworten kommen bald wieder; bekannte Karten rücken auf Tage, Wochen und Monate hinaus ([[spaced-repetition-scheduler]]). Sie hat ein Tagesziel und einen Serienkalender ([[daily-goal]], [[activity-calendar]]), eine Sicherung des Fortschritts ([[progress-backup]]) und Updates aus der App heraus ([[update-client]]). Seit 2026-10-22 kann der Fragenpool ohne neue App-Version wachsen: Neue [[question-pack]]s kommen aus dem Update-Feed ([[question-pool-updater]], [[publish-content]]).
 
 ## How it does it
-Kotlin + Jetpack Compose in zwei Gradle-Modulen: [[quizapp-core]] (reines Kotlin: Planer, Bewerter, Warteschlange, Sitzung, Inhalte) und [[quizapp-app]] (Android-Oberfläche, Speicher, Updates). Inhalte entstehen aus TSV-Dateien durch [[build-vocab]]. Jede Änderung läuft Anforderung → Test → Code durch [[quizapp-quality-gate]] und erreicht das Handy zuerst über den Beta-Kanal ([[release-channels]], [[quizapp-release]]). Entwurf und Entscheidungen: [[quizapp-design-doc]] und [[quizapp-adrs]].
+Sie ist in [Kotlin](https://kotlinlang.org/) mit [Jetpack Compose](https://developer.android.com/compose) (Androids moderne Art, Bildschirme zu zeichnen) geschrieben und in zwei Gradle-Module geteilt (getrennt gebaute Teile): [[quizapp-core]] (reine Kotlin-Logik: Scheduler, Bewerter, Warteschlange, Sitzung, Inhalt) und [[quizapp-app]] (Android-Bildschirme, Speicher, Updates). Der Inhalt wird von [[build-vocab]] aus tabulatorgetrennten Textdateien gebaut. Jede Änderung geht Anforderung → Test → Code, besteht das [[quizapp-quality-gate]] und erreicht das Handy zuerst über den Beta-Kanal ([[release-channels]], [[quizapp-release]]). Entwurf und Entscheidungen stehen in [[quizapp-design-doc]] und [[quizapp-adrs]].
 
 ## Where it sits in the pipeline
-Giovannis wichtigstes Lernwerkzeug; ihr Web-Zwilling ist [[quizweb]], der sich gleich verhalten muss ([[check-web-sync]]). Versionen gehen über [[release-feed]] hinaus.
+Sie ist Giovannis wichtigstes Lernwerkzeug. Ihr Web-Zwilling ist [[quizweb]], der sich genauso verhalten muss ([[check-web-sync]]). Releases gehen über den [[release-feed]] hinaus.
 
 ## Who receives its output
-Giovanni auf dem [[phone]]; [[quizweb]] erhält Regeln, Testvektoren und Übersetzungen.
+Giovanni, auf dem [[phone]]; [[quizweb]] erhält ihre Regeln, Testvektoren und Übersetzungen.

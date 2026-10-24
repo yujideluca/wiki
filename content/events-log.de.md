@@ -1,22 +1,21 @@
 ---
 id: events-log
 lang: de
-source_hash: a0bce5147cc8
+source_hash: 85eff78ad105
 title: events/ (das Gedächtnisprotokoll)
-aliases: [Ereignisdateien]
 ---
 
 ## What it is
-Das Gedächtnis selbst: eine Markdown-Datei pro Ereignis in `events/YYYY/MM/`, benannt `<Zeit>-<Instanz>-<6 Zeichen>.md` (der Name ist die ID; sein letzter Teil ist der #Code im Briefing).
+Der Ordner `events/` ist das Gedächtnis selbst: eine Markdown-Datei pro Ereignis, abgelegt in `events/JJJJ/MM/` und benannt `<Zeit>-<Instanz>-<6 Zeichen>.md`. Der Dateiname ist die ID des Ereignisses, sein letztes Segment der `#code`, den man im Brief sieht. Ein „Ereignis“ (Event) hält fest, dass etwas geschehen ist, etwa „Giovanni hat diese Vorliebe geäußert“.
 
 ## What it does
-Enthält jede Vorliebe, jeden Fakt, jede Entscheidung, Aufgabe, Notiz und jedes Steuerereignis (feedback, claim, done, forget, use, archive, reopen, rescope). Dateien werden nie bearbeitet oder gelöscht, daher geraten Schreibende nie in Konflikt (ADR-0002).
+Er enthält jede Vorliebe, jeden Fakt, jede Entscheidung, Aufgabe und Notiz, dazu „Steuer“-Ereignisse, die den Zustand anderer ändern (Feedback, Claim, Done, Forget, Use, Archive, Reopen, Rescope). Dateien werden nie bearbeitet oder gelöscht, sodass zwei Schreiber nie in Konflikt geraten können (Entscheidung ADR-0002 in [[memory-adrs]]; ein ADR, „Architecture Decision Record“, ist eine kurze Notiz, die eine Entscheidung und ihre Gründe festhält).
 
 ## How it does it
-Ein Kopfteil (`type`, `scope`, `key`, `owner`, `instance`, `ts`, optional `supersedes`, `target`, `signal`, `category`) und ein bis zwei Sätze. Der CI-Job `append-only` lehnt Änderungen ab; ungültige Dateien verschiebt [[mem-validator]] nach `quarantine/`.
+Jede Datei hat einen Kopf (`type`, `scope`, `key`, `owner`, `instance`, `ts` und optional `supersedes`, `target`, `signal`, `category`), gefolgt von ein bis zwei Sätzen. Ein Auftrag der Continuous Integration (CI, automatische Prüfungen bei jedem Push) namens `append-only` weist jede Änderung an einer bestehenden Datei zurück. Ungültige Dateien verschiebt [[mem-validator]] in einen Ordner `quarantine/`.
 
 ## Where it sits in the pipeline
-Geschrieben von [[mem]] (Laptop) und [[mem-github-connector]] (Claude-App); gelesen von [[memory-fold]].
+Geschrieben von [[mem]] auf dem Laptop und von [[mem-github-connector]] für die Claude-App; gelesen von [[memory-fold]].
 
 ## Who receives its output
 [[memory-fold]] und [[mem-action]].

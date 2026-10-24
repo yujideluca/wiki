@@ -12,16 +12,16 @@ sources: [wiki:frontend/src/Search.elm]
 ---
 
 ## What it is
-The search bar at the top of every screen and its list of suggestions.
+This is the search bar at the top of every screen and its list of suggestions (autocomplete: the list that appears while you type).
 
 ## What it does
-As Giovanni types, up to 8 pages are suggested, best first: exact name, then prefix, then the start of a word, then contained anywhere, then letters in order. Titles and aliases are matched in the chosen language and in English, ignoring case and accents. ↑↓ choose, Enter centres the map on the page (or opens it from an article), Esc closes.
+As Giovanni types, up to 8 pages are suggested, best first: exact name, then prefix, then the start of a word, then contained anywhere, then letters in order. Titles and aliases (other names a page is known by) are matched in the chosen language and in English, ignoring case and accents. The arrow keys ↑ and ↓ choose, Enter centres the map on the page (or opens it from an article), and Esc closes the list.
 
 ## How it does it
-A pure ranking function, tested (MP-1).
+It is a pure ranking function, and it is tested (requirement MP-1).
 
 ## Where it sits in the pipeline
-In the top bar of [[wiki-frontend]].
+In the top bar of the [[wiki-frontend]].
 
 ## Who receives its output
-[[wiki-frontend]].
+The [[wiki-frontend]].

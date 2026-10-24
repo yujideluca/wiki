@@ -1,22 +1,21 @@
 ---
 id: study-debug-log
 lang: de
-source_hash: 00a1619e3c3b
+source_hash: 1d7eb4fd1b00
 title: DebugFlags und StudyLog
-aliases: [Debug-Overlay]
 ---
 
 ## What it is
-Die Diagnose von QuizApp: ein Schalter (`DebugFlags`) und typisierte Log-Kanäle (`StudyLog`: CONTENT, PIPELINE, SCHEDULER, SESSION, STORAGE, UI).
+Das ist die eingebaute Diagnose von QuizApp: ein Hauptschalter (`DebugFlags`) und typisierte Log-Kanäle (`StudyLog`: CONTENT, PIPELINE, SCHEDULER, SESSION, STORAGE und UI für die Benutzeroberfläche). Ein Log ist ein laufendes Protokoll dessen, was das Programm getan hat, geschrieben, damit ein Entwickler herausfinden kann, was schiefging.
 
 ## What it does
-Debug-Builds schalten alles ein, Release-Builds nichts. Ein Debug-Overlay unter jeder Frage zeigt Karten-ID, Note, Antwortzeit, Phasenwechsel, Leichtigkeit, Abstand, Fehler und Fälligkeit.
+Debug-Builds schalten alles ein, Release-Builds alles aus. In Debug-Builds zeigt ein Overlay unter jeder Frage Karten-ID, Note, Antwortzeit, Phasenwechsel, Ease, Intervall, Lapses und Fälligkeitszeit.
 
 ## How it does it
-Log-Lambdas werden erst bei Bedarf ausgewertet, abgeschaltete Kanäle kosten also nichts; `AndroidStudyLog` schreibt nach logcat.
+Die Logging-Aufrufe sind „faul“: Der Text wird nur gebaut, wenn sein Kanal an ist, sodass abgeschaltete Kanäle nichts kosten. `AndroidStudyLog` schreibt die Meldungen in logcat, das Systemlog von Android, das sich vom Laptop aus mit adb (Android Debug Bridge) lesen lässt.
 
 ## Where it sits in the pipeline
-Von allen Schichten von [[quizapp-core]] genutzt; beim Debug-Durchgang nach dem Programmieren gelesen.
+Von jeder Schicht von [[quizapp-core]] benutzt; gelesen beim Debug-Durchgang nach dem Programmieren.
 
 ## Who receives its output
 logcat, gelesen mit [[skill-adb-android-control]].

@@ -12,16 +12,16 @@ sources: [QuizApp:tools/gen_web_strings.py]
 ---
 
 ## What it is
-Generates the web twin's interface text from the Android app's string resources.
+`gen_web_strings.py` generates the interface text of the web twin from the Android app's string resources. A string resource is a file in which an Android app keeps all its on-screen text, one file per language.
 
 ## What it does
-Reads `res/values*/strings.xml` (English, German, Portuguese, Spanish) plus a few web-only texts and writes `src/strings.js` of [[quizweb]], so both apps say the same thing in every language.
+It reads `res/values*/strings.xml` (English, German, Portuguese, Spanish) plus a few web-only texts, and writes `src/strings.js` of [[quizweb]], so both apps say the same thing in every language.
 
 ## How it does it
-Python; `{0}`, `{1}`… placeholders; English is the fallback for anything missing.
+A [Python](https://www.python.org/) script. Placeholders such as `{0}` and `{1}` mark where a value is inserted into a sentence; English is the fallback for anything missing.
 
 ## Where it sits in the pipeline
-From [[quizapp-app]] resources to [[quizweb-i18n]].
+From the resources of [[quizapp-app]] to [[quizweb-i18n]].
 
 ## Who receives its output
 [[quizweb-i18n]].

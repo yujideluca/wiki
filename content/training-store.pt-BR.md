@@ -1,21 +1,21 @@
 ---
 id: training-store
 lang: pt-BR
-source_hash: 63938cac2f64
+source_hash: 8473e3cc6421
 title: TrainingStore (histórico de respostas)
 ---
 
 ## What it is
-Guarda quantas perguntas o Giovanni respondeu em cada dia do calendário local, e a configuração da meta diária.
+O `TrainingStore` guarda quantas perguntas o Giovanni respondeu em cada dia do calendário local, junto com a configuração da meta diária. É a base de dados do calendário de sequência e da barra de progresso diário.
 
 ## What it does
-Armazena o `AnswerHistory` (dia → respostas, salvo como `day:count;...` nas preferências `training`) e a meta (10–100). Não é afetado por "Zerar todo o progresso".
+Guarda o `AnswerHistory` (um mapa de número do dia para contagem, salvo como texto no formato `day:count;...` nas preferências do Android chamadas `training`) e a meta (10 a 100). Não é tocado pela ação "Zerar todo o progresso", de modo que o histórico de esforço sobrevive a um reinício.
 
 ## How it does it
-SharedPreferences do Android; instalações antigas migram a contagem única do dia para o histórico.
+Usa SharedPreferences do Android (um pequeno armazenamento chave-valor embutido no Android, veja [a documentação](https://developer.android.com/training/data-storage/shared-preferences)). Instalações antigas migram sua contagem única de um dia para o histórico.
 
 ## Where it sits in the pipeline
-Gravado pelo [[study-controller]] depois de cada resposta, em qualquer modo.
+Escrito pelo [[study-controller]] depois de cada resposta em qualquer modo.
 
 ## Who receives its output
-A [[daily-goal]] (barra do dia), o [[activity-calendar]] (sequências) e o [[progress-backup]].
+A [[daily-goal]] (a barra de hoje), o [[activity-calendar]] (sequências) e o [[progress-backup]].

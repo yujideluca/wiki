@@ -1,22 +1,21 @@
 ---
 id: acer-nitro
 lang: de
-source_hash: a1ca31646967
+source_hash: 5534e2dce58e
 title: Der Laptop (Acer Nitro, yuji-nitro)
-aliases: [Laptop]
 ---
 
 ## What it is
-Giovannis Laptop: ein Acer Nitro mit Nvidia-Grafik unter Kubuntu (KDE Plasma), Rechnername `yuji-nitro`. Alles in `~/dev` liegt hier.
+Das ist Giovannis Laptop: ein Acer Nitro mit Nvidia-Grafikkarte, auf dem [Kubuntu](https://kubuntu.org/) läuft (eine Variante des Betriebssystems [Linux](https://en.wikipedia.org/wiki/Linux) mit der Desktopoberfläche KDE Plasma). Im Netzwerk heißt er `yuji-nitro`. Fast alles in diesem Wiki liegt auf ihm: die Projektordner in `~/dev` (`~` steht für Giovannis Home-Ordner), die Claude-Programme und der Webserver dieses Wikis.
 
 ## What it does
-Führt Claude Code aus, den ständigen [[claude-assistant]], die Builds aller Projekte und den Server dieses Wikis ([[wiki-service]]).
+Er ist die Maschine, auf der gearbeitet wird. Auf ihm laufen [[claude-code]] (der KI-Assistent, der den Code schreibt), der dauerhaft laufende [[claude-assistant]], die Builds und Tests aller Projekte und der Server dieses Wikis ([[wiki-service]]). Ist der Laptop aus oder im Ruhezustand, läuft nichts davon, und das Wiki ist dann nicht erreichbar.
 
 ## How it does it
-Benutzerkonto mit aktiviertem Linger, damit Benutzerdienste ohne Anmeldung weiterlaufen; Reparaturen folgen [[skill-reparo-kubuntu]] und werden über Neustarts hinweg dauerhaft gemacht.
+Für das Benutzerkonto ist „Linger“ eingeschaltet. Normalerweise enden die Hintergrundprogramme eines Benutzers, wenn er sich abmeldet; mit Linger laufen sie weiter, auch wenn niemand angemeldet ist. Dadurch starten die obigen Dienste schon beim Hochfahren. Probleme am Laptop selbst (Bildschirm, Treiber, Ton, Netzwerk) werden mit der Skill [[skill-reparo-kubuntu]] behandelt; jede Reparatur wird dauerhaft gemacht, damit sie einen Neustart übersteht.
 
 ## Where it sits in the pipeline
-Die Maschine unter [[laptop-setup]].
+Die „Pipeline“ ist in diesem Wiki die Kette von Schritten, durch die Arbeit läuft. Der Laptop ist das Erdgeschoss unter allem: Das Projekt [[laptop-setup]] beschreibt, was auf ihm installiert ist, und alles andere läuft darauf.
 
 ## Who receives its output
-Jede lokal laufende Claude-Instanz.
+Jede lokal laufende Claude-Instanz (siehe [[claude-code]] und [[remote-assistant]]) und jedes Projekt, das auf ihm gebaut wird.

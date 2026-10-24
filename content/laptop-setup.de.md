@@ -1,21 +1,21 @@
 ---
 id: laptop-setup
 lang: de
-source_hash: afc723b9ba7d
+source_hash: 7fe6d67d12e1
 title: Laptop-Einrichtung
 ---
 
 ## What it is
-Alles, was auf dem Laptop ([[acer-nitro]]) installiert und eingerichtet ist, damit die Claude-Instanzen arbeiten können: Einstellungen und Hooks von Claude Code, der ständige Assistent, Werkzeuge im Benutzerbereich, die Android-Werkzeugkette und Fernzugriff.
+Die „Laptop-Einrichtung“ ist die Summe von allem, was auf dem Laptop ([[acer-nitro]]) installiert und konfiguriert ist, damit die Claude-Assistenten arbeiten können. Es ist kein einzelnes Programm, sondern ein Werkzeugkasten: Einstellungen für [[claude-code]], der Hintergrund-Assistent, Hilfswerkzeuge, die Android-Build-Werkzeuge und die Möglichkeit, den Laptop vom Handy aus zu erreichen.
 
 ## What it does
-Stellt den Boden für alle Projekte: [[claude-code-settings]] und [[global-claude-md]], den Dienst [[claude-assistant]], die Statuszeile [[pbar]], den Telegram-Sender [[tg-send]], die Android-Bauwerkzeuge ([[android-toolchain]]), die Zusatzwerkzeuge in `~/.local` ([[user-space-tools]]), [[tailscale]] und die SSH-Einrichtung ([[remote-terminal]]).
+Sie bildet den Boden, auf dem jedes Projekt steht. Die Teile sind: die Einstellungen und Anweisungen von Claude Code ([[claude-code-settings]], [[global-claude-md]]), der dauerhaft laufende Dienst [[claude-assistant]], die Statusleiste [[pbar]], der Telegram-Sender [[tg-send]], die Android-Build-Werkzeuge ([[android-toolchain]]), die zusätzlichen Werkzeuge in `~/.local` ([[user-space-tools]]), das private Netzwerk [[tailscale]] und der sichere Fernzugang [[remote-terminal]].
 
 ## How it does it
-Die meisten Installationen liegen im Benutzerbereich (ohne sudo) unter `~/.local` und `~/dev`; Schritte mit sudo übernimmt Giovanni. Dauerhafte Fakten zur Einrichtung stehen in [[claude-auto-memory]] und [[workflow-memory]].
+Die meisten Installationen sind „User-Space“: Sie liegen in den eigenen Ordnern des Benutzers (`~/.local` und `~/dev`) statt in Systemordnern und brauchen deshalb keine Administratorrechte (kein `sudo`, der Befehl, der etwas als Administrator ausführt). Die wenigen Schritte, die Administratorrechte brauchen, übergibt Claude an Giovanni. Dauerhafte Fakten zur Einrichtung stehen in [[claude-auto-memory]] und im gemeinsamen Gedächtnis [[workflow-memory]].
 
 ## Where it sits in the pipeline
-Unter allen Projekten: QuizApp baut mit ihrer Werkzeugkette, das Wiki läuft als ihr Dienst, der Assistent lebt in ihrem systemd.
+Unter allen anderen Projekten: [[quizapp]] wird mit seiner Werkzeugkette gebaut, das Wiki läuft als einer ihrer Dienste, und der Assistent lebt in ihrem Dienstmanager (systemd, das Linux-Programm, das Hintergrunddienste startet und überwacht).
 
 ## Who receives its output
-[[claude-code]], [[remote-assistant]] und jedes Projekt in `~/dev`.
+[[claude-code]], der [[remote-assistant]] und jedes Projekt in `~/dev`.

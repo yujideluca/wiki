@@ -12,16 +12,16 @@ sources: [QuizWeb:src/controller.js]
 ---
 
 ## What it is
-The application service of the web twin: the web counterpart of [[study-controller]].
+`controller.js` is the application service of the web twin: the counterpart of the [[study-controller]] of the Android app. An application service is the layer that coordinates storage, logic and clock without drawing anything.
 
 ## What it does
-Wires deck, storage and clock to the pure functions of [[quizweb-domain]]: sessions, answers, suspension, search, daily progress, calendar.
+It connects the deck, the storage and the clock to the pure functions of [[quizweb-domain]]: sessions, answers, suspending cards, search, daily progress and the calendar.
 
 ## How it does it
-No DOM; takes any store with the right shape (`createMemoryStore` in tests, [[quizweb-store]] in the browser).
+It has no DOM (Document Object Model, the browser's model of a web page). It takes any store with the right shape: `createMemoryStore` in the tests and the [[quizweb-store]] in the browser. That is why it can be tested without a browser.
 
 ## Where it sits in the pipeline
-Between [[quizweb-app]] (UI) and [[quizweb-domain]].
+Between [[quizweb-app]] (the screens) and [[quizweb-domain]].
 
 ## Who receives its output
 [[quizweb-app]].

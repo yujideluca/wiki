@@ -1,22 +1,21 @@
 ---
 id: mem-search
 lang: pt-BR
-source_hash: 6da23209627f
+source_hash: cde7d3c800f8
 title: mem search
-aliases: [busca na memória]
 ---
 
 ## What it is
-Busca de texto completo em todas as entradas da memória, inclusive as frias demais para aparecer no resumo e os itens estacionados.
+`mem search` é uma busca em texto completo sobre todas as entradas da memória, inclusive as antigas demais para aparecer no brief e as pendências guardadas. Use quando o brief disser "N more entries did not fit".
 
 ## What it does
-`mem search "palavras"` imprime as entradas encontradas com seus #códigos.
+`mem search "palavras"` imprime as entradas correspondentes junto com seu `#code`.
 
 ## How it does it
-Um índice SQLite FTS5 derivado, refeito a partir do registro a cada chamada e nunca commitado; vetores poderiam ser acrescentados depois sem mexer no registro.
+Monta um índice temporário com SQLite FTS5 a partir do registro a cada chamada ([SQLite](https://www.sqlite.org/) é um pequeno mecanismo de banco de dados; FTS5 é sua busca em texto completo) e nunca o guarda no repositório. Se desejado, uma busca "vetorial" (por significado) poderia ser acrescentada depois sem mexer no registro.
 
 ## Where it sits in the pipeline
-Usado quando o resumo diz "N entradas a mais não couberam".
+Usado quando o brief curto não contém o que é preciso.
 
 ## Who receives its output
-A instância do Claude que buscou.
+A instância do Claude que fez a busca.

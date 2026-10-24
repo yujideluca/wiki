@@ -12,13 +12,13 @@ sources: [workflow-memory:.github/workflows/mem.yml]
 ---
 
 ## What it is
-The GitHub Actions workflow that keeps the memory consistent without any machine of Giovanni's being on.
+This is the GitHub Actions workflow `.github/workflows/mem.yml` of [[workflow-memory]]. [GitHub Actions](https://docs.github.com/en/actions) is GitHub's service for running automatic jobs on its own computers, so no machine of Giovanni's needs to be on.
 
 ## What it does
-On every push to events or code and once a day (relevance decays with time): runs the tests, quarantines invalid events, promotes habits seen in two projects, rebuilds [[memory-views]], commits. Also enforces that events are append-only.
+It runs on every push to the events or the code, and also once a day (because the relevance of old entries fades with time). Each run: runs the tests, moves invalid events to quarantine, promotes habits seen in two projects to global preferences, rebuilds [[memory-views]] and commits the result. It also enforces that events are append-only (existing files are never edited).
 
 ## How it does it
-Python 3.12; never merges derived files: on a lost race it resets to the newest `main` and derives again (up to five tries).
+It uses Python 3.12. It never merges generated files: if another push arrives at the same time and its own upload is refused, it resets to the newest `main` and generates again (up to five tries).
 
 ## Where it sits in the pipeline
 On GitHub, after [[events-log]] changes.

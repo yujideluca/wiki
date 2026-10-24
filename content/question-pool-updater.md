@@ -12,16 +12,16 @@ sources: [QuizApp:app/src/main/java/dev/yuji/quiz/data/ContentUpdater.kt, QuizAp
 ---
 
 ## What it is
-The part of [[quizapp-app]] that downloads newer question packs and decides which pack the app uses.
+This is the part of the [[quizapp-app]] module that downloads newer question packs and decides which pack the app uses. In code it consists of `ContentUpdater`, `ContentStore` and `QuestionPool`.
 
 ## What it does
-With each update check (app in the foreground, at most every 30 s) it reads `content/content.json` of its own feed branch (beta: `bleeding-edge`, stable: `main`), downloads a pack only if its schema is the app's and its version is higher than the pack in use, and installs it only if [[question-pack]] validation passes. On start it uses the downloaded pack only while it is newer than the built-in one; an outdated or unreadable one is deleted. The deck is swapped at once on the home screen or in Settings, during a study session only when the player returns home; a popup says how many questions were added and Settings shows the pool version and its origin.
+At every update check (when the app comes to the foreground, at most every 30 seconds) it reads `content/content.json` from its own branch of the feed (beta: `bleeding-edge`, stable: `main`). It downloads a pack only if the pack's schema is the one the app understands and its version is higher than the pack in use, and installs it only if the validation of the [[question-pack]] passes. At start it uses the downloaded pack only while it is newer than the built-in one; an outdated or unreadable one is deleted. The deck is swapped at once on the home screen or in Settings, and during a study session only when the player returns home. A popup says how many questions were added, and Settings shows the pool version and where it came from.
 
 ## How it does it
-`ContentUpdater` fetches through [[update-client]] (GitHub contents API); `ContentStore` writes to `files/content/staging` and renames it to `files/content/current`, so an interrupted install never leaves half a pack. `ui/QuestionPool.kt` applies the swap and the popup. Progress is untouched, because card ids come from the content. A failed, refused or offline download is silent and changes nothing. Tested by `ContentUpdaterTest`. Debug builds can read a local feed over `adb reverse` (a debug-only network config allows plain HTTP to 127.0.0.1).
+`ContentUpdater` fetches through the [[update-client]] (the GitHub contents API, application programming interface: a web interface for reading repository files). `ContentStore` writes into `files/content/staging` and then renames that folder to `files/content/current`, so an interrupted install never leaves half a pack. `ui/QuestionPool.kt` applies the swap and shows the popup. Progress is untouched, because card ids come from the content. A download that fails, is refused or happens offline is silent and changes nothing. It is tested by `ContentUpdaterTest`. Debug builds can read a local feed over `adb reverse` (port forwarding from the phone to the laptop; a debug-only network setting allows plain HTTP to 127.0.0.1).
 
 ## Where it sits in the pipeline
-Between [[release-feed]] and the screens ([[study-view-model]]).
+Between the [[release-feed]] and the screens ([[study-view-model]]).
 
 ## Who receives its output
-[[study-view-model]] (the new deck and the popup).
+The [[study-view-model]] (the new deck and the popup).

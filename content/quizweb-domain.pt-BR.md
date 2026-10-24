@@ -1,18 +1,18 @@
 ---
 id: quizweb-domain
 lang: pt-BR
-source_hash: 0e14c608a0a7
+source_hash: cb1f4a58db7e
 title: domain.js do QuizWeb
 ---
 
 ## What it is
-A lógica pura do [[quizweb]], portada do pacote domain do app Android: agendador, avaliador, fila, sessão, meta diária e calendário.
+`domain.js` é a lógica pura do [[quizweb]], portada do pacote de domínio do app Android: agendador, avaliador, pipeline da fila, motor de sessão, meta diária e calendário. "Pura" significa que a mesma entrada sempre dá a mesma saída e nada mais é tocado.
 
 ## What it does
-Comporta-se exatamente como o [[spaced-repetition-scheduler]], o [[answer-grader]] e o [[study-pipeline]]; `MODES` lista os cinco modos.
+Comporta-se exatamente como o [[spaced-repetition-scheduler]], o [[answer-grader]] e o [[study-pipeline]] do app. `MODES` lista os cinco modos.
 
 ## How it does it
-Sem DOM, sem armazenamento, sem acesso ao relógio; a igualdade com o app é provada pelos vetores compartilhados do [[quizweb-conformance]] e pelo [[mutation-check]].
+Não tem DOM (Document Object Model, o modelo do navegador para uma página web), nem armazenamento, nem acesso ao relógio. Que ela é igual à do app é provado pelos vetores compartilhados de [[quizweb-conformance]] e pelo [[mutation-check]].
 
 ## Where it sits in the pipeline
 A camada interna do gêmeo web; só o [[quizweb-controller]] a chama.

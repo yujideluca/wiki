@@ -12,16 +12,16 @@ sources: [wiki:server/priv/decoy.html]
 ---
 
 ## What it is
-What anyone who is not logged in sees: a psychedelic, animated graph of made-up words and a "Sign in with Google" button (Giovanni's design).
+A decoy is something that looks real but hides the real thing. The decoy page is what anyone who is not signed in sees when they open the wiki's address: an animated, psychedelic graph of made-up words and a "Sign in with Google" button (Giovanni's design). Its purpose is that a stranger who finds the address learns nothing about what the wiki contains.
 
 ## What it does
-Shows glowing, colour-cycling nodes drifting and linking, which react to the mouse, with gibberish labels generated at random in the visitor's browser. Nothing real is on the page.
+It shows glowing, colour-cycling nodes that drift and link up and react to the mouse, labelled with gibberish generated at random in the visitor's own browser. Nothing real is on the page.
 
 ## How it does it
-One self-contained HTML file with inline canvas JavaScript: no external file, no fetch. Tests check it loads nothing from outside, makes no requests and contains no page title from the content (DC-1). Respects "reduce motion".
+It is one self-contained [HTML](https://en.wikipedia.org/wiki/HTML) file (HyperText Markup Language, the language of web pages) with inline JavaScript that draws on a canvas: no external file and no network request. Tests check that it loads nothing from outside, makes no requests and contains no page title from the content (requirement DC-1). It respects the browser setting "reduce motion".
 
 ## Where it sits in the pipeline
-Returned by [[wiki-router]] for every page without a session.
+Returned by the [[wiki-router]] for every page request without a valid session.
 
 ## Who receives its output
-Visitors without a session (and Giovanni before logging in).
+Visitors without a session (and Giovanni, before logging in).

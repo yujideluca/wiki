@@ -1,33 +1,32 @@
 ---
 id: quizapp-release
 lang: de
-source_hash: bf3a7b60acc2
+source_hash: d6c9e37ef648
 title: QuizApp-Release (Beta → stabil)
-aliases: [Release-Ablauf]
 ---
 
 ## What it is
-Der Weg, den eine Änderung an [[quizapp]] von der Idee bis auf Giovannis Handy nimmt.
+Diese Seite beschreibt den Weg, den eine Änderung an [[quizapp]] von der Idee bis zu Giovannis Handy nimmt. Der Weg ist so gebaut, dass nichts unspezifiziert, ungetestet oder unerprobt beim Spieler ankommt.
 
 ## What it does
-Stellt sicher, dass jede Änderung spezifiziert, getestet, in der Beta ausprobiert und nur auf Giovannis Wort freigegeben wird.
+Er stellt sicher, dass jede Änderung spezifiziert, getestet, in einer Beta-Version ausprobiert und nur auf Giovannis Ansage in die stabile Version befördert wird.
 
 ## How it does it
-Erst die Anforderung ([[quizapp-requirements]]), dann der Test, dann der Code; das Tor entscheidet; Beta vor stabil ([[release-channels]]).
+Zuerst kommt die Anforderung ([[quizapp-requirements]]), dann der Test, dann der Code; das Quality Gate entscheidet; die Beta-Version kommt vor der stabilen ([[release-channels]]).
 
 ## Where it sits in the pipeline
-Umfasst [[quizapp-requirements]], [[quizapp-quality-gate]], [[publish-apk]], [[release-feed]], [[update-client]].
+Er umfasst [[quizapp-requirements]], [[quizapp-quality-gate]], [[publish-apk]], [[release-feed]] und [[update-client]].
 
 ## Who receives its output
 Giovanni, auf dem [[phone]].
 
 ## Steps
-1. Giovanni beschreibt ein Verhalten; es wird eine Zeile in [[quizapp-requirements]].
-2. Claude schreibt den mit `REQ <ID>` markierten Test, dann den Code, in [[quizapp-core]] oder [[quizapp-app]].
-3. Der erste Debug-Durchgang: Tests, Installation auf dem [[phone]], Ablauf durchspielen, logcat lesen ([[skill-adb-android-control]]).
-4. [[quizapp-quality-gate]] besteht lokal; Push; [[quizapp-ci]] muss grün sein.
-5. [[publish-apk]] veröffentlicht eine Beta im Branch `bleeding-edge` von [[release-feed]].
+1. Giovanni nennt ein Verhalten; es wird eine Zeile in [[quizapp-requirements]].
+2. Claude schreibt den mit `REQ <ID>` getaggten Test, dann den Code, in [[quizapp-core]] oder [[quizapp-app]].
+3. Der Debug-Durchgang der ersten Linie: Tests, Installation auf dem [[phone]], den Ablauf durchspielen, logcat lesen ([[skill-adb-android-control]]).
+4. Das [[quizapp-quality-gate]] besteht lokal; Push; [[quizapp-ci]] muss grün sein.
+5. [[publish-apk]] veröffentlicht eine Beta auf dem Zweig `bleeding-edge` des [[release-feed]] (eine APK, Android Package, ist die installierbare App-Datei).
 6. Der [[update-client]] der Beta-App bietet das Update an; Giovanni probiert es aus.
-7. `publish_apk.sh promote` (Tor mit [[mutation-check]] und [[check-tests-updated]]) hebt sie nach stabil `main`, wenn Giovanni entscheidet.
-8. Die auf `web-<version>` wartende Portierung von [[quizweb]] wird in `main` gemergt.
-9. Nur neue Fragen brauchen keine APK: TSV bearbeiten, [[build-vocab]] ausführen, committen, dann [[publish-content]] `beta` und, wenn Giovanni es sagt, `promote`.
+7. `publish_apk.sh promote` (das Gate mit [[mutation-check]] und [[check-tests-updated]]) befördert sie auf das stabile `main`, wenn Giovanni es entscheidet.
+8. Der [[quizweb]]-Port, der auf dem Zweig `web-<version>` wartet, wird nach `main` gemergt.
+9. Nur neue Fragen brauchen keine APK: TSV-Dateien (tabulatorgetrennte Werte) bearbeiten, [[build-vocab]] ausführen, committen, dann [[publish-content]] `beta` und, wenn Giovanni es sagt, `promote`.

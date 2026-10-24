@@ -12,16 +12,16 @@ sources: [QuizWeb:src/store.js]
 ---
 
 ## What it is
-The browser storage of [[quizweb]]: progress, answer history, daily goal, theme and language in `localStorage`.
+`store.js` is the browser storage of [[quizweb]]. It keeps progress, answer history, daily goal, theme and language in `localStorage` ([localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) is a small key-value storage that every browser offers to a web page).
 
 ## What it does
-Saves and loads everything; Settings > Backup exports and imports it, because it lives only in that device's browser.
+It saves and loads everything. Because the data lives only in that device's browser, Settings > Backup exports and imports it.
 
 ## How it does it
-Every access is guarded: Safari private mode can throw, and then the app keeps working from a memory copy for the session.
+Every access is guarded: Safari's private mode can throw an error on storage, and then the app keeps working from a copy in memory for that session instead of crashing.
 
 ## Where it sits in the pipeline
-Under [[quizweb-controller]].
+Under the [[quizweb-controller]].
 
 ## Who receives its output
-[[quizweb-controller]].
+The [[quizweb-controller]].

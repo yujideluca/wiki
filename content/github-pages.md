@@ -11,16 +11,16 @@ reviewed: 2026-10-22
 ---
 
 ## What it is
-GitHub's free static hosting. It serves [[quizweb]] at `https://yujideluca.github.io/german-quiz-web/` from the `main` branch.
+[GitHub Pages](https://pages.github.com/) is GitHub's free hosting for "static" websites, meaning sites made only of ready-made files (web pages in HTML, HyperText Markup Language; scripts; images) with no program running on the server. It serves [[quizweb]] at `https://yujideluca.github.io/german-quiz-web/`, taken from the `main` branch (the main line of the project's history).
 
 ## What it does
-Publishes a push to `main` within about a minute.
+It publishes a push to `main` within about a minute.
 
 ## How it does it
-Static files only; no server code.
+Only static files are served; there is no server code.
 
 ## Where it sits in the pipeline
 The end of the [[quizweb]] pipeline.
 
 ## Who receives its output
-Any browser, mainly Giovanni's iPhone.
+Any web browser, mainly Giovanni's iPhone.

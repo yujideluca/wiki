@@ -12,16 +12,16 @@ sources: [QuizApp:core/src/main/java/dev/yuji/quiz/content/CardFactory.kt, QuizA
 ---
 
 ## What it is
-Turns vocabulary entries into `Card`s, the unit of study: `id`, `mode`, `prompt`, optional `context`, `choices`, `correctChoice`, `explanation`.
+A "card" is the unit of study in [[quizapp]]: one question with its answer options. The `CardFactory` turns vocabulary entries into cards. A card has an `id`, a `mode`, a `prompt` (the question), an optional `context`, the `choices`, the `correctChoice` and an `explanation`.
 
 ## What it does
-One function per mode ([[game-modes]]): article, preposition, plural, Präteritum (`preteriteCard`) and Fehler finden (`errorCard`, whose choices are the sentence's chunks). Every mode produces the same shape, which keeps the engine mode-agnostic.
+There is one function per mode ([[game-modes]]): article, preposition, plural, Präteritum (`preteriteCard`) and Fehler finden (`errorCard`, whose choices are the chunks of the sentence). Every mode produces the same shape, which keeps the rest of the study engine independent of the mode.
 
 ## How it does it
-Reads parsed entries from [[vocab-assets]] and asks [[distractor-factory]] for the wrong options.
+It reads the parsed entries from [[vocab-assets]] and asks the [[distractor-factory]] for the wrong options (a "distractor" is a plausible but wrong answer).
 
 ## Where it sits in the pipeline
-First step of the content pipeline: vocabulary → cards → queue.
+The first step of the content pipeline: vocabulary → cards → queue.
 
 ## Who receives its output
-[[study-pipeline]] (through [[study-controller]]).
+The [[study-pipeline]], through the [[study-controller]].

@@ -12,16 +12,16 @@ sources: [workflow-memory:mem/hooks.py]
 ---
 
 ## What it is
-The memory's Claude Code hook that runs when Claude finishes a turn: `mem hook-stop` (timeout 40 s).
+A hook is a small program that [[claude-code]] runs automatically at a certain event ([hooks explained](https://docs.claude.com/en/docs/claude-code/hooks-guide)). This is the memory's "Stop" hook: `mem hook-stop`, with a time limit of 40 seconds. It runs every time Claude finishes a reply.
 
 ## What it does
-Pushes new memory events to GitHub, so the Claude app and the next session see them.
+It pushes (uploads) any new memory events to GitHub, so that the Claude app and the next session can see them.
 
 ## How it does it
-Calls [[mem-sync]] `push`; offline it commits locally and pushes later; failures go to the hook log. It runs next to the wiki's own Stop hook ([[wiki-hook-stop]]).
+It calls the push function of [[mem-sync]]. If the laptop is offline it saves the events locally (a git "commit") and uploads them later. Failures are written to the hook log. It runs right next to the wiki's own Stop hook ([[wiki-hook-stop]]).
 
 ## Where it sits in the pipeline
-End of every turn.
+The end of every turn (a turn is one question from Giovanni and Claude's reply to it).
 
 ## Who receives its output
-[[mem-sync]] → [[github]].
+[[mem-sync]], and from there [[github]].

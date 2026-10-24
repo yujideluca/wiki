@@ -1,22 +1,21 @@
 ---
 id: claude-code
 lang: de
-source_hash: 92ea6bcda322
+source_hash: b4eed29baa1a
 title: Claude Code (Laptop)
-aliases: [Entwickler]
 ---
 
 ## What it is
-Claude im Terminal des Laptops ([[acer-nitro]]). In den Rollen von ADR-0003 ist es der Entwickler.
+Claude Code ist Anthropics KI-Assistent zum Programmieren und läuft im Terminal (dem Textfenster) des Laptops ([[acer-nitro]]). Er kann Dateien lesen, Befehle ausführen und Code ändern, immer innerhalb der Berechtigungen, die Giovanni erlaubt. In der Rollenverteilung aus ADR-0003 (ein ADR, „Architecture Decision Record“, ist eine kurze Notiz, die eine Entscheidung und ihre Gründe festhält) ist Claude Code der Entwickler. Siehe die [offizielle Dokumentation](https://docs.claude.com/en/docs/claude-code/overview).
 
 ## What it does
-Baut, testet, dokumentiert und veröffentlicht die Software in `~/dev`: [[quizapp]], [[quizweb]], [[workflow-memory]], dieses [[wiki]]. Pflegt ADRs, CI und Schuldenliste jedes Projekts, hält Gelerntes mit [[mem]] fest und aktualisiert das Wiki am Ende jeder Aufgabe ([[end-of-task]]).
+Er baut, testet, dokumentiert und veröffentlicht die Software in `~/dev`: [[quizapp]], [[quizweb]], [[workflow-memory]] und dieses [[wiki]]. Er pflegt für jedes Projekt die Entscheidungsnotizen, die Continuous Integration (CI, automatische Prüfungen bei jedem Push) und die Liste der technischen Schulden (Abkürzungen, die spätere Änderungen erschweren). Er hält mit [[mem]] fest, was er lernt, und aktualisiert am Ende jeder Aufgabe das Wiki ([[end-of-task]]).
 
 ## How it does it
-Liest beim Chatstart das von [[hook-session-start]] ausgegebene [[session-brief]], folgt der globalen [[global-claude-md]] und der CLAUDE.md jedes Projekts, arbeitet mit den Werkzeugen aus [[claude-code-settings]] und schließt mit `wiki publish` und `mem use` ab.
+Beim Start eines Chats liest er den [[session-brief]], den [[hook-session-start]] ausgibt, und befolgt dann die globalen Anweisungen in [[global-claude-md]] und die CLAUDE.md des jeweiligen Projekts. Er arbeitet mit den Werkzeugen und Berechtigungen aus [[claude-code-settings]] und schließt mit `wiki publish` und `mem use` ab.
 
 ## Where it sits in the pipeline
-Zwischen [[giovanni]] (fragt und genehmigt) und den Repositorys, die es ändert. Es spricht nie direkt mit anderen Claude-Instanzen: Gemeinsames läuft über [[workflow-memory]] oder die Repos.
+Zwischen [[giovanni]] (der fragt und genehmigt) und den Repositories, die er ändert. Er spricht nie direkt mit anderen Claude-Instanzen: Alles Gemeinsame läuft über [[workflow-memory]] oder die Repositories.
 
 ## Who receives its output
-Die Projekt-Repositorys, [[events-log]] (Gedächtnis-Ereignisse) und [[wiki-content]].
+Die Projekt-Repositories, das Gedächtnisprotokoll [[events-log]] und die Wiki-Inhalte ([[wiki-content]]).

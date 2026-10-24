@@ -12,16 +12,16 @@ sources: [QuizApp:tools/check_tests_updated.sh]
 ---
 
 ## What it is
-The check behind ADR-0011: a new version may reach users only when it survived tests that were updated for what it changes.
+`check_tests_updated.sh` is the check behind decision ADR-0011 (an ADR is an architecture decision record, a short note that keeps the reasons for a decision). The rule: a new version of [[quizapp]] may reach users only if it survived tests that were updated for what it changes. Otherwise old tests could pass while the new behaviour is not tested at all.
 
 ## What it does
-Compares the commit to publish with the last stable release: if code or content changed and no test changed, it refuses (exit 1).
+It compares the commit about to be published with the last stable release. If code or content changed but no test changed, it refuses and exits with code 1.
 
 ## How it does it
-Bash over `git diff --name-only BASE HEAD`, separating main code from test folders.
+A [Bash](https://www.gnu.org/software/bash/) script over `git diff --name-only BASE HEAD` (the list of files that differ between two points in history), which separates main code from test folders.
 
 ## Where it sits in the pipeline
-Run by [[publish-apk]] `promote`, part of [[quizapp-release]].
+Run by `promote` in [[publish-apk]], as part of the [[quizapp-release]].
 
 ## Who receives its output
 [[publish-apk]].

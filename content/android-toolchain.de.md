@@ -1,21 +1,21 @@
 ---
 id: android-toolchain
 lang: de
-source_hash: 26d1a062b2f1
+source_hash: ea3982d57f8e
 title: Android-Werkzeugkette (env.sh)
 ---
 
 ## What it is
-Was [[quizapp]] auf dem Laptop baut: JDK 21, Gradle 9.8 und das Android SDK, alle in `~/dev` entpackt, plus `~/dev/env.sh`, das sie in den Pfad legt.
+Die „Werkzeugkette“ (Toolchain) ist die Menge der Programme, die aus dem Quellcode von [[quizapp]] eine installierbare Android-App machen. Hier besteht sie aus dem [JDK 21](https://en.wikipedia.org/wiki/Java_Development_Kit) (Java Development Kit, dem Java-Compiler samt Laufzeit), [Gradle](https://gradle.org/) 9.8 (dem Build-Werkzeug, das Kompilieren und Tests ausführt) und dem Android SDK (Software Development Kit: die offiziellen Android-Bibliotheken und Kommandozeilenwerkzeuge). Alles liegt entpackt in `~/dev`, dazu ein kleines Skript, `~/dev/env.sh`, das der Shell sagt, wo sie alles findet.
 
 ## What it does
-`source ~/dev/env.sh` setzt `JAVA_HOME`, `ANDROID_HOME`/`ANDROID_SDK_ROOT` und `PATH` (SDK-Kommandozeilenwerkzeuge, Platform-Tools mit adb, Gradle).
+`source ~/dev/env.sh` setzt die Umgebungsvariablen `JAVA_HOME`, `ANDROID_HOME` und `ANDROID_SDK_ROOT` (sie sagen, wo Java und das SDK liegen) und erweitert `PATH` (die Liste der Ordner, in denen die Shell nach Programmen sucht) um die SDK-Kommandozeilenwerkzeuge, die Plattform-Werkzeuge (darunter [adb](https://developer.android.com/tools/adb), die Android Debug Bridge zur Verbindung mit einem Handy) und Gradle.
 
 ## How it does it
-Installationen im Benutzerbereich, ohne sudo; das Qualitätstor lädt die Datei selbst.
+Alles ist ohne Administratorrechte installiert. Das Quality Gate ([[quizapp-quality-gate]]) lädt die Datei selbst, niemand muss daran denken. Ist sie nicht geladen, werden Befehle wie `adb` oder `gradle` schlicht „nicht gefunden“.
 
 ## Where it sits in the pipeline
 Unter jedem QuizApp-Build und jedem adb-Befehl.
 
 ## Who receives its output
-[[quizapp-quality-gate]], Gradle-Builds und [[skill-adb-android-control]].
+Das [[quizapp-quality-gate]], Gradle-Builds und die Skill [[skill-adb-android-control]].

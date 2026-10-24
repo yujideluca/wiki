@@ -1,22 +1,21 @@
 ---
 id: tg-send
 lang: de
-source_hash: 76ef25373a37
+source_hash: 15c8afb9ada6
 title: tg-send (Telegram-Sender)
-aliases: [Telegram-Bot]
 ---
 
 ## What it is
-Ein kleines Skript, das eine Nachricht oder Datei per Telegram an Giovanni schickt, immer nur an den einen gespeicherten Chat.
+`tg-send` ist ein kleines Skript, das eine Nachricht oder eine Datei an Giovanni auf [Telegram](https://en.wikipedia.org/wiki/Telegram_%28software%29) (eine Chat-App) sendet, und zwar immer nur an einen gespeicherten Chat. Claude nutzt es, wenn etwas Giovannis Handy erreichen soll, zum Beispiel eine Datei, die sich im Terminal schlecht zeigen lässt.
 
 ## What it does
-`tg-send "Text"` oder `tg-send -f DATEI [Beschriftung]` (Dateien bis 50 MB). Nachrichten kommen im Chat „Claude code bridge“ des Bots an, nicht in den gespeicherten Nachrichten.
+`tg-send "Text"` sendet eine Nachricht; `tg-send -f DATEI [Beschriftung]` sendet eine Datei bis 50 MB mit optionaler Beschriftung. Die Nachrichten kommen im Chat „Claude code bridge“ mit dem Bot an, nicht in Telegrams „Gespeicherten Nachrichten“; Giovanni muss also in diesem Chat nachsehen.
 
 ## How it does it
-Bash ruft die Telegram-Bot-API mit Token und Chat-ID aus `~/.config/telegram-bot/` auf (nie angezeigt). Es hat kein `--help`: Jedes Argument wird als Nachricht gesendet.
+Es ist ein [Bash](https://www.gnu.org/software/bash/)-Skript, das die [Telegram Bot API](https://core.telegram.org/bots/api) aufruft (Application Programming Interface: die Webschnittstelle, die Telegram für Programme anbietet). Der Token des Bots (ein geheimes Passwort für den Bot) und die Chat-ID liegen in `~/.config/telegram-bot/` und werden nie angezeigt. Das Skript hat kein `--help`: Jedes Argument wird als Nachricht gesendet, die Bitte um Hilfe würde also das Wort „--help“ an Giovanni schicken.
 
 ## Where it sits in the pipeline
-Von Claude genutzt, um Giovanni eine Datei oder Notiz aufs Handy zu schicken.
+Claude nutzt es, um Giovanni eine Datei oder Notiz aufs Handy zu schicken.
 
 ## Who receives its output
 Giovanni, im Telegram-Chat „Claude code bridge“.

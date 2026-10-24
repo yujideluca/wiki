@@ -1,21 +1,21 @@
 ---
 id: study-session
 lang: de
-source_hash: 99fe926c4491
+source_hash: 99d86b9cf98f
 title: StudyEngine / StudySession
 ---
 
 ## What it is
-Die laufende Lernsitzung von [[quizapp]], als unveränderlicher Zustand mit reinen Übergängen.
+Die `StudySession` (die „Sitzungsmaschine“) ist eine laufende Lernsitzung in [[quizapp]]. Sie wird als unveränderlicher Zustand gehalten (ein Wert, der nie an Ort und Stelle geändert wird) mit reinen Übergängen (jedes Ereignis erzeugt einen neuen Wert, statt den alten zu verändern).
 
 ## What it does
-Kennt die aktuelle Karte, die Rückmeldung zur Antwort und was als Nächstes kommt; eine wieder gezeigte Lernkarte zählt erneut für das [[daily-goal]].
+Sie kennt die aktuelle Karte, das Feedback zur letzten Antwort und was als Nächstes kommt. Eine Lernkarte, die erneut gezeigt wird, zählt erneut für das [[daily-goal]].
 
 ## How it does it
-Jedes Ereignis (Antwort, weiter, pausieren) liefert einen neuen Sitzungswert; die Reihenfolge der Knöpfe wird pro Wiederholung gemischt, bleibt aber während der Rückmeldung fest.
+Jedes Ereignis (eine Antwort, „weiter“, ein Pausieren) liefert einen neuen Sitzungswert. Die Reihenfolge der Antwortknöpfe wird bei jeder Wiederholung gemischt, ist aber eingefroren, solange das Feedback angezeigt wird, sodass sich ein Knopf nie unter dem Finger des Spielers bewegt.
 
 ## Where it sits in the pipeline
-Zwischen [[study-pipeline]] (Warteschlange) und [[study-controller]] (bewertet und speichert).
+Zwischen der [[study-pipeline]] (die die Warteschlange liefert) und dem [[study-controller]] (der Bewertung und Speichern anwendet).
 
 ## Who receives its output
-[[study-controller]] und darüber [[study-view-model]].
+Der [[study-controller]] und über ihn das [[study-view-model]].

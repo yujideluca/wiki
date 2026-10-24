@@ -12,16 +12,16 @@ sources: [QuizApp:core/src/main/java/dev/yuji/quiz/domain/StudySession.kt]
 ---
 
 ## What it is
-The running study session of [[quizapp]], held as immutable state with pure transitions.
+The `StudySession` (the "session engine") is one running study session in [[quizapp]]. It is held as immutable state (a value that is never changed in place) with pure transitions (every event produces a new value instead of altering the old one).
 
 ## What it does
-Knows the current card, the answer feedback and what comes next; a re-shown learning card counts again toward the [[daily-goal]].
+It knows the current card, the feedback on the last answer and what comes next. A learning card that is shown again counts again toward the [[daily-goal]].
 
 ## How it does it
-Each event (answer, next, suspend) returns a new session value; the button order is shuffled per repetition but frozen while feedback shows.
+Each event (an answer, "next", a suspend) returns a new session value. The order of the answer buttons is shuffled for every repetition but frozen while the feedback is on screen, so a button never moves under the player's finger.
 
 ## Where it sits in the pipeline
-Between [[study-pipeline]] (the queue) and [[study-controller]] (which applies grading and saving).
+Between the [[study-pipeline]] (which gives the queue) and the [[study-controller]] (which applies grading and saving).
 
 ## Who receives its output
-[[study-controller]] and through it [[study-view-model]].
+The [[study-controller]] and, through it, the [[study-view-model]].

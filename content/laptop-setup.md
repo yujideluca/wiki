@@ -12,16 +12,16 @@ sources: [home:.claude/settings.json, home:.claude/CLAUDE.md]
 ---
 
 ## What it is
-Everything installed and configured on the laptop ([[acer-nitro]]) so the Claude instances can work: Claude Code's settings and hooks, the always-on assistant, user-space tools, the Android toolchain and remote access.
+"Laptop setup" is the collection of everything that is installed and configured on the laptop ([[acer-nitro]]) so that the Claude assistants can do their work. It is not one program but a toolbox: settings for [[claude-code]], the background assistant, helper tools, the Android build tools and the means to reach the laptop from a phone.
 
 ## What it does
-Provides the ground every project runs on: [[claude-code-settings]] and [[global-claude-md]], the [[claude-assistant]] service, the status line [[pbar]], the Telegram sender [[tg-send]], the Android build tools ([[android-toolchain]]), the extra tools in `~/.local` ([[user-space-tools]]), [[tailscale]] and the SSH setup ([[remote-terminal]]).
+It provides the ground that every project stands on. The parts are: the Claude Code settings and instructions ([[claude-code-settings]], [[global-claude-md]]), the always-on [[claude-assistant]] service, the status bar [[pbar]], the Telegram sender [[tg-send]], the Android build tools ([[android-toolchain]]), the extra tools in `~/.local` ([[user-space-tools]]), the private network [[tailscale]] and the secure remote access setup [[remote-terminal]].
 
 ## How it does it
-Most installs are user-space (no sudo) under `~/.local` and `~/dev`; the steps that need sudo are handed to Giovanni. Lasting facts about the setup are kept in [[claude-auto-memory]] and [[workflow-memory]].
+Most installs are "user-space": they are placed in the user's own folders (`~/.local` and `~/dev`) instead of system folders, so they need no administrator rights (no `sudo`, the command that runs something as administrator). The few steps that do need administrator rights are handed to Giovanni to run. Lasting facts about the setup are kept in [[claude-auto-memory]] and in the shared memory [[workflow-memory]].
 
 ## Where it sits in the pipeline
-Below all projects: QuizApp builds with its toolchain, the wiki runs as its service, the assistant lives in its systemd.
+Below all other projects: [[quizapp]] is built with its toolchain, the wiki runs as one of its services, and the assistant lives in its service manager (systemd, the Linux program that starts and watches background services).
 
 ## Who receives its output
-[[claude-code]], [[remote-assistant]] and every project in `~/dev`.
+[[claude-code]], the [[remote-assistant]] and every project in `~/dev`.

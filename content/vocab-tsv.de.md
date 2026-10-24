@@ -1,21 +1,21 @@
 ---
 id: vocab-tsv
 lang: de
-source_hash: 9de6b1547255
+source_hash: b74a285eb51e
 title: Vokabel-Quelldateien (TSV)
 ---
 
 ## What it is
-Die von Hand bearbeitbare Quelle der Quizinhalte: `nouns.tsv` (484 Nomen), `prepositions.tsv` (309 Einträge), `verbs.tsv` (253 Verben) und `errors.tsv` (121 Sätze für Fehler finden).
+Das sind die von Menschen bearbeitbaren Quelldateien des gesamten Quiz-Inhalts im Format TSV (tab-separated values, durch Tabulatoren getrennte Werte: eine Klartext-Tabelle, deren Spalten durch ein Tabulatorzeichen getrennt sind, siehe [TSV](https://en.wikipedia.org/wiki/Tab-separated_values)). Es sind `nouns.tsv` (484 Nomen), `prepositions.tsv` (309 Einträge), `verbs.tsv` (253 Verben) und `errors.tsv` (121 Sätze für den Modus „Fehler finden“).
 
 ## What it does
-Enthalten jedes Wort mit Genus, Plural, Präposition und Hinweis sowie jeden Fehlersatz mit Korrektur, Regel und geübtem Ausdruck.
+Sie enthalten jedes Wort mit Geschlecht, Plural, Präposition und Hinweis sowie jeden Fehlersatz mit seiner Korrektur, der dahinterstehenden Regel und dem Ausdruck, den er übt. Alles, was die App fragt, stammt von hier.
 
 ## How it does it
-Von Hand bearbeitet (von Claude, aus Giovannis Listen und korrigierten Prüfungen); eine Zeile mit mehreren Präpositionen braucht eine Hinweis-Spalte; ein Fehlersatz markiert genau einen falschen Teil mit `{{ }}`.
+Die Dateien werden von Hand bearbeitet (von Claude, nach Giovannis Wortlisten und korrigierten Prüfungen). Eine Zeile mit mehreren möglichen Präpositionen braucht eine Hinweisspalte. Ein Fehlersatz markiert genau einen falschen Teil mit `{{ }}`. Ein Skript, [[build-vocab]], prüft all das, bevor die Daten die App erreichen können.
 
 ## Where it sits in the pipeline
-Ganz am Anfang der Inhaltspipeline: TSV → [[build-vocab]] → [[vocab-assets]] → [[card-factory]].
+Der allererste Anfang der Inhaltspipeline: TSV → [[build-vocab]] → [[vocab-assets]] → [[card-factory]].
 
 ## Who receives its output
 [[build-vocab]].

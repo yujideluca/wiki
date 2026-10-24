@@ -12,16 +12,16 @@ sources: [QuizApp:tools/mutation_check.py]
 ---
 
 ## What it is
-A check that the tests really protect the rules: it plants faults on purpose and demands that a test fails for each one.
+Mutation testing ([mutation testing](https://en.wikipedia.org/wiki/Mutation_testing)) asks: "if I deliberately break the program, does a test notice?" `mutation_check.py` plants faults on purpose and demands that a test fails for each one. If a planted fault ("mutant") goes unnoticed, the tests do not really protect that rule.
 
 ## What it does
-Each mutant changes one constant, comparison or condition in the scheduler, grader, queue, session, store or the web twin; a surviving mutant means a requirement is not really protected. Source files are always restored.
+Each mutant changes one constant, comparison or condition in the scheduler, grader, queue, session or store of [[quizapp]], or in the web twin. A surviving mutant means a requirement is not really protected. The source files are always restored afterwards.
 
 ## How it does it
-Python; runs the matching test suite per mutant (`--web-only`, `--app-only`). Slow, so it runs in `promote` and every Monday in CI, not on every push.
+A [Python](https://www.python.org/) script that runs the matching test suite for each mutant (`--web-only` and `--app-only` limit it to one side). It is slow, so it runs in `promote` and every Monday in CI (continuous integration, automatic checks on GitHub), not on every push.
 
 ## Where it sits in the pipeline
-Inside [[quizapp-quality-gate]] when called with `--mutation`, which [[publish-apk]] `promote` does.
+Inside the [[quizapp-quality-gate]] when called with `--mutation`, which [[publish-apk]] `promote` does.
 
 ## Who receives its output
-[[quizapp-quality-gate]].
+The [[quizapp-quality-gate]].

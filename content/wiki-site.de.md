@@ -1,21 +1,21 @@
 ---
 id: wiki-site
 lang: de
-source_hash: 2c57f1f81e0e
+source_hash: ccfb383e550a
 title: site/ (gebautes Wiki)
 ---
 
 ## What it is
-Die gebaute Ausgabe: `index.html`, `assets/` (die kompilierte Elm-App `app.js`, `boot.js`, `style.css`) und `data/` (Graph- und Seiten-JSON).
+Der Ordner `site/` ist das gebaute Wiki, fertig zur Anzeige: `index.html`, `assets/` (die kompilierte Elm-App `app.js`, `boot.js` und `style.css`) und `data/` (die Graph- und Seitendateien in [JSON](https://en.wikipedia.org/wiki/JSON), JavaScript Object Notation, einem Klartext-Datenformat).
 
 ## What it does
-Alles, was der Browser nach der Anmeldung braucht; nichts davon wird je vor der Anmeldung gesendet.
+Er ist alles, was der Browser nach der Anmeldung braucht. Nichts davon wird je vor der Anmeldung gesendet.
 
 ## How it does it
-Von [[wiki-build]] erzeugt, nicht committet (abgeleitet); von [[wiki-router]] von der Platte ausgeliefert, sodass eine Veröffentlichung ohne Serverneustart sichtbar ist.
+Er wird von [[wiki-build]] erzeugt und nicht in Git committet (er ist abgeleitet und lässt sich jederzeit neu erzeugen). Der [[wiki-router]] liefert ihn von der Festplatte aus, sodass eine Veröffentlichung ohne Neustart des Servers sichtbar wird.
 
 ## Where it sits in the pipeline
-Zwischen [[wiki-build]] und [[wiki-router]].
+Zwischen [[wiki-build]] und dem [[wiki-router]].
 
 ## Who receives its output
-[[wiki-router]].
+Der [[wiki-router]].

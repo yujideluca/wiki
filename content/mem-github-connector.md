@@ -11,13 +11,13 @@ sources: [workflow-memory:docs/CLAUDE-AI.md, workflow-memory:README.md]
 ---
 
 ## What it is
-How the [[claude-app]], which cannot run `mem`, still reads and writes the shared memory.
+The [[claude-app]] cannot run programs, so it cannot use the `mem` command. This page explains how it nevertheless reads and writes the shared memory: through the GitHub connector, an add-on that gives the app tools to read and write files in GitHub repositories.
 
 ## What it does
-Reads `views/BRIEF.md` at the start of each chat and records a correction by creating one new event file.
+At the start of each chat it reads `views/BRIEF.md`; when Giovanni corrects it, it records the correction by creating one new event file.
 
 ## How it does it
-Through the GitHub connector (its tools are deferred in the app and must be loaded by name), following the how-to at the end of BRIEF.md. Tested on the phone app (plain and project chats).
+Its GitHub tools are "deferred" in the app, meaning they must be loaded by name before they can be used; the pointer text in the app settings ([[claude-ai-settings-pointer]]) tells it to do so. It then follows the how-to printed at the end of BRIEF.md. This was tested on the phone app, in plain chats and in project chats.
 
 ## Where it sits in the pipeline
 The Claude app's side of [[workflow-memory]].
@@ -26,8 +26,8 @@ The Claude app's side of [[workflow-memory]].
 [[events-log]].
 
 ## Steps
-1. The chat starts; the pointer in claude.ai Settings ([[claude-ai-settings-pointer]]) tells it to load the GitHub tools.
-2. It reads `views/BRIEF.md` of `yujideluca/workflow-memory` (branch main) — [[memory-views]].
-3. Giovanni gives a correction; the chat creates one event file in `events/` with the format of the brief's how-to ([[events-log]]).
+1. The chat starts; the pointer in the claude.ai settings ([[claude-ai-settings-pointer]]) tells it to load the GitHub tools.
+2. It reads `views/BRIEF.md` of `yujideluca/workflow-memory` (branch main) — see [[memory-views]].
+3. Giovanni gives a correction; the chat creates one event file in `events/` in the format described at the end of the brief ([[events-log]]).
 4. The push triggers [[mem-action]], which validates the file ([[mem-validator]]) and rebuilds [[memory-views]].
-5. The next Claude Code session pulls it in its brief ([[hook-session-start]]).
+5. The next Claude Code session downloads it and shows it in its brief ([[hook-session-start]]).

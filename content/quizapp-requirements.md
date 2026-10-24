@@ -12,16 +12,16 @@ sources: [QuizApp:docs/REQUIREMENTS.md, QuizApp:docs/TESTING.md, QuizApp:core/sr
 ---
 
 ## What it is
-The catalogue of every testable promise of [[quizapp]], each with an ID (SP-1 spacing, GR-1 grading, QU-1 queue, DG-* daily goal, QP-* question pool…), plus the test strategy in `docs/TESTING.md` (ADR-0008, requirements-first QA).
+A requirement is a testable promise of the program, for example "a wrong answer on a new card comes back after 10 minutes". This catalogue lists every testable promise of [[quizapp]], each with an ID (SP-1 spacing, GR-1 grading, QU-1 queue, DG-* daily goal, QP-* question pool, and so on), together with the test strategy in `docs/TESTING.md` (decision ADR-0008, "requirements-first quality assurance"; an ADR is an architecture decision record, a short note that keeps the reasons for a decision).
 
 ## What it does
-Says what must hold and at which level it is tested: unit, integration, property, cross-platform conformance, acceptance on a device, mutation-checked. `docs/TRACEABILITY.md` (generated) maps each requirement to its tests.
+It says what must hold and at which level each promise is tested: unit (one piece), integration (pieces together), property (many random inputs), cross-platform conformance (app and web agree), acceptance on a device, and mutation-checked. The generated file `docs/TRACEABILITY.md` maps each requirement to its tests.
 
 ## How it does it
-A behaviour Giovanni states becomes a row first; then a test tagged `REQ <ID>`; then code. [[check-traceability]] fails when a requirement has no test.
+A behaviour Giovanni states becomes a row first; then a test tagged `REQ <ID>` is written; then the code. The [[check-traceability]] check fails when a requirement has no test.
 
 ## Where it sits in the pipeline
-The first step of [[quizapp-release]].
+The first step of the [[quizapp-release]].
 
 ## Who receives its output
 [[check-traceability]] and every test author.

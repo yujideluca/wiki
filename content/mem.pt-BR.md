@@ -1,33 +1,33 @@
 ---
 id: mem
 lang: pt-BR
-source_hash: ed035e7c48fb
-title: mem (comando de memória)
+source_hash: cc93e389c143
+title: mem (comando da memória)
 ---
 
 ## What it is
-A ferramenta de linha de comando do [[workflow-memory]]: é como o Claude Code e o assistente leem e escrevem a memória compartilhada. Python 3, só biblioteca padrão.
+`mem` é a ferramenta de linha de comando do [[workflow-memory]] (uma ferramenta de linha de comando é um programa que se executa digitando seu nome e opções em um terminal). É por ela que o [[claude-code]] e o [[remote-assistant]] leem e escrevem a memória compartilhada. É escrita em Python 3 e não precisa de nada além da biblioteca padrão do Python.
 
 ## What it does
-Grava um arquivo de evento novo para cada mudança ([[mem-add]], [[mem-use]], [[mem-task]], feedback, forget, done, claim…), imprime o resumo, busca ([[mem-search]]), valida, gera as [[memory-views]], sincroniza com o GitHub e instala seus próprios hooks do Claude Code.
+Escreve um novo arquivo de evento a cada mudança ([[mem-add]], [[mem-use]], [[mem-task]], e também feedback, esquecer, concluir, reivindicar e semelhantes), imprime o brief, pesquisa a memória ([[mem-search]]), verifica problemas nos arquivos, gera os arquivos legíveis em [[memory-views]], sincroniza com o GitHub e instala seus próprios hooks do Claude Code.
 
 ## How it does it
-O `mem/cli.py` lê o comando e chama os módulos: `events.py` (gravar/ler arquivos), [[memory-fold]] (`core.py`), [[mem-validator]], [[mem-harvester]], [[mem-pendency]], `search.py`, `project.py`, [[mem-sync]], `install.py`.
+O arquivo `mem/cli.py` lê a linha de comando e chama os módulos: `events.py` (escrever e ler arquivos de evento), [[memory-fold]] (`core.py`), [[mem-validator]], [[mem-harvester]], [[mem-pendency]], `search.py`, `project.py`, [[mem-sync]] e `install.py`.
 
 ## Where it sits in the pipeline
-A porta de escrita da memória no notebook; os hooks o chamam como `mem hook-session-start`, `hook-prompt`, `hook-stop`.
+É a porta pela qual a memória é escrita no notebook. Os hooks também a chamam, como `mem hook-session-start`, `mem hook-prompt` e `mem hook-stop`.
 
 ## Who receives its output
-O [[events-log]] (arquivos novos) e o terminal (resumo, resultados de busca).
+[[events-log]] (os arquivos novos) e o terminal (brief, resultados de busca).
 
 ## Functions
-- `mem add --type pref --owner user --key topic "rule"`: record a correction or lasting preference
-- `mem feedback REF wrong|stale|helpful|not_helpful`: rate an entry
-- `mem forget REF`, `mem done REF`, `mem archive REF`, `mem reopen REF`: close, solve, park, bring back
-- `mem claim REF`: claim a task (earliest claim wins)
-- `mem pending`, `mem scope`: list and scope open items
-- `mem brief`, `mem search "words"`: print the brief, full-text search
-- `mem check`, `mem quarantine`, `mem dismiss`: validity of event files
-- `mem promote`, `mem compact [--apply]`: global habits; digest cold entries
-- `mem build [--check]`: regenerate views
+- `mem add --type pref --owner user --key topic "rule"`: registrar uma correção ou preferência duradoura
+- `mem feedback REF wrong|stale|helpful|not_helpful`: avaliar uma entrada
+- `mem forget REF`, `mem done REF`, `mem archive REF`, `mem reopen REF`: apagar, concluir, guardar, trazer de volta
+- `mem claim REF`: reivindicar uma tarefa (vale a reivindicação mais antiga)
+- `mem pending`, `mem scope`: listar e delimitar pendências
+- `mem brief`, `mem search "words"`: imprimir o brief, busca em texto completo
+- `mem check`, `mem quarantine`, `mem dismiss`: validade dos arquivos de evento
+- `mem promote`, `mem compact [--apply]`: tornar hábitos globais; resumir entradas antigas
+- `mem build [--check]`: regenerar as visões
 - `mem sync [--pull] [--push]`, `mem install-hooks`

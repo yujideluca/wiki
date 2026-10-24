@@ -12,16 +12,16 @@ sources: [QuizApp:app/src/main/java/dev/yuji/quiz/data/TrainingStore.kt]
 ---
 
 ## What it is
-Keeps how many questions Giovanni answered on each local calendar day, and the daily goal setting.
+The `TrainingStore` keeps how many questions Giovanni answered on each local calendar day, together with the setting for the daily goal. It is the data behind the streak calendar and the daily progress bar.
 
 ## What it does
-Stores `AnswerHistory` (epoch day → answers, saved as `day:count;...` in the `training` preferences) and the goal (10–100). Not touched by "Reset all progress".
+It stores the `AnswerHistory` (a map from day number to count, saved as text like `day:count;...` in the Android preferences called `training`) and the goal (10 to 100). It is not touched by the "Reset all progress" action, so the history of effort survives a reset.
 
 ## How it does it
-Android SharedPreferences; older installs migrate their single day count into the history.
+It uses Android SharedPreferences (a small key-value store built into Android, see [the documentation](https://developer.android.com/training/data-storage/shared-preferences)). Older installs migrate their single day count into the history.
 
 ## Where it sits in the pipeline
-Written by [[study-controller]] after every answer in any mode.
+Written by the [[study-controller]] after every answer in any mode.
 
 ## Who receives its output
-[[daily-goal]] (today's bar), [[activity-calendar]] (streaks) and [[progress-backup]].
+The [[daily-goal]] (today's bar), the [[activity-calendar]] (streaks) and the [[progress-backup]].

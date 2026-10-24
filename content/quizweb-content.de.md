@@ -1,21 +1,21 @@
 ---
 id: quizweb-content
 lang: de
-source_hash: ddd020679780
+source_hash: 76699f06c312
 title: QuizWeb content.js und vocab/
 ---
 
 ## What it is
-Vokabeln → Karten und Ablenker für den Web-Zwilling, aus dem Content-Paket der App portiert, dazu die JSON-Dateien in `vocab/` (dieselben wie in der Android-App; `errors.json` entsteht aus ihrer `errors.tsv`).
+`content.js` und der Ordner `vocab/` von [[quizweb]]: der Code, der für den Web-Zwilling Vokabeln in Karten und falsche Optionen verwandelt, aus dem Inhaltspaket der App übertragen, plus die JSON-Dateien in `vocab/` (JSON, JavaScript Object Notation, ist ein Klartext-Datenformat). Es sind dieselben Dateien wie in der Android-App; `errors.json` wird aus `errors.tsv` gebaut.
 
 ## What it does
-Baut den Stapel: eine Karte pro Wort und Modus, mit denselben deterministischen Ablenkern wie [[distractor-factory]].
+Er baut das Deck: eine Karte pro Wort und Modus, mit denselben deterministischen falschen Optionen wie die [[distractor-factory]].
 
 ## How it does it
-Reines ES-Modul; [[check-web-sync]] stellt sicher, dass `vocab/` den [[vocab-assets]] der App gleicht.
+Es ist ein schlichtes ES-Modul (das Standard-Dateiformat von JavaScript). [[check-web-sync]] stellt sicher, dass `vocab/` den [[vocab-assets]] der App gleicht.
 
 ## Where it sits in the pipeline
-Zwischen der Ausgabe von [[build-vocab]] und [[quizweb-app]], das beim Start den Stapel baut.
+Zwischen der Ausgabe von [[build-vocab]] und [[quizweb-app]], die das Deck beim Start baut.
 
 ## Who receives its output
-[[quizweb-app]] (und darüber [[quizweb-controller]]).
+[[quizweb-app]] (und über sie der [[quizweb-controller]]).

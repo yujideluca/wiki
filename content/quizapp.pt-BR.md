@@ -1,21 +1,21 @@
 ---
 id: quizapp
 lang: pt-BR
-source_hash: 47dd00ad5310
+source_hash: d475a94d63d5
 title: QuizApp (German Quiz, Android)
 ---
 
 ## What it is
-Um app Android offline para treinar alemão B2 com repetição espaçada no estilo do Anki. Repositório `yujideluca/german-quiz`, pasta `~/dev/QuizApp`, pacote `dev.yuji.quiz`. É o projeto de referência de como os projetos do Giovanni são construídos.
+O QuizApp ("German Quiz") é um app Android que o Giovanni usa para treinar alemão no nível B2 do exame Goethe. Funciona offline e usa repetição espaçada no estilo do [Anki](https://apps.ankiweb.net/): um método em que as perguntas respondidas bem voltam depois de intervalos cada vez maiores, e as erradas voltam logo ([repetição espaçada](https://en.wikipedia.org/wiki/Spaced_repetition)). O repositório é `yujideluca/german-quiz`, a pasta é `~/dev/QuizApp` e o nome de pacote do app é `dev.yuji.quiz`. É também o projeto de referência de como os projetos do Giovanni são construídos.
 
 ## What it does
-Cinco modos de estudo sobre um conjunto fixo de B2 ([[game-modes]]): der/die/das, preposições, plurais, Präteritum e Fehler finden. Respostas erradas ou lentas voltam logo; cartas conhecidas vão para dias, semanas e meses ([[spaced-repetition-scheduler]]). Meta diária e calendário de sequência ([[daily-goal]], [[activity-calendar]]), backup ([[progress-backup]]) e atualização dentro do app ([[update-client]]). Desde 22/10/2026 o banco de perguntas pode crescer sem nova versão do app: novos [[question-pack]]s chegam pelo canal ([[question-pool-updater]], [[publish-content]]).
+Oferece cinco modos de estudo sobre um conjunto fixo de conteúdo B2 ([[game-modes]]): der/die/das, preposições, formas de plural, Präteritum (o passado simples do alemão) e "Fehler finden" (achar o erro). Respostas erradas ou lentas voltam logo; cartas conhecidas se afastam para dias, semanas e meses ([[spaced-repetition-scheduler]]). Tem meta diária e calendário de sequência ([[daily-goal]], [[activity-calendar]]), cópia de segurança do progresso ([[progress-backup]]) e atualizações de dentro do app ([[update-client]]). Desde 2026-10-22 o conjunto de perguntas pode crescer sem um novo lançamento do app: novos [[question-pack]]s chegam pelo feed de atualização ([[question-pool-updater]], [[publish-content]]).
 
 ## How it does it
-Kotlin + Jetpack Compose em dois módulos Gradle: [[quizapp-core]] (Kotlin puro: agendador, avaliador, fila, sessão, conteúdo) e [[quizapp-app]] (interface Android, armazenamento, atualizações). O conteúdo é gerado a partir de arquivos TSV pelo [[build-vocab]]. Toda mudança segue requisito → teste → código, passa pelo [[quizapp-quality-gate]] e chega ao celular primeiro pelo canal beta ([[release-channels]], [[quizapp-release]]). Desenho e decisões: [[quizapp-design-doc]] e [[quizapp-adrs]].
+É escrito em [Kotlin](https://kotlinlang.org/) com [Jetpack Compose](https://developer.android.com/compose) (a forma moderna do Android de desenhar telas), dividido em dois módulos Gradle (partes construídas separadamente): [[quizapp-core]] (lógica em Kotlin puro: agendador, avaliador, fila, sessão, conteúdo) e [[quizapp-app]] (telas Android, armazenamento, atualizações). O conteúdo é construído a partir de arquivos de texto separados por tabulação pelo [[build-vocab]]. Toda mudança segue requisito → teste → código, passa pelo [[quizapp-quality-gate]] e chega ao celular primeiro pelo canal beta ([[release-channels]], [[quizapp-release]]). O design e suas decisões estão em [[quizapp-design-doc]] e [[quizapp-adrs]].
 
 ## Where it sits in the pipeline
-A principal ferramenta de estudo do Giovanni; seu gêmeo web é o [[quizweb]], que precisa se comportar igual ([[check-web-sync]]). As versões saem pelo [[release-feed]].
+É a principal ferramenta de estudo do Giovanni. Seu gêmeo web é o [[quizweb]], que deve se comportar igual ([[check-web-sync]]). Os lançamentos saem pelo [[release-feed]].
 
 ## Who receives its output
-O Giovanni no [[phone]]; o [[quizweb]] recebe as regras, os vetores de teste e as traduções.
+O Giovanni, no [[phone]]; o [[quizweb]] recebe suas regras, vetores de teste e traduções.

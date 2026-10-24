@@ -12,16 +12,16 @@ sources: [home:.claude/CLAUDE.md]
 ---
 
 ## What it is
-`~/.claude/CLAUDE.md`: Giovanni's private instructions for every Claude Code session on the laptop.
+`~/.claude/CLAUDE.md` is Giovanni's private instruction file for every Claude Code session on the laptop. A CLAUDE.md file is plain text that Claude Code reads automatically at the start of a session and treats as standing instructions ([documentation](https://docs.claude.com/en/docs/claude-code/memory)). This one is "global": it applies in every project, while each project also has its own.
 
 ## What it does
-Points to [[workflow-memory]] as the shared memory; says how to record a correction (`mem add`), report what shaped a task (`mem use`), and flag a wrong entry; forbids editing `events/` or `views/` by hand and storing other people's clinical, secret or contact data; and makes the wiki update part of finishing a task ([[end-of-task]]).
+It names [[workflow-memory]] as the shared memory and explains how to record a correction (`mem add`), how to report which memory entries shaped a task (`mem use`) and how to flag a wrong entry. It forbids editing the `events/` and `views/` folders by hand and storing clinical, secret or contact data about other people. It also makes updating the wiki part of finishing any task ([[end-of-task]]).
 
 ## How it does it
-Loaded automatically into the context of every session, next to the brief.
+It is loaded automatically into the context of every session, next to the memory brief ([[session-brief]]). No command is needed.
 
 ## Where it sits in the pipeline
-Read at [[chat-start]].
+Read at the start of each chat ([[chat-start]]).
 
 ## Who receives its output
-[[claude-code]] and [[remote-assistant]].
+[[claude-code]] and the [[remote-assistant]].

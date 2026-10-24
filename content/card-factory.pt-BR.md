@@ -1,22 +1,21 @@
 ---
 id: card-factory
 lang: pt-BR
-source_hash: badb4960a1a6
+source_hash: 03a61cd67d2d
 title: CardFactory
-aliases: [cartas]
 ---
 
 ## What it is
-Transforma entradas de vocabulário em `Card`s, a unidade de estudo: `id`, `mode`, `prompt`, `context` opcional, `choices`, `correctChoice`, `explanation`.
+Uma "carta" (card) é a unidade de estudo do [[quizapp]]: uma pergunta com suas opções de resposta. A `CardFactory` transforma entradas de vocabulário em cartas. Uma carta tem um `id`, um `mode`, um `prompt` (a pergunta), um `context` opcional, as `choices`, a `correctChoice` e uma `explanation`.
 
 ## What it does
-Uma função por modo ([[game-modes]]): artigo, preposição, plural, Präteritum (`preteriteCard`) e Fehler finden (`errorCard`, cujas opções são os pedaços da frase). Todos os modos produzem o mesmo formato, o que mantém o motor independente do modo.
+Há uma função por modo ([[game-modes]]): artigo, preposição, plural, Präteritum (`preteriteCard`) e Fehler finden (`errorCard`, cujas opções são os trechos da frase). Todo modo produz a mesma forma, o que mantém o resto do motor de estudo independente do modo.
 
 ## How it does it
-Lê as entradas já interpretadas de [[vocab-assets]] e pede as opções erradas ao [[distractor-factory]].
+Lê as entradas já interpretadas de [[vocab-assets]] e pede ao [[distractor-factory]] as opções erradas (um "distrator" é uma resposta plausível, porém errada).
 
 ## Where it sits in the pipeline
-Primeiro passo do fluxo de conteúdo: vocabulário → cartas → fila.
+O primeiro passo do pipeline de conteúdo: vocabulário → cartas → fila.
 
 ## Who receives its output
-O [[study-pipeline]] (pelo [[study-controller]]).
+O [[study-pipeline]], por meio do [[study-controller]].

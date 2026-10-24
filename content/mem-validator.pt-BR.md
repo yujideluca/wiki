@@ -1,22 +1,21 @@
 ---
 id: mem-validator
 lang: pt-BR
-source_hash: 298a4d08cb22
+source_hash: e43dcc2da722
 title: Validador e quarentena (validate.py)
-aliases: [verificação de privacidade]
 ---
 
 ## What it is
-O guarda de privacidade e formato da memória, seja quem for que escreve.
+O validador é o guarda de privacidade e de formato da memória, seja quem for o escritor. Seus padrões para segredos, telefones e números de CPF (Cadastro de Pessoas Físicas, o número brasileiro de contribuinte) ficam em `mem/privacy-patterns.tsv`, a lista única que a verificação de privacidade do próprio wiki ([[wiki-check]]) também usa.
 
 ## What it does
-Rejeita tokens e chaves, e-mails, telefones, CPFs e eventos malformados. Arquivos rejeitados vão para `quarantine/` com uma nota `.reason` e aparecem no REVIEW. De propósito não há filtro de vocabulário de saúde (decisão do Giovanni, 19/10/2026); não guardar dados clínicos de outras pessoas é uma regra permanente, não uma verificação automática.
+Rejeita tokens e chaves, endereços de e-mail, telefones, números de CPF e eventos malformados. Um arquivo rejeitado é movido para a pasta `quarantine/` com uma nota `.reason` e aparece no arquivo de revisão. Não há, de propósito, filtro de vocabulário de saúde (decisão do Giovanni de 2026-10-19); não guardar dados clínicos de outras pessoas é uma regra permanente que o Claude segue, não uma verificação automática.
 
 ## How it does it
-`check_event` para cada evento; `load_checked` separa válidos de inválidos; `quarantine` move os ruins. Testado por `test_privacy_boundary`. Os padrões de segredos, telefones e CPF ficam em `mem/privacy-patterns.tsv`, a lista única que a verificação de privacidade da wiki ([[wiki-check]]) também usa.
+A função `check_event` examina um evento, `load_checked` separa os válidos dos inválidos e `quarantine` move os ruins. É testado por `test_privacy_boundary`.
 
 ## Where it sits in the pipeline
-Antes de toda gravação pelo [[mem]] e, no GitHub, na [[mem-action]].
+Antes de toda escrita feita pelo [[mem]] e, no GitHub, no [[mem-action]].
 
 ## Who receives its output
-O [[memory-fold]] (só eventos válidos) e as [[memory-views]] (o REVIEW lista a quarentena).
+O [[memory-fold]] (só eventos válidos) e o [[memory-views]] (o arquivo de revisão lista o que foi para a quarentena).

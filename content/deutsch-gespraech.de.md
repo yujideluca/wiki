@@ -1,29 +1,28 @@
 ---
 id: deutsch-gespraech
 lang: de
-source_hash: d61da8c22e56
+source_hash: f03f3a15619d
 title: Projekt Deutsch-Gespräch (Claude-App)
-aliases: [Deutsch-Gespräch]
 ---
 
 ## What it is
-Ein Projekt in der Claude-App zum Üben deutscher Gespräche, dessen Gedächtnis ein Google-Dokument ist: `deutsch-gespraech-state`.
+Deutsch-Gespräch ist ein Projekt in der [[claude-app]], um gesprochenes Deutsch zu üben. Da die App zwischen Chats kein Gedächtnis hat, bewahrt dieses Projekt sein Gedächtnis in einem Google Doc namens `deutsch-gespraech-state` auf.
 
 ## What it does
-Bei der ersten Nachricht jedes Chats in diesem Projekt lädt es den Gesprächsstand aus dem Dokument; bei „Ende“ speichert es die Sitzung dort; bei „Gedächtnis?“ oder „Vergiss …“ zeigt oder löscht es gespeicherte Punkte.
+Bei der ersten Nachricht jedes Chats in diesem Projekt wird der Stand aus dem Doc geladen. Schreibt Giovanni „Ende“, wird die Sitzung dort gespeichert. „Gedächtnis?“ zeigt, was gespeichert ist, und „Vergiss …“ löscht einen Eintrag.
 
 ## How it does it
-Der Skill deutsch-gespraech-memory in der App ([[claude-ai-skills]]). Sein Hinweis beim Sitzungsstart gilt nicht für Claude Code, das ihn ignoriert.
+Das erledigt die Skill deutsch-gespraech-memory in der App ([[claude-ai-skills]]). Diese Skill zeigt zu Beginn von Chats einen Hinweis, der nicht für [[claude-code]] gedacht ist; Claude Code ignoriert ihn.
 
 ## Where it sits in the pipeline
 Nur in der [[claude-app]], neben [[skill-alemao-goethe-fsp]].
 
 ## Who receives its output
-Das Google-Dokument und Giovanni im nächsten Gespräch.
+Das Google Doc und Giovanni im nächsten Gespräch.
 
 ## Steps
 1. Giovanni öffnet einen Chat im Projekt Deutsch-Gespräch der [[claude-app]].
-2. Der Skill lädt `deutsch-gespraech-state` aus Google Docs.
-3. Es wird Deutsch gesprochen; Korrekturen folgen [[skill-alemao-goethe-fsp]].
-4. „Ende“ speichert die Sitzung zurück ins Dokument.
-5. „Gedächtnis?“ zeigt gespeicherte Punkte, „Vergiss …“ löscht einen.
+2. Die Skill lädt `deutsch-gespraech-state` aus Google Docs.
+3. Sie sprechen Deutsch; Korrekturen folgen [[skill-alemao-goethe-fsp]].
+4. „Ende“ speichert die Sitzung zurück ins Doc.
+5. „Gedächtnis?“ zeigt die gespeicherten Einträge, „Vergiss …“ löscht einen.

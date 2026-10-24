@@ -12,16 +12,16 @@ sources: [workflow-memory:docs/CLAUDE-AI.md]
 ---
 
 ## What it is
-A short Portuguese text pasted once into claude.ai Settings > preferences; it lives in `docs/CLAUDE-AI.md`.
+A "pointer" is a short text that points somewhere else instead of holding the content itself. This one is a short Portuguese text that Giovanni pasted once into the preferences field of the claude.ai settings. A copy is kept in the file `docs/CLAUDE-AI.md` of [[workflow-memory]].
 
 ## What it does
-Tells every Claude app chat to load the GitHub tools, read `views/BRIEF.md` and follow it; if that fails, to follow at least three rules: reply in the message's language, explain plainly, never store clinical, secret or contact data about other people.
+It tells every chat in the Claude app to load the GitHub tools, read the file `views/BRIEF.md` and follow it. If that fails, the chat still follows three basic rules: reply in the language of the message, explain things plainly, and never store clinical, secret or contact data about other people.
 
 ## How it does it
-Only Giovanni can write that field, so it is a pointer: the content lives in the brief, which the Action regenerates. It replaced the line that made chats read `code/CORE.md` of the old repository.
+Only Giovanni can write into that settings field, so nothing long can be kept there. That is why it is only a pointer: the real content lives in the brief, which a GitHub Action (an automatic job on GitHub) regenerates whenever memory changes. The pointer replaced an older line that made chats read `code/CORE.md` of the old, retired repository.
 
 ## Where it sits in the pipeline
-At the start of every Claude app chat.
+At the very start of every chat in the [[claude-app]].
 
 ## Who receives its output
-[[mem-github-connector]].
+[[mem-github-connector]], the process by which the app then reads and writes memory.

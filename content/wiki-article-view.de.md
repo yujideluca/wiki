@@ -1,22 +1,21 @@
 ---
 id: wiki-article-view
 lang: de
-source_hash: 14654ceacdd4
+source_hash: b1f8a6299d38
 title: Artikelansicht
-aliases: [Infobox, Pipeline-Leiste]
 ---
 
 ## What it is
-Die vollständige Seite eines Begriffs im Stil von Wikipedia (Option A der Entwürfe).
+Die Artikelansicht ist die vollständige Seite eines Konzepts, gestaltet wie Wikipedia (Option A der Entwurfsskizzen).
 
 ## What it does
-Titel und Art, der Einleitungsabsatz, eine Infobox (Art, Projekt, Status, Ort, seit/bis, Quellen, Gedächtniseinträge) mit der Pipeline-Leiste (was es speist → es → wer seine Ausgabe erhält) und einer kleinen Karte verbundener Seiten, dann die Abschnitte mit übersetzten Überschriften und der Verlauf der Seite aus git. Ablaufseiten bekommen ein Schritt-für-Schritt-Diagramm: nummerierte Punkte, der aktuelle Schritt leuchtet, sein Text und die beteiligten Seiten, mit Zurück/Weiter.
+Sie zeigt Titel und Art, den Einleitungsabsatz, eine Infobox (Art, Projekt, Status, Ort, Daten seit und bis, Quellen, Gedächtniseinträge) mit dem Pipeline-Streifen (was es speist → es → wer seine Ausgabe erhält) und eine kleine Karte der verbundenen Seiten, dann die Abschnitte mit übersetzten Überschriften und den Verlauf der Seite aus Git. Eine Ablaufseite (eine mit Abschnitt Steps, etwa eine Skill oder ein Verfahren) bekommt außerdem ein Schritt-für-Schritt-Diagramm: nummerierte Punkte, der aktuelle Schritt leuchtet, sein Text und die beteiligten Seiten, mit den Knöpfen Zurück und Weiter.
 
 ## How it does it
-Markdown mit elm-markdown gerendert, nachdem `[[id]]`-Links in `/p/<id>` umgeschrieben wurden (MP-3). Zeigt einen Hinweis, wenn eine Seite noch keine Übersetzung hat oder veraltet sein kann.
+Der Markdown-Text wird mit elm-markdown dargestellt, nachdem die `[[id]]`-Links in `/p/<id>` umgeschrieben wurden (Anforderung MP-3); Links zu anderen Websites öffnen sich in einem neuen Tab (MP-8). Sie zeigt einen Hinweis, wenn eine Seite noch keine Übersetzung hat oder veraltet sein kann.
 
 ## Where it sits in the pipeline
-In [[wiki-frontend]], unter `/p/<id>`.
+Im [[wiki-frontend]], unter `/p/<id>`.
 
 ## Who receives its output
-[[wiki-frontend]].
+Das [[wiki-frontend]].

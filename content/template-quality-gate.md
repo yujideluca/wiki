@@ -12,16 +12,16 @@ sources: [project-template:tools/quality_gate.sh]
 ---
 
 ## What it is
-The skeleton of every project's `tools/quality_gate.sh`: the one definition of "passing", used by releases and by CI.
+A quality gate is one script that decides whether a project is "passing". This is the skeleton of every project's `tools/quality_gate.sh`: the single definition of "passing", used both before a release and by CI (continuous integration, automatic checks on every push). Having one definition means the checks on the laptop and on GitHub can never disagree.
 
 ## What it does
-Three steps to fill per project: build and tests; requirement traceability ([[check-traceability]]); fitness functions. It fails when the gate takes longer than 1200 s, because a slow gate gets skipped.
+It has three steps for each project to fill in: build and tests; requirement traceability, meaning every requirement has a test and every test points to a requirement ([[check-traceability]]); and fitness functions, which are automatic checks that the design has not drifted. It also fails if the gate takes longer than 1200 seconds, because a slow gate gets skipped, and a skipped gate protects nothing.
 
 ## How it does it
-Bash, `set -euo pipefail`; each step a command that exits non-zero on failure. CI (`.github/workflows/quality-gate.yml`) runs exactly this script.
+It is a [Bash](https://www.gnu.org/software/bash/) script with `set -euo pipefail` (stop at the first error), where each step is a command that exits with a non-zero code (the number a program returns to say something went wrong) on failure. The CI workflow (`.github/workflows/quality-gate.yml`) runs exactly this script.
 
 ## Where it sits in the pipeline
 Copied into each new project ([[new-project]]).
 
 ## Who receives its output
-[[quizapp-quality-gate]] and [[wiki-quality-gate]].
+[[quizapp-quality-gate]] and [[wiki-quality-gate]], which are its filled-in versions.

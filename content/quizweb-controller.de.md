@@ -1,21 +1,21 @@
 ---
 id: quizweb-controller
 lang: de
-source_hash: 1de898c1d8ca
+source_hash: f2504d98f561
 title: QuizWeb controller.js
 ---
 
 ## What it is
-Der Anwendungsdienst des Web-Zwillings: das Web-Gegenstück zu [[study-controller]].
+`controller.js` ist der Anwendungsdienst des Web-Zwillings: das Gegenstück zum [[study-controller]] der Android-App. Ein Anwendungsdienst ist die Schicht, die Speicher, Logik und Uhr koordiniert, ohne etwas zu zeichnen.
 
 ## What it does
-Verbindet Stapel, Speicher und Uhr mit den reinen Funktionen von [[quizweb-domain]]: Sitzungen, Antworten, Pausieren, Suche, Tagesfortschritt, Kalender.
+Er verbindet Deck, Speicher und Uhr mit den reinen Funktionen aus [[quizweb-domain]]: Sitzungen, Antworten, Pausieren von Karten, Suche, Tagesfortschritt und Kalender.
 
 ## How it does it
-Kein DOM; nimmt jeden Speicher mit der richtigen Form (`createMemoryStore` in Tests, [[quizweb-store]] im Browser).
+Er hat kein DOM (Document Object Model, das Modell des Browsers von einer Webseite). Er nimmt jeden Speicher mit der richtigen Form: `createMemoryStore` in den Tests und den [[quizweb-store]] im Browser. Deshalb lässt er sich ohne Browser testen.
 
 ## Where it sits in the pipeline
-Zwischen [[quizweb-app]] (Oberfläche) und [[quizweb-domain]].
+Zwischen [[quizweb-app]] (den Bildschirmen) und [[quizweb-domain]].
 
 ## Who receives its output
 [[quizweb-app]].

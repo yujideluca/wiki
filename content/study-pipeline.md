@@ -12,16 +12,16 @@ sources: [QuizApp:core/src/main/java/dev/yuji/quiz/domain/StudyPipeline.kt]
 ---
 
 ## What it is
-Builds the queue of cards for a study session in [[quizapp]].
+Before every study session, [[quizapp]] has to decide which cards to ask and in which order. The StudyPipeline builds that queue of cards. A pipeline here is a chain of small steps where each step takes the result of the previous one.
 
 ## What it does
-`buildQueue` = `attachProgress → excludeUnavailable → selectLearningDue → selectReviewsDue → selectNewCards → interleave`. Learning cards first once their wait is over; reviews most-overdue-first, capped at 100; new cards with no daily cap, one after every 3 reviews.
+`buildQueue` is the chain `attachProgress → excludeUnavailable → selectLearningDue → selectReviewsDue → selectNewCards → interleave`. In words: attach each card's saved progress; drop cards that are suspended or removed; take learning cards first once their waiting time is over; then reviews, most overdue first, at most 100; then new cards (with no daily cap), mixed in one after every 3 reviews.
 
 ## How it does it
-A chain of small, separately tested pure steps; suspended and removed cards are dropped by `excludeUnavailable`.
+It is a chain of small pure steps, each tested separately (a function is "pure" when the same input always gives the same output and nothing else changes).
 
 ## Where it sits in the pipeline
 At the start of each session, between the cards ([[card-factory]]) with their saved progress ([[progress-store]]) and the running session ([[study-session]]).
 
 ## Who receives its output
-[[study-controller]], which hands the queue to [[study-session]].
+The [[study-controller]], which hands the queue to the [[study-session]].

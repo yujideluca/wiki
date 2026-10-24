@@ -1,30 +1,30 @@
 ---
 id: quizapp-core
 lang: pt-BR
-source_hash: 188f62b22781
+source_hash: 18212cafeb25
 title: Módulo :core do QuizApp
 ---
 
 ## What it is
-A metade em Kotlin puro do [[quizapp]] (módulo Gradle `:core`): toda a lógica de estudo, sem Android no classpath, de modo que um `import android.*` ali não compila (ADR-0009).
+O módulo `:core` é a metade "Kotlin puro" do [[quizapp]]: toda a lógica de estudo, sem nenhuma parte do Android. A "pureza" é imposta pelo build: um `import android.*` neste módulo simplesmente não compila (decisão ADR-0009; uma ADR é um architecture decision record, uma nota curta que guarda os motivos de uma decisão). Um módulo Gradle é uma parte do projeto que é construída sozinha.
 
 ## What it does
-Contém o domínio (cartas, progresso, [[spaced-repetition-scheduler]], [[answer-grader]], [[study-pipeline]], [[study-session]], [[daily-goal]], [[activity-calendar]], codec do [[progress-backup]]), a camada de conteúdo ([[card-factory]], [[distractor-factory]], leitores) e os canais de depuração ([[study-debug-log]]).
+Contém o domínio (as regras de estudo: cartas, progresso, o [[spaced-repetition-scheduler]], o [[answer-grader]], o [[study-pipeline]], a [[study-session]], a [[daily-goal]], o [[activity-calendar]] e o codec do [[progress-backup]]), a camada de conteúdo ([[card-factory]], [[distractor-factory]] e os parsers) e os canais de depuração ([[study-debug-log]]).
 
 ## How it does it
-Funções pequenas e puras encadeadas em fluxos; dados imutáveis; o tempo entra por `Clock`. Coberto por testes unitários JVM simples em `core/src/test`, rodados sem emulador pelo [[quizapp-quality-gate]]; o [[fitness-check]] também confere que continua sem Android.
+Pequenas funções puras são encadeadas em pipelines (uma função é "pura" quando a mesma entrada sempre dá a mesma saída e nada mais muda), os dados são imutáveis e o tempo é passado por um `Clock`, para os testes poderem controlá-lo. É coberto por testes unitários JVM simples (rodam na Java Virtual Machine, sem emulador nem celular) em `core/src/test`, que o [[quizapp-quality-gate]] executa; o [[fitness-check]] também garante que o módulo continue livre de Android.
 
 ## Where it sits in the pipeline
-A camada interna: `ui → StudyController → domain/content/data`. Nada nele depende do módulo do app.
+A camada interna: `ui → StudyController → domain/content/data`. Nada em `:core` depende do módulo app.
 
 ## Who receives its output
-O [[quizapp-app]], principalmente o [[study-controller]].
+O [[quizapp-app]], sobretudo o [[study-controller]].
 
 ## Functions
 - `Clock`: fonte de tempo injetada, para os testes controlarem o tempo
 - `CardAvailability` / `foldForSearch`: quais cartas estão suspensas ou removidas; busca sem acentos
-- `HeatColor`: escala de cores do calendário
-- `AppUpdate` / `shouldCheckForUpdate`: regras de atualização (no máximo a cada 30 s)
+- `HeatColor`: gradiente de cores do calendário de sequência
+- `AppUpdate` / `shouldCheckForUpdate`: regras de atualização (no máximo uma vez por 30 s)
 - `SchedulerConfig`, `GraderConfig`: os números ajustáveis
-- `ContentTranslations`: textos de explicação em inglês para de/pt/es
-- `VocabularyParsers`, `VocabularyModels`: vocabulário JSON para objetos Kotlin
+- `ContentTranslations`: textos explicativos em inglês para de/pt/es
+- `VocabularyParsers`, `VocabularyModels`: vocabulário JSON (JavaScript Object Notation) para objetos Kotlin

@@ -1,0 +1,45 @@
+# Acronyms whose first use on an English page must come with the full name (rule CO-9, `wiki check`).
+# Format: ACRONYM<TAB>full name. The name must stand before the acronym or within 100 characters after it.
+# The match is case-insensitive for the name and exact (whole word) for the acronym; code quotes are skipped.
+ADR	architecture decision record
+AHA	American Heart Association
+AMLS	Advanced Medical Life Support
+API	application programming interface
+APK	Android Package
+CI	continuous integration
+CLI	command-line interface
+CPF	Cadastro de Pessoas Físicas
+CSP	Content Security Policy
+DNS	Domain Name System
+DOM	Document Object Model
+DORA	DevOps Research and Assessment
+ERC	European Resuscitation Council
+ESC	European Society of Cardiology
+FSP	Fachsprachprüfung
+FTS5	full-text search
+GINA	Global Initiative for Asthma
+GRADE	Grading of Recommendations Assessment, Development and Evaluation
+HTML	HyperText Markup Language
+HTTPS	Hypertext Transfer Protocol Secure
+JDK	Java Development Kit
+JSON	JavaScript Object Notation
+LSP	Language Server Protocol
+MADR	Markdown Architectural Decision Records
+OAuth	Open Authorization
+OIDC	OpenID Connect
+OTP	Open Telecom Platform
+PALS	Pediatric Advanced Life Support
+PHTLS	Prehospital Trauma Life Support
+PICO	population, intervention, comparator, outcome
+PWA	progressive web app
+SDK	software development kit
+SHA-256	Secure Hash Algorithm 256
+SM-2	SuperMemo 2
+SRE	site reliability engineering
+SSH	Secure Shell
+SVG	Scalable Vector Graphics
+TLS	Transport Layer Security
+TSV	tab-separated values
+UI	user interface
+URL	Uniform Resource Locator
+VPN	virtual private network

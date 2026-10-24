@@ -12,16 +12,16 @@ sources: [workflow-memory:mem/hooks.py]
 ---
 
 ## What it is
-The Claude Code hook that runs when a chat starts: `python3 ~/dev/workflow-memory/bin/mem hook-session-start` (timeout 40 s).
+A hook is a small program that [[claude-code]] runs automatically when a certain event happens ([hooks explained](https://docs.claude.com/en/docs/claude-code/hooks-guide)). This one runs when a chat starts: `python3 ~/dev/workflow-memory/bin/mem hook-session-start`, with a time limit of 40 seconds. Its job is to give the new chat its memory.
 
 ## What it does
-Pulls the memory repo, folds the events, and prints the [[session-brief]] for the current project (the folder name of the chat).
+It downloads the newest version of the memory from GitHub, combines the stored events into the current state, and prints the [[session-brief]] for the current project (the project is taken from the name of the folder the chat was opened in). Whatever a hook prints at this moment is placed in front of the model, which is how Claude "remembers" Giovanni's preferences.
 
 ## How it does it
-Must never fail loudly: its stdout goes into the model's context, so errors are written to `~/.local/state/mem/hook.log` instead. Offline it falls back to the last pulled state.
+It must never fail loudly, because its printed output goes straight into the model's context: an error message there would confuse the chat. So errors are written to a log file, `~/.local/state/mem/hook.log`, instead. If the laptop is offline it falls back to the last state it downloaded, and the brief then says that the memory may be stale.
 
 ## Where it sits in the pipeline
-First step of [[chat-start]].
+It is the first step of [[chat-start]].
 
 ## Who receives its output
-[[session-brief]] → the Claude Code session.
+The [[session-brief]], and through it the Claude Code session.

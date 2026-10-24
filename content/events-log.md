@@ -12,16 +12,16 @@ sources: [workflow-memory:mem/events.py, workflow-memory:docs/DESIGN.md]
 ---
 
 ## What it is
-The memory itself: one Markdown file per event in `events/YYYY/MM/`, named `<time>-<instance>-<6 chars>.md` (the name is the id; its last segment is the #code shown in the brief).
+The `events/` folder is the memory itself: one Markdown file per event, stored in `events/YYYY/MM/` and named `<time>-<instance>-<6 characters>.md`. The file name is the event's id, and its last segment is the `#code` you see in the brief. An "event" is a record of one thing that happened, such as "Giovanni stated this preference".
 
 ## What it does
-Holds every preference, fact, decision, task, note and control event (feedback, claim, done, forget, use, archive, reopen, rescope). Files are never edited or deleted, so writers never conflict (ADR-0002).
+It holds every preference, fact, decision, task and note, plus "control" events that change the state of others (feedback, claim, done, forget, use, archive, reopen, rescope). Files are never edited or deleted, which means two writers can never conflict (decision ADR-0002 in [[memory-adrs]]; an ADR, "architecture decision record", is a short note that records one decision and its reasons).
 
 ## How it does it
-A header (`type`, `scope`, `key`, `owner`, `instance`, `ts`, optional `supersedes`, `target`, `signal`, `category`) and one or two sentences. CI job `append-only` rejects edits; invalid files are moved to `quarantine/` by [[mem-validator]].
+Each file has a header (`type`, `scope`, `key`, `owner`, `instance`, `ts`, and optionally `supersedes`, `target`, `signal`, `category`) followed by one or two sentences. A job in continuous integration (CI, automatic checks on every push) named `append-only` rejects any edit to an existing file. Invalid files are moved to a `quarantine/` folder by [[mem-validator]].
 
 ## Where it sits in the pipeline
-Written by [[mem]] (laptop) and [[mem-github-connector]] (Claude app); read by [[memory-fold]].
+Written by [[mem]] on the laptop and by [[mem-github-connector]] for the Claude app; read by [[memory-fold]].
 
 ## Who receives its output
 [[memory-fold]] and [[mem-action]].

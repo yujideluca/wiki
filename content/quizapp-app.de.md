@@ -1,31 +1,31 @@
 ---
 id: quizapp-app
 lang: de
-source_hash: 0fb1ee33cb85
+source_hash: 34313e4f55a8
 title: QuizApp-Modul :app
 ---
 
 ## What it is
-Die Android-Hälfte von [[quizapp]] (Gradle-Modul `:app`, hängt von [[quizapp-core]] ab): Bildschirme, Speicher und Android-Adapter.
+Das Modul `:app` ist die Android-Hälfte von [[quizapp]]. Es hängt von [[quizapp-core]] ab und enthält, was nur auf einem Handy existiert: die Bildschirme, den Speicher und die Adapter (dünne Codestücke, die die reine Logik mit Android verbinden).
 
 ## What it does
-Zeigt die Lernbildschirme ([[study-view-model]]), speichert Fortschritt und Einstellungen ([[progress-store]], [[training-store]], [[settings-store]]), liest die mitgelieferten Vokabeln ([[vocab-assets]]), sucht und installiert Updates ([[update-client]], [[apk-installer]]).
+Es zeigt die Lernbildschirme ([[study-view-model]]), speichert Fortschritt und Einstellungen ([[progress-store]], [[training-store]], [[settings-store]]), liest das mitgelieferte Vokabular ([[vocab-assets]]) und prüft auf Updates und installiert sie ([[update-client]], [[apk-installer]]).
 
 ## How it does it
-Jetpack Compose + Material 3 (ADR-0002). `MainActivity` trägt alles, setzt die gewählte Sprache, aktualisiert den Startbildschirm bei jedem Fortsetzen und startet die Update-Prüfung; [[study-controller]] ist die einzige Fassade, die die Oberfläche aufruft. Zwei Build-Varianten, `stable` und `beta` ([[release-channels]]), signiert mit dem projekteigenen Schlüssel ([[signing-key]]).
+Die Bildschirme nutzen [Jetpack Compose](https://developer.android.com/compose) und [Material 3](https://m3.material.io/) (Googles Designsystem), gewählt in Entscheidung ADR-0002 (ein ADR ist ein Architecture Decision Record, eine kurze Notiz, die die Gründe einer Entscheidung festhält). `MainActivity` (eine [Activity](https://developer.android.com/guide/components/activities/intro-activities) ist eine bildschirmtragende Komponente einer Android-App) trägt alles, wendet die gewählte Sprache an, aktualisiert den Startbildschirm bei jeder Rückkehr in die App und startet die Update-Prüfung. Der [[study-controller]] ist der einzige Einstiegspunkt, den die Bildschirme aufrufen. Es gibt zwei Build-Varianten, `stable` und `beta` ([[release-channels]]), beide mit dem eigenen Schlüssel des Projekts signiert ([[signing-key]]).
 
 ## Where it sits in the pipeline
-Die äußere Schicht, zwischen Spieler und [[quizapp-core]].
+Die äußere Schicht, zwischen dem Lernenden und [[quizapp-core]].
 
 ## Who receives its output
-Giovanni auf dem [[phone]]: Die APK wird installiert.
+Giovanni auf dem [[phone]]: Die aus diesem Modul gebaute APK (Android Package, die installierbare Datei) wird installiert.
 
 ## Functions
-- `MainActivity`: hosts the UI, Back button, language, resume refresh, update check on start
-- `ui/Screens.kt`: home, question, finished screens
-- `ui/SettingsScreen.kt`, `ui/BackupSection.kt`: settings and backup
-- `ui/CalendarCard.kt`: the streak calendar card
-- `ui/UpdatePrompt.kt`, `ui/UpdateReducer.kt`: the update popup and its state
-- `ui/ScreenScale.kt`: scales layout with screen height
-- `android/LocaleContext.kt`, `data/AppLanguage.kt`: language choice
-- `data/VocabularySource.kt`, `data/ContentTranslationSource.kt`: read assets
+- `MainActivity`: trägt die Benutzeroberfläche (UI), Zurück-Taste, Sprache, Auffrischung bei Rückkehr, Update-Prüfung beim Start
+- `ui/Screens.kt`: Start-, Frage- und Abschlussbildschirm
+- `ui/SettingsScreen.kt`, `ui/BackupSection.kt`: Einstellungen und Sicherung
+- `ui/CalendarCard.kt`: die Karte des Serienkalenders
+- `ui/UpdatePrompt.kt`, `ui/UpdateReducer.kt`: das Update-Popup und sein Zustand
+- `ui/ScreenScale.kt`: skaliert das Layout mit der Bildschirmhöhe
+- `android/LocaleContext.kt`, `data/AppLanguage.kt`: Sprachwahl
+- `data/VocabularySource.kt`, `data/ContentTranslationSource.kt`: Assets lesen

@@ -1,22 +1,21 @@
 ---
 id: mem-harvester
 lang: pt-BR
-source_hash: 70527e6145e4
-title: Coletor de preferências (harvest.py)
-aliases: [coletor]
+source_hash: 12ecd89fae97
+title: Colhedor de preferências (harvest.py)
 ---
 
 ## What it is
-Recolhe preferências das palavras do próprio Giovanni nas mensagens, para uma regra dita uma vez não se perder.
+O harvester ("harvest" significa colher) recolhe preferências das próprias palavras do Giovanni nas mensagens que ele envia, para que uma regra dita uma vez não se perca só porque ninguém executou `mem add`. Fica em `mem/harvest.py`.
 
 ## What it does
-Só conta o texto da mensagem do usuário (nunca saída de ferramenta nem texto do Claude), em inglês e português, só frases que estabelecem uma regra e citam uma ação. O escopo padrão é o projeto; um hábito visto em dois projetos, ou dito "em todos os meus projetos", vira global (`promote`).
+Só vale o texto da própria mensagem do usuário (nunca saída de ferramentas nem texto do Claude), em inglês e português, e só frases que enunciam uma regra e nomeiam uma ação. Por padrão uma preferência colhida vale só para o projeto atual; um hábito visto em dois projetos, ou formulado como "em todos os meus projetos", torna-se global (esse passo se chama `promote`).
 
 ## How it does it
-Ids de evento determinísticos, então uma chamada repetida do hook grava o mesmo arquivo. Uma entrada coletada nunca sobrescreve uma com `owner: user`; vira uma proposta no REVIEW.
+Os ids de evento são determinísticos (a mesma entrada sempre produz o mesmo id), então uma chamada de hook repetida escreve o mesmo arquivo em vez de um duplicado. Uma entrada colhida nunca sobrescreve uma com `owner: user` (as palavras registradas do próprio Giovanni); em vez disso, vira uma proposta listada no arquivo de revisão para o Giovanni decidir.
 
 ## Where it sits in the pipeline
-Chamado pelo [[hook-prompt]] a cada mensagem que o Giovanni manda ao Claude Code.
+Chamado pelo [[hook-prompt]] a cada mensagem que o Giovanni envia ao Claude Code.
 
 ## Who receives its output
-O [[events-log]].
+[[events-log]].

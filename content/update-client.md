@@ -12,16 +12,16 @@ sources: [QuizApp:app/src/main/java/dev/yuji/quiz/data/UpdateClient.kt, QuizApp:
 ---
 
 ## What it is
-How [[quizapp]] updates itself without an app store (ADR-0004).
+The `UpdateClient` is how [[quizapp]] updates itself without an app store (decision ADR-0004; an ADR is an architecture decision record, a short note that keeps the reasons for a decision).
 
 ## What it does
-Every time the app comes to the foreground (at most once per 30 s) it reads `latest.json` from [[release-feed]]; a higher versionCode opens a popup on the home screen (never during a session). Update downloads the APK, checks its SHA-256 and hands it to [[apk-installer]]. The same check also asks [[question-pool-updater]] for a newer question pack.
+Every time the app comes to the foreground (at most once per 30 seconds) it reads `latest.json` from the [[release-feed]]. A higher `versionCode` opens a popup on the home screen (never during a study session). Tapping "Update" downloads the APK (Android Package, the installable app file), checks its SHA-256 (Secure Hash Algorithm 256) fingerprint and hands it to the [[apk-installer]]. The same check also asks the [[question-pool-updater]] for a newer question pack.
 
 ## How it does it
-Reads through the GitHub contents API (`Accept: application/vnd.github.raw+json`), because raw.githubusercontent.com cached for 5 minutes; a 403 is reported as the hourly limit (60 requests per IP). The beta flavor follows the `bleeding-edge` branch, stable follows `main` ([[release-channels]]).
+It reads through the GitHub contents API (application programming interface: a web interface for reading repository files) with the header `Accept: application/vnd.github.raw+json`, because the address `raw.githubusercontent.com` cached files for 5 minutes. An error 403 is reported as the hourly limit (60 requests per IP address). The beta flavor follows the `bleeding-edge` branch, the stable one follows `main` ([[release-channels]]).
 
 ## Where it sits in the pipeline
-Between [[release-feed]] on GitHub and [[apk-installer]] on the phone.
+Between the [[release-feed]] on GitHub and the [[apk-installer]] on the phone.
 
 ## Who receives its output
-[[apk-installer]].
+The [[apk-installer]].

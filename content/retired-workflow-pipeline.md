@@ -12,16 +12,16 @@ reviewed: 2026-10-22
 ---
 
 ## What it is
-The old way the Claude instances shared memory and coordinated: the repo `claude-workflow-backup` with gui-code-protocol (numbered logbooks, "seen" cursors, owner folders), sync scripts, an event-memory project and daily/rollback timers. Retired.
+This is the old way in which the Claude instances shared memory and coordinated their work, and it is retired: it must not be used or resumed. It lived in a repository called `claude-workflow-backup` and consisted of a protocol called gui-code-protocol (numbered logbooks, "seen" markers and folders per owner), synchronisation scripts, an event-memory project and daily and rollback timers.
 
 ## What it does
-Nothing any more. Its repo is gone; the orphaned dev worktree was archived on 2026-10-22 to `~/archive/claude-workflow-dev-2026-10-22.tar.gz`. Its only legacy is that it once filled `~/.claude/skills`.
+Nothing any more. Its repository is gone; the leftover development copy was archived on 2026-10-22 as `~/archive/claude-workflow-dev-2026-10-22.tar.gz` (a compressed archive file). Its only legacy is that it once filled the folder `~/.claude/skills`.
 
 ## How it does it
-Replaced by [[workflow-memory]] (one write primitive and one pure function instead of a protocol), as recorded in ADR-0002/0003 there. Its rules (logbooks, sync.sh, sandbox_check.sh) must never be followed or resumed.
+It was replaced by [[workflow-memory]], which uses one way of writing (adding a new file) and one function that computes the current state, instead of a protocol between machines. The decision is recorded in ADR-0002 and ADR-0003 there (an ADR, "architecture decision record", is a short note recording one decision and its reasons). Its rules (logbooks, `sync.sh`, `sandbox_check.sh`) must never be followed or resumed.
 
 ## Where it sits in the pipeline
 History only.
 
 ## Who receives its output
-No one; if its history is needed, read the tarball.
+No one; if its history is ever needed, read the archive file.

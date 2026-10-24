@@ -12,16 +12,19 @@ sources: [QuizApp:core/src/main/java/dev/yuji/quiz/domain/AnswerGrader.kt]
 ---
 
 ## What it is
-Turns a multiple-choice answer into an Anki grade, because a quiz cannot ask the player to grade themselves.
+Anki-style spaced repetition needs a "grade" for every answer (Again, Hard, Good, Easy). In a flashcard app the player grades themselves; in a quiz they cannot, because the app already knows if the answer was right. The `AnswerGrader` therefore turns a multiple-choice answer into a grade automatically.
 
 ## What it does
-Wrong → AGAIN. On a card already in REVIEW: correct in 10 s or more → HARD, correct in 2.5 s or less → EASY. Otherwise GOOD. HARD and EASY are never given to cards still in (re)learning, so a lucky one-in-three guess cannot skip learning and a slow correct answer there always passes (requirement GR-1).
+- A wrong answer → AGAIN.
+- On a card already in the REVIEW phase: correct in 10 s or more → HARD; correct in 2.5 s or less → EASY.
+- Otherwise → GOOD.
+HARD and EASY are never given to cards still in (re)learning. Reason: a lucky guess (one in three) must not let a card skip learning, and a slow correct answer there always passes (requirement GR-1).
 
 ## How it does it
-A pure function of correctness, response time and phase; thresholds in `GraderConfig`.
+It is a pure function (the same input always gives the same output) of three things: whether the answer was correct, the response time and the card's phase. The time thresholds are kept in `GraderConfig`.
 
 ## Where it sits in the pipeline
-First step after the player answers, before [[spaced-repetition-scheduler]].
+The first step after the player answers, before the [[spaced-repetition-scheduler]].
 
 ## Who receives its output
-[[spaced-repetition-scheduler]].
+The [[spaced-repetition-scheduler]].

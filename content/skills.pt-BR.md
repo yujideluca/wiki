@@ -1,24 +1,24 @@
 ---
 id: skills
 lang: pt-BR
-source_hash: 9b0e6662b48a
+source_hash: 18be4ef4b712
 title: Skills
 ---
 
 ## What it is
-As skills do Claude do Giovanni: instruções empacotadas que o Claude carrega quando aparece uma tarefa daquele tipo. As cópias locais do Claude Code ficam em `~/.claude/skills`; o app do Claude tem as suas próprias ([[claude-ai-skills]]).
+Uma skill é um conjunto empacotado de instruções que o Claude carrega quando surge uma tarefa desse tipo ([documentação de skills](https://docs.claude.com/en/docs/claude-code/skills)). Pense nela como um capítulo de um livro de receitas que o Claude lê só quando o pedido combina: um capítulo sobre corrigir alemão, outro sobre depuração, outro sobre conserto do notebook. Cada skill é uma pasta com um arquivo `SKILL.md`: primeiro um nome, depois uma "descrição" que decide quando a skill é carregada, depois as instruções. As skills do Giovanni ficam em `~/.claude/skills`; o app Claude tem cópias próprias ([[claude-ai-skills]]).
 
 ## What it does
-Registram como o Giovanni quer as tarefas recorrentes: treino de alemão, respostas clínicas, análise de artigos, candidaturas na Alemanha, Magic: The Gathering, segurança no navegador, conserto do notebook e o processo de desenvolvimento (brainstorming, depuração, verificação, criação de skills).
+As skills registram como o Giovanni quer que tarefas recorrentes sejam feitas: treino de alemão, respostas clínicas, avaliação de artigos científicos, candidaturas à Alemanha, Magic: The Gathering, automação segura do navegador, conserto do notebook e o processo de desenvolvimento (brainstorming, depuração, verificação, revisões de manutenção, criação de testes e criação de skills). Cada skill tem uma página neste wiki que contém sua própria definição, então nunca é preciso abrir o arquivo `SKILL.md` para entendê-la.
 
 ## How it does it
-Cada skill é uma pasta com um `SKILL.md` (nome, uma descrição que decide quando ela é acionada, e as instruções). Skills novas ou refeitas passam pela [[skill-skill-forge]]. A pasta era preenchida pelo fluxo aposentado ([[retired-workflow-pipeline]]); hoje são pastas de verdade.
+O Claude vê a lista de nomes e descrições em toda conversa; quando um pedido combina com uma descrição, carrega o texto completo dessa skill e o segue. Skills novas ou refeitas passam pela [[skill-skill-forge]]. A pasta foi um dia preenchida pelo pipeline desativado ([[retired-workflow-pipeline]]); as skills agora são pastas comuns.
 
 ## Where it sits in the pipeline
-Ao lado de cada tarefa: a instância do Claude carrega uma skill quando a descrição dela combina com o pedido.
+Ao lado de toda tarefa: uma skill é carregada pela instância do Claude quando sua descrição combina com o pedido.
 
 ## Who receives its output
-O [[claude-code]], o [[remote-assistant]] e (pelas cópias) o [[claude-app]].
+O [[claude-code]], o [[remote-assistant]] e, por suas cópias, o [[claude-app]].
 
 ## Notes
 - [[skill-brainstorming]]

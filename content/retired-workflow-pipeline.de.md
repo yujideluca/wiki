@@ -1,22 +1,21 @@
 ---
 id: retired-workflow-pipeline
 lang: de
-source_hash: 93de72edfc3a
-title: Stillgelegt: claude-workflow-backup-Pipeline
-aliases: [altes Protokoll]
+source_hash: 72e43d3ac29d
+title: Stillgelegt: Pipeline claude-workflow-backup
 ---
 
 ## What it is
-Die alte Art, wie die Claude-Instanzen Gedächtnis teilten und sich abstimmten: das Repo `claude-workflow-backup` mit gui-code-protocol (nummerierte Logbücher, „gesehen“-Zeiger, Besitzerordner), Sync-Skripten, einem Event-Memory-Projekt und täglichen/Rollback-Timern. Stillgelegt.
+Das ist die alte Art, wie die Claude-Instanzen Gedächtnis teilten und ihre Arbeit abstimmten, und sie ist stillgelegt: Sie darf nicht benutzt oder wieder aufgenommen werden. Sie lebte in einem Repository namens `claude-workflow-backup` und bestand aus einem Protokoll namens gui-code-protocol (nummerierte Logbücher, „gesehen“-Markierungen und Ordner pro Eigentümer), Synchronisationsskripten, einem Ereignisgedächtnis-Projekt und täglichen sowie Rollback-Timern.
 
 ## What it does
-Nichts mehr. Das Repo ist weg; der verwaiste Entwicklungs-Worktree wurde am 22.10.2026 nach `~/archive/claude-workflow-dev-2026-10-22.tar.gz` archiviert. Einziges Erbe: Es füllte einst `~/.claude/skills`.
+Nichts mehr. Ihr Repository ist weg; die übrig gebliebene Entwicklungskopie wurde am 2026-10-22 als `~/archive/claude-workflow-dev-2026-10-22.tar.gz` archiviert (eine komprimierte Archivdatei). Ihr einziges Erbe ist, dass sie einmal den Ordner `~/.claude/skills` gefüllt hat.
 
 ## How it does it
-Ersetzt durch [[workflow-memory]] (eine Schreiboperation und eine reine Funktion statt eines Protokolls), festgehalten dort in ADR-0002/0003. Seine Regeln (Logbücher, sync.sh, sandbox_check.sh) dürfen nie befolgt oder wieder aufgenommen werden.
+Sie wurde durch [[workflow-memory]] ersetzt, das eine einzige Schreibweise (eine neue Datei anlegen) und eine einzige Funktion zur Berechnung des aktuellen Stands nutzt statt eines Protokolls zwischen Maschinen. Die Entscheidung steht in ADR-0002 und ADR-0003 dort (ein ADR, „Architecture Decision Record“, ist eine kurze Notiz, die eine Entscheidung und ihre Gründe festhält). Ihre Regeln (Logbücher, `sync.sh`, `sandbox_check.sh`) dürfen nie befolgt oder wieder aufgenommen werden.
 
 ## Where it sits in the pipeline
-Nur Geschichte.
+Nur noch Geschichte.
 
 ## Who receives its output
-Niemand; wird die Geschichte gebraucht, das Tarball lesen.
+Niemand; falls ihre Geschichte je gebraucht wird, die Archivdatei lesen.

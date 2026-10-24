@@ -12,16 +12,16 @@ sources: [workflow-memory:mem/cli.py, workflow-memory:mem/core.py]
 ---
 
 ## What it is
-The end-of-task report: `mem use REF1,REF2 --note "how"`, naming the memory entries (by their #code) that shaped the work.
+`mem use REF1,REF2 --note "how"` is the end-of-task report. It names the memory entries (by their short `#code`) that shaped the work, and says in a few words how they did.
 
 ## What it does
-Each use stretches an entry's half-life by `1 + log2(1 + uses)`, so rules that are used stay in the brief; for an open item it records when and how it was last checked. It is also the trigger point of the wiki update ([[end-of-task]]).
+Each reported use makes the entry fade more slowly: its "half-life" (the time after which its weight in the brief halves) is stretched by the factor `1 + log2(1 + uses)`. Rules that are really used therefore stay in the brief, and unused ones gradually drop out. For an open item, it also records when and how it was last checked. It is also the point at which the wiki update is triggered ([[end-of-task]]).
 
 ## How it does it
-Writes a `use` event with `target: ref1, ref2` and one short line (the note has a length limit).
+It writes a `use` event listing the entries as `target: ref1, ref2` and one short line of note (the note has a length limit).
 
 ## Where it sits in the pipeline
-The last step of every task, right after `wiki publish`.
+The very last step of every task, right after `wiki publish`.
 
 ## Who receives its output
-[[events-log]]; [[memory-fold]] counts the uses when ranking the brief.
+The memory log [[events-log]]; [[memory-fold]] counts the uses when it ranks entries for the brief.

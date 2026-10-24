@@ -1,21 +1,21 @@
 ---
 id: remote-assistant
 lang: pt-BR
-source_hash: e01b95e3fdf4
+source_hash: 41f62f766233
 title: Assistente remoto
 ---
 
 ## What it is
-Uma sessão do Claude Code que fica rodando o tempo todo no notebook e que o [[giovanni]] acessa pelo app do Claude no celular (Remote Control). Aparece no app como `yuji-nitro-assistant`.
+O assistente remoto é uma sessão do Claude Code que roda o tempo todo no notebook e que o [[giovanni]] alcança pelo app Claude no celular, por um recurso chamado Remote Control. No app ele aparece como `yuji-nitro-assistant`. Pense nele como uma segunda porta para o mesmo notebook: o mesmo Claude, os mesmos repositórios, mas acessível de qualquer lugar.
 
 ## What it does
-Tarefas curtas no notebook quando o Giovanni está fora: mesmas regras do [[claude-code]], gravando na memória como instância `assistant`.
+Faz tarefas curtas no notebook enquanto o Giovanni está longe dele. Segue as mesmas regras do [[claude-code]] e escreve na memória compartilhada com o nome de instância `assistant`, para a memória saber quem escreveu o quê.
 
 ## How it does it
-Mantida viva pelo serviço [[claude-assistant]]: uma sessão tmux roda `claude remote-control` num laço de reinício a partir da pasta `~/assistant`, cujo próprio CLAUDE.md pede respostas curtas, boas para o celular. O modo de permissão foi definido pelo próprio Giovanni.
+O serviço [[claude-assistant]] o mantém vivo: uma sessão tmux (um terminal que continua rodando sem janela) executa `claude remote-control` em um laço de reinício, a partir da pasta `~/assistant`. Essa pasta tem seu próprio CLAUDE.md (um arquivo de texto com instruções permanentes que o Claude Code lê ao iniciar) pedindo respostas curtas, boas de ler no celular. O modo de permissão dele (quanto o Claude pode fazer sem perguntar) foi escolhido pelo próprio Giovanni.
 
 ## Where it sits in the pipeline
-Uma segunda porta para o mesmo notebook e os mesmos repositórios do Claude Code.
+É uma segunda entrada para o mesmo notebook e os mesmos repositórios de projeto do Claude Code; a diferença é só como o Giovanni chega até ele.
 
 ## Who receives its output
-O mesmo que o [[claude-code]]: repositórios e o [[events-log]] (com `MEM_INSTANCE=assistant`).
+Os mesmos destinatários do [[claude-code]]: os repositórios dos projetos e o registro de memória [[events-log]] (as entradas levam a marca `MEM_INSTANCE=assistant`).

@@ -1,22 +1,24 @@
 ---
 id: answer-grader
 lang: de
-source_hash: 797aab00faa1
+source_hash: 8db6708f5c54
 title: AnswerGrader
-aliases: [Bewerter]
 ---
 
 ## What it is
-Macht aus einer Multiple-Choice-Antwort eine Anki-Note, weil ein Quiz den Spieler nicht selbst bewerten lassen kann.
+Spaced Repetition im Anki-Stil braucht für jede Antwort eine „Note“ (Again, Hard, Good, Easy). In einer Karteikarten-App bewertet der Spieler sich selbst; in einem Quiz geht das nicht, denn die App weiß schon, ob die Antwort richtig war. Der `AnswerGrader` macht deshalb aus einer Multiple-Choice-Antwort automatisch eine Note.
 
 ## What it does
-Falsch → AGAIN. Bei einer Karte, die schon in REVIEW ist: richtig in 10 s oder mehr → HARD, richtig in höchstens 2,5 s → EASY. Sonst GOOD. HARD und EASY gibt es nie für Karten im (Neu-)Lernen, damit ein glücklicher Treffer (eins zu drei) das Lernen nicht überspringt und eine langsame richtige Antwort dort immer besteht (Anforderung GR-1).
+- Falsche Antwort → AGAIN.
+- Bei einer Karte, die schon in der Phase REVIEW ist: richtig in 10 s oder mehr → HARD; richtig in 2,5 s oder weniger → EASY.
+- Sonst → GOOD.
+HARD und EASY werden nie an Karten vergeben, die noch (neu) gelernt werden. Grund: Ein Glückstreffer (eins zu drei) soll eine Karte nicht das Lernen überspringen lassen, und eine langsame richtige Antwort besteht dort immer (Anforderung GR-1).
 
 ## How it does it
-Eine reine Funktion aus Richtigkeit, Antwortzeit und Phase; Schwellen in `GraderConfig`.
+Es ist eine reine Funktion (dieselbe Eingabe ergibt immer dieselbe Ausgabe) aus drei Dingen: ob die Antwort richtig war, der Antwortzeit und der Phase der Karte. Die Zeitschwellen stehen in `GraderConfig`.
 
 ## Where it sits in the pipeline
-Erster Schritt nach der Antwort, vor [[spaced-repetition-scheduler]].
+Der erste Schritt nach der Antwort des Spielers, vor dem [[spaced-repetition-scheduler]].
 
 ## Who receives its output
-[[spaced-repetition-scheduler]].
+Der [[spaced-repetition-scheduler]].

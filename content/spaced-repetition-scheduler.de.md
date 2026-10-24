@@ -1,22 +1,21 @@
 ---
 id: spaced-repetition-scheduler
 lang: de
-source_hash: 2edefc4be95c
+source_hash: ff1ac9e54dfb
 title: SpacedRepetitionScheduler
-aliases: [Planer, Abstandsregeln]
 ---
 
 ## What it is
-Das Herz von [[quizapp]]: eine reine Funktion `(Fortschritt, Note, jetzt, Konfiguration) → Fortschritt`, die entscheidet, wann eine Karte wiederkommt. Eine SM-2-Variante mit Ankis Standardwerten.
+Der Scheduler ist das Herz von [[quizapp]]: eine reine Funktion `(progress, grade, now, config) → progress`, die entscheidet, wann eine Karte wiederkommt. Er ist eine Variante des Algorithmus SM-2 (SuperMemo 2, ein früher [Spaced-Repetition](https://en.wikipedia.org/wiki/SuperMemo)-Ansatz, den viele Karteikarten-Programme nutzen) mit den Standardparametern von [Anki](https://apps.ankiweb.net/).
 
 ## What it does
-Führt eine Karte durch die Phasen NEW → LEARNING → REVIEW (RELEARNING nach einem Fehler). Die erste richtige Antwort schickt eine Karte auf 3 Tage; jede weitere multipliziert den Abstand mit dem Leichtigkeitsfaktor (3 → 8 → 20 → 50 → 125 Tage). Eine falsche Antwort auf eine neue Karte kommt nach 10 Minuten wieder, nie früher (ADR-0007, die Abstandsregeln).
+Er führt eine Karte durch Phasen: NEW → LEARNING → REVIEW (RELEARNING nach einem Lapse, also einer falschen Antwort auf eine bekannte Karte). Die erste richtige Antwort schickt eine Karte auf 3 Tage; jede weitere richtige Antwort multipliziert das Intervall mit der „Ease“ (also 3 → 8 → 20 → 50 → 125 Tage). Eine falsche Antwort auf eine neue Karte wiederholt sich nach 10 Minuten, nie früher (Entscheidung ADR-0007, „die Abstandsregeln“; ein ADR ist ein Architecture Decision Record, eine kurze Notiz, die die Gründe einer Entscheidung festhält).
 
 ## How it does it
-Liest nie selbst die Uhr und hat keine Zufallsstreuung, ist also vollständig deterministisch (ADR-0003). Start-Leichtigkeit 2,5, Minimum 1,3, Easy-Bonus 1,3, Hard-Faktor 1,2 (`SchedulerConfig`). Festgenagelt durch `SpacingRulesTest`, `PeriodizationSimulationTest`, gemeinsame Konformitätsvektoren mit [[quizweb-domain]] und [[mutation-check]].
+Er liest nie selbst die Uhr und hat kein zufälliges „Fuzz“ in den Intervallen, ist also vollständig deterministisch (Entscheidung ADR-0003). Die Start-Ease ist 2,5, das Minimum 1,3, der Easy-Bonus 1,3 und der Hard-Faktor 1,2 (alles in `SchedulerConfig`). Das Verhalten ist festgenagelt durch die Tests `SpacingRulesTest` und `PeriodizationSimulationTest`, durch gemeinsame Konformitätsvektoren mit [[quizweb-domain]] und durch den [[mutation-check]].
 
 ## Where it sits in the pipeline
-Direkt nach [[answer-grader]] in der Antwort-Pipeline; sein Ergebnis ist der neue `CardProgress`, den [[study-controller]] speichert.
+Direkt nach dem [[answer-grader]] in der Antwort-Pipeline; seine Ausgabe ist der neue `CardProgress`, den der [[study-controller]] speichert.
 
 ## Who receives its output
-[[study-controller]] (und darüber [[progress-store]]).
+Der [[study-controller]] (und über ihn der [[progress-store]]).

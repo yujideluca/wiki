@@ -1,31 +1,30 @@
 ---
 id: end-of-task
 lang: de
-source_hash: a93720e775ec
+source_hash: 9b32b66ea893
 title: Ende einer Aufgabe (Wiki-Aktualisierungskette)
-aliases: [Aktualisierungskette]
 ---
 
 ## What it is
-Was Claude jedes Mal tut, wenn es eine Aufgabe beendet, damit Gedächtnis und Wiki nie hinter dem Gebauten zurückbleiben (von Giovanni am 22.10.2026 entschieden: die Wiki-Aktualisierung hängt an `mem use`).
+Diese Seite beschreibt, was Claude jedes Mal tut, wenn eine Aufgabe fertig ist, damit Gedächtnis und Wiki nie hinter dem zurückbleiben, was tatsächlich gebaut wurde. Giovanni hat am 2026-10-22 entschieden, dass die Wiki-Aktualisierung an den Bericht `mem use` gekoppelt ist.
 
 ## What it does
-Aktualisiert die Seiten für das Geänderte (neue, geänderte, stillgelegte Begriffe, mit Übersetzungen), veröffentlicht sie durch die Prüfungen und meldet dann, welche Gedächtniseinträge die Arbeit geprägt haben.
+Claude aktualisiert die Wiki-Seiten zu allem, was sich geändert hat (neue, geänderte oder stillgelegte Dinge, jeweils mit deutscher und portugiesischer Übersetzung), veröffentlicht sie durch die Inhaltsprüfungen und meldet dann, welche Gedächtniseinträge die Arbeit geprägt haben.
 
 ## How it does it
-Eine Regel in [[global-claude-md]]; die Prüfungen in [[wiki-check]]; das Sicherheitsnetz [[wiki-hook-stop]].
+Die Regel steht in [[global-claude-md]]; die Prüfungen, die das Veröffentlichen absichern, stehen in [[wiki-check]]; und ein Sicherheitsnetz, [[wiki-hook-stop]], erinnert Claude, falls es das vergessen hat.
 
 ## Where it sits in the pipeline
-Der letzte Schritt jeder Programmieraufgabe in jedem Projekt.
+Es ist der letzte Schritt jeder Programmieraufgabe in jedem Projekt.
 
 ## Who receives its output
-[[wiki-content]], [[github]] und [[events-log]].
+Der Wiki-Inhalt ([[wiki-content]]), [[github]] (wo das Wiki gespeichert ist) und das Gedächtnisprotokoll [[events-log]].
 
 ## Steps
-1. Die Arbeit der Aufgabe ist erledigt und geprüft ([[skill-verification-before-completion]]).
-2. Claude aktualisiert oder erstellt die englischen Seiten in `~/dev/wiki/content` für das Geänderte, dann die Versionen de und pt-BR ([[wiki-content]]).
-3. Was über die Seitenschwelle gewachsen ist, bekommt eine eigene Seite (Beförderungsregel, [[wiki-check]]).
-4. `wiki publish -m "…"` prüft lokal, baut, committet nur content/ und pusht ([[wiki-cli]]).
-5. Die laufende Seite liefert die neuen Daten sofort aus ([[wiki-site]], [[wiki-router]]).
-6. `mem use REF… --note "wie"` meldet die genutzten Gedächtniseinträge ([[mem-use]]).
-7. Am Ende der Runde bestätigt [[wiki-hook-stop]], dass nichts vergessen wurde, und [[hook-stop]] pusht die Gedächtnisereignisse.
+1. Die Arbeit der Aufgabe ist erledigt und durch ausgeführte Prüfungen belegt ([[skill-verification-before-completion]]).
+2. Claude aktualisiert oder erstellt die englischen Seiten in `~/dev/wiki/content` für das, was sich geändert hat, danach die deutschen und brasilianisch-portugiesischen Fassungen ([[wiki-content]]).
+3. Alles, was die Seitenschwelle überschritten hat, bekommt eine eigene Seite (die Beförderungsregel, durchgesetzt von [[wiki-check]]).
+4. `wiki publish -m "…"` prüft den Inhalt, baut die Seite, committet nur den Ordner `content/` und lädt ihn hoch ([[wiki-cli]]).
+5. Die Live-Seite liefert die neuen Daten sofort aus ([[wiki-site]], [[wiki-router]]).
+6. `mem use REF… --note "how"` meldet die verwendeten Gedächtniseinträge ([[mem-use]]).
+7. Wenn der Durchgang endet, bestätigt [[wiki-hook-stop]], dass nichts vergessen wurde, und [[hook-stop]] lädt die Gedächtnisereignisse hoch.

@@ -12,16 +12,16 @@ sources: [remote-terminal:setup-sudo.sh]
 ---
 
 ## What it is
-`~/dev/remote-terminal/setup-sudo.sh`: the one-time, re-runnable setup for reaching the laptop's terminal from the phone.
+`~/dev/remote-terminal/setup-sudo.sh` is a one-time setup script (it can safely be run again) that makes it possible to open the laptop's terminal from the phone. A terminal is the text window where commands are typed; reaching it remotely means Giovanni can run commands on the laptop from anywhere.
 
 ## What it does
-Installs OpenSSH server, [[tailscale]] and tmux from official repositories; configures SSH for keys only, only user `yuji`, no root and no passwords; adds the phone's public key if given.
+It installs three things from official sources: an OpenSSH server (the program that accepts [SSH](https://en.wikipedia.org/wiki/Secure_Shell), Secure Shell, encrypted remote logins), [[tailscale]] (a private network between Giovanni's devices) and tmux (a terminal that keeps running when you disconnect). It then locks SSH down: only keys (no passwords), only the user `yuji`, no root login. If given the phone's public key, it authorises the phone.
 
 ## How it does it
-Bash run with sudo by Giovanni (`sudo bash ~/dev/remote-terminal/setup-sudo.sh ["ssh-ed25519 … phone"]`); `set -euxo pipefail` and `sshd -t` before restarting. Since 2026-10-24 it is a private GitHub repository (`yujideluca/remote-terminal`) with a gate, CI and the [[pipeline-check]] pre-push check.
+It is a [Bash](https://www.gnu.org/software/bash/) script that Giovanni runs with administrator rights: `sudo bash ~/dev/remote-terminal/setup-sudo.sh ["ssh-ed25519 … phone"]`. It stops at the first error (`set -euxo pipefail`) and checks the SSH configuration with `sshd -t` before restarting the service, so a typo cannot lock Giovanni out. Since 2026-10-24 it is a private GitHub repository (`yujideluca/remote-terminal`) with a quality gate, continuous integration (CI, automatic checks that run on every push) and the [[pipeline-check]] pre-push check.
 
 ## Where it sits in the pipeline
-The base of remote access to the [[acer-nitro]].
+It is the base of all remote access to the [[acer-nitro]].
 
 ## Who receives its output
 [[tailscale]] and the SSH service.

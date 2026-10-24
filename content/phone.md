@@ -11,16 +11,16 @@ reviewed: 2026-10-22
 ---
 
 ## What it is
-Giovanni's Android phone, a Motorola edge 50 fusion: where [[quizapp]] is used, and the device every UI change is tried on.
+This is Giovanni's Android phone, a Motorola edge 50 fusion. It is where [[quizapp]] is used, and the device on which every change to the app's screens is tried.
 
 ## What it does
-Runs the stable and beta QuizApp side by side, receives updates from [[release-feed]], and is driven over adb during the debug pass after coding ([[skill-adb-android-control]]). Also runs the Claude app ([[claude-app]]), which reaches the [[remote-assistant]].
+It runs the stable and the beta version of QuizApp side by side, receives updates from the [[release-feed]], and is driven over adb (the Android Debug Bridge, a tool that lets a computer control a phone) during the debug pass after coding ([[skill-adb-android-control]]). It also runs the [[claude-app]], which reaches the [[remote-assistant]].
 
 ## How it does it
-Connected to the laptop by USB (adb); reaches the internet for updates and this wiki.
+It is connected to the laptop by a USB cable (for adb) and reaches the internet for updates and for this wiki.
 
 ## Where it sits in the pipeline
-The end of the QuizApp pipeline.
+The end of the QuizApp pipeline: the point where what was built is finally used.
 
 ## Who receives its output
 Giovanni.

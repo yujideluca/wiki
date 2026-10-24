@@ -1,21 +1,21 @@
 ---
 id: wiki
 lang: de
-source_hash: 7b48652c48e1
+source_hash: e6dac1a598c3
 title: Wiki (diese Seite)
 ---
 
 ## What it is
-Diese Seite: ein Wiki aller Projekte, Programme, Skills und Abläufe in Giovannis Systemen, mit einer Karte im Stil von Dark, die zeigt, wie sie zusammenhängen. Repo `yujideluca/wiki` (privat), Ordner `~/dev/wiki`. Am 22.10.2026 aus [[project-template]] gestartet.
+Diese Website ist ein Wiki: eine Enzyklopädie aller Projekte, Programme, Skills und Abläufe in Giovannis Systemen, mit einer Karte, die zeigt, wie sie zusammenhängen. Jedes Thema hat seine eigene Seite, so geschrieben, dass ein Leser, der nichts über das System oder seine Fachsprache weiß, folgen kann. Ein Wort neu? Öffne das [[glossary]], das die auf den Seiten verwendeten Begriffe erklärt. Das Repository `yujideluca/wiki` ist privat, der Ordner ist `~/dev/wiki`, und das Projekt wurde am 2026-10-22 aus [[project-template]] gestartet.
 
 ## What it does
-Lässt Giovanni eine Architekturfrage nach einer Suche und höchstens zwei Klicks beantworten: Suche mit Autovervollständigung, über einen Punkt fahren zeigt in vier Kästen, was er ist, ein Klick öffnet den Artikel ([[wiki-frontend]]). Bleibt automatisch aktuell, am Ende jeder Aufgabe ([[end-of-task]]).
+Es lässt Giovanni eine Architekturfrage nach einer Suche und höchstens zwei Klicks beantworten: Suche mit Vorschlägen beim Tippen, über einen Punkt der Karte fahren, um in vier Kästen zu sehen, was er ist, auf den Punkt klicken für die vollständige Seite ([[wiki-frontend]]). Es wird am Ende jeder Aufgabe automatisch aktuell gehalten ([[end-of-task]]).
 
 ## How it does it
-Inhalte sind Markdown-Dateien mit Kopfteil ([[wiki-content]]), geprüft von [[wiki-check]] und von [[wiki-build]] in JSON verwandelt. Das Frontend ist in Elm geschrieben ([[wiki-frontend]]), das Backend in Elixir ([[wiki-server]]) mit Google-Anmeldung für ein Konto und einer Attrappe für alle anderen ([[wiki-router]], [[decoy-page]]). Im Web erreichbar über [[tailscale-funnel]]. Sprachen: Englisch, Deutsch, brasilianisches Portugiesisch.
+Der Inhalt besteht aus Markdown-Textdateien, jede mit einem kleinen Kopf ([[wiki-content]]); sie werden von [[wiki-check]] geprüft und von [[wiki-build]] in JSON-Daten (JavaScript Object Notation) verwandelt. Der sichtbare Teil ist in Elm geschrieben ([[wiki-frontend]]); der Server ist in Elixir geschrieben ([[wiki-server]]) und lässt nur ein Google-Konto hinein, allen anderen zeigt er einen Köder ([[wiki-router]], [[decoy-page]]). Im Internet ist es über [[tailscale-funnel]] erreichbar. Die Sprachen sind Englisch, Deutsch und brasilianisches Portugiesisch.
 
 ## Where it sits in the pipeline
-Neben [[workflow-memory]]: Das Gedächtnis hält Regeln und Vorlieben, das Wiki beschreibt, was existiert und wie es funktioniert, und verlinkt Gedächtniseinträge, statt sie zu kopieren.
+Neben [[workflow-memory]]: Das Gedächtnis enthält Regeln und Vorlieben, das Wiki beschreibt, was es gibt und wie es funktioniert, und verlinkt auf Gedächtniseinträge, statt sie zu kopieren.
 
 ## Who receives its output
 [[giovanni]], im Browser auf dem Laptop oder dem Handy.

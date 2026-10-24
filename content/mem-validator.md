@@ -12,16 +12,16 @@ sources: [workflow-memory:mem/validate.py]
 ---
 
 ## What it is
-The privacy and format guard of the memory, whoever the writer is. Its patterns for secrets, phone numbers and CPF live in `mem/privacy-patterns.tsv`, the one list that the wiki's privacy scan ([[wiki-check]]) also uses.
+The validator is the privacy and format guard of the memory, whoever the writer is. Its patterns for secrets, phone numbers and CPF numbers (Cadastro de Pessoas Físicas, the Brazilian personal tax number) are kept in `mem/privacy-patterns.tsv`, the one list that the wiki's own privacy scan ([[wiki-check]]) also uses.
 
 ## What it does
-Rejects tokens and keys, e-mail addresses, phone numbers and CPF numbers, and malformed events. Rejected files move to `quarantine/` with a `.reason` note and appear in REVIEW. There is deliberately no health-vocabulary filter (Giovanni's decision, 2026-10-19); not storing clinical data about other people is a standing rule, not an automatic check.
+It rejects tokens and keys, e-mail addresses, phone numbers, CPF numbers and malformed events. A rejected file is moved to the `quarantine/` folder with a `.reason` note and appears in the review file. There is deliberately no filter for health vocabulary (Giovanni's decision of 2026-10-19); not storing clinical data about other people is a standing rule that Claude follows, not an automatic check.
 
 ## How it does it
-`check_event` per event; `load_checked` splits valid from invalid; `quarantine` moves the bad ones. Tested by `test_privacy_boundary`.
+The function `check_event` examines one event, `load_checked` separates valid from invalid events, and `quarantine` moves the bad ones. It is tested by `test_privacy_boundary`.
 
 ## Where it sits in the pipeline
 Before every write by [[mem]], and on GitHub in [[mem-action]].
 
 ## Who receives its output
-[[memory-fold]] (only valid events) and [[memory-views]] (REVIEW lists the quarantined).
+[[memory-fold]] (only valid events) and [[memory-views]] (the review file lists what was quarantined).

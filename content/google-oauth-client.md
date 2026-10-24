@@ -11,16 +11,16 @@ reviewed: 2026-10-22
 ---
 
 ## What it is
-The "Google login key" Giovanni created in Google Cloud Console (project `wiki`): a Web-application OAuth client whose only redirect URI is `https://yuji-nitro.tailed3a22.ts.net/auth/google/callback`.
+To let people sign in with their Google account, a website must first be registered with Google. The result of that registration is the "Google login key" that Giovanni created in the [Google Cloud Console](https://console.cloud.google.com/) (project `wiki`): a web-application OAuth client (OAuth, Open Authorization, is the standard through which Google tells a website who is signing in, see [OAuth](https://en.wikipedia.org/wiki/OAuth)). Its only redirect address (where Google sends the browser back after sign-in) is `https://yuji-nitro.tailed3a22.ts.net/auth/google/callback`.
 
 ## What it does
-Lets [[wiki-router]] ask Google who is signing in. Its audience is left in Testing with `yujideluca@gmail.com` as the only test user, a second lock: Google itself refuses other accounts.
+It lets the [[wiki-router]] ask Google who is signing in. The project's audience is left in "Testing" mode with `yujideluca@gmail.com` as the only test user, which is a second lock: Google itself refuses other accounts.
 
 ## How it does it
-Client id and secret are stored only in `~/.config/wiki/oauth.env` (mode 600), read by [[wiki-service]]; never in git, never in chat.
+The client id and the client secret (the "password" of the website towards Google) are stored only in `~/.config/wiki/oauth.env` (readable only by the owner, file mode 600) and are read by the [[wiki-service]]. They are never in git and never shown in chat.
 
 ## Where it sits in the pipeline
 Outside the laptop, at Google.
 
 ## Who receives its output
-[[wiki-router]] (through the sign-in redirect).
+The [[wiki-router]], through the sign-in redirect.

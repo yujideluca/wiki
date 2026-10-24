@@ -12,16 +12,16 @@ sources: [QuizApp:core/src/main/java/dev/yuji/quiz/domain/ActivityCalendar.kt, Q
 ---
 
 ## What it is
-The compact month calendar at the top of the home screen that shows which days Giovanni trained.
+The streak calendar is the compact month calendar at the top of the home screen of [[quizapp]]. It shows which days Giovanni trained. A "streak" is the number of days in a row on which something was done.
 
 ## What it does
-A day with at least one answer counts as trained. Shows the current streak (an empty today does not break a streak that ran through yesterday), the longest streak and the days this month; each trained day is coloured light yellow → orange → orange-red at 100+ answers (`HeatColor`).
+A day with at least one answer counts as trained. The calendar shows the current streak (an empty today does not break a streak that ran through yesterday), the longest streak and the days trained this month. Each trained day is coloured from light yellow to orange to orange-red at 100 or more answers (`HeatColor`).
 
 ## How it does it
-Pure logic in `ActivityCalendar.kt` over the history in [[training-store]]; drawn by `ui/CalendarCard.kt`. Previous/next month arrows, Monday first, no future months.
+The logic is pure code in `ActivityCalendar.kt` working on the history in the [[training-store]]; the drawing is done by `ui/CalendarCard.kt`. There are arrows for the previous and next month, the week starts on Monday, and future months cannot be shown.
 
 ## Where it sits in the pipeline
-Reads [[training-store]], displayed by [[study-view-model]] on the home screen.
+Reads the [[training-store]]; displayed by the [[study-view-model]] on the home screen.
 
 ## Who receives its output
-[[study-view-model]].
+The [[study-view-model]].

@@ -1,21 +1,21 @@
 ---
 id: claude-auto-memory
 lang: pt-BR
-source_hash: beb58ec2ef19
-title: Memória automática do Claude Code
+source_hash: cd7b746e912a
+title: Auto-memória do Claude Code
 ---
 
 ## What it is
-A pequena memória em arquivos do próprio Claude Code para sessões iniciadas na pasta pessoal: um fato por arquivo mais o índice `MEMORY.md`, carregado em toda sessão desse tipo.
+O Claude Code tem uma pequena memória própria, separada da compartilhada. É uma pasta de arquivos de texto curtos, um fato por arquivo, mais um arquivo de índice chamado `MEMORY.md`. É usada em conversas iniciadas na pasta pessoal, e o índice é carregado no começo de cada uma delas. Essa é a "auto-memory" descrita no [guia de memória do Claude Code](https://docs.claude.com/en/docs/claude-code/memory).
 
 ## What it does
-Guarda notas próprias do notebook: como verificar o assistente remoto, o projeto German Quiz, caminhos das ferramentas no espaço do usuário, a regra de depurar depois de programar, que o aviso do deutsch-gespraech não é para o Claude Code e que o fluxo antigo está aposentado.
+Guarda notas que só importam neste notebook: como verificar o assistente remoto, o projeto German Quiz, onde estão instaladas as ferramentas de espaço de usuário, a regra de que o código deve ser depurado antes de ser dado como pronto, o fato de que um certo aviso sobre uma skill de conversação em alemão não é para o Claude Code, e o fato de que o pipeline antigo foi desativado.
 
 ## How it does it
-Escrita pelo Claude Code no formato de memória (cabeçalho + fato + porquê + como aplicar). Regras compartilhadas entre instâncias ficam no [[workflow-memory]].
+O próprio Claude Code escreve esses arquivos, em um formato fixo (um pequeno cabeçalho, o fato, por que importa, como aplicar). Regras que precisam ser compartilhadas entre todas as instâncias do Claude não ficam aqui; vão para a memória compartilhada [[workflow-memory]].
 
 ## Where it sits in the pipeline
-Carregada no [[chat-start]] ao lado do [[global-claude-md]].
+Carregada no início de uma conversa ([[chat-start]]), junto com as instruções de [[global-claude-md]].
 
 ## Who receives its output
 O [[claude-code]].

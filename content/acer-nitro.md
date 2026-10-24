@@ -7,20 +7,20 @@ project: laptop-setup
 status: active
 fed_by: []
 feeds: []
-reviewed: 2026-10-22
+reviewed: 2026-10-24
 ---
 
 ## What it is
-Giovanni's laptop: an Acer Nitro with an Nvidia card running Kubuntu (KDE Plasma), host name `yuji-nitro`. Everything in `~/dev` lives here.
+This is Giovanni's laptop: an Acer Nitro with an Nvidia graphics card, running [Kubuntu](https://kubuntu.org/) (a version of the [Linux](https://en.wikipedia.org/wiki/Linux) operating system with the KDE Plasma desktop). On the network it is called `yuji-nitro`. Almost everything in this wiki lives on it: the project folders in `~/dev` (the `~` means Giovanni's home folder), the Claude programs, and the web server of this wiki.
 
 ## What it does
-Runs Claude Code, the always-on [[claude-assistant]], the builds of every project and this wiki's server ([[wiki-service]]).
+It is the machine where the work happens. It runs [[claude-code]] (the AI assistant that writes the code), the always-on [[claude-assistant]], the builds and tests of every project, and the server of this wiki ([[wiki-service]]). When the laptop is off or asleep, none of these run, so this wiki is unreachable then.
 
 ## How it does it
-User account with linger enabled, so user services keep running without a login; repairs follow [[skill-reparo-kubuntu]] and are made permanent across reboots.
+The user account has "linger" switched on. Normally a user's background programs stop when they log out; with linger they keep running without anyone logged in, which is what lets the services above start at boot. Problems with the laptop itself (screen, drivers, sound, network) are handled with the skill [[skill-reparo-kubuntu]], and each fix is made permanent so it survives a restart.
 
 ## Where it sits in the pipeline
-The machine under [[laptop-setup]].
+The "pipeline" in this wiki is the chain of steps work passes through. The laptop is the ground floor under all of it: the project [[laptop-setup]] describes what is installed on it, and everything else runs on top.
 
 ## Who receives its output
-Every Claude instance that runs locally.
+Every Claude instance that runs locally (see [[claude-code]] and [[remote-assistant]]), and every project that is built on it.

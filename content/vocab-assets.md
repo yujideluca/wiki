@@ -12,16 +12,16 @@ sources: [QuizApp:app/src/main/assets]
 ---
 
 ## What it is
-The JSON files inside the APK: `assets/vocab/*.json` (built by [[build-vocab]]) and `assets/i18n/<de|pt|es>.json` (translations of the English explanation text).
+These are the [JSON](https://en.wikipedia.org/wiki/JSON) files (JavaScript Object Notation, a plain-text data format) inside the APK (Android Package, the app's installable file): `assets/vocab/*.json`, built by [[build-vocab]], and `assets/i18n/<de|pt|es>.json`, the translations of the English explanation texts. "Assets" are files packaged with an app that are not code.
 
 ## What it does
-Give the app its whole question pool offline, and translate hints, error types and rules into the app language.
+They give the app its whole question pool offline, and translate hints, error types and rules into the language of the app.
 
 ## How it does it
-Read at start by `VocabularySource` and `ContentTranslationSource`, parsed in [[quizapp-core]]; `ContentTranslationsTest` fails when a translation is missing.
+They are read at start by `VocabularySource` and `ContentTranslationSource` and parsed in [[quizapp-core]]. The test `ContentTranslationsTest` fails if a translation is missing.
 
 ## Where it sits in the pipeline
-Between [[build-vocab]] and [[card-factory]].
+Between [[build-vocab]] and the [[card-factory]].
 
 ## Who receives its output
-[[card-factory]]; the i18n files are copied to [[quizweb]].
+The [[card-factory]]; the i18n files (i18n means "internationalisation", i followed by 18 letters and n: text in several languages) are also copied to [[quizweb]].

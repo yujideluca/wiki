@@ -1,22 +1,21 @@
 ---
 id: drachenkurve
 lang: de
-source_hash: 5261225cbb64
+source_hash: b229032015b6
 title: drachenkurve (Drachenkurve)
-aliases: [Startsymbol]
 ---
 
 ## What it is
-Eine Processing-Skizze, die die Heighway-Drachenkurve zeichnet, als eigenständige App exportiert.
+Eine Drachenkurve ist ein [Fraktal](https://en.wikipedia.org/wiki/Fractal): eine Form, die entsteht, wenn man einen Papierstreifen immer wieder in der Mitte faltet und entfaltet (der Heighway-Drache, siehe [Drachenkurve](https://en.wikipedia.org/wiki/Dragon_curve)). `drachenkurve` ist ein [Processing](https://processing.org/)-Sketch (Processing ist eine auf Java basierende Programmierumgebung für Zeichnen und Kunst), der sie zeichnet, exportiert als eigenständige Anwendung.
 
 ## What it does
-Hat das Startsymbol von [[quizapp]] gerendert (Version 2.1): eine Drachenkurve von Pastellrosa bis Rot auf dunklem Grund.
+Sie hat das Startsymbol von [[quizapp]] (Version 2.1) gerendert: eine Drachenkurve von Pastellrosa bis Rot auf dunklem Hintergrund.
 
 ## How it does it
-Processing (`drachenkurve.pde`) mit exportiertem `build/`.
+Der Code liegt in der Datei `drachenkurve.pde`, dazu gibt es einen exportierten Ordner `build/`.
 
 ## Where it sits in the pipeline
-Ihre einzige Ausgabe ging in die Symbolressourcen von [[quizapp-app]].
+Ihre einzige Ausgabe floss in die Symbol-Ressourcen von [[quizapp-app]].
 
 ## Who receives its output
 [[quizapp-app]] (das Symbol).

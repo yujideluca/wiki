@@ -1,21 +1,21 @@
 ---
 id: quizweb-store
 lang: de
-source_hash: 9ae898a9446e
+source_hash: f58cb4471767
 title: QuizWeb store.js (localStorage)
 ---
 
 ## What it is
-Der Browserspeicher von [[quizweb]]: Fortschritt, Antwortverlauf, Tagesziel, Design und Sprache in `localStorage`.
+`store.js` ist der Browserspeicher von [[quizweb]]. Er hält Fortschritt, Antwortverlauf, Tagesziel, Thema und Sprache in `localStorage` ([localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) ist ein kleiner Schlüssel-Wert-Speicher, den jeder Browser einer Webseite anbietet).
 
 ## What it does
-Speichert und lädt alles; Einstellungen > Sicherung exportiert und importiert es, weil es nur im Browser dieses Geräts liegt.
+Er speichert und lädt alles. Da die Daten nur im Browser dieses Geräts liegen, exportiert und importiert Einstellungen > Sicherung sie.
 
 ## How it does it
-Jeder Zugriff ist abgesichert: Der private Modus von Safari kann Fehler werfen, dann arbeitet die App für die Sitzung mit einer Kopie im Speicher weiter.
+Jeder Zugriff ist abgesichert: Der private Modus von Safari kann beim Speichern einen Fehler auslösen, und dann läuft die App für diese Sitzung mit einer Kopie im Arbeitsspeicher weiter, statt abzustürzen.
 
 ## Where it sits in the pipeline
-Unter [[quizweb-controller]].
+Unter dem [[quizweb-controller]].
 
 ## Who receives its output
-[[quizweb-controller]].
+Der [[quizweb-controller]].

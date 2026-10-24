@@ -1,21 +1,21 @@
 ---
 id: wiki-router
 lang: de
-source_hash: 6de46422dca8
-title: Wiki-Router (Anmeldetor)
+source_hash: bbcf4cfc2c84
+title: Wiki-Router (Anmelde-Tor)
 ---
 
 ## What it is
-Die einzige Tür zum Wiki (`Wiki.Web.Router`): standardmäßig verweigert.
+Der Router (Elixir-Modul `Wiki.Web.Router`) ist die einzige Tür zum Wiki, und er folgt der Regel „standardmäßig verweigern“: Nichts wird gezeigt, wenn der Besucher nicht bewiesen hat, wer er ist.
 
 ## What it does
-Ohne eine Sitzung mit Giovannis bestätigter Google-E-Mail antwortet jede Seite mit der [[decoy-page]] und jeder Pfad unter `/data` oder `/assets` mit 404. `/auth/google` startet die Anmeldung; der Rückruf akzeptiert genau `yujideluca@gmail.com` mit `email_verified: true` und einem State, der zum Anmeldestart dieses Browsers passt; `/logout` beendet die Sitzung.
+Ohne eine Sitzung mit Giovannis verifizierter Google-E-Mail-Adresse antwortet jede Seite mit der [[decoy-page]], und jeder Pfad unter `/data` oder `/assets` antwortet „404 nicht gefunden“. Der Pfad `/auth/google` startet die Anmeldung; der Callback akzeptiert genau `yujideluca@gmail.com` mit `email_verified: true` und einem „State“, der zu dem passt, der beim Start der Anmeldung in diesem Browser gespeichert wurde; `/logout` beendet die Sitzung.
 
 ## How it does it
-Verschlüsseltes, signiertes Sitzungs-Cookie (HttpOnly, Secure, SameSite=Lax, 30 Tage), bei der Anmeldung erneuert. Jede Antwort ist `no-store` mit Sicherheitsheadern; die Content-Security-Policy der Attrappe verbietet jede Netzanfrage. Die Anmeldung selbst erledigt die Bibliothek Assent, nie Eigenbau. Tests mit AU-1…AU-6 markiert.
+Die Sitzung liegt in einem Cookie ([Cookie](https://en.wikipedia.org/wiki/HTTP_cookie): ein kleines Datenstück, das der Browser bei jeder Anfrage zurückschickt), das verschlüsselt, signiert, HttpOnly (Seitenskripte können es nicht lesen), Secure (nur über HTTPS, Hypertext Transfer Protocol Secure, das verschlüsselte Webprotokoll, gesendet) und SameSite=Lax (nicht bei Anfragen anderer Seiten mitgesendet) ist; es gilt 30 Tage und wird bei der Anmeldung erneuert. Jede Antwort ist mit `no-store` (nicht zwischenspeichern) markiert und trägt Sicherheits-Header; die CSP (Content Security Policy, eine Regel, die dem Browser sagt, was eine Seite laden darf) des Köders verbietet jede Netzwerkanfrage. Die Anmeldung selbst erledigt die Bibliothek Assent und wurde nie von Hand geschrieben. Abgedeckt ist es durch die Tests AU-1 bis AU-6.
 
 ## Where it sits in the pipeline
-In [[wiki-server]], hinter [[tailscale-funnel]]; das Herz von [[wiki-sign-in]].
+Im [[wiki-server]], hinter dem [[tailscale-funnel]]; es ist der Kern von [[wiki-sign-in]].
 
 ## Who receives its output
-Angemeldet: [[wiki-frontend]] und die Daten aus [[wiki-site]]. Alle anderen: [[decoy-page]].
+Wenn angemeldet: das [[wiki-frontend]] und die Daten der [[wiki-site]]. Alle anderen: die [[decoy-page]].

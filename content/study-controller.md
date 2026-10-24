@@ -12,16 +12,16 @@ sources: [QuizApp:app/src/main/java/dev/yuji/quiz/StudyController.kt]
 ---
 
 ## What it is
-The single facade the [[quizapp]] UI talks to: it wires store, clock, pipeline and engine together.
+The `StudyController` is the single entry point (a "facade": one simple front door in front of many parts) that the screens of [[quizapp]] talk to. It connects the storage, the clock, the card queue and the session engine.
 
 ## What it does
-Starts sessions, records each answer (grade → schedule → save), reports today's count toward the [[daily-goal]], and handles suspend/remove, reset, backup import/export.
+It starts study sessions, records each answer (grade → schedule → save), reports today's count toward the [[daily-goal]], and handles suspending and removing cards, resetting progress, and importing and exporting a backup.
 
 ## How it does it
-Calls [[card-factory]] for the cards, [[study-pipeline]] for the queue, [[study-session]] for the running session, [[answer-grader]] and [[spaced-repetition-scheduler]] for each answer, and writes through [[progress-store]] and [[training-store]]. Tested end to end, including persistence across sessions.
+It calls the [[card-factory]] for the cards, the [[study-pipeline]] for the queue, the [[study-session]] for the running session, the [[answer-grader]] and the [[spaced-repetition-scheduler]] for every answer, and writes through the [[progress-store]] and the [[training-store]]. It is tested end to end, including that progress survives from one session to the next.
 
 ## Where it sits in the pipeline
-The middle of `ui → StudyController → domain/content/data`.
+The middle of the layers `ui → StudyController → domain/content/data`.
 
 ## Who receives its output
-[[study-view-model]], which turns its results into screen state.
+The [[study-view-model]], which turns its results into what the screen shows.

@@ -12,16 +12,16 @@ sources: [QuizApp:tools/publish_content.sh]
 ---
 
 ## What it is
-Publishes a new question pool without a new APK (ADR-0012).
+`publish_content.sh` publishes a new question pool without building a new APK (Android Package, the installable app file). This is possible because of decision ADR-0012 (an ADR is an architecture decision record, a short note that keeps the reasons for a decision).
 
 ## What it does
-`publish_content.sh beta` checks the committed pool and puts it in the `content/` folder of [[release-feed]] on `bleeding-edge`, where the beta app finds it. `publish_content.sh promote` (Giovanni's call, like an APK) copies exactly that pack to `main` for the stable app and puts the same files on the web version ([[quizweb]]).
+`publish_content.sh beta` checks the committed pool and puts it in the `content/` folder of the [[release-feed]], on the `bleeding-edge` branch, where the beta app finds it. `publish_content.sh promote` (Giovanni's decision, just like for an APK) copies exactly that pack to the `main` branch for the stable app and puts the same files on the web version ([[quizweb]]).
 
 ## How it does it
-Bash; the web step works in a temporary worktree of the web repo's `origin/main`, so a web port waiting on a `web-<version>` branch is not disturbed.
+[Bash](https://www.gnu.org/software/bash/). The web step works in a temporary worktree (a second checked-out copy) of the web repository's `origin/main`, so a web port that is waiting on a `web-<version>` branch is not disturbed.
 
 ## Where it sits in the pipeline
-The content-only path of [[quizapp-release]]: edit TSV → [[build-vocab]] → commit → this script.
+The content-only path of the [[quizapp-release]]: edit the TSV (tab-separated values) files → [[build-vocab]] → commit → this script.
 
 ## Who receives its output
-[[release-feed]] (both branches) and [[quizweb-content]].
+The [[release-feed]] (both branches) and [[quizweb-content]].

@@ -1,21 +1,21 @@
 ---
 id: hook-session-start
 lang: de
-source_hash: e610c985eb91
+source_hash: 336796a2b8c1
 title: SessionStart-Hook (mem hook-session-start)
 ---
 
 ## What it is
-Der Claude-Code-Hook, der beim Chatstart läuft: `python3 ~/dev/workflow-memory/bin/mem hook-session-start` (Zeitlimit 40 s).
+Ein Hook ist ein kleines Programm, das [[claude-code]] automatisch ausführt, wenn ein bestimmtes Ereignis eintritt ([Hooks erklärt](https://docs.claude.com/en/docs/claude-code/hooks-guide)). Dieser läuft, wenn ein Chat beginnt: `python3 ~/dev/workflow-memory/bin/mem hook-session-start`, mit einem Zeitlimit von 40 Sekunden. Seine Aufgabe ist, dem neuen Chat sein Gedächtnis mitzugeben.
 
 ## What it does
-Holt das Gedächtnis-Repo, faltet die Ereignisse und gibt das [[session-brief]] für das aktuelle Projekt (den Ordnernamen des Chats) aus.
+Er lädt die neueste Version des Gedächtnisses von GitHub herunter, fasst die gespeicherten Ereignisse zum aktuellen Stand zusammen und gibt den [[session-brief]] für das aktuelle Projekt aus (das Projekt wird aus dem Namen des Ordners abgeleitet, in dem der Chat geöffnet wurde). Was ein Hook in diesem Moment ausgibt, wird dem Modell vorangestellt; so „erinnert“ sich Claude an Giovannis Vorlieben.
 
 ## How it does it
-Darf nie laut scheitern: Seine Ausgabe landet im Kontext des Modells, Fehler gehen daher nach `~/.local/state/mem/hook.log`. Offline nimmt es den zuletzt geholten Stand.
+Er darf nie laut scheitern, denn seine Ausgabe geht direkt in den Kontext des Modells: Eine Fehlermeldung dort würde den Chat verwirren. Fehler werden deshalb in eine Logdatei geschrieben, `~/.local/state/mem/hook.log`. Ist der Laptop offline, greift er auf den zuletzt geladenen Stand zurück, und der Brief weist dann darauf hin, dass das Gedächtnis veraltet sein kann.
 
 ## Where it sits in the pipeline
-Erster Schritt von [[chat-start]].
+Er ist der erste Schritt von [[chat-start]].
 
 ## Who receives its output
-[[session-brief]] → die Claude-Code-Sitzung.
+Der [[session-brief]] und über ihn die Claude-Code-Sitzung.

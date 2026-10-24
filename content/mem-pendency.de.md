@@ -1,21 +1,21 @@
 ---
 id: mem-pendency
 lang: de
-source_hash: 233324a439b0
+source_hash: c56b96c7a701
 title: Offene Punkte: Regeln (pendency.py)
 ---
 
 ## What it is
-Die Regeln für offene Punkte ([[mem-task]]): ein eigener Gedächtnisfluss mit eigenem Budget.
+Das sind die Regeln für „offene Punkte“ (siehe [[mem-task]]): unerledigte Ziele und bekannte Probleme, die Giovanni vor Augen gehalten werden. Sie bilden einen eigenen Ablauf im Gedächtnis mit eigenem Größenbudget, sodass eine Flut alter Vorlieben nie einen offenen Punkt verdrängen kann. Der Code steht in `mem/pendency.py`.
 
 ## What it does
-Nichts verfällt: Ein Punkt erscheint in jedem Chat, bis er gelöst, geparkt oder gelöscht ist. Standardmäßig überall sichtbar; nur wenn Giovanni es sagt, wird ein Punkt oder eine Kategorie projektabhängig (`mem scope project:X`). Budget 2.000 Tokens, getrennt vom Briefing; ein Punkt höchstens 500 Zeichen; die zuletzt aktiven zuerst.
+Nichts verfällt: Ein Punkt wird in jedem Chat gezeigt, bis er erledigt, geparkt oder gelöscht ist. Standardmäßig wird er in jedem Projekt gezeigt; nur wenn Giovanni es sagt, wird ein Punkt oder eine Kategorie auf ein Projekt beschränkt (`mem scope project:X`). Das Budget beträgt 2.000 Token (ein Token ist ein kleines Textstück, etwa drei Viertel eines Wortes), getrennt vom Budget des Briefs; ein Punkt darf höchstens 500 Zeichen haben; die zuletzt aktiven kommen zuerst.
 
 ## How it does it
-Der Sitzungsstart sagt immer, wie man festhält, löst, parkt, löscht und eingrenzt; werden Punkte gezeigt, kommt die Prüfregel dazu (vor dem Erinnern die Prüfung ausführen; gilt er nicht mehr, schließen; ungeprüft, „ungeprüft“ sagen). Entstanden, nachdem am 20.10.2026 ein Punkt aus der Erinnerung an das Gespräch als offen gemeldet wurde, obwohl er schon erledigt war.
+Der Sitzungsstart sagt immer, wie man einen Punkt festhält, löst, parkt, löscht und eingrenzt. Werden Punkte gezeigt, ergänzt er die Prüfregel: Vor der Erinnerung an Giovanni die Prüfung des Punktes ausführen; gilt er nicht mehr, ihn schließen; konnte er nicht geprüft werden, „unchecked“ sagen. Die Regel entstand, nachdem am 2026-10-20 ein Punkt aus der Erinnerung an das Gespräch als offen gemeldet wurde, obwohl er längst erledigt war.
 
 ## Where it sits in the pipeline
-Teil des Briefings, das [[hook-session-start]] baut.
+Teil des Briefs, den [[hook-session-start]] baut.
 
 ## Who receives its output
-[[session-brief]].
+Der [[session-brief]].

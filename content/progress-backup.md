@@ -12,16 +12,16 @@ sources: [QuizApp:core/src/main/java/dev/yuji/quiz/domain/ProgressBackup.kt, Qui
 ---
 
 ## What it is
-Settings > Backup in [[quizapp]]: one JSON file with everything needed to restore Giovanni's progress (ADR-0010).
+Settings > Backup in [[quizapp]] exports Giovanni's learning progress as one [JSON](https://en.wikipedia.org/wiki/JSON) file (JavaScript Object Notation, a plain-text data format) and can restore it (decision ADR-0010; an ADR is an architecture decision record, a short note that keeps the reasons for a decision). It is the safety net against a phone reset or a risky release.
 
 ## What it does
-Exports and imports: format version, card states, answer history, daily goal and theme. Import replaces the current progress in a single write.
+It exports and imports the format version, the state of each card, the answer history, the daily goal and the theme. An import replaces the current progress in a single write, so it either works completely or not at all.
 
 ## How it does it
-The codec lives in [[quizapp-core]]; files go through Android's document picker (`CreateDocument` / `OpenDocument`), so the user picks phone storage or Google Drive and the app needs no storage permission.
+The code that converts progress to and from the file (the codec) lives in [[quizapp-core]]. Files go through Android's document picker (`CreateDocument` and `OpenDocument`), so the user chooses phone storage or Google Drive and the app needs no storage permission.
 
 ## Where it sits in the pipeline
-Reads [[progress-store]] and [[training-store]]; its files end up on the phone, in Google Drive or in [[quiz-backups]].
+It reads the [[progress-store]] and the [[training-store]]; its files end up on the phone, in Google Drive or in [[quiz-backups]].
 
 ## Who receives its output
 Giovanni (the file) and [[quiz-backups]] on the laptop.

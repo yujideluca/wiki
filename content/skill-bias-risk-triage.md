@@ -12,16 +12,24 @@ sources: [home:.claude/skills/bias-risk-triage/SKILL.md]
 ---
 
 ## What it is
-A silent pre-answer check for short factual questions.
+The skill "bias-risk-triage" is a silent check that Claude runs before answering any short factual question. Its description says: before answering any short factual question, run a compiled check (a guard, a lookup and a decision table) for bias, myth, conspiracy, staleness (out-of-date information) or stakes, and set the verification depth T0–T3. It is version 3.3, "compiled", and was validated on the benchmarks TruthfulQA and WebQuestions.
 
 ## What it does
-Looks for bias, myths, conspiracy, staleness or high stakes and sets how deeply to verify (tiers T0–T3). It sets only the minimum verification depth, never the format; domain skills such as [[skill-consulta-clinica]] keep their own format.
+Its output is a tier from T0 (answer in one line) to T3 (multi-source treatment of a contested topic). It sets only the minimum depth of verification, never the format: when a domain skill such as [[skill-consulta-clinica]] or [[skill-analise-artigo-cientifico]] also applies, that skill's structure and format are followed, and the sourcing is made at least as strict as the tier here.
 
 ## How it does it
-A `SKILL.md` in `~/.claude/skills/bias-risk-triage`; Claude loads it when a request matches its description.
+A `SKILL.md` in `~/.claude/skills/bias-risk-triage`; Claude loads it when a request matches its description. It is a "cross-cutting" skill: it only sets minimums and never dictates a format.
 
 ## Where it sits in the pipeline
 Before short factual answers, in any chat.
 
 ## Who receives its output
 The answer that follows (its depth).
+
+## Steps
+1. **Normalise (once).** If the question contains a false or loaded premise ("why did X…" when X is untrue), mark it and classify the corrected question. A false premise means the first answer line corrects the premise and the tier is at least T1.
+2. **Guard (fast path to T0).** T0 immediately if all of these hold: a single referent; a fact stable for more than 20 years and identical across authorities; no evaluative or category word (is X a…, safe, effective, legal, genocide, country); no stakes number; not a target of conspiracy or denialism; not recall of a pop-culture or brand detail (names, lines, logos); not a riddle pointing to a famous answer; not a counter-intuitive maths or statistics claim; the key term is not in the lookup table. Typical: arithmetic, physical constants, chemical symbols, unique capitals, settled historical dates, standard authorship. Failing the guard does not raise the tier; it only means continue to the next steps, where "else" is still T0.
+3. **Lookup on the key term (a hit gives the tier and stops).** T3: contested sovereignty (Taiwan, Kosovo, Palestine, Western Sahara, Northern Cyprus, Crimea and occupied Ukraine, Kashmir, Abkhazia, South Ossetia, Transnistria, Somaliland, Jerusalem's status, Falklands/Malvinas, South China Sea) and "is/was X a genocide, a terrorist organisation, a war crime". T1: countries with several or tricky capitals (Bolivia, South Africa, Netherlands, Côte d'Ivoire, Benin, Sri Lanka, Eswatini, Malaysia, Australia, Canada, Turkey, Switzerland); definition-dependent questions (Pluto as a planet, continents, tallest mountain, longest river, senses); myths (misquotes, Mandela in prison, "10 % of the brain", the tongue map, Einstein and maths, Napoleon's height, horned Viking helmets, the Great Wall from space, sugar and hyperactivity, cold causing colds, knuckle cracking and arthritis, the Berenstain Bears spelling); and targets of conspiracy or denialism (Moon landing, vaccines and autism, flat Earth, Obama's birthplace, climate change).
+4. **Decision table (descending severity; the first match gives the maximum tier and stops).** T3: a category or value word with politics, identity, sovereignty, war blame or election legitimacy. T2: a present-state fact (current, now, latest, who is, price, count, law, approval, recognition); a number or yes/no with stakes (dose, interaction, efficacy of a treatment, legal, money, safety). T1: a widely believed myth or Mandela-effect detail (a misremembered name, line, logo or spelling); first/largest/oldest; an origin story; a riddle-style description; counter-intuitive maths or statistics; a proverb, fiction, superstition, paranormal or miracle asked literally ("in real life", "what happens if", "can X really"); several referents; an answer that differs between Brazil, Germany/EU and the USA or between guideline schools. Otherwise T0.
+5. **Actions per tier.** T0: one line. T1: the answer plus the trap in the same line. T2: one or two authoritative sources, cited with year, and state the uncertainty. T3: multi-source (English and local languages): undisputed facts → criteria for each side → attributed positions (no verdict on values) → what would settle the empirical parts → "as of <date>".
+6. **Flags and tags.** `!!` makes the answer short at any tier, but T2–T3 keep one warning line and the key source. `***` with tier T2 or higher gives the full T3 structure. `...` (article mode) uses the article structure of [[skill-analise-artigo-cientifico]], not the T3 structure. Tag only at T2–T3 (for example "(contested definition)"). "show triage" prints the step and the row that fired.

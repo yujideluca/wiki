@@ -11,5 +11,6 @@
   {"name": "actor", "colour": "#8fcf6a", "description": "Someone who acts: Giovanni or a Claude instance"},
   {"name": "process", "colour": "#e8d27a", "description": "A sequence of steps across several parts of the system"},
   {"name": "decision", "colour": "#c8c4bc", "description": "A recorded decision (ADR) or a rule with its reasons"},
+  {"name": "reference", "colour": "#a9b4c0", "description": "A page for looking things up, such as the glossary; it explains the others and draws no lines on the map"},
   {"name": "external", "colour": "#6e7681", "description": "A device or outside service the system depends on"}
 ]

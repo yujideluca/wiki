@@ -1,21 +1,21 @@
 ---
 id: wiki-quality-gate
 lang: de
-source_hash: e96e70cff52d
-title: Wiki-Qualitätstor
+source_hash: 845e5e02101d
+title: Wiki Quality Gate
 ---
 
 ## What it is
-Die einzige Definition von „bestanden“ für das Wiki, aus [[template-quality-gate]]; die CI führt dasselbe Skript aus.
+Das Quality Gate ist die eine Definition von „bestanden“ des Wikis, abgeleitet aus dem [[template-quality-gate]]. Die CI (Continuous Integration, die automatischen Prüfungen auf GitHub) führt dasselbe Skript aus.
 
 ## What it does
-Elixir-Tests (`mix test`: Prüfer, Build, Hook, Veröffentlichung, Anmeldetor, Attrappe), Elm-Tests (`elm-test`), ein Elm-Build, Rückverfolgbarkeit der Anforderungen ([[check-traceability]]), `wiki check` auf den echten Inhalten und Fitnessprüfungen (die Attrappe enthält nichts Echtes; die gebaute App bleibt klein).
+Es führt aus: die Elixir-Tests (`mix test`: Prüfer, Build, Hook, Veröffentlichen, Anmelde-Tor, Köder), die Elm-Tests (`elm-test`), einen Elm-Build, die Anforderungsrückverfolgung ([[check-traceability]]), `wiki check` auf dem echten Inhalt und Fitnessprüfungen (der Köder enthält keinen echten Inhalt; die gebaute App bleibt klein).
 
 ## How it does it
-Bash; auf GitHub läuft `wiki check` ohne `--local`, weil die anderen privaten Repos dort nicht sichtbar sind.
+Es ist ein [Bash](https://www.gnu.org/software/bash/)-Skript. Auf GitHub führt es `wiki check` ohne `--local` aus, weil die anderen privaten Repositories dort nicht sichtbar sind.
 
 ## Where it sits in the pipeline
 Vor dem Veröffentlichen von Codeänderungen und bei jedem Push.
 
 ## Who receives its output
-[[github]] (CI-Ergebnis).
+[[github]] (das CI-Ergebnis).

@@ -12,16 +12,16 @@ sources: [wiki:frontend/src/MapView.elm, wiki:frontend/src/Layout.elm, wiki:fron
 ---
 
 ## What it is
-The home screen's map: every page as a dot coloured by kind, lines for feeds (arrows) and mentions (dashed), and the four boxes below it.
+The map is the home screen of the wiki: every page is a dot coloured by its kind, with lines for the "feeds" relation (arrows: what feeds what) and the "mentions" relation (dashed: one page links to another), and four information boxes below it.
 
 ## What it does
-Hovering a dot lights it and its neighbours in gold and dims the rest; the boxes show What it is, What it does, Fed by and Who receives its output (and keep the last dot when the mouse leaves). Clicking a dot opens its article. Drag to pan, wheel or pinch to zoom; the project filter and timeline hide what does not belong. The highlight is quick (every fade lasts 0.07 s). On a large window the map takes all the height the four boxes do not need, so the page never scrolls when a dot is hovered; a text longer than its box scrolls inside it.
+Hovering over a dot lights it and its neighbours in gold and dims the rest; the boxes show What it is, What it does, Fed by and Who receives its output (and keep the last dot when the mouse leaves). Clicking a dot opens its article. You drag to pan, and use the wheel or a two-finger pinch to zoom; the project filter and the timeline hide what does not belong. The highlight is quick (every fade lasts 0.07 seconds). On a large window the map takes all the height that the four boxes do not need, so the page never scrolls when a dot is hovered; a text longer than its box scrolls inside it.
 
 ## How it does it
-Positions are computed once with a force simulation (elm-visualization): connected pages pull together, all pages push apart and keep a minimum gap, projects start in clusters, and a pull towards a horizontal line makes the cloud settle wide and flat. `Layout.matchAspect` then reshapes it to the shape of the map area (stretching only, at most 3 times, so no two dots get closer), so the dots use the full width. `MapSize` decides the heights: on a wide, tall enough window the boxes get the height their text needs (about 226 px at 1920 px wide) and the map the rest; on a shorter or narrower window the map keeps its 58 % share and the boxes size themselves. Filters are pure functions (`Filter.visible`). Zoom and pan come from elm-visualization's `Zoom`; the SVG declares a viewBox equal to its size and starts at the window's top-left (the search bar floats over it), so the mouse wheel, dragging and two-finger pinch all zoom around the pointer.
+Positions are computed once with a force simulation ([force-directed layout](https://en.wikipedia.org/wiki/Force-directed_graph_drawing), done with the library elm-visualization): connected pages pull together, all pages push apart and keep a minimum gap, projects start in clusters, and a pull towards a horizontal line makes the cloud settle wide and flat. `Layout.matchAspect` then reshapes it to the shape of the map area (stretching only, at most 3 times, so no two dots get closer), so the dots use the full width. `MapSize` decides the heights: on a wide, tall enough window the boxes get the height their text needs (about 226 pixels at 1920 pixels wide) and the map gets the rest; on a shorter or narrower window the map keeps its 58 % share and the boxes size themselves. Filters are pure functions (`Filter.visible`). Zoom and pan come from the `Zoom` module of elm-visualization; the SVG (Scalable Vector Graphics, a format for drawings made of shapes) declares a `viewBox` equal to its size and starts at the top-left of the window (the search bar floats over it), so the mouse wheel, dragging and pinching all zoom around the pointer.
 
 ## Where it sits in the pipeline
-Inside [[wiki-frontend]], at `/`.
+Inside the [[wiki-frontend]], at the address `/`.
 
 ## Who receives its output
-[[wiki-frontend]] (and through it Giovanni).
+The [[wiki-frontend]] (and through it Giovanni).

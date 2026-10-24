@@ -1,22 +1,21 @@
 ---
 id: card-factory
 lang: de
-source_hash: badb4960a1a6
+source_hash: 03a61cd67d2d
 title: CardFactory
-aliases: [Karten]
 ---
 
 ## What it is
-Macht aus Vokabeleinträgen `Card`s, die Lerneinheit: `id`, `mode`, `prompt`, optional `context`, `choices`, `correctChoice`, `explanation`.
+Eine „Karte“ ist die Lerneinheit in [[quizapp]]: eine Frage mit ihren Antwortoptionen. Die `CardFactory` verwandelt Vokabeleinträge in Karten. Eine Karte hat eine `id`, einen `mode`, einen `prompt` (die Frage), einen optionalen `context`, die `choices`, die `correctChoice` und eine `explanation`.
 
 ## What it does
-Eine Funktion pro Modus ([[game-modes]]): Artikel, Präposition, Plural, Präteritum (`preteriteCard`) und Fehler finden (`errorCard`, dessen Auswahl die Satzteile sind). Alle Modi liefern dieselbe Form, deshalb bleibt die Engine modusunabhängig.
+Es gibt eine Funktion pro Modus ([[game-modes]]): Artikel, Präposition, Plural, Präteritum (`preteriteCard`) und Fehler finden (`errorCard`, dessen Optionen die Satzteile sind). Jeder Modus erzeugt dieselbe Form, wodurch der Rest der Lernmaschine vom Modus unabhängig bleibt.
 
 ## How it does it
-Liest geparste Einträge aus [[vocab-assets]] und holt die falschen Optionen bei [[distractor-factory]].
+Sie liest die geparsten Einträge aus [[vocab-assets]] und fragt die [[distractor-factory]] nach den falschen Optionen (ein „Distraktor“ ist eine plausible, aber falsche Antwort).
 
 ## Where it sits in the pipeline
-Erster Schritt der Inhaltspipeline: Vokabeln → Karten → Warteschlange.
+Der erste Schritt der Inhaltspipeline: Vokabeln → Karten → Warteschlange.
 
 ## Who receives its output
-[[study-pipeline]] (über [[study-controller]]).
+Die [[study-pipeline]], über den [[study-controller]].

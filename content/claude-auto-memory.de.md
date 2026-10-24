@@ -1,21 +1,21 @@
 ---
 id: claude-auto-memory
 lang: de
-source_hash: beb58ec2ef19
+source_hash: cd7b746e912a
 title: Auto-Gedächtnis von Claude Code
 ---
 
 ## What it is
-Das eigene kleine Dateigedächtnis von Claude Code für Sitzungen im Home-Ordner: ein Fakt pro Datei plus der Index `MEMORY.md`, in jede solche Sitzung geladen.
+Claude Code hat ein kleines eigenes Gedächtnis, getrennt vom gemeinsamen. Es ist ein Ordner mit kurzen Textdateien, ein Fakt pro Datei, plus eine Indexdatei namens `MEMORY.md`. Es wird für Chats verwendet, die im Home-Ordner gestartet werden, und der Index wird an den Anfang jedes solchen Chats geladen. Das ist das „Auto-Memory“ aus dem [Claude-Code-Leitfaden zum Gedächtnis](https://docs.claude.com/en/docs/claude-code/memory).
 
 ## What it does
-Enthält laptopspezifische Notizen: wie man den Fernassistenten prüft, das German-Quiz-Projekt, Pfade der Werkzeuge im Benutzerbereich, die Regel zum Debuggen nach dem Programmieren, dass der deutsch-gespraech-Hinweis nicht für Claude Code ist und dass die alte Pipeline stillgelegt ist.
+Es enthält Notizen, die nur auf diesem Laptop wichtig sind: wie man den Remote-Assistenten prüft, das Projekt German Quiz, wo die User-Space-Werkzeuge installiert sind, die Regel, dass Code vor der Fertigmeldung debuggt werden muss, die Tatsache, dass ein bestimmter Hinweis zu einer Skill für deutsche Gespräche nicht für Claude Code gedacht ist, und dass die alte Pipeline stillgelegt ist.
 
 ## How it does it
-Von Claude Code im Gedächtnisformat geschrieben (Kopfteil + Fakt + warum + wie anwenden). Gemeinsame Regeln für alle Instanzen gehören stattdessen in [[workflow-memory]].
+Claude Code schreibt diese Dateien selbst in einem festen Format (eine kleine Kopfzeile, der Fakt, warum er wichtig ist, wie man ihn anwendet). Regeln, die alle Claude-Instanzen teilen müssen, gehören nicht hierher, sondern ins gemeinsame Gedächtnis [[workflow-memory]].
 
 ## Where it sits in the pipeline
-Bei [[chat-start]] neben [[global-claude-md]] geladen.
+Wird zu Beginn eines Chats geladen ([[chat-start]]), neben den Anweisungen aus [[global-claude-md]].
 
 ## Who receives its output
 [[claude-code]].

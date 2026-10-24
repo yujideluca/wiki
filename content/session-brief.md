@@ -11,16 +11,16 @@ sources: [workflow-memory:mem/hooks.py, workflow-memory:mem/project.py]
 ---
 
 ## What it is
-The block of text a Claude Code chat sees first: "Memory (workflow-memory)…" with Giovanni's standing preferences (each with its #code), open items and how to record, report and give feedback.
+The session brief is the block of text a [[claude-code]] chat sees first. It starts with "Memory (workflow-memory)…" and lists Giovanni's standing preferences (each tagged with a short `#code` so it can be referred to), the open items, and how to record a new preference, report what was used, and give feedback.
 
 ## What it does
-Sets defaults for the session (it never authorizes anything); precedence is current instruction > repo rules file > project memory > profile.
+It sets the defaults for the session. It never authorizes anything by itself: the order of precedence is the current instruction first, then the repository's rules file, then project memory, then the general profile. In other words, what Giovanni says now always beats what memory says.
 
 ## How it does it
-Printed by [[hook-session-start]] from [[memory-fold]] and [[mem-pendency]], within its budgets; says "memory may be stale" when the pull failed.
+The [[hook-session-start]] prints it, using the ranking from [[memory-fold]] and the open-item rules from [[mem-pendency]], each within a size budget so the brief stays short. When the download of the newest memory failed, the brief says "memory may be stale".
 
 ## Where it sits in the pipeline
-The first input of every Claude Code session ([[chat-start]]).
+It is the first input of every Claude Code session ([[chat-start]]).
 
 ## Who receives its output
-[[claude-code]] and [[remote-assistant]].
+[[claude-code]] and the [[remote-assistant]].

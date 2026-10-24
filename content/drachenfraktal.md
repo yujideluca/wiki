@@ -12,13 +12,13 @@ sources: [processing-sketches:drachenfraktal/drachenfraktal.pde]
 ---
 
 ## What it is
-A second Processing sketch of the dragon fractal, with a rendered `drachenfraktal.png`.
+`drachenfraktal` ("dragon fractal" in German) is a second [Processing](https://processing.org/) sketch (Processing is a programming environment for drawing and art, based on Java) of the dragon fractal, with a rendered picture `drachenfraktal.png`.
 
 ## What it does
-Draws the Heighway dragon as a fractal image; an earlier or alternative take on [[drachenkurve]].
+It draws the Heighway dragon as a [fractal](https://en.wikipedia.org/wiki/Fractal) image; it is an earlier or alternative take on [[drachenkurve]].
 
 ## How it does it
-Processing (`drachenfraktal.pde`).
+The code is in the file `drachenfraktal.pde`.
 
 ## Where it sits in the pipeline
 Within [[processing-sketches]]; nothing else uses it.

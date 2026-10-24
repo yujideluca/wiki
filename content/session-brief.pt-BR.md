@@ -1,22 +1,21 @@
 ---
 id: session-brief
 lang: pt-BR
-source_hash: 2b6add466f4b
-title: Resumo da sessão (memória no início da conversa)
-aliases: [resumo]
+source_hash: eb21f1167079
+title: Resumo de sessão (memória no início da conversa)
 ---
 
 ## What it is
-O bloco de texto que uma conversa do Claude Code vê primeiro: "Memory (workflow-memory)…" com as preferências permanentes do Giovanni (cada uma com seu #código), os itens em aberto e como registrar, informar e dar retorno.
+O resumo de sessão (session brief) é o bloco de texto que uma conversa do [[claude-code]] vê primeiro. Começa com "Memory (workflow-memory)…" e lista as preferências permanentes do Giovanni (cada uma marcada com um `#code` curto para poder ser citada), as pendências e como registrar uma nova preferência, informar o que foi usado e dar feedback.
 
 ## What it does
-Define padrões para a sessão (nunca autoriza nada); a precedência é instrução atual > arquivo de regras do repositório > memória do projeto > perfil.
+Define os padrões da sessão. Ele nunca autoriza nada sozinho: a ordem de precedência é a instrução atual primeiro, depois o arquivo de regras do repositório, depois a memória do projeto, depois o perfil geral. Em outras palavras, o que o Giovanni diz agora sempre vale mais do que o que a memória diz.
 
 ## How it does it
-Impresso pelo [[hook-session-start]] a partir do [[memory-fold]] e do [[mem-pendency]], dentro dos orçamentos; diz "memory may be stale" quando o pull falhou.
+O [[hook-session-start]] o imprime, usando a classificação do [[memory-fold]] e as regras de pendências do [[mem-pendency]], cada um dentro de um orçamento de tamanho para o resumo ficar curto. Quando o download da memória mais recente falhou, o resumo diz "memory may be stale".
 
 ## Where it sits in the pipeline
-A primeira entrada de toda sessão do Claude Code ([[chat-start]]).
+É a primeira entrada de toda sessão do Claude Code ([[chat-start]]).
 
 ## Who receives its output
 O [[claude-code]] e o [[remote-assistant]].

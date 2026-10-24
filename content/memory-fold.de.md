@@ -1,22 +1,21 @@
 ---
 id: memory-fold
 lang: de
-source_hash: b6b1c1d081e3
+source_hash: 169474e671bd
 title: Die Faltung (core.py)
-aliases: [Faltung]
 ---
 
 ## What it is
-Die eine reine Funktion von [[workflow-memory]]: Sie faltet das Ereignisprotokoll zum aktuellen Zustand.
+„Die Faltung“ (fold) ist die einzelne Funktion im Herzen von [[workflow-memory]]: Sie nimmt das gesamte Ereignisprotokoll und „faltet“ es zum aktuellen Stand zusammen (wie das Zusammenfalten einer langen Liste zu einem Ergebnis). In der Programmiersprache ist es eine [reine Funktion](https://en.wikipedia.org/wiki/Pure_function): Dieselbe Eingabe ergibt immer dieselbe Ausgabe, und sie verändert sonst nichts. Sie liegt in `mem/core.py`.
 
 ## What it does
-Die neueste Regel pro (scope, key) gewinnt; dieselbe Regel erneut ist zusätzlicher Beleg; eine Verneinung ist eine Änderung; `forget` und `done` schließen ihr Ziel; Feedback ändert die Wichtigkeit (`wrong` nimmt einen Eintrag aus dem Briefing und listet ihn zur Prüfung); ein Ereignis des Harvesters überschreibt nie Giovannis eigene Worte; zwei Schreibende mit verschiedenen Texten zu einem Schlüssel innerhalb von 24 h ergeben einen Konflikt, keine Verschmelzung. Dann ordnet sie die Einträge fürs Briefing: Vorlieben verfallen nie, andere Typen verblassen mit Halbwertszeiten (Entscheidung und Fakt 180 Tage, Notiz 7 Tage), verlängert durch jede Nutzung.
+Für jedes Thema (Scope plus Key) gewinnt die jüngste Entscheidung; dieselbe Entscheidung noch einmal liefert zusätzliche Belege; eine Verneinung zählt als Änderung; `forget` und `done` schließen ihr Ziel; Feedback ändert, wie prominent ein Eintrag ist (`wrong` nimmt ihn aus dem Brief und legt ihn Giovanni zur Prüfung vor). Ein Ereignis des automatischen [[mem-harvester]] überschreibt nie Giovannis eigene Worte. Geben zwei Schreiber demselben Key innerhalb von 24 Stunden verschiedene Texte, entsteht ein Konflikt, den Giovanni sieht, keine stille Zusammenführung. Danach ordnet sie die Einträge für den Brief: Vorlieben verblassen nie; andere Typen verblassen mit einer Halbwertszeit (die Zeit, nach der das Gewicht sich halbiert): 180 Tage für Entscheidungen und Fakten, 7 Tage für Notizen, gestreckt durch jede gemeldete Nutzung ([[mem-use]]).
 
 ## How it does it
-Unabhängig von der Reihenfolge und idempotent (getestet): Ereignisse werden nach Zeit, dann ID sortiert, Duplikate zählen einmal. `brief()` passt das Ergebnis in ein Budget von etwa 2.900 Zeichen (2,5 % einer typischen ersten Runde, kalibriert mit `scripts/calibrate.py`).
+Das Ergebnis hängt nicht von der Reihenfolge ab, in der Ereignisse eintreffen, und ist [idempotent](https://en.wikipedia.org/wiki/Idempotence) (ein Duplikat anzuwenden ändert nichts); beides ist getestet. Ereignisse werden nach Zeit und dann ID sortiert, Duplikate zählen einmal. Die Funktion `brief()` passt das Ergebnis in ein Budget von etwa 2.900 Zeichen, das sind etwa 2,5 % eines typischen ersten Durchgangs; die Zahl wurde mit `scripts/calibrate.py` kalibriert.
 
 ## Where it sits in the pipeline
 Zwischen [[events-log]] und allem, was Gedächtnis anzeigt.
 
 ## Who receives its output
-[[session-brief]] (über [[hook-session-start]]) und [[memory-views]] (über [[mem-action]]).
+Der [[session-brief]] (über [[hook-session-start]]) und [[memory-views]] (über [[mem-action]]).

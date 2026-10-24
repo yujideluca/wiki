@@ -12,16 +12,16 @@ sources: [quiz-backups:LATEST]
 ---
 
 ## What it is
-Copies of Giovanni's own QuizApp progress kept on the laptop in `~/dev/quiz-backups` (for example `20261019-0847/progress.json` and exported backup files).
+These are copies of Giovanni's own QuizApp progress, kept on the laptop in `~/dev/quiz-backups` (for example `20261019-0847/progress.json` and exported backup files).
 
 ## What it does
-Lets a phone reset or a risky release be undone: the progress can be put back.
+They make it possible to undo a phone reset or a risky release: the progress can be put back.
 
 ## How it does it
-A timestamped folder per copy (pulled from the phone over adb) plus `exported/` for files made with [[progress-backup]]; `LATEST` names the newest.
+Each copy is a folder named with a timestamp (pulled from the phone over adb, the Android Debug Bridge), plus an `exported/` folder for files made with the [[progress-backup]] function. The file `LATEST` names the newest copy.
 
 ## Where it sits in the pipeline
-At the end of the backup path: [[progress-backup]] / adb → here.
+At the end of the backup path: [[progress-backup]] or adb → here.
 
 ## Who receives its output
 Giovanni or Claude, when progress must be restored.

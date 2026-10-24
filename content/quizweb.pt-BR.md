@@ -1,22 +1,21 @@
 ---
 id: quizweb
 lang: pt-BR
-source_hash: e4103e50ee47
+source_hash: 57d297c63574
 title: QuizWeb (German Quiz, web)
-aliases: [gêmeo web]
 ---
 
 ## What it is
-A versão web do quiz de alemão, pensada para iPhone: uma PWA (uma página que pode ser instalada como app) servida pelo [[github-pages]]. Repositório `yujideluca/german-quiz-web`, pasta `~/dev/QuizWeb`.
+O QuizWeb é a versão web do quiz de alemão, feita para funcionar em um iPhone. É um PWA (progressive web app: uma página web que pode ser instalada no celular como um app e continua funcionando offline, veja [PWA](https://en.wikipedia.org/wiki/Progressive_web_app)), servido pelo [[github-pages]]. O repositório é `yujideluca/german-quiz-web` e a pasta é `~/dev/QuizWeb`. É o "gêmeo web" do [[quizapp]].
 
 ## What it does
-Os mesmos cinco modos, o mesmo agendador, a meta diária e o calendário de sequência do [[quizapp]], offline. O progresso fica no navegador daquele aparelho e é separado do app Android; Configurações > Backup salva e restaura.
+Tem os mesmos cinco modos, agendador, meta diária e calendário de sequência do [[quizapp]] e funciona offline. O progresso fica no navegador daquele aparelho e é separado do app Android; Configurações > Backup o salva e restaura.
 
 ## How it does it
-Módulos ES simples, sem etapa de build e sem dependências: [[quizweb-domain]] (lógica pura), [[quizweb-content]], [[quizweb-controller]], [[quizweb-store]] e [[quizweb-app]] (os únicos que mexem no navegador), mais o cache offline [[quizweb-service-worker]]. `tests/architecture.test.js` define quem pode importar quem; a [[quizweb-ci]] roda `npm test` a cada push.
+É JavaScript simples em módulos ES (a forma padrão de dividir JavaScript em arquivos), sem etapa de build e sem dependências. As partes são: [[quizweb-domain]] (lógica pura), [[quizweb-content]], [[quizweb-controller]], [[quizweb-store]] e [[quizweb-app]] (os dois últimos são os únicos módulos que tocam o navegador), mais o cache offline [[quizweb-service-worker]]. O teste `tests/architecture.test.js` define quem pode importar quem, e a [[quizweb-ci]] executa `npm test` a cada push.
 
 ## Where it sits in the pipeline
-O gêmeo do [[quizapp]] (ADR-0006 de lá): lê os mesmos arquivos de vocabulário e os mesmos vetores de conformidade, e o [[check-web-sync]] do QuizApp os compara. A versão web de um app ainda em beta espera num branch `web-<versão>` e entra no `main` quando o app é promovido.
+É o gêmeo do [[quizapp]] (decisão ADR-0006 lá; uma ADR é um architecture decision record, uma nota curta que guarda os motivos de uma decisão): lê os mesmos arquivos de vocabulário e os mesmos vetores de conformidade, e o [[check-web-sync]] no QuizApp os compara. O QuizWeb segue só a versão lançada do app: a portabilidade de uma versão do app ainda em beta espera em um branch `web-<versão>` e é mesclada ao `main` quando o app é promovido.
 
 ## Who receives its output
-O iPhone do Giovanni ou qualquer navegador, pelo [[github-pages]].
+O iPhone do Giovanni, ou qualquer navegador, por meio do [[github-pages]].

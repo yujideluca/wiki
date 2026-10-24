@@ -12,13 +12,13 @@ sources: [workflow-memory:mem/harvest.py]
 ---
 
 ## What it is
-Picks up preferences from Giovanni's own words in the prompts, so a rule said once is not lost.
+The harvester ("harvest" means to gather) picks up preferences from Giovanni's own words in the messages he sends, so that a rule said once is not lost just because nobody ran `mem add`. It lives in `mem/harvest.py`.
 
 ## What it does
-Only the user's prompt text counts (never tool output or Claude's text), English and Portuguese, only sentences that state a rule and name an action. Default scope is the project; a habit seen in two projects, or phrased "in all my projects", becomes global (`promote`).
+Only the user's own message text counts (never tool output or Claude's text), in English and Portuguese, and only sentences that state a rule and name an action. By default a harvested preference applies to the current project only; a habit seen in two projects, or one phrased "in all my projects", becomes global (this step is called `promote`).
 
 ## How it does it
-Deterministic event ids, so a repeated hook call writes the same file. A harvested entry never overwrites one with `owner: user`; it becomes a proposal in REVIEW instead.
+Event ids are deterministic (the same input always produces the same id), so a hook call that is repeated writes the same file instead of a duplicate. A harvested entry never overwrites one with `owner: user` (Giovanni's own recorded words); instead it becomes a proposal listed in the review file for Giovanni to decide.
 
 ## Where it sits in the pipeline
 Called by [[hook-prompt]] on every message Giovanni sends to Claude Code.

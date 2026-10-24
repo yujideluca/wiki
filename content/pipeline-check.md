@@ -12,19 +12,25 @@ sources: [pipeline-check:src/lib.rs, pipeline-check:docs/adr/0003-one-repository
 ---
 
 ## What it is
-A Rust program that measures a project and makes the machine, not Claude's habit, refuse a bad merge (ADR-0013). It replaces `fitness_check.py`. Language chosen by Giovanni.
+pipeline-check is a program, written in [Rust](https://www.rust-lang.org/) (the language was Giovanni's choice), that measures a software project and makes a machine, not Claude's good habits, refuse a bad merge (decision ADR-0013 in QuizApp; an ADR is an architecture decision record, a short note that keeps the reasons for a decision). It replaced the older Python script `fitness_check.py`.
 
 ## What it does
-Writes `build/pipeline-check/report.json` (project, date, mode `local` or `ci`, checks with status `ok`/`aviso`/`falha`/`pulado`, value and limit, and a `dora` block) and exits 1 if any check is `falha`; a warning never fails. Checks: the project gate ([[quizapp-quality-gate]]) runs once; the architecture check (no `android.*` or `androidx.*` import in `:core`, read from the source); fitness functions with a warning from 80 % of the limit and a failure at 100 %; DORA figures from git, the release feed and the decision log; and, in local mode only, whether the last CI run is green and branch protection requires the job `gate` (read-only, through `gh`). A check that could not run is `pulado`, never `ok`; if it is required it is `falha`.
+It writes `build/pipeline-check/report.json`: the project, the date, the mode (`local` or `ci`), a list of checks each with a status (`ok`, `aviso` = warning, `falha` = failure, `pulado` = skipped), a value and a limit, plus a `dora` block of delivery metrics (DORA: DevOps Research and Assessment). It exits with code 1 if any check is a `falha`; a warning never fails. The checks are:
+- the project's own quality gate ([[quizapp-quality-gate]]), run once;
+- the architecture check: no `android.*` or `androidx.*` import may appear in the module `:core`, which is read from the source;
+- fitness functions (automatic limits such as file size), with a warning from 80 % of a limit and a failure at 100 %;
+- DORA figures, taken from git, the release feed and the decision log;
+- and, in local mode only, whether the last run of continuous integration (CI, automatic checks on GitHub) is green and whether branch protection requires the job `gate` (read-only, through the `gh` command of GitHub).
+A check that could not run is `pulado`, never `ok`; if it was required, it counts as `falha`.
 
 ## How it does it
-Rust with `serde`, `toml` and `clap`; `git` and `gh` are called as processes. Limits live in `pipeline-check.toml`, changed only by Giovanni with a decision-log row. `tools/pipeline-check.sh` builds and runs it; the gate calls it with `--measure-only` (no recursion). Requirements PC-1..PC-11, tests tagged `REQ`. It went through its own process first: the skill [[skill-gerar-teste-automatizado]] wrote bug-finding tests (`tools/pipeline-check/docs/TESTES-AUTOMATIZADOS.md`) that found six defects, all fixed, and a hand-made mutation check (`mutants.py`) catches every planted fault.
+It is Rust with the libraries `serde`, `toml` and `clap`, and it runs `git` and `gh` as separate processes. The limits live in `pipeline-check.toml` in each project and are changed only by Giovanni, with a decision-log row. The script `tools/pipeline-check.sh` builds and runs it; the gate calls it with `--measure-only` so it does not run the gate again (no recursion). Its own requirements (PC-1 to PC-11) have tests tagged `REQ`. It went through its own process first: the skill [[skill-gerar-teste-automatizado]] wrote bug-finding tests (record in `tools/pipeline-check/docs/TESTES-AUTOMATIZADOS.md`) that found six defects, all fixed, and a hand-made mutation check (`mutants.py`, which plants faults on purpose) catches every planted fault.
 
 ## Where it sits in the pipeline
-CI runs it instead of the bare gate ([[quizapp-ci]]); Claude runs it at the start of every [[skill-revisao-manutencao]]. Part of the [[maintenance-pipeline]]. The program lives once, in its own public repository (`yujideluca/pipeline-check`); [[project-template]], [[quizapp]], [[wiki]], [[quizweb]], [[workflow-memory]], [[remote-terminal]] and [[processing-sketches]] pin a tag in `pipeline-check.version` (now v0.2.0) and keep only their own `pipeline-check.toml` and a small runner script. It also runs as the git pre-push hook (`--pre-push`), which stops a push of `main` when a check fails, because branch protection is not available on private free-plan repositories. Why one repository and not copies: ADR-0003 in that repository.
+CI runs it instead of the bare gate ([[quizapp-ci]]), and Claude runs it at the start of every [[skill-revisao-manutencao]]; it is part of the [[maintenance-pipeline]]. The program lives once, in its own public repository (`yujideluca/pipeline-check`). [[project-template]], [[quizapp]], the [[wiki]], [[quizweb]], [[workflow-memory]], [[remote-terminal]] and [[processing-sketches]] each pin a version tag in a file named `pipeline-check.version` (now v0.2.0) and keep only their own `pipeline-check.toml` and a small runner script. It also runs as the git pre-push hook (`--pre-push`), which stops a push of `main` when a check fails, because branch protection is not available on private free-plan repositories. Why one repository and not copies: ADR-0003 in that repository.
 
 ## Who receives its output
-[[quizapp-ci]] (the red or green mark) and [[skill-revisao-manutencao]] (reads `report.json`, never re-measures).
+[[quizapp-ci]] (the red or green mark) and [[skill-revisao-manutencao]] (which reads `report.json` and never measures again).
 
 ## Functions
 - `classify`: ok below the warning share, aviso up to the limit, falha from the limit

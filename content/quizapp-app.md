@@ -12,22 +12,22 @@ sources: [QuizApp:app/src/main/java/dev/yuji/quiz, QuizApp:app/src/debug]
 ---
 
 ## What it is
-The Android half of [[quizapp]] (Gradle module `:app`, depends on [[quizapp-core]]): screens, storage and the Android adapters.
+The `:app` module is the Android half of [[quizapp]]. It depends on [[quizapp-core]] and contains what only exists on a phone: the screens, the storage and the adapters (thin pieces of code that connect the pure logic to Android).
 
 ## What it does
-Shows the study screens ([[study-view-model]]), stores progress and settings ([[progress-store]], [[training-store]], [[settings-store]]), reads the bundled vocabulary ([[vocab-assets]]), checks for and installs updates ([[update-client]], [[apk-installer]]).
+It shows the study screens ([[study-view-model]]), stores progress and settings ([[progress-store]], [[training-store]], [[settings-store]]), reads the bundled vocabulary ([[vocab-assets]]), and checks for and installs updates ([[update-client]], [[apk-installer]]).
 
 ## How it does it
-Jetpack Compose + Material 3 (ADR-0002). `MainActivity` hosts everything, applies the chosen language, refreshes the home screen on every resume and starts the update check; [[study-controller]] is the single facade the UI calls. Two build flavors, `stable` and `beta` ([[release-channels]]), signed with the project's own key ([[signing-key]]).
+The screens use [Jetpack Compose](https://developer.android.com/compose) and [Material 3](https://m3.material.io/) (Google's design system), chosen in decision ADR-0002 (an ADR is an architecture decision record, a short note that keeps the reasons for a decision). `MainActivity` (an [Activity](https://developer.android.com/guide/components/activities/intro-activities) is one screen-hosting component of an Android app) hosts everything, applies the chosen language, refreshes the home screen every time the app is resumed and starts the update check. The [[study-controller]] is the single entry point the screens call. There are two build flavors, `stable` and `beta` ([[release-channels]]), both signed with the project's own key ([[signing-key]]).
 
 ## Where it sits in the pipeline
 The outer layer, between the player and [[quizapp-core]].
 
 ## Who receives its output
-Giovanni on the [[phone]]: the APK is what gets installed.
+Giovanni on the [[phone]]: the APK (Android Package, the installable file) built from this module is what gets installed.
 
 ## Functions
-- `MainActivity`: hosts the UI, Back button, language, resume refresh, update check on start
+- `MainActivity`: hosts the user interface (UI), Back button, language, resume refresh, update check on start
 - `ui/Screens.kt`: home, question, finished screens
 - `ui/SettingsScreen.kt`, `ui/BackupSection.kt`: settings and backup
 - `ui/CalendarCard.kt`: the streak calendar card

@@ -12,16 +12,16 @@ sources: [wiki:frontend/src/Main.elm, wiki:frontend/static/style.css]
 ---
 
 ## What it is
-The part of the wiki you see and click, written in Elm (Giovanni's choice): a language for web pages that refuses to compile many kinds of mistakes.
+The front end is the part of the wiki you see and click. It is written in [Elm](https://elm-lang.org/) (Giovanni's choice), a language for web pages that refuses to compile many kinds of mistakes, so errors are caught before the page ever runs.
 
 ## What it does
-Home is the system map ([[wiki-map-view]]) with search and autocomplete ([[wiki-search]]), a project filter, a timeline slider and a kind legend; hovering a dot fills four boxes; clicking opens the article ([[wiki-article-view]]). Interface in English, German or Brazilian Portuguese, remembered in the browser.
+The home screen is the system map ([[wiki-map-view]]) with search and suggestions ([[wiki-search]]), a project filter, a timeline slider and a legend of kinds. Hovering over a dot fills four boxes with its description; clicking a dot opens its article ([[wiki-article-view]]). A "Glossary" link in the top bar leads to the glossary page, and links to other websites open in a new tab. The interface is in English, German or Brazilian Portuguese, remembered in the browser.
 
 ## How it does it
-`Browser.application` with routes `/` and `/p/<id>`; loads `data/graph.json` once and each article in the chosen language on demand; the language is kept in localStorage through a port (`boot.js`). Dark, cinematic map (Dark explorer) and light, serif articles (Wikipedia). Tested with elm-test (MP-1…MP-4, LG-2).
+It is a `Browser.application` (an Elm program that controls the whole page and its address) with the routes `/` and `/p/<id>`. It loads `data/graph.json` once and each article in the chosen language on demand; the language is kept in localStorage (the browser's small key-value storage) through a port (Elm's controlled doorway to JavaScript, in `boot.js`). The map is dark and cinematic (inspired by "Dark explorer" visualisations) and the articles are light with serif letters, like Wikipedia. It is tested with elm-test (requirements MP-1 to MP-9 and LG-2).
 
 ## Where it sits in the pipeline
-The top of the wiki, served by [[wiki-router]] after login.
+The top of the wiki, served by the [[wiki-router]] after login.
 
 ## Who receives its output
 [[giovanni]], on the laptop or the phone.

@@ -1,21 +1,21 @@
 ---
 id: tailscale-funnel
 lang: de
-source_hash: 4824d15fe304
+source_hash: 2e96d8b2d9ad
 title: Tailscale Funnel (öffentliche Adresse)
 ---
 
 ## What it is
-Die Tailscale-Funktion, die einen Port des Laptops im Internet unter `https://yuji-nitro.tailed3a22.ts.net` veröffentlicht, von Giovanni dem Kauf einer Domain vorgezogen.
+[Tailscale Funnel](https://tailscale.com/kb/1223/funnel) ist die Tailscale-Funktion, die einen Port des Laptops aus dem gesamten Internet erreichbar macht, unter der Adresse `https://yuji-nitro.tailed3a22.ts.net`. Ein „Port“ ist eine nummerierte Tür eines Computers, an der ein Programm lauscht. Giovanni hat sich für Funnel statt für den Kauf eines Domainnamens entschieden.
 
 ## What it does
-Nimmt HTTPS von überall an, beendet TLS (das Zertifikat verwaltet Tailscale) und leitet an den [[wiki-server]] auf 127.0.0.1:4180 weiter. Am Router wird kein Port geöffnet.
+Es nimmt sicheren Webverkehr (HTTPS, Hypertext Transfer Protocol Secure) von überall entgegen, übernimmt die Verschlüsselung (TLS, Transport Layer Security; das Zertifikat verwaltet Tailscale selbst) und leitet die Anfrage an den [[wiki-server]] auf Adresse 127.0.0.1, Port 4180 weiter. Am Heimrouter muss kein Port geöffnet werden.
 
 ## How it does it
-`tailscale funnel --bg 4180`, bleibt über Neustarts bestehen; kostenlos, keine Domain nötig. Nur online, solange der Laptop an und wach ist.
+Der Befehl `tailscale funnel --bg 4180` richtet es ein, und es bleibt über Neustarts hinweg bestehen. Es ist kostenlos und braucht keine Domain. Die Adresse funktioniert nur, solange der Laptop an und wach ist.
 
 ## Where it sits in the pipeline
-Zwischen Internet und [[wiki-server]], auf [[tailscale]] aufbauend.
+Zwischen dem Internet und dem [[wiki-server]], auf [[tailscale]] aufgesetzt.
 
 ## Who receives its output
-[[wiki-server]].
+Der [[wiki-server]].

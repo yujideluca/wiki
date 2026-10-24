@@ -1,24 +1,24 @@
 ---
 id: skills
 lang: de
-source_hash: 9b0e6662b48a
+source_hash: 18be4ef4b712
 title: Skills
 ---
 
 ## What it is
-Giovannis Claude-Skills: gebündelte Anleitungen, die Claude lädt, wenn eine passende Aufgabe kommt. Die lokalen Kopien für Claude Code liegen in `~/.claude/skills`; die Claude-App hat eigene Kopien ([[claude-ai-skills]]).
+Eine Skill ist ein gepacktes Set von Anweisungen, das Claude lädt, wenn eine Aufgabe dieser Art ansteht ([Dokumentation zu Skills](https://docs.claude.com/en/docs/claude-code/skills)). Man kann sie sich als Kapitel eines Rezeptbuchs vorstellen, das Claude nur liest, wenn die Anfrage passt: ein Kapitel zum Korrigieren von Deutsch, eines zum Debuggen, eines zur Laptop-Reparatur. Jede Skill ist ein Ordner mit einer Datei `SKILL.md`: zuerst ein Name, dann eine „Beschreibung“, die entscheidet, wann die Skill geladen wird, dann die Anweisungen. Giovannis Skills liegen in `~/.claude/skills`; die Claude-App hat eigene Kopien ([[claude-ai-skills]]).
 
 ## What it does
-Halten fest, wie Giovanni wiederkehrende Aufgaben erledigt haben will: Deutschtraining, klinische Antworten, Artikelbewertung, Bewerbungen in Deutschland, Magic: The Gathering, Browser-Sicherheit, Laptop-Reparatur und den Entwicklungsprozess (Brainstorming, Fehlersuche, Verifikation, Skill-Bau).
+Die Skills halten fest, wie Giovanni wiederkehrende Aufgaben erledigt haben will: Deutschtraining, klinische Antworten, Bewertung wissenschaftlicher Artikel, Bewerbungen in Deutschland, Magic: The Gathering, sichere Browser-Automatisierung, Laptop-Reparatur und der Entwicklungsprozess (Brainstorming, Debugging, Verifikation, Wartungs-Reviews, Testerstellung und Skill-Bau). Jede Skill hat eine Seite in diesem Wiki, die ihre eigene Definition enthält, sodass man die Datei `SKILL.md` nie öffnen muss, um sie zu verstehen.
 
 ## How it does it
-Jeder Skill ist ein Ordner mit einer `SKILL.md` (Name, eine Beschreibung, die bestimmt, wann er greift, dann die Anleitung). Neue oder neu gebaute Skills laufen über [[skill-skill-forge]]. Früher füllte die stillgelegte Pipeline den Ordner ([[retired-workflow-pipeline]]); heute sind es echte Ordner.
+Claude sieht in jedem Chat die Liste der Namen und Beschreibungen; passt eine Anfrage zu einer Beschreibung, lädt es den vollen Text dieser Skill und folgt ihm. Neue oder neu gebaute Skills laufen durch [[skill-skill-forge]]. Der Ordner wurde einst von der stillgelegten Pipeline gefüllt ([[retired-workflow-pipeline]]); die Skills sind jetzt gewöhnliche Ordner.
 
 ## Where it sits in the pipeline
-Neben jeder Aufgabe: Die Claude-Instanz lädt einen Skill, wenn seine Beschreibung zur Anfrage passt.
+Neben jeder Aufgabe: Eine Skill wird von der Claude-Instanz geladen, wenn ihre Beschreibung zur Anfrage passt.
 
 ## Who receives its output
-[[claude-code]], [[remote-assistant]] und (über ihre Kopien) [[claude-app]].
+[[claude-code]], der [[remote-assistant]] und, über ihre Kopien, die [[claude-app]].
 
 ## Notes
 - [[skill-brainstorming]]

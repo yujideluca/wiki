@@ -1,22 +1,21 @@
 ---
 id: release-channels
 lang: pt-BR
-source_hash: 7fa797bc5567
-title: Canais de versão: estável e beta
-aliases: [beta]
+source_hash: bd9b881c526c
+title: Canais de lançamento: estável e beta
 ---
 
 ## What it is
-A regra de que nada chega ao jogador sem passar antes pelo app beta (ADR-0005), e de quando um beta pode ser promovido (ADR-0011).
+Um "canal de lançamento" é um fluxo separado de versões que as pessoas podem seguir. Esta página descreve a regra de que nada chega ao jogador sem passar primeiro pelo app beta (decisão ADR-0005) e quando um beta pode ser promovido (decisão ADR-0011). Uma ADR é um architecture decision record, uma nota curta que guarda os motivos de uma decisão.
 
 ## What it does
-Duas variantes de build: `stable` (`dev.yuji.quiz`, "Deutsch B2", segue o `main` do [[release-feed]]) e `beta` (`dev.yuji.quiz.beta`, "Deutsch B2 beta", segue o `bleeding-edge`). Um beta fica apto quando sobrevive aos testes automáticos atualizados para o que ele muda; aí o Giovanni decide.
+Há dois sabores de build. O `stable` (pacote `dev.yuji.quiz`, exibido como "Deutsch B2") segue o branch `main` do [[release-feed]]; o `beta` (pacote `dev.yuji.quiz.beta`, exibido como "Deutsch B2 beta") segue o branch `bleeding-edge`. Como os pacotes são diferentes, os dois podem ser instalados ao mesmo tempo no celular. Um beta torna-se elegível para promoção depois de sobreviver aos testes automatizados atualizados para o que ele muda; depois disso o Giovanni decide.
 
 ## How it does it
-Garantido pelo [[publish-apk]] (`promote` roda o portão com [[mutation-check]] e [[check-tests-updated]]). As versões web esperam num branch `web-<versão>` do [[quizweb]] até a promoção.
+É aplicado pelo [[publish-apk]]: seu `promote` executa o portão com [[mutation-check]] e [[check-tests-updated]]. Portabilidades web esperam em um branch `web-<versão>` do [[quizweb]] até a promoção.
 
 ## Where it sits in the pipeline
 Rege o [[quizapp-release]].
 
 ## Who receives its output
-O [[update-client]] (qual branch seguir).
+O [[update-client]], que fica sabendo qual branch seguir.

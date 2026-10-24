@@ -1,22 +1,21 @@
 ---
 id: activity-calendar
 lang: de
-source_hash: bc3abc227a7e
+source_hash: f2516fd8fc66
 title: Serienkalender
-aliases: [Serie]
 ---
 
 ## What it is
-Der kompakte Monatskalender oben auf dem Startbildschirm, der zeigt, an welchen Tagen Giovanni geübt hat.
+Der Serienkalender ist der kompakte Monatskalender oben auf dem Startbildschirm von [[quizapp]]. Er zeigt, an welchen Tagen Giovanni gelernt hat. Eine „Serie“ (Streak) ist die Zahl der Tage in Folge, an denen etwas getan wurde.
 
 ## What it does
-Ein Tag mit mindestens einer Antwort zählt als geübt. Zeigt die aktuelle Serie (ein leerer heutiger Tag bricht eine Serie bis gestern nicht), die längste Serie und die Tage dieses Monats; jeder geübte Tag ist hellgelb → orange → orangerot ab 100 Antworten gefärbt (`HeatColor`).
+Ein Tag mit mindestens einer Antwort gilt als gelernt. Der Kalender zeigt die aktuelle Serie (ein leeres Heute unterbricht keine Serie, die bis gestern lief), die längste Serie und die gelernten Tage dieses Monats. Jeder gelernte Tag wird von hellgelb über orange bis orangerot bei 100 oder mehr Antworten gefärbt (`HeatColor`).
 
 ## How it does it
-Reine Logik in `ActivityCalendar.kt` über den Verlauf in [[training-store]]; gezeichnet von `ui/CalendarCard.kt`. Pfeile für vorigen/nächsten Monat, Montag zuerst, keine künftigen Monate.
+Die Logik ist reiner Code in `ActivityCalendar.kt`, der auf dem Verlauf im [[training-store]] arbeitet; gezeichnet wird von `ui/CalendarCard.kt`. Es gibt Pfeile für den vorigen und nächsten Monat, die Woche beginnt am Montag, und künftige Monate lassen sich nicht anzeigen.
 
 ## Where it sits in the pipeline
-Liest [[training-store]], angezeigt von [[study-view-model]] auf dem Startbildschirm.
+Liest den [[training-store]]; vom [[study-view-model]] auf dem Startbildschirm angezeigt.
 
 ## Who receives its output
-[[study-view-model]].
+Das [[study-view-model]].

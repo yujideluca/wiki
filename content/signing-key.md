@@ -12,16 +12,16 @@ sources: [home:.android]
 ---
 
 ## What it is
-The project's own Android signing key, kept outside the repo in `~/.android` (the keystore and a properties file with its credentials). Its contents are never written anywhere else.
+Android only installs an app update if it is signed with the same cryptographic key as the installed version. QuizApp has its own signing key, kept outside the repository in `~/.android`: the keystore (the key file) and a properties file with its credentials. The contents are never written anywhere else.
 
 ## What it does
-Signs both debug and release builds, so updates install over each other and progress survives; stable and beta can be installed side by side.
+It signs both debug and release builds, so updates install over each other and progress survives; stable and beta can be installed side by side.
 
 ## How it does it
-The Gradle build reads the properties file; if it is missing it falls back to the default debug key.
+The Gradle build reads the properties file. If the file is missing, it falls back to the default debug key, which is fine for tests but would not match the real app.
 
 ## Where it sits in the pipeline
-Used by [[publish-apk]] and every local build.
+Used by [[publish-apk]] and by every local build.
 
 ## Who receives its output
 [[publish-apk]].

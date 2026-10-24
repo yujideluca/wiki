@@ -1,22 +1,21 @@
 ---
 id: check-traceability
 lang: de
-source_hash: 6c2600619e7c
+source_hash: 7feb1ba28744
 title: pipeline-check --traceability
-aliases: [Rückverfolgbarkeitstor, check_traceability.py]
 ---
 
 ## What it is
-Die gemeinsame Rückverfolgbarkeitsprüfung aller Projekte: Jede Anforderung hat einen Test, und jede Test-Markierung nennt eine echte Anforderung.
+Anforderungsrückverfolgung heißt, jedes Versprechen eines Programms bis zu dem Test verfolgen zu können, der es prüft. Diese Prüfung gilt für alle Projekte: Jede Anforderung hat einen Test, und jedes Test-Tag nennt eine echte Anforderung.
 
 ## What it does
-Liest die IDs aus `docs/REQUIREMENTS.md`, sammelt `REQ <ID>`-Markierungen aus den Testordnern, schlägt bei einer Anforderung ohne markierten Test oder einer unbekannten Markierung fehl und schreibt `docs/TRACEABILITY.md` (Anforderung → Testdateien).
+Sie liest die Anforderungs-IDs aus `docs/REQUIREMENTS.md`, sammelt die `REQ <ID>`-Tags (Kommentare wie `REQ GR-1`) aus den Testordnern und schlägt fehl, wenn eine Anforderung keinen getaggten Test hat oder ein Tag eine nicht existierende Anforderung nennt. Sie schreibt `docs/TRACEABILITY.md`, eine Tabelle, die jede Anforderung ihren Testdateien zuordnet.
 
 ## How it does it
-Ein Unterbefehl des Programms [[pipeline-check]] (Rust, `--traceability`, seit v0.3.0), den jedes Projekt über sein festgelegtes `tools/pipeline-check.sh` ausführt; er ersetzt das `check_traceability.py`, das früher in jedes Repository kopiert wurde. Jedes Projekt nennt Testordner, Dateiendungen und eine optionale Bezeichnung in einem Abschnitt `[traceability]` der `pipeline-check.toml` (QuizApp: Kotlin und JS, die Tests des Web-Zwillings mit der Bezeichnung `web`; das Wiki: Elixir und Elm).
+Sie ist ein Unterbefehl des Programms [[pipeline-check]] (in Rust geschrieben, Option `--traceability`, seit Version v0.3.0). Jedes Projekt führt sie über sein eigenes festgelegtes Runner-Skript `tools/pipeline-check.sh` aus; sie ersetzte `check_traceability.py`, das früher in jedes Repository kopiert wurde. Jedes Projekt nennt seine Testordner, Dateiendungen und ein optionales Label in einem Abschnitt `[traceability]` von `pipeline-check.toml` (QuizApp: Kotlin und JavaScript, mit den Tests des Web-Zwillings unter dem Label `web`; das Wiki: Elixir und Elm).
 
 ## Where it sits in the pipeline
-Schritt 2 jedes Qualitätstors.
+Schritt 2 jedes Quality Gates.
 
 ## Who receives its output
-[[template-quality-gate]], [[quizapp-quality-gate]], [[wiki-quality-gate]].
+[[template-quality-gate]], [[quizapp-quality-gate]] und [[wiki-quality-gate]].

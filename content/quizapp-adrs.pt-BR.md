@@ -1,22 +1,21 @@
 ---
 id: quizapp-adrs
 lang: pt-BR
-source_hash: 62f2358d7d92
+source_hash: a87bec97fb85
 title: ADRs do QuizApp
-aliases: [registros de decisão de arquitetura]
 ---
 
 ## What it is
-Os registros de decisão de arquitetura do [[quizapp]] (`docs/adr/`): um arquivo curto por decisão estrutural, com contexto, decisão, alternativas e consequências.
+Uma ADR (architecture decision record) é uma nota curta sobre uma decisão importante: o contexto, a decisão, as alternativas consideradas e as consequências. Estas são as ADRs do [[quizapp]], na pasta `docs/adr/`, um arquivo por decisão estrutural.
 
 ## What it does
-0001 registrar decisões · 0002 Kotlin + Compose · 0003 agendador puro e determinístico · 0004 canal de atualização · 0005 canais de versão · 0006 gêmeo web · 0007 regras de espaçamento · 0008 qualidade começando pelos requisitos · 0009 módulo core puro · 0010 backup do progresso · 0011 promover depois de testes atualizados · 0012 banco de perguntas baixável ([[question-pack]]).
+Registram: 0001 registrar decisões · 0002 Kotlin + Compose · 0003 agendador puro e determinístico · 0004 feed de atualização · 0005 canais de lançamento · 0006 gêmeo web · 0007 regras de espaçamento · 0008 garantia de qualidade com requisitos primeiro · 0009 módulo core puro · 0010 backup de progresso · 0011 promover após testes atualizados · 0012 conjunto de perguntas baixável ([[question-pack]]).
 
 ## How it does it
-Formato MADR (enxuto), a partir de `docs/adr/0000-template.md`; uma mudança estrutural ganha seu ADR no mesmo commit.
+Usam o formato MADR (Markdown Architectural Decision Records, em forma reduzida), a partir de `docs/adr/0000-template.md`. Uma mudança estrutural recebe sua ADR no mesmo commit da mudança, de modo que o motivo nunca se separa do código.
 
 ## Where it sits in the pipeline
 Ao lado do [[quizapp-design-doc]]; o padrão vem do [[project-template]].
 
 ## Who receives its output
-O Claude e o Giovanni, quando uma decisão é questionada.
+O Claude e o Giovanni, sempre que uma decisão é questionada.

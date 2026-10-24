@@ -1,18 +1,18 @@
 ---
 id: publish-apk
 lang: pt-BR
-source_hash: eaf1591f7392
+source_hash: bb877313e92a
 title: publish_apk.sh
 ---
 
 ## What it is
-O script de publicação do [[quizapp]]: compila um APK de release assinado e publica no [[release-feed]].
+`publish_apk.sh` é o script de lançamento do [[quizapp]]. Constrói um APK de lançamento assinado (Android Package, o arquivo instalável do app) e o publica no [[release-feed]].
 
 ## What it does
-Roda primeiro o [[quizapp-quality-gate]]; publica um beta no `bleeding-edge`; `publish_apk.sh promote` leva um beta para o estável `main` depois que o portão com teste de mutação e o [[check-tests-updated]] passam (ADR-0011). Promover é decisão do Giovanni, sem tempo mínimo em beta.
+Executa primeiro o [[quizapp-quality-gate]]. Depois publica um beta no branch `bleeding-edge`. O comando `publish_apk.sh promote` leva um beta ao branch estável `main`, depois de o portão com verificação de mutação e o [[check-tests-updated]] terem passado (decisão ADR-0011; uma ADR é um architecture decision record, uma nota curta que guarda os motivos de uma decisão). Promover é decisão do Giovanni, sem tempo mínimo em beta.
 
 ## How it does it
-Build de release do Gradle assinado com a [[signing-key]]; grava versionCode e SHA-256 no `latest.json` e faz push do repositório do canal.
+Um build de lançamento do Gradle assinado com a [[signing-key]]. Escreve o versionCode e a impressão digital SHA-256 (Secure Hash Algorithm 256) no `latest.json` e faz push do repositório do feed.
 
 ## Where it sits in the pipeline
 O último passo do [[quizapp-release]].

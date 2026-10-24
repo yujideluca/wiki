@@ -1,22 +1,21 @@
 ---
 id: mem-task
 lang: de
-source_hash: 43266564fb16
+source_hash: bbabc7f00743
 title: mem task (offene Punkte)
-aliases: [offener Punkt]
 ---
 
 ## What it is
-Wie ein unerledigtes Ziel oder bekanntes Problem vor Giovanni bleibt, bis es erledigt ist: `mem task --check WIE [--category K] "Text"`.
+Ein „offener Punkt“ ist ein unerledigtes Ziel oder ein bekanntes Problem, das Giovanni nicht vergessen soll. `mem task --check WIE [--category C] "Text"` ist der Befehl (CLI, Kommandozeilenschnittstelle), der einen solchen Punkt festhält, damit er sichtbar bleibt, bis er erledigt ist.
 
 ## What it does
-Legt ein `task`-Ereignis an (`was offen ist | check: wie man prüft, ob es noch gilt`). Es erscheint zu Beginn jedes Chats, bis Giovanni entscheidet: gelöst (`mem done`), geparkt (`mem archive`, zurück mit `mem reopen`) oder gelöscht (`mem forget`). Die Regeln stehen in [[mem-pendency]].
+Er erzeugt ein `task`-Ereignis der Form `was offen ist | check: wie man prüft, dass es noch gilt`. Der Punkt wird zu Beginn jedes Chats gezeigt, bis Giovanni entscheidet: erledigt (`mem done`), geparkt (`mem archive`, zurückgeholt mit `mem reopen`) oder gelöscht (`mem forget`). Die Regeln für offene Punkte stehen bei [[mem-pendency]].
 
 ## How it does it
-Die Kommandozeile lehnt eine Aufgabe ohne Prüfung ab. Bevor Claude an einen Punkt erinnert, führt es dessen Prüfung aus; gilt er nicht mehr, schließt Claude ihn stattdessen.
+Der Befehl lehnt eine Aufgabe ohne Prüfung ab, denn ein nicht prüfbarer Punkt wird zur veralteten Erinnerung. Bevor Claude Giovanni an einen Punkt erinnert, führt es dessen Prüfung aus; gilt er nicht mehr, schließt Claude ihn, statt ihn zu erwähnen.
 
 ## Where it sits in the pipeline
-Am Ende einer Sitzung für alles, was noch offen ist.
+Wird am Ende einer Sitzung für alles erzeugt, was noch offen ist.
 
 ## Who receives its output
-[[events-log]], danach das [[session-brief]] jedes Chats.
+[[events-log]] und dann der [[session-brief]] jedes Chats.

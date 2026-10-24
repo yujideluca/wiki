@@ -12,16 +12,16 @@ sources: [QuizWeb:src/content.js, QuizWeb:vocab]
 ---
 
 ## What it is
-Vocabulary → cards and distractors for the web twin, ported from the app's content package, plus the `vocab/` JSON files (the same files as the Android app; `errors.json` is built from its `errors.tsv`).
+`content.js` and the `vocab/` folder of [[quizweb]]: the code that turns vocabulary into cards and wrong options for the web twin, ported from the content package of the app, plus the `vocab/` JSON files (JSON, JavaScript Object Notation, is a plain-text data format). They are the same files as in the Android app; `errors.json` is built from `errors.tsv`.
 
 ## What it does
-Builds the deck: one card per word and mode, with the same deterministic distractors as [[distractor-factory]].
+It builds the deck: one card per word and mode, with the same deterministic wrong options as the [[distractor-factory]].
 
 ## How it does it
-Plain ES module; [[check-web-sync]] makes sure `vocab/` equals the app's [[vocab-assets]].
+It is a plain ES module (the standard JavaScript file format). [[check-web-sync]] makes sure that `vocab/` equals the app's [[vocab-assets]].
 
 ## Where it sits in the pipeline
-Between [[build-vocab]] output and [[quizweb-app]], which builds the deck at start.
+Between the output of [[build-vocab]] and [[quizweb-app]], which builds the deck at start.
 
 ## Who receives its output
-[[quizweb-app]] (and through it [[quizweb-controller]]).
+[[quizweb-app]] (and through it the [[quizweb-controller]]).

@@ -1,21 +1,21 @@
 ---
 id: wiki-build
 lang: pt-BR
-source_hash: 095b1a19c418
+source_hash: 34c4b2daf7e4
 title: wiki build (conteúdo → dados)
 ---
 
 ## What it is
-Transforma o conteúdo nos dados que o front-end em Elm lê (módulo Elixir `Wiki.Content.Build`) e depois compila o front-end.
+`wiki build` transforma o conteúdo nos dados que o front end em Elm lê (módulo Elixir `Wiki.Content.Build`) e depois compila o front end. Pense nele como o passo que prepara o wiki para ser exibido.
 
 ## What it does
-Grava `site/data/graph.json` (nós com o texto nos três idiomas, arestas `feeds` e arestas `mentions` vindas dos links, tipos) e um `site/data/pages/<id>.<idioma>.json` por página e idioma (seções, campos da caixa de informações, histórico). Preenche o `since` com o primeiro commit das fontes da página, marca como "pode estar desatualizada" a página de coisa fora do notebook 30 dias depois da revisão, roda `elm make --optimize` e copia os arquivos estáticos.
+Escreve `site/data/graph.json` (os nós com seu texto nos três idiomas, as arestas `feeds`, as arestas `mentions` tiradas dos links e os tipos) e um arquivo `site/data/pages/<id>.<lang>.json` por página e idioma (seções, campos da caixa de informações, histórico). Uma página do tipo reference (o glossário) pode apontar para qualquer página sem desenhar arestas no mapa. Preenche `since` a partir do primeiro commit git das fontes de uma página, marca páginas de fora do notebook como "pode estar desatualizada" 30 dias após a data de revisão, depois executa `elm make --optimize` e copia os arquivos estáticos.
 
 ## How it does it
-Chamadas ao git só de leitura para datas e histórico; JSON pelo módulo `JSON` embutido no Elixir 1.18.
+Usa chamadas git somente de leitura para datas e histórico e escreve [JSON](https://en.wikipedia.org/wiki/JSON) (JavaScript Object Notation, um formato de dados em texto simples) com o módulo `JSON` embutido no Elixir 1.18.
 
 ## Where it sits in the pipeline
-O segundo passo do `wiki publish`, depois do [[wiki-check]].
+O segundo passo de `wiki publish`, depois do [[wiki-check]].
 
 ## Who receives its output
 O [[wiki-site]].

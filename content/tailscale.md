@@ -11,16 +11,16 @@ reviewed: 2026-10-22
 ---
 
 ## What it is
-A private network between Giovanni's devices (a "tailnet") that works through any router; the laptop is `yuji-nitro.tailed3a22.ts.net` on it.
+[Tailscale](https://tailscale.com/) creates a private network between Giovanni's own devices, called a "tailnet" (a kind of [virtual private network](https://en.wikipedia.org/wiki/Virtual_private_network), VPN: an encrypted link that makes distant devices behave as if they were on the same local network). It works through any home router without special settings. On it, the laptop is reachable as `yuji-nitro.tailed3a22.ts.net`.
 
 ## What it does
-Lets the phone reach the laptop over SSH ([[remote-terminal]]) and, through [[tailscale-funnel]], publishes this wiki on the internet.
+It lets the phone reach the laptop over SSH (Secure Shell, an encrypted remote login; see [[remote-terminal]]), and through its Funnel feature ([[tailscale-funnel]]) it publishes this wiki on the internet.
 
 ## How it does it
-Installed from Tailscale's signed apt repository by `setup-sudo.sh`; logged in with Giovanni's account.
+It was installed from Tailscale's signed apt repository by the script `setup-sudo.sh`, and the laptop is logged in with Giovanni's account.
 
 ## Where it sits in the pipeline
-Network layer under remote access and the wiki.
+The network layer underneath remote access and the wiki.
 
 ## Who receives its output
 [[tailscale-funnel]] and the SSH connection from the phone.

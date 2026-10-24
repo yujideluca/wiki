@@ -12,16 +12,16 @@ sources: [QuizApp:tools/check_errors_languagetool.py]
 ---
 
 ## What it is
-A grammar check of the Fehler-finden sentences with LanguageTool (a grammar checker that runs locally on Java).
+`check_errors_languagetool.py` is a grammar check of the "find the error" sentences, done with [LanguageTool](https://languagetool.org/), a grammar checker that runs locally on Java.
 
 ## What it does
-1. Every corrected sentence must be clean at the PICKY level, so no sentence teaches German that LanguageTool rejects. 2. No warning may fall on a chunk other than the marked one, so the player never meets a second, unintended error.
+It enforces two rules. (1) Every corrected sentence must be clean at the PICKY level (LanguageTool's strictest setting), so no sentence teaches German that LanguageTool rejects. (2) No warning may fall on a chunk other than the marked one, so the player never meets a second, unintended error.
 
 ## How it does it
-Python calling the LanguageTool command-line jar (Java 17+). LanguageTool recognises only about a quarter of the planted errors, so whether the marked chunk is really wrong is reviewed by hand.
+A [Python](https://www.python.org/) script that calls the LanguageTool command-line program (a Java archive, Java 17 or newer). LanguageTool recognises only about a quarter of the planted errors, so whether the marked chunk is really wrong is still reviewed by hand.
 
 ## Where it sits in the pipeline
 After [[build-vocab]], whenever error sentences change.
 
 ## Who receives its output
-Claude, as pass/fail before the content is committed.
+Claude, as a pass or fail before the content is committed.

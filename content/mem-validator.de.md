@@ -1,22 +1,21 @@
 ---
 id: mem-validator
 lang: de
-source_hash: 298a4d08cb22
-title: Prüfer und Quarantäne (validate.py)
-aliases: [Datenschutzprüfung]
+source_hash: e43dcc2da722
+title: Validator und Quarantäne (validate.py)
 ---
 
 ## What it is
-Der Datenschutz- und Formatwächter des Gedächtnisses, egal wer schreibt.
+Der Validator ist der Datenschutz- und Formatwächter des Gedächtnisses, egal wer schreibt. Seine Muster für Geheimnisse, Telefonnummern und CPF-Nummern (Cadastro de Pessoas Físicas, die brasilianische persönliche Steuernummer) liegen in `mem/privacy-patterns.tsv`, der einen Liste, die auch der Datenschutz-Scan des Wikis ([[wiki-check]]) benutzt.
 
 ## What it does
-Lehnt Tokens und Schlüssel, E-Mail-Adressen, Telefonnummern, CPF-Nummern und fehlerhafte Ereignisse ab. Abgelehnte Dateien wandern mit einer `.reason`-Notiz nach `quarantine/` und erscheinen in REVIEW. Einen Filter für Gesundheitsbegriffe gibt es bewusst nicht (Giovannis Entscheidung, 19.10.2026); keine klinischen Daten über andere zu speichern ist eine feste Regel, keine automatische Prüfung.
+Er weist Tokens und Schlüssel, E-Mail-Adressen, Telefonnummern, CPF-Nummern und fehlerhafte Ereignisse zurück. Eine abgelehnte Datei wird mit einer `.reason`-Notiz in den Ordner `quarantine/` verschoben und erscheint in der Prüfdatei. Einen Filter für Gesundheitsvokabular gibt es bewusst nicht (Giovannis Entscheidung vom 2026-10-19); klinische Daten über andere Personen nicht zu speichern ist eine dauerhafte Regel, der Claude folgt, keine automatische Prüfung.
 
 ## How it does it
-`check_event` pro Ereignis; `load_checked` trennt gültig von ungültig; `quarantine` verschiebt die schlechten. Getestet durch `test_privacy_boundary`. Die Muster für Geheimnisse, Telefonnummern und CPF stehen in `mem/privacy-patterns.tsv`, der einen Liste, die auch die Datenschutzprüfung des Wikis ([[wiki-check]]) benutzt.
+Die Funktion `check_event` prüft ein Ereignis, `load_checked` trennt gültige von ungültigen Ereignissen, und `quarantine` verschiebt die schlechten. Getestet wird er durch `test_privacy_boundary`.
 
 ## Where it sits in the pipeline
 Vor jedem Schreiben durch [[mem]] und auf GitHub in [[mem-action]].
 
 ## Who receives its output
-[[memory-fold]] (nur gültige Ereignisse) und [[memory-views]] (REVIEW listet die Quarantäne).
+[[memory-fold]] (nur gültige Ereignisse) und [[memory-views]] (die Prüfdatei listet, was in Quarantäne ging).

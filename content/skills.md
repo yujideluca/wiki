@@ -12,19 +12,19 @@ sources: [home:.claude/skills]
 ---
 
 ## What it is
-Giovanni's Claude skills: packaged instructions that Claude loads when a task of their kind comes up. The local copies for Claude Code live in `~/.claude/skills`; the Claude app has its own copies ([[claude-ai-skills]]).
+A skill is a packaged set of instructions that Claude loads when a task of that kind comes up ([skills documentation](https://docs.claude.com/en/docs/claude-code/skills)). Think of it as a recipe book chapter that Claude reads only when the request matches: a chapter on correcting German, one on debugging, one on laptop repair. Each skill is a folder containing a file `SKILL.md`: first a name, then a "description" that decides when the skill is loaded, then the instructions. Giovanni's skills are kept in `~/.claude/skills`; the Claude app has its own copies ([[claude-ai-skills]]).
 
 ## What it does
-Encode how Giovanni wants recurring tasks done: German training, clinical answers, article appraisal, applications to Germany, Magic: The Gathering, browser safety, laptop repair, and the development process (brainstorming, debugging, verification, building skills).
+The skills encode how Giovanni wants recurring tasks done: German training, clinical answers, appraisal of scientific articles, applications to Germany, Magic: The Gathering, safe browser automation, laptop repair, and the development process (brainstorming, debugging, verification, maintenance reviews, building tests and building skills). Each skill has a page in this wiki that contains its own definition, so you never need to open the `SKILL.md` file to understand it.
 
 ## How it does it
-Each skill is a folder with a `SKILL.md` (a name, a description that decides when it triggers, then the instructions). New or rebuilt skills go through [[skill-skill-forge]]. The folder was once filled by the retired pipeline ([[retired-workflow-pipeline]]); the skills are now real folders.
+Claude sees the list of names and descriptions in every chat; when a request matches a description, it loads that skill's full text and follows it. New or rebuilt skills go through [[skill-skill-forge]]. The folder was once filled by the retired pipeline ([[retired-workflow-pipeline]]); the skills are now ordinary folders.
 
 ## Where it sits in the pipeline
 Beside every task: a skill is loaded by the Claude instance when its description matches the request.
 
 ## Who receives its output
-[[claude-code]], [[remote-assistant]] and (through their copies) [[claude-app]].
+[[claude-code]], the [[remote-assistant]] and, through their copies, the [[claude-app]].
 
 ## Notes
 - [[skill-brainstorming]]

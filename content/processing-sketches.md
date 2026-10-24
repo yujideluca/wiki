@@ -12,13 +12,13 @@ sources: [processing-sketches:drachenkurve, processing-sketches:drachenfraktal]
 ---
 
 ## What it is
-Small generative-art programs written in Processing (a Java-based language for drawing) in `~/dev/processing-sketches`.
+Small generative-art programs (art made by code) written in [Processing](https://processing.org/), a programming environment for drawing based on Java. They are in `~/dev/processing-sketches`. A "sketch" is what Processing calls a program.
 
 ## What it does
-Draws the Heighway dragon curve in two versions: [[drachenkurve]] (exported as an app, rendered the QuizApp launcher icon) and [[drachenfraktal]].
+It draws the Heighway dragon curve in two versions: [[drachenkurve]] (exported as an app; it rendered the QuizApp launcher icon) and [[drachenfraktal]].
 
 ## How it does it
-Each sketch is a `.pde` file in its own folder; `drachenkurve` has an exported build. Since 2026-10-24 the folder is a private GitHub repository (`yujideluca/processing-sketches`) with a gate, CI and the [[pipeline-check]] pre-push check; build output is ignored.
+Each sketch is a `.pde` file in its own folder; `drachenkurve` also has an exported build. Since 2026-10-24 the folder is a private GitHub repository (`yujideluca/processing-sketches`) with a quality gate, CI (continuous integration, automatic checks on every push) and the [[pipeline-check]] pre-push check; the build output is ignored by git.
 
 ## Where it sits in the pipeline
 Off to the side of the other projects; its one link into them is the icon of [[quizapp]].

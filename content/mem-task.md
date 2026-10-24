@@ -12,16 +12,16 @@ sources: [workflow-memory:mem/pendency.py]
 ---
 
 ## What it is
-How an unfinished goal or known problem is kept in front of Giovanni until it is dealt with: `mem task --check HOW [--category C] "text"`.
+An "open item" is an unfinished goal or a known problem that Giovanni should not forget. `mem task --check HOW [--category C] "text"` is the command (CLI, command-line interface) that records one, so that it stays visible until it is dealt with.
 
 ## What it does
-Creates a `task` event (`what is open | check: how to verify it still applies`). It is shown at the start of every chat until Giovanni decides: solved (`mem done`), parked (`mem archive`, back with `mem reopen`) or deleted (`mem forget`). Rules are in [[mem-pendency]].
+It creates a `task` event shaped as `what is open | check: how to verify it still applies`. The item is shown at the start of every chat until Giovanni decides: solved (`mem done`), parked (`mem archive`, brought back with `mem reopen`) or deleted (`mem forget`). The rules for open items are on [[mem-pendency]].
 
 ## How it does it
-The CLI refuses a task without a check. Before reminding Giovanni of one, Claude runs its check; if it no longer applies, Claude closes it instead.
+The command refuses a task that comes without a check, because an item that cannot be verified becomes a stale reminder. Before reminding Giovanni of an item, Claude runs its check; if the item no longer applies, Claude closes it instead of mentioning it.
 
 ## Where it sits in the pipeline
-Created at the end of a session for anything still open.
+Created at the end of a session for anything that is still open.
 
 ## Who receives its output
-[[events-log]], then the [[session-brief]] of every chat.
+[[events-log]], and then the [[session-brief]] of every chat.

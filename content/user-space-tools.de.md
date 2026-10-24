@@ -1,18 +1,18 @@
 ---
 id: user-space-tools
 lang: de
-source_hash: 010b8b5afe5c
-title: Werkzeuge im Benutzerbereich (~/.local)
+source_hash: 03b13b55ee7d
+title: User-Space-Werkzeuge (~/.local)
 ---
 
 ## What it is
-Die ohne sudo in `~/.local` installierten Zusatzwerkzeuge: Node 22 und npm, uv, pyright, kotlin-lsp, rclone, ein tmux im Benutzerbereich, Elm 0.19.1 (mit elm-test und elm-format) und die Skripte `mem`, `tg-send`, `claude-assistant` und `wiki`.
+„User-Space“ heißt: in den eigenen Ordnern des Benutzers statt in Systemordnern installiert, sodass keine Administratorrechte nötig sind. Diese Seite behandelt die zusätzlichen Werkzeuge in `~/.local` auf Giovannis Laptop: [Node.js](https://nodejs.org/) 22 mit npm (JavaScript-Laufzeit und ihr Paketinstaller), [uv](https://docs.astral.sh/uv/) (ein schnelles Python-Paketwerkzeug), pyright (ein Python-Typprüfer), kotlin-lsp (ein Helfer, der Editoren Kotlin-Code erklärt), rclone (kopiert Dateien in Cloud-Speicher), eine eigene Kopie von tmux (ein Terminal, das ohne Fenster weiterläuft), [Elm](https://elm-lang.org/) 0.19.1 mit elm-test und elm-format sowie die Skripte `mem`, `tg-send`, `claude-assistant` und `wiki`.
 
 ## What it does
-Geben Claude Code Sprachserver (pyright, kotlin-lsp für die Plugins), Bauwerkzeuge und Helfer. Ausnahme Elixir 1.18 / Erlang OTP 27: von Giovanni mit apt für das Wiki installiert.
+Sie geben Claude Code Language Server (Programme, die über das Language Server Protocol, LSP, Codefehler und Definitionen melden), Build-Werkzeuge und Helfer. Die Ausnahme ist [Elixir](https://elixir-lang.org/) 1.18 mit Erlang/OTP 27 (OTP ist die Open Telecom Platform, die Standardbibliotheken von Erlang): Diese hat Giovanni für das Wiki mit dem System-Paketmanager `apt` installiert.
 
 ## How it does it
-Wrapper im `PATH` unter `~/.local/bin`; pyright liegt in `~/.local/share/pyright-pkg` (kein venv möglich), kotlin-lsp in `~/.local/opt/kotlin-lsp`. Pfade und Update-Schritte stehen in [[claude-auto-memory]].
+Kleine Wrapper-Skripte im `PATH` (der Liste der Ordner, in denen nach Befehlen gesucht wird) in `~/.local/bin`. pyright liegt in `~/.local/share/pyright-pkg`, weil eine virtuelle Umgebung nicht möglich war, und kotlin-lsp in `~/.local/opt/kotlin-lsp`. Die genauen Pfade und Upgrade-Schritte stehen in [[claude-auto-memory]].
 
 ## Where it sits in the pipeline
 Unter der Arbeit jedes Projekts.

@@ -1,21 +1,21 @@
 ---
 id: hook-prompt
 lang: de
-source_hash: 58369d16ec08
+source_hash: 7aa53c2fbf0f
 title: UserPromptSubmit-Hook (mem hook-prompt)
 ---
 
 ## What it is
-Der Claude-Code-Hook, der bei jeder Nachricht von Giovanni läuft: `mem hook-prompt` (Zeitlimit 10 s).
+Ein Hook ist ein kleines Programm, das [[claude-code]] bei einem bestimmten Ereignis automatisch ausführt ([Hooks erklärt](https://docs.claude.com/en/docs/claude-code/hooks-guide)). Dieser läuft bei jeder Nachricht, die Giovanni sendet: der Befehl `mem hook-prompt`, mit einem Zeitlimit von 10 Sekunden.
 
 ## What it does
-Gibt den Nachrichtentext an [[mem-harvester]], der jede genannte Vorliebe festhält. Gibt nichts aus.
+Er gibt den Text der Nachricht an den [[mem-harvester]], der nach einer von Giovanni geäußerten Vorliebe sucht und sie festhält, damit eine einmal genannte Regel nicht vergessen wird. Der Hook selbst gibt nichts aus.
 
 ## How it does it
-Fehler gehen ins Hook-Protokoll; es endet immer mit 0 und kann so nie eine Nachricht blockieren.
+Er ist so gebaut, dass er nie im Weg steht. Jeder Fehler geht ins Hook-Log, und das Programm endet immer mit Exit-Code 0 (die Zahl, mit der ein Programm „alles in Ordnung“ meldet); ein Fehler hier kann also nie verhindern, dass eine Nachricht Claude erreicht.
 
 ## Where it sits in the pipeline
-Zwischen Giovannis Nachricht und dem Modell.
+Zwischen Giovannis Nachricht und dem Modell: Die Nachricht wird im Vorbeigehen gelesen.
 
 ## Who receives its output
-[[mem-harvester]].
+Der [[mem-harvester]].

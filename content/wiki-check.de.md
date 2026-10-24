@@ -1,21 +1,21 @@
 ---
 id: wiki-check
 lang: de
-source_hash: 25401c8d1e9e
+source_hash: 5612b4226fd5
 title: wiki check (Inhaltsregeln)
 ---
 
 ## What it is
-Jede Regel, der eine Seite folgen muss, bevor sie veröffentlicht werden kann (Elixir-Modul `Wiki.Content.Check`).
+`wiki check` führt jede Regel aus, die eine Seite befolgen muss, bevor sie veröffentlicht werden kann. Im Code ist es das Elixir-Modul `Wiki.Content.Check`.
 
 ## What it does
-Kopffelder und Arten gültig; die fünf Abschnitte vorhanden und nicht leer; jeder `[[Link]]`, `fed_by` und `feeds` löst auf; `fed_by`/`feeds` symmetrisch; keine verwaisten Seiten (außer Akteuren und Externem); Datenschutzprüfung (Schlüssel, Tokens, Passwörter, Telefonnummern, E-Mails außer Giovannis; die Muster sind die `privacy-patterns.tsv` von workflow-memory, nach `server/priv/` kopiert und vom Tor verglichen); Beförderung (eine auf einer Seite gelistete Funktion, die zwei andere Seiten erwähnen, braucht eine eigene Seite); eine Seite ohne Quellen braucht ein Prüfdatum; deutsche und portugiesische Übersetzungen existieren und passen zum aktuellen Englisch. `--local` prüft zusätzlich, dass Quellen und Gedächtnisverweise existieren.
+Es prüft, dass: Kopffelder und Arten gültig sind; die fünf Pflichtabschnitte vorhanden und nicht leer sind; jeder `[[link]]`, `fed_by` und `feeds` auf eine echte Seite zeigt; `fed_by` und `feeds` in beide Richtungen übereinstimmen; es keine verwaisten Seiten gibt (Seiten, auf die nichts verlinkt), außer Akteuren und Dingen von außen; der Datenschutz-Scan keine Schlüssel, Tokens, Passwörter, Telefonnummern oder andere E-Mail-Adressen als Giovannis findet (die Muster sind die Datei `privacy-patterns.tsv` von workflow-memory, nach `server/priv/` kopiert und vom Gate verglichen); eine Funktion, die auf einer Seite aufgeführt und von zwei weiteren Seiten erwähnt wird, eine eigene Seite bekommt (die Beförderungsregel); eine Seite ohne Quellen ein Prüfdatum hat; eine Skill-Seite einen Abschnitt Steps mit der eigenen Definition der Skill hat; die erste Verwendung jedes gelisteten Akronyms mit seinem vollen Namen kommt; und die deutschen und portugiesischen Übersetzungen existieren und zum aktuellen Englisch passen. Mit `--local` prüft es auch, dass Quellen und Gedächtniseinträge existieren.
 
 ## How it does it
-Reine Funktionen über die geladenen Inhalte; liefert eine sortierte Liste `Datei: Problem`. Die CI führt es ohne `--local` aus, weil GitHub die anderen privaten Repos nicht sieht.
+Es besteht aus reinen Funktionen über dem geladenen Inhalt und gibt eine sortierte Liste von Zeilen der Form `Datei: Problem` zurück. Die Continuous Integration (CI, automatische Prüfungen auf GitHub) führt es ohne `--local` aus, weil GitHub Giovannis andere private Repositories nicht sehen kann.
 
 ## Where it sits in the pipeline
-Erster Schritt von `wiki publish` und Teil von [[wiki-quality-gate]].
+Der erste Schritt von `wiki publish` und Teil des [[wiki-quality-gate]].
 
 ## Who receives its output
-[[wiki-cli]] (publish lehnt bei jedem Problem ab).
+Die [[wiki-cli]] (das Veröffentlichen verweigert sich bei jedem Problem).

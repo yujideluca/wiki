@@ -1,28 +1,28 @@
 ---
 id: wiki-cli
 lang: pt-BR
-source_hash: 604a82d9280c
+source_hash: 6477af02e256
 title: wiki (comando)
 ---
 
 ## What it is
-O comando que o Claude usa para manter o wiki atualizado: um escript Elixir instalado como `~/.local/bin/wiki`.
+`wiki` é o comando que o Claude usa para manter o wiki em dia: um escript Elixir (um programa empacotado em um único arquivo executável) instalado como `~/.local/bin/wiki`.
 
 ## What it does
-O `wiki publish` é o passo de fim de tarefa: roda o [[wiki-check]] em modo local e o [[wiki-build]], faz commit só do `content/` (trabalho alheio no repositório nunca vai junto), faz push para o repositório privado no [[github]] e registra a hora da publicação para o [[wiki-hook-stop]]. Recusa a qualquer falha.
+`wiki publish` é o passo do fim da tarefa. Executa o [[wiki-check]] em modo local, depois o [[wiki-build]], faz commit apenas da pasta `content/` (para que trabalho não relacionado no repositório nunca seja arrastado) e a envia ao repositório privado no [[github]], e por fim registra o momento da publicação para o [[wiki-hook-stop]]. Recusa diante de qualquer falha.
 
 ## How it does it
-Compilado com `mix escript.build` a partir do projeto do servidor; `WIKI_ROOT` aponta para o repositório (padrão `~/dev/wiki`). Nunca faz force-push.
+É construído com `mix escript.build` a partir do projeto do servidor; a variável `WIKI_ROOT` aponta para o repositório (padrão `~/dev/wiki`). Nunca faz force-push.
 
 ## Where it sits in the pipeline
-Chamado no [[end-of-task]], antes do `mem use`.
+Chamado em [[end-of-task]], antes de `mem use`.
 
 ## Who receives its output
 O [[github]] (o commit) e o site no ar (pelo [[wiki-site]]).
 
 ## Functions
-- `wiki check [--local]`: validate the content
-- `wiki build`: content → site/data, Elm → site/assets
-- `wiki stale`: pages whose sources changed after the page
-- `wiki publish -m "msg"`: check --local, build, commit only content/, push
-- `wiki hook-stop`: the Claude Code Stop hook
+- `wiki check [--local]`: validar o conteúdo
+- `wiki build`: conteúdo → site/data, Elm → site/assets
+- `wiki stale`: páginas cujas fontes mudaram depois da página
+- `wiki publish -m "msg"`: check --local, build, commit só de content/, push
+- `wiki hook-stop`: o hook Stop do Claude Code

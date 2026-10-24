@@ -1,22 +1,21 @@
 ---
 id: release-feed
 lang: pt-BR
-source_hash: 11a253fb56fb
-title: german-quiz-releases (canal de atualização)
-aliases: [repositório de versões]
+source_hash: 1e0d55392911
+title: german-quiz-releases (feed de atualização)
 ---
 
 ## What it is
-O repositório público `yujideluca/german-quiz-releases` no GitHub (clone local `~/dev/german-quiz-releases`), que guarda só o APK mais novo e seu manifesto `latest.json` (versionCode, versionName, sha256, commit) e, desde 22/10/2026, uma pasta `content/` com o [[question-pack]] mais novo.
+O "feed de atualização" é o repositório público do GitHub `yujideluca/german-quiz-releases` (clone local `~/dev/german-quiz-releases`). Guarda apenas o APK mais novo (Android Package, o arquivo instalável do app) e seu arquivo de descrição `latest.json` (versionCode, versionName, impressão digital sha256, commit). Desde 2026-10-22 tem também uma pasta `content/` com o [[question-pack]] mais novo.
 
 ## What it does
-É o canal de atualização automática que o app lê. Dois branches: `main` = estável (o que os usuários recebem) e `bleeding-edge` = beta ([[release-channels]]).
+É o que os apps leem ao verificar atualizações. Há dois branches: `main` é o canal estável (o que os usuários recebem) e `bleeding-edge` é o canal beta ([[release-channels]]).
 
 ## How it does it
-Só o [[publish-apk]] (o APK) e o [[publish-content]] (o pacote de perguntas) escrevem nele.
+É escrito apenas pelo [[publish-apk]] (o APK) e pelo [[publish-content]] (o pacote de perguntas), então nada mais pode mudar o que os apps baixam.
 
 ## Where it sits in the pipeline
 Entre o [[publish-apk]] no notebook e o [[update-client]] no celular.
 
 ## Who receives its output
-O [[update-client]] em cada cópia instalada.
+O [[update-client]] em cada cópia instalada e o [[question-pool-updater]].

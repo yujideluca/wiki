@@ -12,13 +12,13 @@ sources: [QuizWeb:src/app.js, QuizWeb:index.html, QuizWeb:style.css]
 ---
 
 ## What it is
-The UI layer of [[quizweb]]: renders the screens and wires taps to the controller.
+`app.js` is the user-interface layer of [[quizweb]]: it draws the screens and connects taps to the controller. (Together with `index.html` and `style.css` it is what the browser actually shows.)
 
 ## What it does
-Home (calendar, daily goal, modes), questions with feedback and 0.5 s auto-advance, settings, backup, removed-cards list with search.
+It shows the home screen (calendar, daily goal, modes), the questions with feedback and a 0.5-second automatic advance, the settings, the backup, and the list of removed cards with a search box.
 
 ## How it does it
-Plain DOM; with [[quizweb-store]] it is the only code that touches the browser (an architecture test enforces it). All logic lives in [[quizweb-domain]].
+It works directly on the DOM (Document Object Model: the browser's live model of a web page, see [the documentation](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model)), with no framework. Together with the [[quizweb-store]] it is the only code that touches the browser, and an architecture test enforces that. All the logic lives in [[quizweb-domain]].
 
 ## Where it sits in the pipeline
 The top of the web twin, served by [[github-pages]].

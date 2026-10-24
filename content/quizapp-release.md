@@ -11,16 +11,16 @@ sources: [QuizApp:tools/publish_apk.sh, QuizApp:CLAUDE.md]
 ---
 
 ## What it is
-The path a change to [[quizapp]] takes from an idea to Giovanni's phone.
+This page describes the path that a change to [[quizapp]] takes from an idea to Giovanni's phone. The path is built so that nothing reaches the player unspecified, untested or untried.
 
 ## What it does
-Makes sure every change is specified, tested, tried in beta and promoted only when Giovanni says so.
+It makes sure that every change is specified, tested, tried in a beta version and promoted to the stable version only when Giovanni says so.
 
 ## How it does it
-Requirement first ([[quizapp-requirements]]), then test, then code; the gate decides; beta before stable ([[release-channels]]).
+The requirement comes first ([[quizapp-requirements]]), then the test, then the code; the quality gate decides; the beta version comes before the stable one ([[release-channels]]).
 
 ## Where it sits in the pipeline
-Spans [[quizapp-requirements]], [[quizapp-quality-gate]], [[publish-apk]], [[release-feed]], [[update-client]].
+It spans [[quizapp-requirements]], [[quizapp-quality-gate]], [[publish-apk]], [[release-feed]] and [[update-client]].
 
 ## Who receives its output
 Giovanni, on the [[phone]].
@@ -29,9 +29,9 @@ Giovanni, on the [[phone]].
 1. Giovanni states a behaviour; it becomes a row in [[quizapp-requirements]].
 2. Claude writes the test tagged `REQ <ID>`, then the code, in [[quizapp-core]] or [[quizapp-app]].
 3. The first-line debug pass: tests, install on the [[phone]], exercise the flow, read logcat ([[skill-adb-android-control]]).
-4. [[quizapp-quality-gate]] passes locally; push; [[quizapp-ci]] must be green.
-5. [[publish-apk]] publishes a beta to the `bleeding-edge` branch of [[release-feed]].
+4. The [[quizapp-quality-gate]] passes locally; push; [[quizapp-ci]] must be green.
+5. [[publish-apk]] publishes a beta to the `bleeding-edge` branch of the [[release-feed]] (an APK, Android Package, is the installable app file).
 6. The beta app's [[update-client]] offers the update; Giovanni tries it.
-7. `publish_apk.sh promote` (gate with [[mutation-check]] and [[check-tests-updated]]) moves it to stable `main` when Giovanni decides.
-8. The [[quizweb]] port waiting on `web-<version>` is merged to `main`.
-9. New questions alone need no APK: edit the TSV, run [[build-vocab]], commit, then [[publish-content]] `beta` and, when Giovanni says so, `promote`.
+7. `publish_apk.sh promote` (the gate with the [[mutation-check]] and [[check-tests-updated]]) moves it to the stable `main` when Giovanni decides.
+8. The [[quizweb]] port waiting on the branch `web-<version>` is merged to `main`.
+9. New questions alone need no APK: edit the TSV files (tab-separated values), run [[build-vocab]], commit, then [[publish-content]] `beta` and, when Giovanni says so, `promote`.

@@ -12,19 +12,19 @@ sources: [wiki:server/lib/wiki/cli.ex]
 ---
 
 ## What it is
-The command Claude uses to keep the wiki current: an Elixir escript installed as `~/.local/bin/wiki`.
+`wiki` is the command that Claude uses to keep the wiki current: an Elixir escript (a program packed into a single runnable file) installed as `~/.local/bin/wiki`.
 
 ## What it does
-`wiki publish` is the end-of-task step: it runs [[wiki-check]] in local mode, [[wiki-build]], then commits only `content/` (unrelated work in the repo is never swept in) and pushes to the private repo on [[github]], and records the publish time for [[wiki-hook-stop]]. It refuses on any failure.
+`wiki publish` is the end-of-task step. It runs [[wiki-check]] in local mode, then [[wiki-build]], then commits only the `content/` folder (so unrelated work in the repository is never swept in) and pushes it to the private repository on [[github]], and finally records the time of the publish for the [[wiki-hook-stop]]. It refuses on any failure.
 
 ## How it does it
-Built with `mix escript.build` from the server project; `WIKI_ROOT` points at the repo (default `~/dev/wiki`). Never force-pushes.
+It is built with `mix escript.build` from the server project; the variable `WIKI_ROOT` points at the repository (default `~/dev/wiki`). It never force-pushes.
 
 ## Where it sits in the pipeline
 Called at [[end-of-task]], before `mem use`.
 
 ## Who receives its output
-[[github]] (the commit) and the live site (through [[wiki-site]]).
+[[github]] (the commit) and the live site (through the [[wiki-site]]).
 
 ## Functions
 - `wiki check [--local]`: validate the content

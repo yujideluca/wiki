@@ -1,18 +1,18 @@
 ---
 id: quizweb-ci
 lang: de
-source_hash: 18f913bdb0c7
-title: QuizWeb-CI (GitHub Actions)
+source_hash: 5c99d45dbbea
+title: QuizWeb CI (GitHub Actions)
 ---
 
 ## What it is
-Der GitHub-Actions-Workflow von [[quizweb]].
+Das ist der GitHub-Actions-Workflow von [[quizweb]] (Datei `.github/workflows/test.yml`). [GitHub Actions](https://docs.github.com/en/actions) führt automatische Aufträge auf GitHubs Rechnern aus; dieser Auftrag ist CI (Continuous Integration), die automatischen Prüfungen bei jeder Änderung.
 
 ## What it does
-Führt bei jedem Push und Pull-Request die ganze Web-Testsuite aus: Domäne, gemeinsame Konformitätsvektoren, Inhalte, i18n und Architekturregeln.
+Er führt bei jedem Push und Pull Request (einem Vorschlag, eine Änderung zu übernehmen) die gesamte Web-Testsuite aus: Domäne, gemeinsame Konformitätsvektoren, Inhalt, i18n und Architekturregeln.
 
 ## How it does it
-Der eingebaute Testläufer von Node 22 (`npm test` = `node --test`), keine Abhängigkeiten zu installieren.
+Er nutzt den in Node 22 eingebauten Test-Runner (`npm test` = `node --test`), sodass keine Abhängigkeiten zu installieren sind.
 
 ## Where it sits in the pipeline
 Nach jedem Push zu [[github]].

@@ -1,19 +1,20 @@
 ---
 id: wiki-content
 lang: pt-BR
-source_hash: 476989c4168a
+source_hash: 0f8ca2dbbce9
 title: Conteúdo do wiki (páginas Markdown)
-aliases: [páginas]
 ---
 
 ## What it is
-A fonte de verdade deste wiki: um arquivo Markdown por conceito em `content/` (inglês), com as traduções `<id>.de.md` e `<id>.pt-BR.md`, e o `_kinds.json`, a lista aberta de tipos e suas cores.
+São as próprias páginas: a fonte da verdade deste wiki. Há um arquivo [Markdown](https://en.wikipedia.org/wiki/Markdown) (um arquivo de texto com marcas simples para títulos, listas e links) por conceito na pasta `content/`, em inglês, com uma versão em alemão `<id>.de.md` e uma em português do Brasil `<id>.pt-BR.md`. Mais dois arquivos guardam configurações: `_kinds.json`, a lista aberta de tipos de página e suas cores, e `_acronyms.tsv`, a lista de siglas cujo primeiro uso em uma página deve vir com o nome completo.
 
 ## What it does
-Cada página tem um cabeçalho (`id, title, aliases, kind, project, status, location, fed_by, feeds, sources, memory, since, until, reviewed`) e seções fixas: O que é, O que faz, Como faz, Onde fica no fluxo, Quem recebe o que produz, mais Passos (páginas de processo), Funções e Observações, opcionais.
+Cada página tem um cabeçalho (`id, title, aliases, kind, project, status, location, fed_by, feeds, sources, memory, since, until, reviewed`) e seções fixas: What it is, What it does, How it does it, Where it sits in the pipeline, Who receives its output, mais, opcionalmente, Steps (para processos e skills), Functions e Notes.
+
+As regras de escrita são estas: toda página deve ser compreensível para quem não sabe nada do sistema; um termo técnico é definido onde aparece pela primeira vez e, quando é complexo, aponta para uma definição (uma fonte externa ou o [[glossary]]); uma sigla é escrita por extenso no primeiro uso em cada página; e uma página de skill traz a definição da própria skill na seção Steps, de modo que a página basta para entender a skill.
 
 ## How it does it
-Os links seguem o estilo do Obsidian `[[id]]`; `fed_by`/`feeds` são as arestas do fluxo e precisam bater nos dois sentidos. As `sources` são `repo:caminho`, para uma mudança no código marcar a página como desatualizada. As traduções guardam um hash do texto em inglês de onde vieram. As páginas dizem o que existe; as regras ficam na memória e são ligadas pelo #código.
+Os links entre páginas são escritos `[[id]]`. Os cabeçalhos `fed_by` e `feeds` são as arestas do pipeline (o que alimenta o quê) e devem concordar nos dois sentidos. `sources` são escritos `repo:path`, para que uma mudança no código possa marcar a página como desatualizada. Uma tradução guarda um hash (uma impressão digital curta) do texto em inglês de que foi feita, então uma tradução desatualizada é detectada. As páginas dizem o que existe; regras e preferências ficam na memória e são ligadas pelo `#code`.
 
 ## Where it sits in the pipeline
 Escrito pelo [[claude-code]] no fim de cada tarefa ([[end-of-task]]); verificado pelo [[wiki-check]]; transformado em dados pelo [[wiki-build]].

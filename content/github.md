@@ -11,16 +11,16 @@ reviewed: 2026-10-22
 ---
 
 ## What it is
-Where all of Giovanni's repositories live (account `yujideluca`): german-quiz, german-quiz-web, german-quiz-releases, workflow-memory, project-template and wiki (private where they hold anything personal).
+[GitHub](https://github.com/) is a website that stores programmers' projects online and keeps the full history of every change (it is built on [Git](https://git-scm.com/), the version-control tool). A project stored this way is called a repository. All of Giovanni's repositories live under the account `yujideluca`: german-quiz, german-quiz-web, german-quiz-releases, workflow-memory, project-template and this wiki. Those that hold anything personal are private.
 
 ## What it does
-Hosts the code, runs CI (GitHub Actions), serves [[github-pages]], and is the bridge the [[claude-app]] uses to write memory ([[mem-github-connector]]).
+It hosts the code, runs the automatic checks called CI (continuous integration) through GitHub Actions, serves static websites ([[github-pages]]), and is the bridge that lets the [[claude-app]] write to the memory ([[mem-github-connector]]).
 
 ## How it does it
-Claude Code pushes over SSH; never force-push (a standing preference).
+[[claude-code]] uploads (pushes) over SSH (Secure Shell, an encrypted login method that uses keys instead of passwords). It never force-pushes, which would overwrite history on the server; this is a standing preference of Giovanni.
 
 ## Where it sits in the pipeline
-The off-laptop backup and meeting point of every project.
+It is the off-laptop backup and the meeting point of every project.
 
 ## Who receives its output
 The Claude instances, [[github-pages]] and the phone's update check ([[update-client]]).

@@ -13,16 +13,16 @@ memory: [#f1e117]
 ---
 
 ## What it is
-This site: a wiki of every project, program, skill and process in Giovanni's systems, with a Dark-style map of how they connect. Repo `yujideluca/wiki` (private), folder `~/dev/wiki`. Started 2026-10-22 from [[project-template]].
+This site is a wiki: an encyclopedia of every project, program, skill and process in Giovanni's systems, with a map that shows how they connect. Each topic has its own page, written so that a reader who knows nothing about the system or its technical language can follow it. New to a word? Open the [[glossary]], which explains the terms used on the pages. The repository `yujideluca/wiki` is private, the folder is `~/dev/wiki`, and the project was started on 2026-10-22 from [[project-template]].
 
 ## What it does
-Lets Giovanni answer an architecture question after one search and at most two clicks: search with autocomplete, hover a dot to see what it is in four boxes, click for the full article ([[wiki-frontend]]). Kept current automatically at the end of every task ([[end-of-task]]).
+It lets Giovanni answer an architecture question after one search and at most two clicks: search with suggestions while typing, hover over a dot on the map to see what it is in four boxes, click the dot for the full page ([[wiki-frontend]]). It is kept up to date automatically at the end of every task ([[end-of-task]]).
 
 ## How it does it
-Content is Markdown files with a header ([[wiki-content]]), checked by [[wiki-check]] and turned into JSON by [[wiki-build]]. The front end is written in Elm ([[wiki-frontend]]); the back end in Elixir ([[wiki-server]]) with Google sign-in for one account and a decoy for everyone else ([[wiki-router]], [[decoy-page]]). It is reachable on the web through [[tailscale-funnel]]. Languages: English, German, Brazilian Portuguese.
+The content is Markdown text files, each with a small header ([[wiki-content]]); they are checked by [[wiki-check]] and turned into JSON (JavaScript Object Notation) data by [[wiki-build]]. The part you see is written in Elm ([[wiki-frontend]]); the server is written in Elixir ([[wiki-server]]) and lets in only one Google account, showing everyone else a decoy ([[wiki-router]], [[decoy-page]]). It is reachable on the internet through [[tailscale-funnel]]. The languages are English, German and Brazilian Portuguese.
 
 ## Where it sits in the pipeline
-Beside [[workflow-memory]]: memory holds rules and preferences, the wiki describes what exists and how it works, and links to memory entries instead of copying them.
+Beside [[workflow-memory]]: the memory holds rules and preferences, while the wiki describes what exists and how it works, and links to memory entries instead of copying them.
 
 ## Who receives its output
 [[giovanni]], in the browser on the laptop or the phone.

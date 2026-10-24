@@ -1,19 +1,18 @@
 ---
 id: pbar
 lang: pt-BR
-source_hash: 533620cc5c3f
+source_hash: 87fde8bdca73
 title: pbar.py (linha de status)
-aliases: [barra de progresso]
 ---
 
 ## What it is
-A linha de status do Claude Code no notebook: uma barra de progresso desenhada como a do apt durante uma instalação. Só local: sem rede, sem tokens do modelo.
+`pbar.py` desenha a linha de status do Claude Code no notebook: a única linha de texto na parte de baixo do terminal. Enquanto um comando roda, ela se parece com a barra de progresso que o instalador de pacotes `apt` desenha. Funciona só localmente: não usa rede nem tokens do modelo (as unidades em que o uso de IA é medido), então não custa nada.
 
 ## What it does
-Enquanto um comando roda, mostra `Progress: [ 45%]` e uma barra, estimada pelo tempo que aquele programa levou antes; quando nada roda, mostra pasta, branch do git, modelo, custo, contexto usado e o uso de 5 horas com a hora de renovação.
+Enquanto um comando de shell roda, mostra `Progress: [ 45%]` e uma barra, estimada pelo tempo que esse mesmo programa levou nas execuções anteriores. Quando nada roda, mostra a pasta, o branch do git, o modelo, o custo, quanto da janela de contexto está usada e o uso do limite de 5 horas com o horário de reinício.
 
 ## How it does it
-Duas partes: um laço que varre o `/proc` atrás do programa de cada comando do Claude Code e aprende as durações (`~/.local/share/claude-pbar/history.json`), e o `line`, o comando da statusLine, que imprime uma linha da largura do terminal. Iniciado pelo [[claude-code-settings]].
+São duas partes. Um laço de verificação examina `/proc` (a lista de programas em execução do Linux) em busca do programa que cada comando do Claude Code executa e aprende durações típicas, guardadas em `~/.local/share/claude-pbar/history.json`. A segunda parte, `line`, é o comando que o Claude Code chama para obter a linha de status ([documentação](https://docs.claude.com/en/docs/claude-code/statusline)); ele imprime uma linha com a largura do terminal. Ambas são iniciadas a partir de [[claude-code-settings]].
 
 ## Where it sits in the pipeline
 Na parte de baixo de todo terminal do Claude Code.

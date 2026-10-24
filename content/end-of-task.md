@@ -11,25 +11,25 @@ sources: [home:.claude/CLAUDE.md, wiki:server/lib/wiki/cli.ex]
 ---
 
 ## What it is
-What Claude does every time it finishes a task, so memory and wiki never fall behind what was built (decided by Giovanni on 2026-10-22: the wiki update is tied to `mem use`).
+This page describes what Claude does every time it finishes a task, so that the memory and this wiki never fall behind what has actually been built. Giovanni decided on 2026-10-22 that the wiki update is tied to the `mem use` report.
 
 ## What it does
-Updates the pages for what changed (new, changed, retired concepts, with their translations), publishes them through the checks, then reports which memory entries shaped the work.
+Claude updates the wiki pages for whatever changed (new, changed or retired things, each with its German and Portuguese translation), publishes them through the content checks, and then reports which memory entries shaped the work.
 
 ## How it does it
-A rule in [[global-claude-md]]; the checks in [[wiki-check]]; the safety net [[wiki-hook-stop]].
+The rule is written in [[global-claude-md]]; the checks that guard publishing are in [[wiki-check]]; and a safety net, [[wiki-hook-stop]], reminds Claude if it forgot.
 
 ## Where it sits in the pipeline
-The last step of every coding task in any project.
+It is the last step of every coding task, in any project.
 
 ## Who receives its output
-[[wiki-content]], [[github]] and [[events-log]].
+The wiki content ([[wiki-content]]), [[github]] (where the wiki is stored) and the memory log [[events-log]].
 
 ## Steps
-1. The task's work is done and verified ([[skill-verification-before-completion]]).
-2. Claude updates or creates the English pages in `~/dev/wiki/content` for what changed, then the de and pt-BR versions ([[wiki-content]]).
-3. Anything that grew past the page threshold gets its own page (promotion rule, [[wiki-check]]).
-4. `wiki publish -m "…"` checks locally, builds, commits only content/ and pushes ([[wiki-cli]]).
+1. The task's work is done and proven by running checks ([[skill-verification-before-completion]]).
+2. Claude updates or creates the English pages in `~/dev/wiki/content` for what changed, then the German and Brazilian Portuguese versions ([[wiki-content]]).
+3. Anything that has grown past the page threshold gets its own page (the promotion rule, enforced by [[wiki-check]]).
+4. `wiki publish -m "…"` checks the content, builds the site, commits only the `content/` folder and uploads it ([[wiki-cli]]).
 5. The live site serves the new data at once ([[wiki-site]], [[wiki-router]]).
-6. `mem use REF… --note "how"` reports the memory entries used ([[mem-use]]).
-7. When the turn ends, [[wiki-hook-stop]] confirms nothing was forgotten and [[hook-stop]] pushes the memory events.
+6. `mem use REF… --note "how"` reports the memory entries that were used ([[mem-use]]).
+7. When the turn ends, [[wiki-hook-stop]] confirms nothing was forgotten and [[hook-stop]] uploads the memory events.

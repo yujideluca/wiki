@@ -12,16 +12,16 @@ sources: [project-template:README.md, project-template:CLAUDE.md]
 ---
 
 ## What it is
-The starting point for every new software project of Giovanni's (`~/dev/project-template`, repo `yujideluca/project-template`), so the right way to work is also the quickest. Chosen in the maintenance and evolution review of 2026-10-22.
+project-template is the starting point for every new software project of Giovanni's. It is a ready-made folder (`~/dev/project-template`, repository `yujideluca/project-template`) that already contains the good working habits, so that doing it the right way is also the quickest way. It was chosen in the maintenance and evolution review of 2026-10-22, and [[quizapp]] was the reference project it was extracted from.
 
 ## What it does
-Gives a new project, from day one: principles each enforced by a check, a design file with C4 diagrams and a decision log, ADRs, a requirements list with tagged tests ([[check-traceability]]), a quality gate ([[template-quality-gate]]), CI, and the technical-debt and review policy ([[maintenance-policy]]).
+From day one a new project gets: principles that are each enforced by a check; a design file with diagrams (in the [C4 model](https://c4model.com/) style, drawn with [Mermaid](https://mermaid.js.org/)) and a decision log; ADRs (architecture decision records, short notes that keep the reasons for decisions); a list of requirements with tests tagged to them ([[check-traceability]]); a quality gate (one script that defines "passing", [[template-quality-gate]]); CI (continuous integration: automatic checks on every push); and the policy for technical debt and reviews ([[maintenance-policy]]).
 
 ## How it does it
-Copied with `cp -r` into a new folder; the first session fills CLAUDE.md, DESIGN.md section 1, the first requirements, the gate steps and ADR-0002 for the stack, then creates the private GitHub repo and its labels ([[new-project]]). Before any of that, Giovanni chooses the programming language ([[work-ask-language]]).
+The folder is copied with `cp -r` into a new project folder. In the first session Claude fills in the project's CLAUDE.md (its instruction file), section 1 of the design file, the first requirements, the gate's steps and ADR-0002 for the chosen technology, and then creates the private GitHub repository and its labels ([[new-project]]). Before any of that, Giovanni chooses the programming language ([[work-ask-language]]).
 
 ## Where it sits in the pipeline
-Upstream of every new project; QuizApp was the reference it was extracted from. This [[wiki]] was the first project started from it.
+Upstream of every new project. This [[wiki]] was the first project started from it.
 
 ## Who receives its output
-New projects such as [[wiki]]; better solutions found in projects flow back into it during the [[monthly-architecture-review]].
+New projects such as the [[wiki]]; improvements found in running projects flow back into the template during the [[monthly-architecture-review]].

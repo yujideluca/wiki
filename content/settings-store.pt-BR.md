@@ -1,22 +1,21 @@
 ---
 id: settings-store
 lang: pt-BR
-source_hash: 3a96c21f4463
+source_hash: ea2eef65a238
 title: SettingsStore (tema e idioma)
-aliases: [configuração de idioma]
 ---
 
 ## What it is
-O pequeno armazenamento de tema (sistema / claro / noturno) e idioma (padrão do sistema, English, Deutsch, Português (Brasil), Español) do QuizApp.
+Um pequeno armazenamento para duas configurações do QuizApp: o tema (seguir o sistema, claro ou noturno) e o idioma (padrão do sistema, English, Deutsch, Português (Brasil), Español).
 
 ## What it does
-Lembra os dois; o idioma padrão segue o celular e cai para inglês (`AppLanguage.effective`).
+Lembra as duas escolhas. O idioma padrão segue o idioma do celular e volta para o inglês quando o idioma do celular não é oferecido (`AppLanguage.effective`).
 
 ## How it does it
-SharedPreferences. `MainActivity.attachBaseContext` aplica o idioma salvo e a activity se recria quando ele muda. O conteúdo de estudo continua em alemão em qualquer idioma.
+Usa SharedPreferences (um pequeno armazenamento chave-valor embutido no Android). `MainActivity.attachBaseContext` envolve o contexto do app com o idioma guardado, e a tela se recria quando o idioma muda. O conteúdo de estudo continua em alemão em qualquer idioma da interface.
 
 ## Where it sits in the pipeline
-Lido na abertura pelo [[quizapp-app]], alterado nas Configurações.
+Lido no início pelo módulo [[quizapp-app]]; alterado na tela de configurações.
 
 ## Who receives its output
 O [[study-view-model]] e todas as telas.

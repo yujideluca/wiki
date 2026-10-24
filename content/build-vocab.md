@@ -12,16 +12,16 @@ sources: [QuizApp:tools/build_vocab.py]
 ---
 
 ## What it is
-The script that validates the TSV vocabulary and writes the JSON the app bundles.
+`build_vocab.py` is the script that checks the vocabulary tables ([[vocab-tsv]]) and turns them into the [JSON](https://en.wikipedia.org/wiki/JSON) files (JavaScript Object Notation, a plain-text data format) that the app carries inside it.
 
 ## What it does
-Checks structure, duplicates, allowed articles and cases, hints for ambiguous prepositions and the one-wrong-chunk rule of error sentences; writes `assets/vocab/*.json` and refreshes the pool manifest through [[content-manifest]]. Exits non-zero on any problem, so bad data cannot reach the app. `--verify-nouns` cross-checks genders and plurals against de.wiktionary.org.
+It checks the structure, duplicates, allowed articles and cases, hints for ambiguous prepositions and the rule that each error sentence has exactly one wrong chunk. It writes `assets/vocab/*.json` and refreshes the manifest of the question pool through [[content-manifest]]. It exits with a non-zero code on any problem, so bad data cannot reach the app. The option `--verify-nouns` cross-checks genders and plurals against the German Wiktionary (de.wiktionary.org).
 
 ## How it does it
-Python; reads [[vocab-tsv]]; the corrected error sentences are also checked by [[check-errors-languagetool]].
+It is a [Python](https://www.python.org/) script. It reads [[vocab-tsv]]; the corrected error sentences are additionally checked by [[check-errors-languagetool]].
 
 ## Where it sits in the pipeline
-Between [[vocab-tsv]] and [[vocab-assets]]; its JSON is copied into [[quizweb]] too.
+Between [[vocab-tsv]] and [[vocab-assets]]; its JSON is copied into [[quizweb]] as well.
 
 ## Who receives its output
-[[vocab-assets]] (the app) and [[quizweb-content]] (the web twin's `vocab/`).
+[[vocab-assets]] (the app) and [[quizweb-content]] (the `vocab/` folder of the web twin).

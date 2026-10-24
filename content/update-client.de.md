@@ -1,22 +1,21 @@
 ---
 id: update-client
 lang: de
-source_hash: 2dd2dc905f0b
+source_hash: 3a483c2dfdb6
 title: UpdateClient (Update in der App)
-aliases: [Update-Prüfung]
 ---
 
 ## What it is
-Wie [[quizapp]] sich ohne App-Store selbst aktualisiert (ADR-0004).
+Der `UpdateClient` ist die Art, wie sich [[quizapp]] ohne App-Store selbst aktualisiert (Entscheidung ADR-0004; ein ADR ist ein Architecture Decision Record, eine kurze Notiz, die die Gründe einer Entscheidung festhält).
 
 ## What it does
-Jedes Mal, wenn die App in den Vordergrund kommt (höchstens alle 30 s), liest sie `latest.json` aus [[release-feed]]; ein höherer versionCode öffnet ein Fenster auf dem Startbildschirm (nie während einer Sitzung). „Aktualisieren“ lädt die APK, prüft ihre SHA-256 und gibt sie an [[apk-installer]]. Dieselbe Prüfung fragt auch [[question-pool-updater]] nach einem neueren Fragenpaket.
+Jedes Mal, wenn die App in den Vordergrund kommt (höchstens einmal pro 30 Sekunden), liest er `latest.json` aus dem [[release-feed]]. Ein höherer `versionCode` öffnet ein Popup auf dem Startbildschirm (nie während einer Lernsitzung). Ein Tipp auf „Update“ lädt die APK herunter (Android Package, die installierbare App-Datei), prüft ihren SHA-256-Fingerabdruck (Secure Hash Algorithm 256) und übergibt sie dem [[apk-installer]]. Dieselbe Prüfung fragt auch den [[question-pool-updater]] nach einem neueren Fragenpaket.
 
 ## How it does it
-Liest über die GitHub-Contents-API (`Accept: application/vnd.github.raw+json`), weil raw.githubusercontent.com 5 Minuten zwischenspeicherte; ein 403 wird als Stundenlimit gemeldet (60 Anfragen pro IP). Die Beta-Variante folgt dem Branch `bleeding-edge`, stable folgt `main` ([[release-channels]]).
+Er liest über die GitHub-Contents-API (Application Programming Interface: eine Webschnittstelle zum Lesen von Repository-Dateien) mit dem Header `Accept: application/vnd.github.raw+json`, weil die Adresse `raw.githubusercontent.com` Dateien 5 Minuten zwischenspeicherte. Ein Fehler 403 wird als stündliches Limit gemeldet (60 Anfragen pro IP-Adresse). Die Beta-Variante folgt dem Zweig `bleeding-edge`, die stabile folgt `main` ([[release-channels]]).
 
 ## Where it sits in the pipeline
-Zwischen [[release-feed]] auf GitHub und [[apk-installer]] auf dem Handy.
+Zwischen dem [[release-feed]] auf GitHub und dem [[apk-installer]] auf dem Handy.
 
 ## Who receives its output
-[[apk-installer]].
+Der [[apk-installer]].

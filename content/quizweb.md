@@ -12,16 +12,16 @@ sources: [QuizWeb:README.md, QuizWeb:src]
 ---
 
 ## What it is
-The iPhone-friendly web version of the German quiz: a PWA (a web page that can be installed like an app) served by [[github-pages]]. Repo `yujideluca/german-quiz-web`, folder `~/dev/QuizWeb`.
+QuizWeb is the web version of the German quiz, made so that it works on an iPhone. It is a PWA (progressive web app: a web page that can be installed on a phone like an app and keeps working offline, see [PWA](https://en.wikipedia.org/wiki/Progressive_web_app)), served by [[github-pages]]. The repository is `yujideluca/german-quiz-web` and the folder is `~/dev/QuizWeb`. It is the "web twin" of [[quizapp]].
 
 ## What it does
-Same five modes, scheduler, daily goal and streak calendar as [[quizapp]], offline. Progress lives in the browser of that device and is separate from the Android app; Settings > Backup saves and restores it.
+It has the same five modes, scheduler, daily goal and streak calendar as [[quizapp]], and works offline. The progress lives in the browser of that device and is separate from the Android app; Settings > Backup saves and restores it.
 
 ## How it does it
-Plain ES modules, no build step and no dependencies: [[quizweb-domain]] (pure logic), [[quizweb-content]], [[quizweb-controller]], [[quizweb-store]] and [[quizweb-app]] (the only modules that touch the browser), plus the offline cache [[quizweb-service-worker]]. `tests/architecture.test.js` holds who may import whom; [[quizweb-ci]] runs `npm test` on every push.
+It is plain JavaScript in ES modules (the standard way to split JavaScript into files), with no build step and no dependencies. The parts are: [[quizweb-domain]] (pure logic), [[quizweb-content]], [[quizweb-controller]], [[quizweb-store]] and [[quizweb-app]] (the last two are the only modules that touch the browser), plus the offline cache [[quizweb-service-worker]]. The test `tests/architecture.test.js` holds who may import whom, and [[quizweb-ci]] runs `npm test` on every push.
 
 ## Where it sits in the pipeline
-The twin of [[quizapp]] (ADR-0006 there): it reads the same vocabulary files and the same conformance vectors, and [[check-web-sync]] in QuizApp compares them. A port of an app version still in beta waits on a branch `web-<version>` and is merged to `main` when the app is promoted.
+It is the twin of [[quizapp]] (decision ADR-0006 there; an ADR is an architecture decision record, a short note that keeps the reasons for a decision): it reads the same vocabulary files and the same conformance vectors, and [[check-web-sync]] in QuizApp compares them. QuizWeb follows the released version of the app only: a port of an app version that is still in beta waits on a branch `web-<version>` and is merged to `main` when the app is promoted.
 
 ## Who receives its output
-Giovanni's iPhone or any browser, through [[github-pages]].
+Giovanni's iPhone, or any browser, through [[github-pages]].

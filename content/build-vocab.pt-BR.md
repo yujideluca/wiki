@@ -1,22 +1,21 @@
 ---
 id: build-vocab
 lang: pt-BR
-source_hash: 9c5cdd6168eb
+source_hash: b59116847dc2
 title: build_vocab.py
-aliases: [build do vocabulário]
 ---
 
 ## What it is
-O script que valida o vocabulário em TSV e escreve o JSON que vai dentro do app.
+`build_vocab.py` é o script que verifica as tabelas de vocabulário ([[vocab-tsv]]) e as transforma nos arquivos [JSON](https://en.wikipedia.org/wiki/JSON) (JavaScript Object Notation, um formato de dados em texto simples) que o app leva dentro de si.
 
 ## What it does
-Confere estrutura, duplicatas, artigos e casos permitidos, dicas nas preposições ambíguas e a regra de um único pedaço errado nas frases com erro; escreve `assets/vocab/*.json` e atualiza o manifesto do banco pelo [[content-manifest]]. Sai com erro a qualquer problema, então dado ruim nunca chega ao app. `--verify-nouns` confere gênero e plural no de.wiktionary.org.
+Verifica a estrutura, duplicatas, artigos e casos permitidos, dicas para preposições ambíguas e a regra de que cada frase com erro tem exatamente um trecho errado. Escreve `assets/vocab/*.json` e atualiza o manifesto do conjunto de perguntas por meio do [[content-manifest]]. Sai com código diferente de zero diante de qualquer problema, então dados ruins não chegam ao app. A opção `--verify-nouns` confere gêneros e plurais com o Wiktionary alemão (de.wiktionary.org).
 
 ## How it does it
-Python; lê o [[vocab-tsv]]; as frases corrigidas também passam pelo [[check-errors-languagetool]].
+É um script [Python](https://www.python.org/). Lê o [[vocab-tsv]]; as frases com erro corrigidas são verificadas também pelo [[check-errors-languagetool]].
 
 ## Where it sits in the pipeline
-Entre o [[vocab-tsv]] e o [[vocab-assets]]; o JSON também é copiado para o [[quizweb]].
+Entre o [[vocab-tsv]] e o [[vocab-assets]]; seu JSON é copiado também para o [[quizweb]].
 
 ## Who receives its output
-O [[vocab-assets]] (app) e o [[quizweb-content]] (o `vocab/` do gêmeo web).
+O [[vocab-assets]] (o app) e o [[quizweb-content]] (a pasta `vocab/` do gêmeo web).

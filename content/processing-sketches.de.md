@@ -1,21 +1,21 @@
 ---
 id: processing-sketches
 lang: de
-source_hash: 081a1bc48616
-title: Processing-Skizzen
+source_hash: 5f212c792b50
+title: Processing-Sketches
 ---
 
 ## What it is
-Kleine Programme für generative Kunst in Processing (eine Java-basierte Zeichensprache) in `~/dev/processing-sketches`.
+Kleine Generative-Art-Programme (Kunst, die Code erzeugt), geschrieben in [Processing](https://processing.org/), einer auf Java basierenden Programmierumgebung zum Zeichnen. Sie liegen in `~/dev/processing-sketches`. Ein „Sketch“ nennt Processing ein Programm.
 
 ## What it does
-Zeichnet die Heighway-Drachenkurve in zwei Varianten: [[drachenkurve]] (als App exportiert, hat das Startsymbol von QuizApp gerendert) und [[drachenfraktal]].
+Es zeichnet die Heighway-Drachenkurve in zwei Versionen: [[drachenkurve]] (als App exportiert; sie hat das Startsymbol von QuizApp gerendert) und [[drachenfraktal]].
 
 ## How it does it
-Jede Skizze ist eine `.pde`-Datei in eigenem Ordner; `drachenkurve` hat einen exportierten Build. Seit 2026-10-24 ist der Ordner ein privates GitHub-Repository (`yujideluca/processing-sketches`) mit Tor, CI und der Pre-Push-Prüfung von [[pipeline-check]]; Build-Ausgaben werden ignoriert.
+Jeder Sketch ist eine `.pde`-Datei in einem eigenen Ordner; `drachenkurve` hat zusätzlich einen exportierten Build. Seit 2026-10-24 ist der Ordner ein privates GitHub-Repository (`yujideluca/processing-sketches`) mit Quality Gate, CI (Continuous Integration, automatische Prüfungen bei jedem Push) und der Prüfung [[pipeline-check]] vor dem Push; die Build-Ausgabe wird von Git ignoriert.
 
 ## Where it sits in the pipeline
-Am Rand der anderen Projekte; die einzige Verbindung ist das Symbol von [[quizapp]].
+Abseits der anderen Projekte; seine einzige Verbindung zu ihnen ist das Symbol von [[quizapp]].
 
 ## Who receives its output
 [[quizapp]] (sein Startsymbol).

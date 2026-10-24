@@ -1,31 +1,31 @@
 ---
 id: quizapp-app
 lang: pt-BR
-source_hash: 0fb1ee33cb85
+source_hash: 34313e4f55a8
 title: Módulo :app do QuizApp
 ---
 
 ## What it is
-A metade Android do [[quizapp]] (módulo Gradle `:app`, depende do [[quizapp-core]]): telas, armazenamento e adaptadores Android.
+O módulo `:app` é a metade Android do [[quizapp]]. Depende do [[quizapp-core]] e contém o que só existe em um celular: as telas, o armazenamento e os adaptadores (pedaços finos de código que ligam a lógica pura ao Android).
 
 ## What it does
-Mostra as telas de estudo ([[study-view-model]]), guarda progresso e configurações ([[progress-store]], [[training-store]], [[settings-store]]), lê o vocabulário embutido ([[vocab-assets]]), verifica e instala atualizações ([[update-client]], [[apk-installer]]).
+Mostra as telas de estudo ([[study-view-model]]), guarda progresso e configurações ([[progress-store]], [[training-store]], [[settings-store]]), lê o vocabulário embutido ([[vocab-assets]]) e verifica e instala atualizações ([[update-client]], [[apk-installer]]).
 
 ## How it does it
-Jetpack Compose + Material 3 (ADR-0002). A `MainActivity` hospeda tudo, aplica o idioma escolhido, atualiza a tela inicial a cada retorno e inicia a verificação de atualização; o [[study-controller]] é a única fachada que a interface chama. Duas variantes de build, `stable` e `beta` ([[release-channels]]), assinadas com a chave própria do projeto ([[signing-key]]).
+As telas usam [Jetpack Compose](https://developer.android.com/compose) e [Material 3](https://m3.material.io/) (o sistema de design do Google), escolhidos na decisão ADR-0002 (uma ADR é um architecture decision record, uma nota curta que guarda os motivos de uma decisão). A `MainActivity` (uma [Activity](https://developer.android.com/guide/components/activities/intro-activities) é um componente de um app Android que hospeda uma tela) hospeda tudo, aplica o idioma escolhido, atualiza a tela inicial toda vez que o app é retomado e inicia a verificação de atualização. O [[study-controller]] é o ponto de entrada único que as telas chamam. Há dois sabores de build, `stable` e `beta` ([[release-channels]]), ambos assinados com a chave própria do projeto ([[signing-key]]).
 
 ## Where it sits in the pipeline
 A camada externa, entre o jogador e o [[quizapp-core]].
 
 ## Who receives its output
-O Giovanni no [[phone]]: o APK é o que se instala.
+O Giovanni no [[phone]]: o APK (Android Package, o arquivo instalável) construído a partir deste módulo é o que é instalado.
 
 ## Functions
-- `MainActivity`: hosts the UI, Back button, language, resume refresh, update check on start
-- `ui/Screens.kt`: home, question, finished screens
-- `ui/SettingsScreen.kt`, `ui/BackupSection.kt`: settings and backup
-- `ui/CalendarCard.kt`: the streak calendar card
-- `ui/UpdatePrompt.kt`, `ui/UpdateReducer.kt`: the update popup and its state
-- `ui/ScreenScale.kt`: scales layout with screen height
-- `android/LocaleContext.kt`, `data/AppLanguage.kt`: language choice
-- `data/VocabularySource.kt`, `data/ContentTranslationSource.kt`: read assets
+- `MainActivity`: hospeda a interface de usuário (UI), botão Voltar, idioma, atualização ao retomar, verificação de atualização ao iniciar
+- `ui/Screens.kt`: telas inicial, de pergunta e de término
+- `ui/SettingsScreen.kt`, `ui/BackupSection.kt`: configurações e backup
+- `ui/CalendarCard.kt`: o cartão do calendário de sequência
+- `ui/UpdatePrompt.kt`, `ui/UpdateReducer.kt`: o popup de atualização e seu estado
+- `ui/ScreenScale.kt`: escala o layout conforme a altura da tela
+- `android/LocaleContext.kt`, `data/AppLanguage.kt`: escolha de idioma
+- `data/VocabularySource.kt`, `data/ContentTranslationSource.kt`: leitura dos assets

@@ -12,16 +12,16 @@ sources: [wiki:server/lib/wiki/content/check.ex, wiki:server/lib/wiki/content/pr
 ---
 
 ## What it is
-Every rule a page must follow before it can be published (Elixir module `Wiki.Content.Check`).
+`wiki check` runs every rule a page must follow before it can be published. In code it is the Elixir module `Wiki.Content.Check`.
 
 ## What it does
-Header fields and kinds valid; the five sections present and non-empty; every `[[link]]`, `fed_by` and `feeds` resolves; `fed_by`/`feeds` symmetric; no orphan pages (except actors and external things); privacy scan (keys, tokens, passwords, phone numbers, e-mails other than Giovanni's; the patterns are workflow-memory's `privacy-patterns.tsv`, copied to `server/priv/` and compared by the gate); promotion (a function listed on a page and mentioned by two other pages must get its own page); a page without sources needs a review date; German and Portuguese translations exist and match the current English. `--local` also checks that sources and memory refs exist.
+It checks that: header fields and kinds are valid; the five required sections are present and not empty; every `[[link]]`, `fed_by` and `feeds` points to a real page; `fed_by` and `feeds` agree in both directions; there are no orphan pages (pages nothing links to), except actors and outside things; the privacy scan finds no keys, tokens, passwords, phone numbers or e-mail addresses other than Giovanni's (the patterns are the file `privacy-patterns.tsv` of workflow-memory, copied to `server/priv/` and compared by the gate); a function listed on a page and mentioned by two other pages gets its own page (the promotion rule); a page without sources has a review date; a skill page has a Steps section with the skill's own definition; the first use of every listed acronym comes with its full name; and the German and Portuguese translations exist and match the current English. With `--local` it also checks that the sources and memory entries exist.
 
 ## How it does it
-Pure functions over the loaded content; returns a sorted list of `file: problem` lines. CI runs it without `--local` because GitHub cannot see the other private repos.
+It consists of pure functions over the loaded content and returns a sorted list of lines in the form `file: problem`. Continuous integration (CI, automatic checks on GitHub) runs it without `--local`, because GitHub cannot see Giovanni's other private repositories.
 
 ## Where it sits in the pipeline
-First step of `wiki publish` and part of [[wiki-quality-gate]].
+The first step of `wiki publish`, and part of the [[wiki-quality-gate]].
 
 ## Who receives its output
-[[wiki-cli]] (publish refuses on any problem).
+The [[wiki-cli]] (publishing refuses on any problem).

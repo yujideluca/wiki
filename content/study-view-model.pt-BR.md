@@ -1,19 +1,18 @@
 ---
 id: study-view-model
 lang: pt-BR
-source_hash: fa832083ac66
-title: StudyViewModel (estado da interface)
-aliases: [telas]
+source_hash: f0850cae12d0
+title: StudyViewModel (estado da UI)
 ---
 
 ## What it is
-O único ViewModel do [[quizapp]]: expõe um `UiState` selado (`ModeSelect`, `Studying`, `Finished`, `Settings`, `Failed`) para as telas em Compose.
+Um [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel) é a parte de um app Android que prepara dados para as telas e sobrevive a rotações de tela. O StudyViewModel é o único ViewModel do [[quizapp]]; ele expõe um `UiState` "selado" (UI significa interface de usuário; selado significa que só pode ser um dentre uma lista fixa de casos: `ModeSelect`, `Studying`, `Finished`, `Settings`, `Failed`) às telas Compose.
 
 ## What it does
-Transforma os resultados do [[study-controller]] no que as telas mostram: tela inicial (calendário, meta diária, cartões de modo), a pergunta com retorno (verde/vermelho, explicação, avanço automático em 0,5 s, exceto no Fehler finden), configurações e o aviso de atualização.
+Transforma os resultados do [[study-controller]] no que as telas mostram: a tela inicial (calendário, meta diária, cartões de modo), a pergunta com retorno (verde ou vermelho, a explicação, avanço automático após 0,5 s exceto no Fehler finden), as configurações e o popup de atualização.
 
 ## How it does it
-Sobrevive à recriação da activity quando o idioma muda; o texto que ele mesmo produz passa pelo auxiliar `t()`. As telas escalam com a altura (`ScreenScale`); o teste de encaixe de tela confere que nada fica escondido abaixo da dobra em celulares altos.
+Sobrevive à recriação da tela que acontece quando o idioma é trocado. O texto que ele mesmo produz passa pelo auxiliar `t()`, que escolhe o idioma certo. As telas escalam com a altura da tela (`ScreenScale`), e um teste de "encaixe de tela" verifica que nada fica escondido abaixo da dobra em celulares altos.
 
 ## Where it sits in the pipeline
 O topo do app: `ui → StudyController`.

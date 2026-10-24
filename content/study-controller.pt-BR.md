@@ -1,22 +1,21 @@
 ---
 id: study-controller
 lang: pt-BR
-source_hash: 72fccc743498
+source_hash: 2c9ac1cbce0b
 title: StudyController
-aliases: [fachada do controlador]
 ---
 
 ## What it is
-A única fachada com que a interface do [[quizapp]] conversa: liga armazenamento, relógio, fila e motor.
+O `StudyController` é o ponto de entrada único (uma "fachada": uma porta de entrada simples diante de muitas partes) com que as telas do [[quizapp]] conversam. Ele liga armazenamento, relógio, fila de cartas e motor de sessão.
 
 ## What it does
-Inicia sessões, registra cada resposta (avaliar → agendar → salvar), informa a contagem do dia para a [[daily-goal]] e cuida de suspender/remover, zerar e importar/exportar o backup.
+Inicia sessões de estudo, registra cada resposta (nota → agendamento → salvar), informa a contagem de hoje para a [[daily-goal]] e cuida de suspender e remover cartas, zerar o progresso e importar e exportar um backup.
 
 ## How it does it
-Chama o [[card-factory]] para as cartas, o [[study-pipeline]] para a fila, o [[study-session]] para a sessão em andamento, o [[answer-grader]] e o [[spaced-repetition-scheduler]] a cada resposta, e grava pelo [[progress-store]] e pelo [[training-store]]. Testado de ponta a ponta, inclusive a persistência entre sessões.
+Chama o [[card-factory]] para as cartas, o [[study-pipeline]] para a fila, a [[study-session]] para a sessão em andamento, o [[answer-grader]] e o [[spaced-repetition-scheduler]] a cada resposta, e escreve pelo [[progress-store]] e pelo [[training-store]]. É testado de ponta a ponta, inclusive que o progresso sobrevive de uma sessão para a seguinte.
 
 ## Where it sits in the pipeline
-O meio de `ui → StudyController → domain/content/data`.
+O meio das camadas `ui → StudyController → domain/content/data`.
 
 ## Who receives its output
-O [[study-view-model]], que transforma os resultados em estado de tela.
+O [[study-view-model]], que transforma seus resultados no que a tela mostra.

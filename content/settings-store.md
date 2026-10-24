@@ -12,16 +12,16 @@ sources: [QuizApp:app/src/main/java/dev/yuji/quiz/data/SettingsStore.kt, QuizApp
 ---
 
 ## What it is
-The tiny store of QuizApp's theme (system / light / night) and language (system default, English, Deutsch, Português (Brasil), Español).
+A tiny store for two of QuizApp's settings: the theme (follow the system, light or night) and the language (system default, English, Deutsch, Português (Brasil), Español).
 
 ## What it does
-Remembers both; the language default follows the phone and falls back to English (`AppLanguage.effective`).
+It remembers both choices. The default language follows the phone's language and falls back to English when the phone's language is not offered (`AppLanguage.effective`).
 
 ## How it does it
-SharedPreferences. `MainActivity.attachBaseContext` wraps the context with the stored language and the activity recreates itself when it changes. Learning content stays German in every language.
+It uses SharedPreferences (a small key-value store built into Android). `MainActivity.attachBaseContext` wraps the app's context with the stored language, and the screen recreates itself when the language changes. The learning content stays German in every interface language.
 
 ## Where it sits in the pipeline
-Read at start by [[quizapp-app]], changed from Settings.
+Read at start by the [[quizapp-app]] module; changed from the settings screen.
 
 ## Who receives its output
-[[study-view-model]] and every screen.
+The [[study-view-model]] and every screen.

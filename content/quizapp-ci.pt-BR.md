@@ -1,21 +1,21 @@
 ---
 id: quizapp-ci
 lang: pt-BR
-source_hash: 3bd1f673d3a7
+source_hash: ce8cd806b16b
 title: CI do QuizApp (GitHub Actions)
 ---
 
 ## What it is
-O workflow do GitHub Actions do [[quizapp]]: roda o [[quizapp-quality-gate]] nas máquinas do GitHub.
+É o workflow do GitHub Actions do [[quizapp]] (arquivo `.github/workflows/quality-gate.yml`). O [GitHub Actions](https://docs.github.com/en/actions) executa tarefas automáticas nos computadores do GitHub. Este workflow é a CI (integração contínua): executa o [[quizapp-quality-gate]] a cada mudança e mostra uma marca verde ou vermelha.
 
 ## What it does
-A cada push e pull request: o portão inteiro sem mutação. Toda segunda-feira: com o teste de mutação, para um teste que deixou de proteger uma regra aparecer em até uma semana. Depois do push, a execução precisa ficar verde.
+A cada push e pull request (uma proposta de incorporar uma mudança) executa o portão completo sem a verificação de mutação. Toda segunda-feira executa com a verificação de mutação, para que um teste que deixou de proteger uma regra apareça em até uma semana. Depois do push, a execução precisa estar verde.
 
 ## How it does it
-Prepara Java 21, Gradle e Node 22, baixa o branch web correspondente (`web-<versionName>` se existir, senão `main`) e roda o [[pipeline-check]], que executa uma vez o mesmo script do portão do notebook e acrescenta as verificações de arquitetura, fitness e relatório; uma `falha` derruba o job `gate`, que a proteção de branch deveria exigir.
+Prepara Java 21, Gradle e Node 22 (um ambiente de execução de JavaScript), faz checkout do branch correspondente do gêmeo web (`web-<versionName>` se existir, senão `main`) e então executa o [[pipeline-check]], que roda uma vez o mesmo script de portão do notebook e acrescenta as verificações de arquitetura, de aptidão e de relatório. Uma `falha` reprova a tarefa `gate`, que a proteção de branch do GitHub deveria exigir.
 
 ## Where it sits in the pipeline
 Depois de cada push para o [[github]].
 
 ## Who receives its output
-O [[github]] (a marca verde ou vermelha) e o Claude, que precisa conferir.
+O [[github]] (a marca verde ou vermelha) e o Claude, que precisa conferi-la.

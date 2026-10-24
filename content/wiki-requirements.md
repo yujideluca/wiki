@@ -12,16 +12,16 @@ sources: [wiki:docs/REQUIREMENTS.md]
 ---
 
 ## What it is
-The testable promises of the wiki, each with an ID: AU (login gate), DC (decoy), CO (content rules), LG (languages), BU (build), UP (update chain), MP (map and pages).
+A requirement is a testable promise of the software. This page describes the wiki's own list of promises (`docs/REQUIREMENTS.md`), each with an ID built from a two-letter family and a number: AU (the login gate), DC (the decoy), CO (content rules), LG (languages), BU (the build), UP (the update chain) and MP (the map and the pages).
 
 ## What it does
-Every row has at least one test tagged `REQ <ID>`; `docs/TRACEABILITY.md` maps them.
+Every row must have at least one test tagged `REQ <ID>`; the generated file `docs/TRACEABILITY.md` maps each requirement to its tests.
 
 ## How it does it
-Written from Giovanni's statements (G) and the approved design (D); [[check-traceability]] enforces coverage.
+The rows are written from Giovanni's statements (source G) and from the approved design (source D). The [[check-traceability]] check enforces that every promise has a test and every tag names a real promise.
 
 ## Where it sits in the pipeline
 Beside the design document `docs/2026-10-22-wiki-design.md`.
 
 ## Who receives its output
-[[check-traceability]] and [[wiki-quality-gate]].
+[[check-traceability]] and the [[wiki-quality-gate]].

@@ -12,16 +12,16 @@ sources: [workflow-memory:README.md, workflow-memory:docs/DESIGN.md]
 ---
 
 ## What it is
-The shared, long-lived memory of every Claude instance Giovanni uses. Private repo `yujideluca/workflow-memory`, folder `~/dev/workflow-memory`. It replaced the retired claude-workflow-backup protocol ([[retired-workflow-pipeline]]).
+workflow-memory is the shared, long-lived memory of all the Claude assistants Giovanni uses. A Claude chat normally forgets everything when it ends; this project is what lets a preference said once ("answer in the language I wrote in") still apply months later, in a different chat, on a different device. It is a private repository (`yujideluca/workflow-memory`) and lives in `~/dev/workflow-memory`. It replaced the retired protocol described in [[retired-workflow-pipeline]].
 
 ## What it does
-Keeps preferences, facts, decisions and open items, and shows the relevant ones at the start of every chat ([[session-brief]]). It is the only interface between the Claude instances (ADR-0003, [[memory-adrs]]).
+It keeps preferences, facts, decisions and open items (things still to be done), and shows the relevant ones at the start of every chat as the [[session-brief]]. It is the only channel between the different Claude instances ([[claude-code]], the [[remote-assistant]] and the [[claude-app]]); this is decision ADR-0003 in [[memory-adrs]] (an ADR, "architecture decision record", is a short note that records one decision and its reasons).
 
 ## How it does it
-The log is the memory: every entry is one new, never-edited file in [[events-log]]. [[memory-fold]] computes the current state (latest ruling per key wins). [[mem-action]] regenerates [[memory-views]] on GitHub. Claude Code writes with [[mem]] and its hooks ([[hook-session-start]], [[hook-prompt]], [[hook-stop]]); the Claude app writes through [[mem-github-connector]]. Python standard library only; [[mem-validator]] keeps secrets and contact data out.
+The memory is a log: every entry is one new file that is never edited afterwards, stored in [[events-log]]. One function, [[memory-fold]], reads the whole log and works out the current state (the latest ruling for each topic wins). A GitHub Action ([[mem-action]], an automatic job on GitHub) regenerates the readable files in [[memory-views]]. Claude Code writes with the command [[mem]] and with three hooks ([[hook-session-start]], [[hook-prompt]], [[hook-stop]]); the Claude app writes through [[mem-github-connector]]. Everything is written in plain Python (only its standard library), and [[mem-validator]] keeps secrets and other people's contact data out.
 
 ## Where it sits in the pipeline
 Under every other project: they read their defaults from it and report back with `mem use`.
 
 ## Who receives its output
-Every Claude instance, through the brief; [[giovanni]] through [[memory-views]] (REVIEW.md).
+Every Claude instance, through the brief; [[giovanni]], through the review file in [[memory-views]].

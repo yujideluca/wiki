@@ -1,22 +1,21 @@
 ---
 id: quizapp-requirements
 lang: pt-BR
-source_hash: 1502c78509ba
+source_hash: f4adfd238bb2
 title: Requisitos e rastreabilidade do QuizApp
-aliases: [marcas REQ]
 ---
 
 ## What it is
-O catálogo de todas as promessas testáveis do [[quizapp]], cada uma com um ID (SP-1 espaçamento, GR-1 avaliação, QU-1 fila, DG-* meta diária, QP-* banco de perguntas…), mais a estratégia de testes em `docs/TESTING.md` (ADR-0008, qualidade começando pelos requisitos).
+Um requisito é uma promessa testável do programa, por exemplo "uma resposta errada em uma carta nova volta após 10 minutos". Este catálogo lista toda promessa testável do [[quizapp]], cada uma com um ID (SP-1 espaçamento, GR-1 avaliação, QU-1 fila, DG-* meta diária, QP-* conjunto de perguntas e assim por diante), junto com a estratégia de testes em `docs/TESTING.md` (decisão ADR-0008, "requisitos primeiro"; uma ADR é um architecture decision record, uma nota curta que guarda os motivos de uma decisão).
 
 ## What it does
-Diz o que precisa valer e em que nível é testado: unitário, integração, propriedade, conformidade entre plataformas, aceitação no aparelho, verificado por mutação. O `docs/TRACEABILITY.md` (gerado) liga cada requisito aos seus testes.
+Diz o que deve valer e em que nível cada promessa é testada: unitário (uma peça), integração (peças juntas), propriedade (muitas entradas aleatórias), conformidade entre plataformas (app e web concordam), aceitação em um aparelho e verificação de mutação. O arquivo gerado `docs/TRACEABILITY.md` liga cada requisito aos seus testes.
 
 ## How it does it
-Um comportamento que o Giovanni descreve vira primeiro uma linha; depois um teste marcado `REQ <ID>`; depois código. O [[check-traceability]] falha quando um requisito não tem teste.
+Um comportamento declarado pelo Giovanni vira primeiro uma linha; depois se escreve um teste etiquetado `REQ <ID>`; depois o código. A verificação [[check-traceability]] falha quando um requisito não tem teste.
 
 ## Where it sits in the pipeline
 O primeiro passo do [[quizapp-release]].
 
 ## Who receives its output
-O [[check-traceability]] e quem escreve testes.
+O [[check-traceability]] e todo autor de teste.
