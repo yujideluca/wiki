@@ -1,7 +1,7 @@
 ---
 id: pipeline-check
 lang: de
-source_hash: d42bfd911fcd
+source_hash: 2e98711663eb
 title: pipeline-check
 ---
 
@@ -24,7 +24,7 @@ Neben dem Bericht hat das Programm zwei weitere Modi: `--traceability` prüft, o
 Es ist Rust mit den Bibliotheken `serde`, `toml` und `clap` und startet `git` und `gh` als eigene Prozesse. Die Grenzen stehen in `pipeline-check.toml` jedes Projekts und werden nur von Giovanni geändert, mit einer Zeile im Entscheidungsprotokoll. Das Skript `tools/pipeline-check.sh` baut und startet es; das Gate ruft es mit `--measure-only` auf, damit es das Gate nicht erneut ausführt (keine Rekursion). Seine eigenen Anforderungen (PC-1 bis PC-15) haben mit `REQ` getaggte Tests. Es durchlief zuerst seinen eigenen Prozess: Die Skill [[skill-gerar-teste-automatizado]] schrieb fehlersuchende Tests (Protokoll in `tools/pipeline-check/docs/TESTES-AUTOMATIZADOS.md`), die sechs Fehler fanden, alle behoben, und eine selbstgebaute Mutationsprüfung (`mutants.py`, die absichtlich Fehler einbaut) fängt jeden eingebauten Fehler.
 
 ## Where it sits in the pipeline
-Die CI führt es statt des bloßen Gates aus ([[quizapp-ci]]), und Claude startet es zu Beginn jeder [[skill-revisao-manutencao]]; es ist Teil der [[maintenance-pipeline]]. Das Programm existiert nur einmal, in einem eigenen öffentlichen Repository (`yujideluca/pipeline-check`). [[project-template]], [[quizapp]], das [[wiki]], [[quizweb]], [[workflow-memory]], [[remote-terminal]] und [[processing-sketches]] legen jeweils in einer Datei `pipeline-check.version` einen Versions-Tag fest (v0.4.0 in jedem Projekt außer dem [[wiki]], das noch v0.3.1 festhält) und behalten nur ihre eigene `pipeline-check.toml` und ein kleines Runner-Skript. Es läuft auch als Git-Pre-Push-Hook (`--pre-push`), der den Push von `main` stoppt, wenn eine Prüfung fehlschlägt, weil der Branch-Schutz bei privaten Repositories im kostenlosen Tarif nicht verfügbar ist. Warum ein Repository statt Kopien: ADR-0003 in jenem Repository.
+Die CI führt es statt des bloßen Gates aus ([[quizapp-ci]]), und Claude startet es zu Beginn jeder [[skill-revisao-manutencao]]; es ist Teil der [[maintenance-pipeline]]. Das Programm existiert nur einmal, in einem eigenen öffentlichen Repository (`yujideluca/pipeline-check`). [[project-template]], [[quizapp]], das [[wiki]], [[quizweb]], [[workflow-memory]], [[remote-terminal]] und [[processing-sketches]] legen jeweils in einer Datei `pipeline-check.version` einen Versions-Tag fest (v0.4.0 in jedem Projekt) und behalten nur ihre eigene `pipeline-check.toml` und ein kleines Runner-Skript. Es läuft auch als Git-Pre-Push-Hook (`--pre-push`), der den Push von `main` stoppt, wenn eine Prüfung fehlschlägt, weil der Branch-Schutz bei privaten Repositories im kostenlosen Tarif nicht verfügbar ist. Warum ein Repository statt Kopien: ADR-0003 in jenem Repository.
 
 ## Who receives its output
 [[quizapp-ci]] (das rote oder grüne Zeichen) und [[skill-revisao-manutencao]] (die `report.json` liest und nie erneut misst).
