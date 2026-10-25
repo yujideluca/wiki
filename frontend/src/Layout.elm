@@ -1,4 +1,4 @@
-module Layout exposing (Positions, compute, matchAspect)
+module Layout exposing (Positions, Sim, advance, compute, isDone, matchAspect, positionsOf, start)
 
 {-| Places the nodes once with a force simulation: connected pages pull together, all pages push apart.
 Nodes of the same project start near each other so projects form visible clusters.
@@ -14,8 +14,21 @@ type alias Positions =
     Dict String ( Float, Float )
 
 
+{-| A force simulation that can be run a few steps at a time, so that a slow device (a phone needs about 3 seconds for the
+whole run) keeps answering while the layout settles (LY-1). -}
+type alias Sim =
+    { state : Force.State String
+    , entities : List (Force.Entity String {})
+    }
+
+
 compute : Graph -> Positions
 compute graph =
+    start graph |> advance 100000 |> positionsOf
+
+
+start : Graph -> Sim
+start graph =
     let
         projects =
             graph.nodes |> List.map .project |> List.foldl (\p acc -> if List.member p acc then acc else acc ++ [ p ]) []
@@ -26,7 +39,7 @@ compute graph =
         count =
             toFloat (max 1 (List.length projects))
 
-        start i node =
+        seed i node =
             let
                 a =
                     2 * pi * toFloat (projectIndex node.project) / count
@@ -42,7 +55,7 @@ compute graph =
             }
 
         entities =
-            List.indexedMap start graph.nodes
+            List.indexedMap seed graph.nodes
 
         ids =
             List.map .id graph.nodes
@@ -81,7 +94,31 @@ compute graph =
                 ]
                 |> Force.iterations 400
     in
-    Force.computeSimulation sim entities
+    { state = sim, entities = entities }
+
+
+{-| Run up to [n] steps of the simulation. -}
+advance : Int -> Sim -> Sim
+advance n sim =
+    if n <= 0 || Force.isCompleted sim.state then
+        sim
+
+    else
+        let
+            ( state, entities ) =
+                Force.tick sim.state sim.entities
+        in
+        advance (n - 1) { state = state, entities = entities }
+
+
+isDone : Sim -> Bool
+isDone sim =
+    Force.isCompleted sim.state
+
+
+positionsOf : Sim -> Positions
+positionsOf sim =
+    sim.entities
         |> List.map (\e -> ( e.id, ( e.x, e.y ) ))
         |> Dict.fromList
 

@@ -8,6 +8,7 @@ import Http
 import I18n exposing (Lang)
 import Layout exposing (Positions)
 import Motion
+import Touch
 import Route exposing (Route)
 import Set exposing (Set)
 import Url exposing (Url)
@@ -26,6 +27,7 @@ type alias Model =
     , route : Route
     , graph : Load Graph
     , layout : Positions -- the force layout as computed, in layout units
+    , sim : Maybe Layout.Sim -- the force simulation while it is still running (a few steps per frame)
     , positions : Positions -- the layout reshaped to the map area (see Layout.matchAspect)
     , zoom : Zoom
     , width : Float
@@ -48,6 +50,7 @@ type alias Model =
     , moving : Bool -- the dots are not at rest: ask for animation frames
     , drag : Maybe Drag
     , justDragged : Bool -- a click that ends a drag must not open the page
+    , gesture : Touch.Gesture -- the fingers on the map
     }
 
 
@@ -85,6 +88,7 @@ type Msg
     | ToggleMenu
     | ToggleSection String
     | Frame Float
+    | TouchEvent Touch.Phase (List ( Float, Float ))
     | DragStart String Float Float
     | DragMove Float Float
     | DragEnd

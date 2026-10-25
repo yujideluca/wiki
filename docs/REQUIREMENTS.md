@@ -54,7 +54,14 @@ Source: G = stated by Giovanni, D = derived by Claude Code and accepted (design 
 | DY-2 | Pressing a dot and moving the mouse drags it, its neighbours stretch along and contract back when it is let go; a press without movement still opens the page and a drag never does | G |
 | DY-3 | Hovering a dot draws its neighbours a fifth of the way towards it, and they return when the pointer leaves | G |
 | DY-4 | On first load the dots spring open from the middle, and after a window resize they spring from where they were to their new places instead of jumping | G |
-| MB-6 | On a phone the map has no CSS transitions and no dashed lines, and its dots sit in one group that the browser moves, redrawn only when something but the pan changes, so a tap, a pan and a pinch keep frames near 60 per second (measured on the phone: 118 ms a frame after a tap before, 19 ms after) | G |
+| MB-6 | On a phone the map has no CSS transitions and no dashed lines, so a tap, a pan and a pinch keep frames short (measured on the phone before the lens: 118 ms a frame after a tap with them, 19 ms without) | G |
 | MB-7 | The page declares itself not translatable, so the browser's own translation offer neither covers the search bar nor rewrites the app's text | D |
 | MB-8 | On a phone, choosing a search result closes the keyboard, and a change of the window's height alone (keyboard, address bar) keeps the map's zoom and place | D |
+| DY-5 | A dot answers the pointer at its resting place, not where the elastic movement has drawn it, so motion never slides a dot under or out from under a still pointer: the highlighted dot does not change while the pointer is still | G |
+| LN-4 | On a phone the lens has a rectangular focus: each axis is bent on its own, so the middle band is magnified while every side and corner of the area stays in place; while a dot is selected the focus moves to the part of the screen the balloon leaves free and the selected dot lands in its middle | G |
+| DY-6 | The phone's elastic movement is slightly less elastic than the desktop's (stiffer spring, less following of neighbours, more friction), and tapping a dot draws its neighbours in a little, as hovering does on a desktop | G |
+| LY-1 | The force layout is computed a few steps per animation frame instead of in one block, so the page keeps answering while it settles (on the phone the single block froze the page for about 3 seconds); run in slices it gives exactly the layout of a single run | G |
+| TC-1 | On the map one finger pans (the map point under the finger stays under it, through the lens) and two fingers pinch around their midpoint | G |
+| TC-2 | Nothing but a pinch zooms the map by touch: a double tap, quick repeated taps or circles of one finger never zoom it | G |
+| TC-3 | Every touch event restates the fingers that are down, so a missed lift cannot leave a phantom finger that turns the next touch into a pinch | D |
 

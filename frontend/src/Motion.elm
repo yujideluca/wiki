@@ -1,4 +1,4 @@
-module Motion exposing (Adjacency, Body, Forces, State, adjacency, apply, from, step)
+module Motion exposing (Adjacency, Body, Feel, Forces, State, adjacency, apply, desktop, from, phone, step)
 
 {-| The map's elastic layer (DY-1..DY-4). The layout puts every dot at a resting place; on top of it each dot has a
 small displacement that behaves like a mass on springs: one spring pulls it back to its resting place, one pulls it
@@ -36,19 +36,23 @@ type alias Forces =
     }
 
 
-stiffness : Float
-stiffness =
-    55
+{-| How springy the dots are: [stiffness] pulls a dot back to its place, [coupling] makes it follow its neighbours,
+[damping] is the friction. The phone is stiffer, follows less and settles faster, so less elastic (DY-6). -}
+type alias Feel =
+    { stiffness : Float
+    , coupling : Float
+    , damping : Float
+    }
 
 
-coupling : Float
-coupling =
-    45
+desktop : Feel
+desktop =
+    { stiffness = 55, coupling = 45, damping = 7.5 }
 
 
-damping : Float
-damping =
-    7.5
+phone : Feel
+phone =
+    { stiffness = 75, coupling = 32, damping = 10 }
 
 
 adjacency : List Edge -> Adjacency
@@ -76,8 +80,8 @@ displacement state id =
 
 {-| Advance by [dt] seconds. The second value is True when everything has come to rest, so the page can stop asking
 for animation frames. -}
-step : Float -> Adjacency -> Forces -> State -> ( State, Bool )
-step dt adj forces state =
+step : Float -> Feel -> Adjacency -> Forces -> State -> ( State, Bool )
+step dt feel adj forces state =
     let
         one id b =
             case forces.pin of
@@ -114,10 +118,10 @@ step dt adj forces state =
                     Dict.get id forces.pulls |> Maybe.withDefault ( 0, 0 )
 
                 ax =
-                    -stiffness * (b.dx - tx) + coupling * (mx - b.dx) - damping * b.vx
+                    -feel.stiffness * (b.dx - tx) + feel.coupling * (mx - b.dx) - feel.damping * b.vx
 
                 ay =
-                    -stiffness * (b.dy - ty) + coupling * (my - b.dy) - damping * b.vy
+                    -feel.stiffness * (b.dy - ty) + feel.coupling * (my - b.dy) - feel.damping * b.vy
 
                 vx =
                     b.vx + ax * dt

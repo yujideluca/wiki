@@ -16,6 +16,7 @@ import I18n exposing (Lang)
 import Json.Decode as D
 import Layout
 import Lens exposing (Lens)
+import MapCamera
 import MapSize
 import MapView
 import Motion
@@ -23,6 +24,7 @@ import Route exposing (Route(..))
 import Search
 import Set exposing (Set)
 import Task
+import Touch
 import TopBar
 import Types exposing (Load(..), Model, Msg(..))
 import Url exposing (Url)
@@ -56,6 +58,7 @@ init flags url key =
             , route = route
             , graph = Loading
             , layout = Dict.empty
+            , sim = Nothing
             , positions = Dict.empty
             , zoom = Zoom.init { width = 800, height = 500 }
             , width = 800
@@ -78,6 +81,7 @@ init flags url key =
             , moving = False
             , drag = Nothing
             , justDragged = False
+            , gesture = Touch.Idle
             }
     in
     ( model
@@ -102,172 +106,6 @@ loadArticle model =
             Cmd.none
 
 
-{-| The window is [w] by [h]: size the map and the info boxes for it (MP-5). -}
-resized : Float -> Float -> Model -> Model
-resized w h model =
-    let
-        sz =
-            MapSize.sizes w h
-    in
-    { model | width = w, height = sz.map, boxHeight = sz.box }
-
-
-{-| Fit the whole map into the visible area: the layout is reshaped to the area's shape (clear of the floating controls
-at the top and the legend at the bottom), then zoomed and centred to fill it. -}
-fit : Model -> Model
-fit model =
-    let
-        ( top, bottom ) =
-            MapSize.insets model.width
-
-        areaHeight =
-            max 100 (model.height - top - bottom)
-
-        shaped =
-            Layout.matchAspect (model.width / areaHeight) model.layout
-
-        xs =
-            Dict.values shaped |> List.map Tuple.first
-
-        ys =
-            Dict.values shaped |> List.map Tuple.second
-
-        ( minX, maxX ) =
-            ( List.minimum xs |> Maybe.withDefault -100, List.maximum xs |> Maybe.withDefault 100 )
-
-        ( minY, maxY ) =
-            ( List.minimum ys |> Maybe.withDefault -100, List.maximum ys |> Maybe.withDefault 100 )
-
-        k =
-            clamp 0.15 1.6 (min (model.width / (maxX - minX + 140)) (areaHeight / (maxY - minY + 90)))
-    in
-    { model
-        | positions = shaped
-        , zoom =
-            Zoom.init { width = model.width, height = model.height }
-                |> Zoom.scaleExtent 0.1 6
-                |> Zoom.setTransform Zoom.instantly
-                    { scale = k
-                    , translate = { x = model.width / 2 - k * (minX + maxX) / 2, y = top + areaHeight / 2 - k * (minY + maxY) / 2 }
-                    }
-    }
-
-
-centreOn : String -> Model -> Model
-centreOn id model =
-    case Dict.get id model.positions of
-        Just ( x, y ) ->
-            let
-                k =
-                    max 1.1 (Zoom.asRecord model.zoom).scale
-
-                -- on a phone the balloon covers the lower half, so the node goes to the upper part
-                targetY =
-                    if MapSize.isPhone model.width then
-                        model.height * 0.3
-
-                    else
-                        (lensFor model).cy
-            in
-            { model
-                | zoom =
-                    Zoom.setTransform (Zoom.animatedAround ( model.width / 2, model.height / 2 ))
-                        { scale = k, translate = { x = model.width / 2 - k * x, y = targetY - k * y } }
-                        model.zoom
-            }
-
-        Nothing ->
-            model
-
-
-{-| The lens of the map area: centred in what the floating controls leave free, as strong as it is on a desktop and off
-on a phone (LN-1). -}
-lensFor : Model -> Lens
-lensFor model =
-    let
-        ( top, bottom ) =
-            MapSize.insets model.width
-
-        areaHeight =
-            max 100 (model.height - top - bottom)
-    in
-    { cx = model.width / 2
-    , cy = top + areaHeight / 2
-    , hw = model.width / 2
-    , hh = areaHeight / 2
-    , strength =
-        if MapSize.isPhone model.width then
-            0
-
-        else
-            1.2
-    }
-
-
-{-| After the layout or the window changed, the dots start where they were on screen and spring to their new places
-(DY-4); on the first load they start gathered towards the middle and spring open. -}
-reflow : Model -> Model -> Model
-reflow old new =
-    let
-        oldLive =
-            Motion.apply old.motion old.positions
-
-        offset ( id, ( bx, by ) ) =
-            case Dict.get id oldLive of
-                Just w ->
-                    let
-                        ( x, y ) =
-                            Lens.unproject new.zoom (Lens.project old.zoom w)
-                    in
-                    ( id, ( x - bx, y - by ) )
-
-                Nothing ->
-                    ( id, ( -0.55 * bx, -0.55 * by ) )
-    in
-    { new | motion = Motion.from (Dict.fromList (List.map offset (Dict.toList new.positions))), moving = True }
-
-
-{-| Where the dots are drawn from. On a phone, once everything has settled, the resting places themselves: the same value
-every time, so the map's cached drawing is reused while the map is panned or zoomed. -}
-livePositions : Model -> Layout.Positions
-livePositions model =
-    if MapSize.isPhone model.width && not model.moving then
-        model.positions
-
-    else
-        Motion.apply model.motion model.positions
-
-
-{-| Displacements the hovered dot's neighbours are drawn towards: a fifth of the way to it (DY-3). -}
-hoverPulls : Model -> Dict.Dict String ( Float, Float )
-hoverPulls model =
-    case model.hovered |> Maybe.andThen (\h -> Dict.get h model.positions |> Maybe.map (Tuple.pair h)) of
-        Just ( h, ( hx, hy ) ) ->
-            Dict.get h model.adj
-                |> Maybe.withDefault []
-                |> List.filterMap
-                    (\n -> Dict.get n model.positions |> Maybe.map (\( nx, ny ) -> ( n, ( 0.2 * (hx - nx), 0.2 * (hy - ny) ) )))
-                |> Dict.fromList
-
-        Nothing ->
-            Dict.empty
-
-
-{-| The dragged dot is held at the pointer once the pointer has moved. -}
-pinOf : Model -> Maybe ( String, ( Float, Float ) )
-pinOf model =
-    case model.drag of
-        Just d ->
-            if d.moved then
-                Dict.get d.id model.positions |> Maybe.map (\( bx, by ) -> ( d.id, ( Tuple.first d.target - bx, Tuple.second d.target - by ) ))
-
-            else
-                Nothing
-
-        Nothing ->
-            Nothing
-
-
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -289,7 +127,8 @@ update msg model =
             ( m, Cmd.batch [ loadArticle m, Task.perform (always NoOp) (Browser.Dom.setViewport 0 0) ] )
 
         GotGraph (Ok g) ->
-            ( reflow model (fit { model | graph = Loaded g, layout = Layout.compute g, adj = Motion.adjacency g.edges }), Cmd.none )
+            -- the layout is computed a few steps per frame (LY-1), so a slow phone keeps answering meanwhile
+            ( { model | graph = Loaded g, layout = Dict.empty, sim = Just (Layout.start g), adj = Motion.adjacency g.edges, moving = True }, Cmd.none )
 
         GotGraph (Err _) ->
             ( { model | graph = Failed }, Cmd.none )
@@ -301,15 +140,15 @@ update msg model =
             ( { model | article = Failed }, Cmd.none )
 
         GotViewport vp ->
-            ( reflow model (fit (resized vp.viewport.width vp.viewport.height model)), Cmd.none )
+            ( MapCamera.reflow model (MapCamera.fit (MapCamera.resized vp.viewport.width vp.viewport.height model)), Cmd.none )
 
         Resized w h ->
             if MapSize.isPhone model.width && toFloat w == model.width && model.graph /= Loading then
                 -- on a phone only the height changes when the keyboard or the address bar comes and goes: the view stays
-                ( resized (toFloat w) (toFloat h) model, Cmd.none )
+                ( MapCamera.resized (toFloat w) (toFloat h) model, Cmd.none )
 
             else
-                ( reflow model (fit (resized (toFloat w) (toFloat h) model)), Cmd.none )
+                ( MapCamera.reflow model (MapCamera.fit (MapCamera.resized (toFloat w) (toFloat h) model)), Cmd.none )
 
         Hover id ->
             -- a tap also sends mouseover on a phone; there the balloon (SelectNode) is the only preview
@@ -322,12 +161,49 @@ update msg model =
         Unhover ->
             ( { model | hovered = Nothing, justDragged = False, moving = True }, Cmd.none )
 
+        TouchEvent phase fingers ->
+            let
+                ( gesture, zoom ) =
+                    Touch.step (Lens.invert (MapCamera.lensFor model)) phase fingers model.gesture model.zoom
+            in
+            ( { model | gesture = gesture, zoom = zoom }, Cmd.none )
+
         Frame ms ->
             let
+                m1 =
+                    case model.sim of
+                        Just sim ->
+                            let
+                                next =
+                                    Layout.advance
+                                        (if MapSize.isPhone model.width then
+                                            4
+
+                                         else
+                                            40
+                                        )
+                                        sim
+                            in
+                            if Layout.isDone next then
+                                MapCamera.reflow model (MapCamera.fit { model | layout = Layout.positionsOf next, sim = Nothing })
+
+                            else
+                                { model | sim = Just next }
+
+                        Nothing ->
+                            model
+
                 ( state, settled ) =
-                    Motion.step (min 0.033 (ms / 1000)) model.adj { pulls = hoverPulls model, pin = pinOf model } model.motion
+                    Motion.step (min 0.033 (ms / 1000))
+                        (if MapSize.isPhone model.width then
+                            Motion.phone
+
+                         else
+                            Motion.desktop
+                        )
+                        m1.adj { pulls = MapCamera.hoverPulls m1, pin = MapCamera.pinOf m1 } m1.motion
             in
-            ( { model | motion = state, moving = not settled }, Cmd.none )
+            ( { m1 | motion = state, moving = not settled || m1.sim /= Nothing }, Cmd.none )
 
         DragStart id x y ->
             if MapSize.isPhone model.width then
@@ -344,7 +220,7 @@ update msg model =
                             Just
                                 { d
                                     | moved = d.moved || sqrt ((x - d.startX) ^ 2 + (y - d.startY) ^ 2) > 4
-                                    , target = Lens.unproject model.zoom (Lens.invert (lensFor model) ( x, y ))
+                                    , target = Lens.unproject model.zoom (Lens.invert (MapCamera.lensFor model) ( x, y ))
                                 }
                         , moving = True
                       }
@@ -368,10 +244,10 @@ update msg model =
                 ( model, Nav.pushUrl model.key (Route.toPath (ArticleView id)) )
 
         SelectNode id ->
-            ( centreOn id { model | selected = Just id, focused = Just id, menuOpen = False, suggestionsOpen = False }, Cmd.none )
+            ( MapCamera.centreOn id { model | selected = Just id, focused = Just id, menuOpen = False, suggestionsOpen = False, moving = True }, Cmd.none )
 
         CloseSheet ->
-            ( { model | selected = Nothing }, Cmd.none )
+            ( { model | selected = Nothing, moving = True }, Cmd.none )
 
         ToggleMenu ->
             ( { model | menuOpen = not model.menuOpen }, Cmd.none )
@@ -434,6 +310,7 @@ update msg model =
                             else
                                 model.selected
                         , menuOpen = False
+                        , moving = True
                         , project = Nothing
                         , month = Nothing
                     }
@@ -441,7 +318,7 @@ update msg model =
             case model.route of
                 MapView ->
                     -- on a phone the keyboard would cover the balloon: let the search field go
-                    ( centreOn id m, Task.attempt (always NoOp) (Browser.Dom.blur "search-input") )
+                    ( MapCamera.centreOn id m, Task.attempt (always NoOp) (Browser.Dom.blur "search-input") )
 
                 ArticleView _ ->
                     ( m, Cmd.batch [ Nav.pushUrl model.key (Route.toPath (ArticleView id)), Task.attempt (always NoOp) (Browser.Dom.blur "search-input") ] )
@@ -507,7 +384,7 @@ subscriptions model =
     Sub.batch
         [ Zoom.subscriptions model.zoom ZoomMsg
         , Browser.Events.onResize Resized
-        , if model.moving then
+        , if model.moving || model.sim /= Nothing then
             Browser.Events.onAnimationFrameDelta Frame
 
           else
@@ -621,7 +498,7 @@ mapScreen model g =
     in
     div [ A.class "map-screen" ]
         (div [ A.class "map-wrap" ]
-            [ MapView.map model.lang g (livePositions model) model.zoom (lensFor model) model.width model.height model.project model.month active
+            [ MapView.map model.lang g (Motion.apply model.motion model.positions) model.positions model.zoom (MapCamera.lensFor model) model.width model.height model.project model.month active
             , div [ A.class "controls" ]
                 [ select [ E.onInput SetProject, A.attribute "aria-label" s.project ]
                     (option [ A.value "" ] [ text s.allProjects ]
@@ -644,6 +521,11 @@ mapScreen model g =
                     text ""
                 ]
             , legend model g
+            , if model.sim /= Nothing then
+                div [ A.class "layout-wait" ] [ text s.loading ]
+
+              else
+                text ""
             ]
             :: (if phone then
                     [ case active |> Maybe.andThen (Data.nodeById g) of

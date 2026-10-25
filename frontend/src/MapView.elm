@@ -17,7 +17,7 @@ import Set exposing (Set)
 import Svg exposing (Svg)
 import Svg.Attributes as S
 import Svg.Events as SE
-import Svg.Lazy
+import Touch
 import Types exposing (Msg(..))
 import WikiText
 import Zoom exposing (Zoom)
@@ -57,8 +57,8 @@ info lang graph n =
 
 {-| The map, drawn in window coordinates: each dot is placed by the zoom and then by the lens (LN-1..LN-3), which
 makes the dots in the middle bigger, more spread and labelled, and the ones near the border smaller and plainer. -}
-map : Lang -> Graph -> Positions -> Zoom -> Lens -> Float -> Float -> Maybe String -> Maybe String -> Maybe String -> Html Msg
-map lang graph positions zoom lens width height project month active =
+map : Lang -> Graph -> Positions -> Positions -> Zoom -> Lens -> Float -> Float -> Maybe String -> Maybe String -> Maybe String -> Html Msg
+map lang graph positions rest zoom lens width height project month active =
     let
         visibleIds =
             Filter.visible project month graph
@@ -74,10 +74,16 @@ map lang graph positions zoom lens width height project month active =
                 Nothing ->
                     Set.empty
 
+        place =
+            Dict.filter (\id _ -> Set.member id visibleIds) >> Dict.map (\_ xy -> Lens.apply lens (Lens.project zoom xy))
+
         spots =
-            positions
-                |> Dict.filter (\id _ -> Set.member id visibleIds)
-                |> Dict.map (\_ xy -> Lens.apply lens (Lens.project zoom xy))
+            place positions
+
+        -- where each dot answers the pointer: at its resting place, so that the elastic movement can never slide a dot
+        -- under (or out from under) a still pointer and make the hover flicker (DY-5)
+        spotsAtRest =
+            place rest
 
         edgeView e =
             case ( Dict.get e.from spots, Dict.get e.to spots ) of
@@ -135,10 +141,15 @@ map lang graph positions zoom lens width height project month active =
                         isActive =
                             active == Just n.id
                     in
+                    let
+                        hit =
+                            Dict.get n.id spotsAtRest |> Maybe.withDefault spot
+                    in
                     [ node lang
                         graph
-                        ( spot.x, spot.y )
+                        ( hit.x, hit.y )
                         { active = isActive
+                        , offset = ( spot.x - hit.x, spot.y - hit.y )
                         , dim = active /= Nothing && not (Set.member n.id near)
                         , label = isActive || n.kind == "project" || Set.member n.id near || l.labelled
                         , radiusScale = l.radiusScale
@@ -159,116 +170,33 @@ map lang graph positions zoom lens width height project month active =
          , S.viewBox ("0 0 " ++ String.fromFloat width ++ " " ++ String.fromFloat height)
          , A.attribute "role" "img"
          , A.attribute "aria-label" "System map"
+         , A.attribute "data-zoom" (String.fromFloat k)
          ]
-            ++ Zoom.events zoom ZoomMsg
+            ++ (Zoom.onWheel zoom ZoomMsg :: Zoom.onDrag zoom ZoomMsg ++ Zoom.onGesture zoom ZoomMsg)
+            ++ touchEvents
         )
         [ Svg.defs []
             [ Svg.marker [ S.id "arrow", S.viewBox "0 0 10 10", S.refX "22", S.refY "5", S.markerWidth "5", S.markerHeight "5", S.orient "auto" ]
                 [ Svg.path [ S.d "M0,0 L10,5 L0,10 z", S.class "arrowhead" ] [] ]
             ]
-        , if lens.strength == 0 then
-            -- No lens (phone): the dots stay in map coordinates inside one group that the browser moves, and the group's
-            -- content is only rebuilt when something but the pan changed, so a pan costs one attribute (MB-6).
-            Svg.g [ Zoom.transform zoom ] [ Svg.Lazy.lazy7 flatLayer lang graph positions k project month active ]
-
-          else
-            Svg.g [] (List.concatMap edgeView graph.edges ++ List.concatMap nodeView graph.nodes)
+        , Svg.g [] (List.concatMap edgeView graph.edges ++ List.concatMap nodeView graph.nodes)
         ]
 
 
-{-| The map without a lens: every dot at its place, sizes in map units (the group's scale makes them bigger or
-smaller on screen). A pure function of its arguments so that `lazy` can skip it while only the pan changes. -}
-flatLayer : Lang -> Graph -> Positions -> Float -> Maybe String -> Maybe String -> Maybe String -> Svg Msg
-flatLayer lang graph positions k project month active =
+{-| The fingers on the map (TC-1..TC-3): see `Touch`. No double-tap or double-click zoom. -}
+touchEvents : List (Html.Attribute Msg)
+touchEvents =
     let
-        visibleIds =
-            Filter.visible project month graph
+        fingers =
+            D.field "touches"
+                (D.keyValuePairs (D.map2 Tuple.pair (D.field "clientX" D.float) (D.field "clientY" D.float))
+                    |> D.map (List.map Tuple.second)
+                )
 
-        near =
-            case active of
-                Just id ->
-                    Set.insert id (Filter.neighbours graph.edges id)
-
-                Nothing ->
-                    Set.empty
-
-        both e =
-            Set.member e.from visibleIds && Set.member e.to visibleIds
-
-        edgeView e =
-            case ( Dict.get e.from positions, Dict.get e.to positions ) of
-                ( Just ( x1, y1 ), Just ( x2, y2 ) ) ->
-                    if both e then
-                        let
-                            lit =
-                                active == Just e.from || active == Just e.to
-                        in
-                        [ Svg.line
-                            [ S.x1 (String.fromFloat x1)
-                            , S.y1 (String.fromFloat y1)
-                            , S.x2 (String.fromFloat x2)
-                            , S.y2 (String.fromFloat y2)
-                            , S.strokeWidth
-                                (if lit then
-                                    "2"
-
-                                 else
-                                    "1.1"
-                                )
-                            , S.class
-                                ("edge"
-                                    ++ (if e.edgeType == Feeds then
-                                            " feeds"
-
-                                        else
-                                            " mentions"
-                                       )
-                                    ++ (if lit then
-                                            " lit"
-
-                                        else if active /= Nothing then
-                                            " dim"
-
-                                        else
-                                            ""
-                                       )
-                                )
-                            ]
-                            []
-                        ]
-
-                    else
-                        []
-
-                _ ->
-                    []
-
-        nodeView n =
-            case Dict.get n.id positions of
-                Just xy ->
-                    if Set.member n.id visibleIds then
-                        [ node lang
-                            graph
-                            xy
-                            { active = active == Just n.id
-                            , dim = active /= Nothing && not (Set.member n.id near)
-                            , label = k >= 0.95 || n.kind == "project" || Set.member n.id near
-                            , radiusScale = 1
-                            , labelSize = 12 / clamp 0.35 1 k
-                            }
-                            n
-                        ]
-
-                    else
-                        []
-
-                Nothing ->
-                    []
+        on name phase =
+            E.custom name (D.map (\f -> { message = TouchEvent phase f, stopPropagation = True, preventDefault = phase == Touch.Move }) fingers)
     in
-    Svg.g []
-        [ Svg.g [] (List.concatMap edgeView graph.edges)
-        , Svg.g [] (List.concatMap nodeView graph.nodes)
-        ]
+    [ on "touchstart" Touch.Start, on "touchmove" Touch.Move, on "touchend" Touch.End, on "touchcancel" Touch.End ]
 
 
 {-| How much detail a dot gets where the lens puts it, at zoom [k] (LN-2): near the middle it is bigger and labelled, near
@@ -284,6 +212,7 @@ lookAt k spot =
 {-| How one dot is drawn: lit, dimmed, with a label or not, its radius factor and its label size in pixels. -}
 type alias Look =
     { active : Bool
+    , offset : ( Float, Float ) -- how far the drawing is from where the dot answers the pointer
     , dim : Bool
     , label : Bool
     , radiusScale : Float
@@ -335,28 +264,29 @@ node lang graph ( x, y ) look n =
         , SE.stopPropagationOn "mousedown" (D.map2 (\cx cy -> ( DragStart n.id cx cy, True )) (D.field "clientX" D.float) (D.field "clientY" D.float))
         , A.attribute "data-id" n.id
         ]
-        ([ if look.active then
-            Svg.circle [ S.r (String.fromFloat (r + 7)), S.class "halo" ] []
+        [ Svg.g [ S.pointerEvents "none", S.transform ("translate(" ++ String.fromFloat (Tuple.first look.offset) ++ "," ++ String.fromFloat (Tuple.second look.offset) ++ ")") ]
+            [ if look.active then
+                Svg.circle [ S.r (String.fromFloat (r + 7)), S.class "halo" ] []
 
-           else
-            Svg.text ""
-         , Svg.circle [ S.r (String.fromFloat r), S.fill (Data.kindColour graph n.kind), S.class "dot" ] []
+              else
+                Svg.text ""
+            , Svg.circle [ S.r (String.fromFloat r), S.fill (Data.kindColour graph n.kind), S.class "dot" ] []
+            , if look.label then
+                Svg.text_
+                    [ S.y (String.fromFloat (r + look.labelSize + 2))
+                    , S.textAnchor "middle"
+                    , S.class "label"
+                    , S.fontSize (String.fromFloat look.labelSize)
+                    ]
+                    [ Svg.text (Data.title lang n) ]
 
-         -- A larger invisible disc around the dot, so the pointer reaches a node a few pixels early.
-         , Svg.circle [ S.r (String.fromFloat (r + 6)), S.fill "transparent", S.class "hit" ] []
-         , if look.label then
-            Svg.text_
-                [ S.y (String.fromFloat (r + look.labelSize + 2))
-                , S.textAnchor "middle"
-                , S.class "label"
-                , S.fontSize (String.fromFloat look.labelSize)
-                ]
-                [ Svg.text (Data.title lang n) ]
+              else
+                Svg.title [] [ Svg.text (Data.title lang n) ]
+            ]
 
-           else
-            Svg.title [] [ Svg.text (Data.title lang n) ]
-         ]
-        )
+        -- A larger invisible disc around the dot, so the pointer reaches a node a few pixels early.
+        , Svg.circle [ S.r (String.fromFloat (r + 6)), S.fill "transparent", S.class "hit" ] []
+        ]
 
 
 {-| The four boxes. [boxHeight] is their fixed height on wide windows (a longer text scrolls inside), `Nothing` on

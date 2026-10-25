@@ -1,4 +1,4 @@
-module Lens exposing (Lens, Spot, apply, invert, project, unproject)
+module Lens exposing (Lens, Shape(..), Spot, apply, invert, project, unproject)
 
 {-| The map's lens (LN-1..LN-3): a fisheye over the visible area. The middle of the window is magnified, so dots there
 are bigger and further apart, and the border is squeezed, so dots there are smaller. Points on the ellipse that
@@ -11,8 +11,16 @@ With distance `r` from the centre (1 at the ellipse) and strength `d`, a point m
 import Zoom exposing (Zoom)
 
 
+{-| The focus: an `Ellipse` (the desktop) or a `Rectangle` (the phone, LN-4). The rectangle bends each axis on its own,
+so the middle band is magnified, every side of the area stays where it is, and the corners of a tall screen are used. -}
+type Shape
+    = Ellipse
+    | Rectangle
+
+
 type alias Lens =
-    { cx : Float
+    { shape : Shape
+    , cx : Float
     , cy : Float
     , hw : Float -- half the width of the area
     , hh : Float -- half the height of the area
@@ -32,6 +40,70 @@ type alias Spot =
 
 apply : Lens -> ( Float, Float ) -> Spot
 apply lens ( x, y ) =
+    case lens.shape of
+        Ellipse ->
+            applyEllipse lens ( x, y )
+
+        Rectangle ->
+            applyRectangle lens ( x, y )
+
+
+{-| One axis of the rectangular lens: [t] is the offset in half-extents (1 at the side). -}
+bend : Float -> Float -> ( Float, Float )
+bend d t =
+    let
+        a =
+            abs t
+
+        moved =
+            (d + 1) * a / (d * a + 1)
+
+        slope =
+            (d + 1) / ((d * a + 1) * (d * a + 1))
+    in
+    ( if t < 0 then
+        -moved
+
+      else
+        moved
+    , slope
+    )
+
+
+unbend : Float -> Float -> Float
+unbend d t =
+    let
+        a =
+            abs t
+
+        back =
+            a / max 0.02 (d + 1 - d * a)
+    in
+    if t < 0 then
+        -back
+
+    else
+        back
+
+
+applyRectangle : Lens -> ( Float, Float ) -> Spot
+applyRectangle lens ( x, y ) =
+    let
+        ( fx, gx ) =
+            bend lens.strength ((x - lens.cx) / lens.hw)
+
+        ( fy, gy ) =
+            bend lens.strength ((y - lens.cy) / lens.hh)
+    in
+    { x = lens.cx + fx * lens.hw
+    , y = lens.cy + fy * lens.hh
+    , scale = sqrt (gx * gy)
+    , r = max (abs fx) (abs fy)
+    }
+
+
+applyEllipse : Lens -> ( Float, Float ) -> Spot
+applyEllipse lens ( x, y ) =
     let
         u =
             (x - lens.cx) / lens.hw
@@ -61,6 +133,18 @@ apply lens ( x, y ) =
 {-| The point that the lens puts at [(x, y)]: used to turn a pointer position back into the map. -}
 invert : Lens -> ( Float, Float ) -> ( Float, Float )
 invert lens ( x, y ) =
+    case lens.shape of
+        Rectangle ->
+            ( lens.cx + unbend lens.strength ((x - lens.cx) / lens.hw) * lens.hw
+            , lens.cy + unbend lens.strength ((y - lens.cy) / lens.hh) * lens.hh
+            )
+
+        Ellipse ->
+            invertEllipse lens ( x, y )
+
+
+invertEllipse : Lens -> ( Float, Float ) -> ( Float, Float )
+invertEllipse lens ( x, y ) =
     let
         u =
             (x - lens.cx) / lens.hw

@@ -18,6 +18,7 @@ import Set
 import Svg
 import Svg.Attributes
 import Zoom
+import Touch
 import Test exposing (Test, describe, test)
 import Test.Html.Event as Event
 import Test.Html.Query as Query
@@ -89,12 +90,26 @@ phoneArticle =
 
 look : MapView.Look
 look =
-    { active = False, dim = False, label = True, radiusScale = 1, labelSize = 12 }
+    { active = False, offset = ( 0, 0 ), dim = False, label = True, radiusScale = 1, labelSize = 12 }
 
 
 lens : Lens.Lens
 lens =
-    { cx = 500, cy = 300, hw = 500, hh = 300, strength = 1.2 }
+    { shape = Lens.Ellipse, cx = 500, cy = 300, hw = 500, hh = 300, strength = 1.2 }
+
+
+fresh : Zoom.Zoom
+fresh =
+    Zoom.init { width = 400, height = 600 } |> Zoom.scaleExtent 0.1 6
+
+
+transformOf : Zoom.Zoom -> { k : Float, x : Float, y : Float }
+transformOf z =
+    let
+        t =
+            Zoom.asRecord z
+    in
+    { k = t.scale, x = t.translate.x, y = t.translate.y }
 
 
 ids : List Node -> List String
@@ -148,7 +163,7 @@ suite =
                         |> Event.expect (Hover "mem")
             , test "the map declares a viewBox matching its size, so zoom and drag use real pointer positions" <|
                 \_ ->
-                    MapView.map En graph Dict.empty (Zoom.init { width = 800, height = 500 }) { cx = 400, cy = 250, hw = 400, hh = 250, strength = 1.2 } 800 500 Nothing Nothing Nothing
+                    MapView.map En graph Dict.empty Dict.empty (Zoom.init { width = 800, height = 500 }) { shape = Lens.Ellipse, cx = 400, cy = 250, hw = 400, hh = 250, strength = 1.2 } 800 500 Nothing Nothing Nothing
                         |> Query.fromHtml
                         |> Query.has [ Selector.attribute (Svg.Attributes.viewBox "0 0 800 500") ]
             , test "clicking a node opens its page" <|
@@ -178,6 +193,119 @@ suite =
                     Data.nodeById graph "mem"
                         |> Maybe.map (MapView.info De graph >> .receives)
                         |> Expect.equal (Just [ "events/ (de)" ])
+            ]
+
+        -- REQ LY-1
+        , describe "layout in slices"
+            [ test "running the simulation a few steps at a time gives the layout of a single run" <|
+                \_ ->
+                    let
+                        finish sim =
+                            if Layout.isDone sim then
+                                sim
+
+                            else
+                                finish (Layout.advance 7 sim)
+                    in
+                    Layout.start graph |> finish |> Layout.positionsOf |> Expect.equal (Layout.compute graph)
+            , test "one slice does not finish the run" <|
+                \_ ->
+                    Layout.start graph |> Layout.advance 7 |> Layout.isDone |> Expect.equal False
+            ]
+
+        -- REQ TC-1
+        -- REQ TC-2
+        -- REQ TC-3
+        , describe "touch"
+            [ test "one finger pans: the map point under it stays under it" <|
+                \_ ->
+                    let
+                        ( g1, z1 ) =
+                            Touch.step identity Touch.Start [ ( 100, 100 ) ] Touch.Idle fresh
+
+                        ( _, z2 ) =
+                            Touch.step identity Touch.Move [ ( 130, 90 ) ] g1 z1
+                    in
+                    transformOf z2 |> Expect.equal { k = 1, x = 30, y = -10 }
+            , test "two fingers pinch around their midpoint" <|
+                \_ ->
+                    let
+                        ( g1, z1 ) =
+                            Touch.step identity Touch.Start [ ( 150, 200 ), ( 250, 200 ) ] Touch.Idle fresh
+
+                        ( _, z2 ) =
+                            Touch.step identity Touch.Move [ ( 100, 200 ), ( 300, 200 ) ] g1 z1
+                    in
+                    -- twice as far apart: twice the scale, and the point at the midpoint (200, 200) is still there
+                    transformOf z2 |> Expect.equal { k = 2, x = -200, y = -200 }
+            , test "a double tap, quick taps and circles of one finger do not change the scale" <|
+                \_ ->
+                    let
+                        tap ( g, z ) =
+                            Touch.step identity Touch.Start [ ( 50, 50 ) ] g z |> (\( g2, z2 ) -> Touch.step identity Touch.End [] g2 z2)
+
+                        circleStep a ( g, z ) =
+                            Touch.step identity Touch.Move [ ( 200 + 60 * cos a, 300 + 60 * sin a ) ] g z
+
+                        taps =
+                            List.foldl (\_ s -> tap s) ( Touch.Idle, fresh ) (List.range 1 6)
+
+                        circled =
+                            Touch.step identity Touch.Start [ ( 260, 300 ) ] Touch.Idle (Tuple.second taps)
+                                |> (\s -> List.foldl circleStep s (List.map (\i -> toFloat i * 0.3) (List.range 1 60)))
+                    in
+                    ( (transformOf (Tuple.second taps)).k, (transformOf (Tuple.second circled)).k ) |> Expect.equal ( 1, 1 )
+            , test "a lift that was never reported does not turn the next touch into a pinch" <|
+                \_ ->
+                    let
+                        -- a finger goes down, its lift is missed; the next touch arrives alone with the event restating one finger
+                        ( g1, z1 ) =
+                            Touch.step identity Touch.Start [ ( 100, 100 ) ] Touch.Idle fresh
+
+                        ( g2, z2 ) =
+                            Touch.step identity Touch.Start [ ( 300, 300 ) ] g1 z1
+
+                        ( _, z3 ) =
+                            Touch.step identity Touch.Move [ ( 330, 300 ) ] g2 z2
+                    in
+                    transformOf z3 |> Expect.equal { k = 1, x = 30, y = 0 }
+            , test "a pinch scales by the distance between the fingers on screen, whatever the lens does around them" <|
+                \_ ->
+                    let
+                        toMap =
+                            Lens.invert lens
+
+                        ( g1, z1 ) =
+                            Touch.step toMap Touch.Start [ ( 450, 300 ), ( 550, 300 ) ] Touch.Idle fresh
+
+                        ( _, z2 ) =
+                            Touch.step toMap Touch.Move [ ( 400, 300 ), ( 600, 300 ) ] g1 z1
+                    in
+                    (transformOf z2).k |> Expect.within (Expect.Absolute 0.0001) 2
+            , test "a finger count that changes between events moves nothing" <|
+                \_ ->
+                    let
+                        ( g1, z1 ) =
+                            Touch.step identity Touch.Start [ ( 100, 100 ) ] Touch.Idle fresh
+
+                        ( _, z2 ) =
+                            Touch.step identity Touch.Move [ ( 100, 100 ), ( 400, 400 ) ] g1 z1
+                    in
+                    transformOf z2 |> Expect.equal { k = 1, x = 0, y = 0 }
+            , test "the lens is undone first, so the finger holds the dot it is on" <|
+                \_ ->
+                    let
+                        toMap =
+                            Lens.invert lens
+
+                        ( g1, z1 ) =
+                            Touch.step toMap Touch.Start [ ( 700, 300 ) ] Touch.Idle fresh
+
+                        ( _, z2 ) =
+                            Touch.step toMap Touch.Move [ ( 720, 300 ) ] g1 z1
+                    in
+                    -- the finger moved 20 px on screen; the map moved through the lens by that same 20 px at the finger
+                    (toMap ( 720, 300 ) |> Tuple.first) - (toMap ( 700, 300 ) |> Tuple.first) |> Expect.within (Expect.Absolute 0.001) (transformOf z2).x
             ]
 
         -- REQ LN-1
@@ -242,6 +370,81 @@ suite =
                         |> Expect.equal ( True, True, False )
             ]
 
+        -- REQ LN-4
+        , describe "rectangular lens (phone)"
+            [ test "the sides and the corners of the area stay where they are, the middle is magnified" <|
+                \_ ->
+                    let
+                        rect =
+                            { shape = Lens.Rectangle, cx = 200, cy = 400, hw = 200, hh = 400, strength = 0.8 }
+
+                        at xy =
+                            Lens.apply rect xy |> (\sp -> ( sp.x, sp.y ))
+                    in
+                    ( [ at ( 400, 400 ), at ( 400, 800 ), at ( 0, 0 ) ], (Lens.apply rect ( 200, 400 )).scale > 1.5 )
+                        |> Expect.equal ( [ ( 400, 400 ), ( 400, 800 ), ( 0, 0 ) ], True )
+            , test "each axis is bent on its own: the same fraction of the half-width and of the half-height moves alike" <|
+                \_ ->
+                    let
+                        rect =
+                            { shape = Lens.Rectangle, cx = 200, cy = 400, hw = 200, hh = 400, strength = 0.8 }
+
+                        a =
+                            Lens.apply rect ( 300, 400 )
+
+                        b =
+                            Lens.apply rect ( 200, 600 )
+                    in
+                    ( (a.x - 200) / 200, (b.y - 400) / 400 ) |> (\( fx, fy ) -> abs (fx - fy) < 0.0001) |> Expect.equal True
+            , test "a pointer position maps back through the rectangle" <|
+                \_ ->
+                    let
+                        rect =
+                            { shape = Lens.Rectangle, cx = 200, cy = 400, hw = 200, hh = 400, strength = 0.8 }
+                    in
+                    [ ( 250, 300 ), ( 20, 700 ), ( 390, 10 ) ]
+                        |> List.all
+                            (\p ->
+                                let
+                                    sp =
+                                        Lens.apply rect p
+
+                                    ( bx, by ) =
+                                        Lens.invert rect ( sp.x, sp.y )
+                                in
+                                abs (bx - Tuple.first p) < 0.01 && abs (by - Tuple.second p) < 0.01
+                            )
+                        |> Expect.equal True
+            ]
+
+        -- REQ DY-6
+        , describe "phone feel"
+            [ test "a dragged dot pulls its neighbour along less on the phone than on the desktop, and it still settles" <|
+                \_ ->
+                    let
+                        adj =
+                            Motion.adjacency graph.edges
+
+                        run feel n forces st =
+                            List.foldl (\_ s -> Motion.step 0.016 feel adj forces s |> Tuple.first) st (List.range 1 n)
+
+                        follow feel =
+                            run feel 400 { pulls = Dict.empty, pin = Just ( "mem", ( 100, 0 ) ) } Dict.empty
+                                |> Dict.get "events"
+                                |> Maybe.map .dx
+                                |> Maybe.withDefault 0
+
+                        settled =
+                            run Motion.phone 400 { pulls = Dict.empty, pin = Just ( "mem", ( 100, 0 ) ) } Dict.empty
+                                |> run Motion.phone 600 { pulls = Dict.empty, pin = Nothing }
+                                |> Dict.get "events"
+                                |> Maybe.map (.dx >> abs)
+                                |> Maybe.withDefault 99
+                    in
+                    ( follow Motion.phone < follow Motion.desktop, follow Motion.phone > 15, settled < 0.5 )
+                        |> Expect.equal ( True, True, True )
+            ]
+
         -- REQ DY-1
         -- REQ DY-2
         -- REQ DY-3
@@ -253,7 +456,7 @@ suite =
                             Dict.fromList [ ( "mem", ( 10, 20 ) ), ( "events", ( 30, 40 ) ) ]
 
                         ( st, settled ) =
-                            Motion.step 0.016 (Motion.adjacency graph.edges) { pulls = Dict.empty, pin = Nothing } Dict.empty
+                            Motion.step 0.016 Motion.desktop (Motion.adjacency graph.edges) { pulls = Dict.empty, pin = Nothing } Dict.empty
                     in
                     ( settled, Motion.apply st positions ) |> Expect.equal ( True, positions )
             , test "a dragged dot stretches its neighbour along, and the neighbour contracts back when it is let go" <|
@@ -263,7 +466,7 @@ suite =
                             Motion.adjacency graph.edges
 
                         run n forces st =
-                            List.foldl (\_ s -> Motion.step 0.016 adj forces s |> Tuple.first) st (List.range 1 n)
+                            List.foldl (\_ s -> Motion.step 0.016 Motion.desktop adj forces s |> Tuple.first) st (List.range 1 n)
 
                         held =
                             run 120 { pulls = Dict.empty, pin = Just ( "mem", ( 100, 0 ) ) } Dict.empty
@@ -290,15 +493,34 @@ suite =
                                 st
 
                             else
-                                loop (n - 1) (Motion.step 0.016 adj { pulls = pulls, pin = Nothing } st |> Tuple.first)
+                                loop (n - 1) (Motion.step 0.016 Motion.desktop adj { pulls = pulls, pin = Nothing } st |> Tuple.first)
 
                         end =
                             loop 900 Dict.empty
                     in
                     ( Dict.get "events" end |> Maybe.map .dx |> Maybe.withDefault 0 |> (\x -> x < -8 && x > -20.5)
-                    , Motion.step 0.016 adj { pulls = pulls, pin = Nothing } end |> Tuple.second
+                    , Motion.step 0.016 Motion.desktop adj { pulls = pulls, pin = Nothing } end |> Tuple.second
                     )
                         |> Expect.equal ( True, True )
+            ]
+
+        -- REQ DY-5
+        , describe "hover stays put"
+            [ test "the dot answers the pointer where it rests, and its displaced drawing does not" <|
+                \_ ->
+                    MapView.node En graph ( 100, 100 ) { look | offset = ( 30, 0 ) } (mkNode "mem" "mem" "p" [] [])
+                        |> (\n -> Svg.svg [] [ n ])
+                        |> Query.fromHtml
+                        |> Expect.all
+                            [ Query.find [ Selector.attribute (Html.Attributes.attribute "data-id" "mem") ]
+                                >> Query.has [ Selector.attribute (Svg.Attributes.transform "translate(100,100)") ]
+                            , Query.find [ Selector.attribute (Svg.Attributes.pointerEvents "none") ]
+                                >> Expect.all
+                                    [ Query.has [ Selector.attribute (Svg.Attributes.transform "translate(30,0)") ]
+                                    , Query.has [ Selector.class "dot" ]
+                                    ]
+                            , Query.has [ Selector.class "hit" ]
+                            ]
             ]
 
         -- REQ DY-4
