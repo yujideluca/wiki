@@ -1,7 +1,7 @@
 ---
 id: wiki-map-view
 lang: pt-BR
-source_hash: b9e304d61830
+source_hash: 2e1f5eee1345
 title: Vista do mapa e caixas de informação
 ---
 
@@ -15,7 +15,7 @@ O mapa é vivo. Cada ponto descansa onde o layout o coloca, mas pode ser empurra
 
 Em um desktop o mapa também é visto por uma lente (um olho de peixe): os pontos no meio da área são maiores, mais afastados e com rótulo, e os pontos perto da borda são menores, mais juntos e sem rótulo, e as linhas tracejadas de “menciona” somem ali. Por causa da lente nenhum ponto sai da janela, e ao arrastar ou dar zoom os pontos passam pela lente. Em um celular a lente fica desligada.
 
-Em um celular (janela de até 760 pixels de largura) o mapa ocupa a tela inteira, como no Google Maps: no alto flutua uma barra de busca em forma de pílula com o botão de menu (mapa, glossário, idioma, sair) dentro dela e, abaixo, uma fileira de chips de filtro. Uma tela de toque não tem passar o mouse; em vez disso, tocar em um ponto abre embaixo um balão com os mesmos quatro textos, botões para as páginas que o alimentam ou recebem sua saída (tocar em um salta para aquele ponto) e um botão que abre seu artigo; o botão de fechar ou outro ponto o substitui. Os quatro quadros deixam de existir ali (`MapView.sheet`).
+Em um celular (janela de até 760 pixels de largura) o mapa ocupa a tela inteira, como no Google Maps: no alto flutua uma barra de busca em forma de pílula com o botão de menu (mapa, glossário, idioma, sair) dentro dela e, abaixo, uma fileira de chips de filtro. Uma tela de toque não tem passar o mouse; em vez disso, tocar em um ponto abre embaixo um balão com os mesmos quatro textos, botões para as páginas que o alimentam ou recebem sua saída (tocar em um salta para aquele ponto) e um botão que abre seu artigo; o botão de fechar ou outro ponto o substitui. Um celular redesenha devagar, então ali o mapa não tem transições nem linhas tracejadas e se move como um bloco único ao arrastar ou fazer pinça (medido no celular: 17 a 19 milissegundos por quadro, cerca de 60 quadros por segundo); a página também diz ao navegador para não oferecer a tradução própria, e escolher um resultado da busca fecha o teclado para que ele não esconda o balão. Os quatro quadros deixam de existir ali (`MapView.sheet`).
 
 ## How it does it
 As posições são calculadas uma vez com uma simulação de forças ([layout dirigido por forças](https://en.wikipedia.org/wiki/Force-directed_graph_drawing), feito com a biblioteca elm-visualization): páginas ligadas se atraem, todas as páginas se repelem e mantêm um espaço mínimo, os projetos começam em grupos, e uma atração para uma linha horizontal faz a nuvem se assentar larga e achatada. `Layout.matchAspect` a remodela então para a forma da área do mapa (só esticando, no máximo 3 vezes, para que dois pontos nunca se aproximem), de modo que os pontos usem toda a largura. `MapSize` decide as alturas: numa janela larga e alta o bastante, as caixas recebem a altura de que seu texto precisa (cerca de 226 pixels em 1920 pixels de largura) e o mapa recebe o resto; numa janela mais baixa ou estreita o mapa mantém sua parcela de 58 % e as caixas se ajustam sozinhas. Os filtros são funções puras (`Filter.visible`). Zoom e arrastar vêm do módulo `Zoom` do elm-visualization; o SVG (Scalable Vector Graphics, um formato para desenhos feitos de formas) declara um `viewBox` igual ao seu tamanho e começa no canto superior esquerdo da janela (a barra de busca flutua sobre ele), de modo que a roda do mouse, o arrastar e a pinça dão zoom em torno do ponteiro.
