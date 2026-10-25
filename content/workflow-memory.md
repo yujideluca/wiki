@@ -9,7 +9,7 @@ location: workflow-memory:
 fed_by: [claude-code]
 feeds: []
 sources: [workflow-memory:README.md, workflow-memory:docs/DESIGN.md]
-reviewed: 2026-10-24T21:59Z
+reviewed: 2026-10-25T07:34Z
 ---
 
 ## What it is

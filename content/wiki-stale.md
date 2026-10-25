@@ -9,7 +9,7 @@ location: wiki:server/lib/wiki/content/stale.ex
 fed_by: []
 feeds: [wiki-cli]
 sources: [wiki:server/lib/wiki/content/stale.ex, wiki:server/lib/wiki/content/sources.ex, wiki:server/lib/wiki/content/page.ex, wiki:docs/adr/0006-review-time-in-the-page.md]
-reviewed: 2026-10-25T02:11Z
+reviewed: 2026-10-25T07:34Z
 ---
 
 ## What it is

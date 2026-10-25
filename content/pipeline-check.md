@@ -8,8 +8,8 @@ status: active
 location: pipeline-check:src
 fed_by: [fitness-check]
 feeds: [quizapp-ci, skill-revisao-manutencao]
-sources: [pipeline-check:src/lib.rs, pipeline-check:src/shellcheck.rs, pipeline-check:src/traceability.rs, pipeline-check:docs/adr/0003-one-repository-consumed-by-version.md, QuizApp:pipeline-check.toml, QuizApp:tools/pipeline-check.sh, QuizApp:docs/adr/0013-program-measures-skill-judges.md]
-reviewed: 2026-10-24T22:03Z
+sources: [pipeline-check:LICENSE, pipeline-check:src/lib.rs, pipeline-check:src/shellcheck.rs, pipeline-check:src/traceability.rs, pipeline-check:docs/adr/0003-one-repository-consumed-by-version.md, QuizApp:pipeline-check.toml, QuizApp:tools/pipeline-check.sh, QuizApp:docs/adr/0013-program-measures-skill-judges.md]
+reviewed: 2026-10-25T07:34Z
 ---
 
 ## What it is
@@ -31,7 +31,7 @@ The program has two more modes besides the report: `--traceability` checks that 
 It is Rust with the libraries `serde`, `toml` and `clap`, and it runs `git` and `gh` as separate processes. The limits live in `pipeline-check.toml` in each project and are changed only by Giovanni, with a decision-log row. The script `tools/pipeline-check.sh` builds and runs it; the gate calls it with `--measure-only` so it does not run the gate again (no recursion). Its own requirements (PC-1 to PC-15) have tests tagged `REQ`. It went through its own process first: the skill [[skill-gerar-teste-automatizado]] wrote bug-finding tests (record in `tools/pipeline-check/docs/TESTES-AUTOMATIZADOS.md`) that found six defects, all fixed, and a hand-made mutation check (`mutants.py`, which plants faults on purpose) catches every planted fault.
 
 ## Where it sits in the pipeline
-CI runs it instead of the bare gate ([[quizapp-ci]]), and Claude runs it at the start of every [[skill-revisao-manutencao]]; it is part of the [[maintenance-pipeline]]. The program lives once, in its own public repository (`yujideluca/pipeline-check`). [[project-template]], [[quizapp]], the [[wiki]], [[quizweb]], [[workflow-memory]], [[remote-terminal]] and [[processing-sketches]] each pin a version tag in a file named `pipeline-check.version` (v0.4.0 in every project) and keep only their own `pipeline-check.toml` and a small runner script. It also runs as the git pre-push hook (`--pre-push`), which stops a push of `main` when a check fails, because branch protection is not available on private free-plan repositories. Why one repository and not copies: ADR-0003 in that repository.
+CI runs it instead of the bare gate ([[quizapp-ci]]), and Claude runs it at the start of every [[skill-revisao-manutencao]]; it is part of the [[maintenance-pipeline]]. The program lives once, in its own public repository (`yujideluca/pipeline-check`). [[project-template]], [[quizapp]], the [[wiki]], [[quizweb]], [[workflow-memory]], [[remote-terminal]] and [[processing-sketches]] each pin a version tag in a file named `pipeline-check.version` (v0.4.0 in every project) and keep only their own `pipeline-check.toml` and a small runner script. It also runs as the git pre-push hook (`--pre-push`), which stops a push of `main` when a check fails, because branch protection is not available on private free-plan repositories. Why one repository and not copies: ADR-0003 in that repository. The repository carries the MIT licence (a short permissive licence: anyone may use, copy and change the software, provided the copyright notice stays), set on 2026-10-25 in the file `LICENSE` and in `Cargo.toml`.
 
 ## Who receives its output
 [[quizapp-ci]] (the red or green mark) and [[skill-revisao-manutencao]] (which reads `report.json` and never measures again).

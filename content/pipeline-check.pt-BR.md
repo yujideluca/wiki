@@ -1,7 +1,7 @@
 ---
 id: pipeline-check
 lang: pt-BR
-source_hash: 2e98711663eb
+source_hash: ab5c42deea22
 title: pipeline-check
 ---
 
@@ -24,7 +24,7 @@ Além do relatório, o programa tem mais dois modos: `--traceability` confere se
 É Rust com as bibliotecas `serde`, `toml` e `clap`, e executa `git` e `gh` como processos separados. Os limites ficam no `pipeline-check.toml` de cada projeto e só o Giovanni os altera, com uma linha no registro de decisões. O script `tools/pipeline-check.sh` o compila e executa; o portão o chama com `--measure-only` para não rodar o portão de novo (sem recursão). Seus próprios requisitos (PC-1 a PC-15) têm testes etiquetados com `REQ`. Passou primeiro pelo seu próprio processo: a skill [[skill-gerar-teste-automatizado]] escreveu testes caçadores de bugs (registro em `tools/pipeline-check/docs/TESTES-AUTOMATIZADOS.md`) que acharam seis defeitos, todos corrigidos, e uma verificação de mutação feita à mão (`mutants.py`, que planta falhas de propósito) pega todas as falhas plantadas.
 
 ## Where it sits in the pipeline
-A CI o executa no lugar do portão simples ([[quizapp-ci]]), e o Claude o executa no início de cada [[skill-revisao-manutencao]]; faz parte da [[maintenance-pipeline]]. O programa existe uma só vez, em seu próprio repositório público (`yujideluca/pipeline-check`). [[project-template]], [[quizapp]], o [[wiki]], [[quizweb]], [[workflow-memory]], [[remote-terminal]] e [[processing-sketches]] fixam, cada um, uma tag de versão em um arquivo `pipeline-check.version` (v0.4.0 em todos os projetos) e mantêm apenas o próprio `pipeline-check.toml` e um pequeno script executor. Também roda como hook pre-push do git (`--pre-push`), que impede o push do `main` quando uma verificação falha, porque a proteção de branch não está disponível em repositórios privados do plano gratuito. Por que um repositório e não cópias: ADR-0003 naquele repositório.
+A CI o executa no lugar do portão simples ([[quizapp-ci]]), e o Claude o executa no início de cada [[skill-revisao-manutencao]]; faz parte da [[maintenance-pipeline]]. O programa existe uma só vez, em seu próprio repositório público (`yujideluca/pipeline-check`). [[project-template]], [[quizapp]], o [[wiki]], [[quizweb]], [[workflow-memory]], [[remote-terminal]] e [[processing-sketches]] fixam, cada um, uma tag de versão em um arquivo `pipeline-check.version` (v0.4.0 em todos os projetos) e mantêm apenas o próprio `pipeline-check.toml` e um pequeno script executor. Também roda como hook pre-push do git (`--pre-push`), que impede o push do `main` quando uma verificação falha, porque a proteção de branch não está disponível em repositórios privados do plano gratuito. Por que um repositório e não cópias: ADR-0003 naquele repositório. O repositório tem a licença MIT (uma licença curta e permissiva: qualquer pessoa pode usar, copiar e alterar o software, desde que o aviso de copyright seja mantido), definida em 2026-10-25 no arquivo `LICENSE` e no `Cargo.toml`.
 
 ## Who receives its output
 A [[quizapp-ci]] (a marca vermelha ou verde) e a [[skill-revisao-manutencao]] (que lê o `report.json` e nunca mede de novo).

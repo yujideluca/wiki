@@ -9,7 +9,7 @@ location: workflow-memory:events
 fed_by: [mem, mem-add, mem-github-connector, mem-harvester, mem-task, mem-use]
 feeds: [mem-action, mem-search, mem-validator, memory-fold]
 sources: [workflow-memory:mem/events.py, workflow-memory:docs/DESIGN.md]
-reviewed: 2026-10-24T21:59Z
+reviewed: 2026-10-25T07:34Z
 ---
 
 ## What it is

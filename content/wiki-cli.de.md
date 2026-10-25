@@ -1,7 +1,7 @@
 ---
 id: wiki-cli
 lang: de
-source_hash: e301ad30ede8
+source_hash: 61319f1abb67
 title: wiki (Befehl)
 ---
 
@@ -9,7 +9,7 @@ title: wiki (Befehl)
 `wiki` ist der Befehl, mit dem Claude das Wiki aktuell hält: ein Elixir-Escript (ein Programm, das in eine einzige ausführbare Datei gepackt ist), installiert als `~/.local/bin/wiki`.
 
 ## What it does
-`wiki publish` ist der Schritt am Ende einer Aufgabe. Er führt [[wiki-check]] im lokalen Modus aus, dann [[wiki-build]], committet nur den Ordner `content/` (sodass unabhängige Arbeit im Repository nie mitgenommen wird) und pusht ihn ins private Repository auf [[github]], und hält schließlich den Zeitpunkt der Veröffentlichung für den [[wiki-hook-stop]] fest. Bei jedem Fehler verweigert er sich.
+`wiki publish` ist der Schritt am Ende einer Aufgabe. Er führt [[wiki-check]] im lokalen Modus aus, dann [[wiki-build]], committet nur den Ordner `content/` (sodass unabhängige Arbeit im Repository nie mitgenommen wird) und pusht ihn ins private Repository auf [[github]], und hält schließlich den Zeitpunkt der Veröffentlichung für den [[wiki-hook-stop]] fest. Bei jedem Fehler verweigert er sich. Jeder `git`-Befehl, den er ausführt, löscht zuvor `GIT_DIR`, `GIT_WORK_TREE` und `GIT_INDEX_FILE` (Variablen, die git selbst in Hooks wie pre-push setzt), sodass der Befehl immer auf dem übergebenen Repository arbeitet und nie auf dem, das den Hook gestartet hat.
 
 ## How it does it
 Er wird mit `mix escript.build` aus dem Serverprojekt gebaut; die Variable `WIKI_ROOT` zeigt auf das Repository (Standard `~/dev/wiki`). Er erzwingt nie einen Push.
