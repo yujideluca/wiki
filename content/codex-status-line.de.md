@@ -1,7 +1,7 @@
 ---
 id: codex-status-line
 lang: de
-source_hash: 4b6bfd83fb91
+source_hash: 62df6c20d581
 title: Native Codex-Statuszeile
 ---
 
@@ -23,4 +23,4 @@ Giovanni liest die Anzeige.
 ## Notes
 Ein Terminaltest am 2026-10-25 mit Codex 0.164.0 zeigte `5h 44% left · weekly 76% left · 10.5K used · 475K window`. Ein zweites neues Terminal bestätigte die gespeicherte Konfiguration ohne Kommandozeilenüberschreibungen. Das Neuladen in bereits laufenden Terminals wurde nicht bestätigt.
 
-Mit `tui.fullscreen_transcript = false` nutzt der Gesprächsverlauf den Rückscrollbereich des Terminals. Ein Terminaltest bestätigte, dass die dauerhafte doppelte Kontingentwarnung über der Eingabe entfällt und beide Kontingentfelder erhalten bleiben. Die Startwarnung bleibt im Verlauf.
+Mit `tui.fullscreen_transcript = true` setzt Codex Eingabe und native Statuszeile sofort an den unteren Rand; der Verlauf wird innerhalb von Codex gescrollt. Im Rückscrollmodus (`false`) beginnen beide oben und wandern mit wachsender Ausgabe nach unten, getrennt von der festen Fortschrittszeile. Ein Vergleich mit Codex 0.164.0 zeigte die Kontingentwerte in Zeile 13 von 52 im Rückscrollmodus und in Zeile 51 im Vollbildmodus, ohne eine Anfrage zu senden. Auch bei 70 Spalten und 24 Zeilen blieb die Anzeige im Vollbildmodus unten. Die Terminalansicht muss neu geöffnet werden, damit die gespeicherte Einstellung gilt. Im Vollbildmodus kann Codex über der Eingabe eine zusätzliche Kontingentwarnung anzeigen.

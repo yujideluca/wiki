@@ -8,7 +8,7 @@ location: home:.codex/config.toml
 fed_by: []
 feeds: []
 sources: [home:.codex/config.toml, home:AGENTS.md, home:.codex/AGENTS.md]
-reviewed: 2026-10-25T20:55Z
+reviewed: 2026-10-25T21:08Z
 ---
 
 ## What it is
@@ -29,4 +29,4 @@ Giovanni reads the display.
 ## Notes
 A terminal test on 2026-10-25 with Codex 0.164.0 displayed `5h 44% left · weekly 76% left · 10.5K used · 475K window`. A second fresh terminal verified the saved configuration without command-line overrides. Existing terminal processes have not been verified to reload the configuration.
 
-With `tui.fullscreen_transcript = false`, conversation history uses terminal scrollback. A terminal test confirmed that this removes the persistent duplicate low-budget warning above the input while retaining both budget fields in the status line. The startup warning remains in history.
+With `tui.fullscreen_transcript = true`, Codex places the input and native status line at the bottom immediately; scrolling is handled inside Codex. Scrollback mode (`false`) starts them near the top and moves them down as output fills the terminal, separating them from the fixed task-progress footer. A comparison on Codex 0.164.0 placed the budget fields on row 13 of 52 in scrollback mode and row 51 in fullscreen mode, with no prompt sent. Fullscreen also retained the bottom position at 70 columns by 24 rows. Reopen the terminal view to apply the saved setting. Fullscreen can show Codex’s additional low-budget warning above the input.
