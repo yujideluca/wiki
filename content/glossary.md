@@ -7,7 +7,7 @@ project: none
 status: active
 fed_by: []
 feeds: []
-reviewed: 2026-10-24
+reviewed: 2026-10-24T21:57Z
 ---
 
 ## What it is
@@ -106,7 +106,7 @@ Every reader of the wiki, above all [[giovanni]] and anyone new to the system.
 - **SM-2** (SuperMemo 2): an early spaced-repetition algorithm ([SuperMemo](https://en.wikipedia.org/wiki/SuperMemo)); see [[spaced-repetition-scheduler]].
 - **Spaced repetition**: a study method in which what you know comes back after longer and longer gaps ([spaced repetition](https://en.wikipedia.org/wiki/Spaced_repetition)).
 - **SSH** (Secure Shell): an encrypted way to log in to another computer ([SSH](https://en.wikipedia.org/wiki/Secure_Shell)); see [[remote-terminal]].
-- **Stale**: out of date; a page is "may be stale" when its source changed or when too long has passed since its review.
+- **Stale**: out of date. A page with sources is stale when one of them changed after the page's `reviewed` time; a page without sources is shown as "may be stale" 30 days after that time. See [[wiki-stale]].
 - **Status line**: the single line at the bottom of the Claude Code terminal; see [[pbar]].
 - **sudo**: the command that runs another command with administrator rights.
 - **SVG** (Scalable Vector Graphics): a format for drawings made of shapes, used by the map ([SVG](https://en.wikipedia.org/wiki/Scalable_Vector_Graphics)).

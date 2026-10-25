@@ -9,7 +9,7 @@ location: home:.claude/skills/systematic-debugging
 fed_by: []
 feeds: []
 sources: [home:.claude/skills/systematic-debugging/SKILL.md]
-reviewed: 2026-10-22T16:33Z
+reviewed: 2026-10-25T02:07Z
 ---
 
 ## What it is

@@ -9,7 +9,7 @@ location: pipeline-check:src
 fed_by: [fitness-check]
 feeds: [quizapp-ci, skill-revisao-manutencao]
 sources: [pipeline-check:src/lib.rs, pipeline-check:src/shellcheck.rs, pipeline-check:src/traceability.rs, pipeline-check:docs/adr/0003-one-repository-consumed-by-version.md, QuizApp:pipeline-check.toml, QuizApp:tools/pipeline-check.sh, QuizApp:docs/adr/0013-program-measures-skill-judges.md]
-reviewed: 2026-10-24T12:43Z
+reviewed: 2026-10-24T22:03Z
 ---
 
 ## What it is

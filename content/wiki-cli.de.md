@@ -1,7 +1,7 @@
 ---
 id: wiki-cli
 lang: de
-source_hash: 5cd5cb46038e
+source_hash: e301ad30ede8
 title: wiki (Befehl)
 ---
 
@@ -23,6 +23,6 @@ Aufgerufen bei [[end-of-task]], vor `mem use`.
 ## Functions
 - `wiki check [--local]`: den Inhalt validieren
 - `wiki build`: Inhalt → site/data, Elm → site/assets
-- `wiki stale` ([[wiki-stale]]): Seiten, deren Quellen sich nach der Seite geändert haben
+- `wiki stale` ([[wiki-stale]]): Seiten mit einer Quelle, die sich nach ihrem `reviewed`-Zeitpunkt geändert hat; endet mit 1, wenn es welche auflistet
 - `wiki publish -m "msg"`: check --local, build, nur content/ committen, pushen
 - `wiki hook-stop`: der Stop-Hook von Claude Code

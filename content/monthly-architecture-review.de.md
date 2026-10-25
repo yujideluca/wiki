@@ -1,7 +1,7 @@
 ---
 id: monthly-architecture-review
 lang: de
-source_hash: 2337ed4ae976
+source_hash: 528e8d4043f6
 title: Monatlicher Architektur-Review
 ---
 
@@ -12,7 +12,7 @@ Einmal im Monat betrachtet eine Arbeitssitzung alle Projekte von Giovanni zusamm
 Er geht für jedes aktive Projekt in `~/dev` die Checkliste von [[maintenance-policy]] durch und hält das Ergebnis fest. Seit 2026-10-24 führt ihn die Skill [[skill-revisao-manutencao]] aus, auf Grundlage des Berichts von [[pipeline-check]] ([[maintenance-pipeline]]).
 
 ## How it does it
-Er nutzt das Quality Gate jedes Projekts, Lieferkennzahlen (`tools/metrics.py`, wo vorhanden), Fitnessfunktionen, die Entwurfsdatei (DESIGN.md), ADRs und die Schuldenliste.
+Er nutzt das Quality Gate jedes Projekts, Lieferkennzahlen (der Block `dora` im Bericht von [[pipeline-check]]), Fitnessfunktionen, die Entwurfsdatei (DESIGN.md), ADRs und die Schuldenliste. Die Skill [[skill-revisao-manutencao]] führt `tools/pipeline-check.sh` aus und liest `build/pipeline-check/report.json`; die Schritte 1 bis 3 unten hat das Programm schon gemessen, der Rest ist Urteil.
 
 ## Where it sits in the pipeline
 Monatlich, quer über [[quizapp]], [[quizweb]], [[workflow-memory]], das [[wiki]] und die Vorlage.

@@ -9,7 +9,7 @@ location: home:.claude/plugins
 fed_by: []
 feeds: []
 sources: [home:.claude/plugins/installed_plugins.json]
-reviewed: 2026-10-22T16:33Z
+reviewed: 2026-10-25T02:07Z
 ---
 
 ## What it is

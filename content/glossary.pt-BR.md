@@ -1,7 +1,7 @@
 ---
 id: glossary
 lang: pt-BR
-source_hash: 9955ec7c58c9
+source_hash: 8435e59d7cf8
 title: Glossário
 ---
 
@@ -101,7 +101,7 @@ Todo leitor do wiki, sobretudo o [[giovanni]] e quem é novo no sistema.
 - **SM-2** (SuperMemo 2): um algoritmo inicial de repetição espaçada ([SuperMemo](https://en.wikipedia.org/wiki/SuperMemo)); veja [[spaced-repetition-scheduler]].
 - **Repetição espaçada**: um método de estudo em que o que você sabe volta após intervalos cada vez maiores ([repetição espaçada](https://en.wikipedia.org/wiki/Spaced_repetition)).
 - **SSH** (Secure Shell): uma forma criptografada de entrar em outro computador ([SSH](https://en.wikipedia.org/wiki/Secure_Shell)); veja [[remote-terminal]].
-- **Stale / desatualizado**: fora de data; uma página "pode estar desatualizada" quando sua fonte mudou ou passou tempo demais desde a revisão.
+- **Stale / desatualizado**: fora de data. Uma página com fontes está desatualizada quando uma delas mudou depois do `reviewed` da página; uma página sem fontes aparece como "pode estar desatualizada" 30 dias depois desse horário. Veja [[wiki-stale]].
 - **Linha de status**: a linha única no rodapé do terminal do Claude Code; veja [[pbar]].
 - **sudo**: o comando que executa outro comando com direitos de administrador.
 - **SVG** (Scalable Vector Graphics): um formato para desenhos feitos de formas, usado pelo mapa ([SVG](https://en.wikipedia.org/wiki/Scalable_Vector_Graphics)).

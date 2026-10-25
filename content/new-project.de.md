@@ -1,7 +1,7 @@
 ---
 id: new-project
 lang: de
-source_hash: 13e440ae47d0
+source_hash: ceeed30e6773
 title: Ein neues Projekt starten (Golden Path)
 ---
 
@@ -24,7 +24,7 @@ Ein neues Projekt-Repository auf [[github]].
 1. Brainstorming, was gewünscht ist, und Größe einschätzen ([[skill-brainstorming]]); ein Projekt bekommt ein schriftliches Entwurfsdokument, das Giovanni genehmigt.
 2. Giovanni wählt die Programmiersprache(n) ([[work-ask-language]]).
 3. `cp -r ~/dev/project-template ~/dev/NewProject`, dann ein frisches `git init -b main` ([[project-template]]).
-4. CLAUDE.md, Abschnitt 1 von DESIGN.md, die ersten Anforderungen samt Tests, die Gate-Schritte ([[template-quality-gate]]) und ADR-0002 für die Technik ausfüllen (ein ADR ist ein Architecture Decision Record, eine kurze Notiz, die eine Entscheidung und ihre Gründe festhält).
-5. Das private GitHub-Repository anlegen, pushen, prüfen, dass der erste CI-Lauf (Continuous Integration: automatische Prüfungen) grün ist, und die Labels `debt idea P1 P2 P3` anlegen ([[github]]).
+4. CLAUDE.md, Abschnitt 1 von DESIGN.md, die ersten Anforderungen samt Tests, die Gate-Schritte ([[template-quality-gate]]), die Grenzen in `pipeline-check.toml` ([[fitness-check]]) und ADR-0002 für die Technik ausfüllen (ein ADR ist ein Architecture Decision Record, eine kurze Notiz, die eine Entscheidung und ihre Gründe festhält).
+5. Das private GitHub-Repository anlegen, pushen, prüfen, dass der erste CI-Lauf (Continuous Integration: automatische Prüfungen) grün ist, die Labels `debt idea P1 P2 P3` anlegen ([[github]]) und die lokale Prüfung vor dem Push mit `git config core.hooksPath tools/hooks` einschalten ([[maintenance-pipeline]]).
 6. Vollständig bauen, dann den Debug-Durchgang der ersten Linie machen ([[skill-verification-before-completion]]).
 7. Die Seiten des Projekts in dieses Wiki aufnehmen ([[end-of-task]]).

@@ -1,12 +1,12 @@
 ---
 id: game-modes
 lang: pt-BR
-source_hash: 98486acd43c1
+source_hash: 0ccc7c1e2438
 title: Os cinco modos de jogo
 ---
 
 ## What it is
-São as cinco formas como o [[quizapp]] e o [[quizweb]] testam alemão de nível B2. Todas usam um conjunto fixo do que todo falante B2 deveria saber. Um "modo de jogo" é um tipo de pergunta.
+São as cinco formas como o [[quizapp]] e o [[quizweb]] testam alemão de nível B2. Todas usam um conjunto selecionado do que todo falante B2 deveria saber; o conjunto pode crescer sem atualizar o app ([[question-pack]]), e os números abaixo são os do conjunto embutido no app (versão de conteúdo 1). Um "modo de jogo" é um tipo de pergunta.
 
 ## What it does
 - **Der · Die · Das**: escolher o artigo (a palavra alemã para "o/a", que depende do gênero do substantivo) de 484 substantivos.

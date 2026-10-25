@@ -1,7 +1,7 @@
 ---
 id: maintenance-policy
 lang: de
-source_hash: a13b2e481871
+source_hash: e444782f41e5
 title: Wartungsrichtlinie (technische Schulden)
 ---
 
@@ -12,7 +12,7 @@ Das ist das Regelwerk, damit jedes Projekt gesund bleibt, während es sich über
 Sie definiert technische Schulden: alles, was heute funktioniert, die nächste Änderung aber langsamer oder riskanter macht ([technische Schulden](https://en.wikipedia.org/wiki/Technical_debt)). Schulden werden zu einem GitHub Issue (einer verfolgten Aufgabe) mit dem Label `debt` und einer Priorität von P1 (am dringendsten) bis P3; neue Funktionsideen nutzen das Label `idea`. Etwa eine von fünf Arbeitssitzungen gilt Schulden oder Vorsorge: Drehten sich die letzten vier Sitzungen nur um Funktionen, sagt Claude das und schlägt das wichtigste Schulden-Issue vor, und Giovanni entscheidet.
 
 ## How it does it
-Eine bei der Arbeit gefundene Einschränkung wird in derselben Sitzung zu einem Issue, und der Monats-Review prüft die Liste.
+Eine bei der Arbeit gefundene Einschränkung wird in derselben Sitzung zu einem Issue, und der Monats-Review prüft die Liste. Seit 2026-10-24 prüft ein Programm die Regeln: [[pipeline-check]] (in einem eigenen Repository, festgelegt in `pipeline-check.version`) führt das Gate, die Architekturregel und die Fitness-Grenzen aus, berechnet die DORA-Kennzahlen und schlägt fehl, wenn eine Grenze überschritten wird ([[maintenance-pipeline]]); bei einem privaten Repository eines kostenlosen GitHub-Tarifs, das die Prüfung nicht verlangen kann, ersetzt eine lokale Prüfung vor dem Push den Branch-Schutz.
 
 ## Where it sits in the pipeline
 Teil der Vorlage, in jedes Projekt kopiert.

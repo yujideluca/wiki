@@ -9,7 +9,7 @@ location: pipeline-check:src/traceability.rs
 fed_by: [quizapp-requirements, wiki-requirements]
 feeds: [quizapp-quality-gate, template-quality-gate]
 sources: [pipeline-check:src/traceability.rs]
-reviewed: 2026-10-22T16:33Z
+reviewed: 2026-10-24T22:03Z
 ---
 
 ## What it is

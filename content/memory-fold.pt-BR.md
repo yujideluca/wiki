@@ -1,7 +1,7 @@
 ---
 id: memory-fold
 lang: pt-BR
-source_hash: 169474e671bd
+source_hash: 80b7998a6f55
 title: A dobra (core.py)
 ---
 
@@ -12,7 +12,7 @@ title: A dobra (core.py)
 Para cada assunto (escopo mais key) vale a decisão mais recente; a mesma decisão repetida soma evidência; uma negação conta como mudança; `forget` e `done` encerram seu alvo; o feedback muda o destaque de uma entrada (`wrong` a tira do brief e a lista para o Giovanni revisar). Um evento do [[mem-harvester]] automático nunca sobrescreve as palavras do próprio Giovanni. Se dois escritores dão à mesma key textos diferentes em 24 horas, o resultado é um conflito que o Giovanni vê, não uma mescla silenciosa. Depois classifica as entradas para o brief: preferências nunca desbotam; os outros tipos desbotam com uma meia-vida (o tempo após o qual o peso cai pela metade): 180 dias para decisões e fatos, 7 dias para notas, esticada por cada uso informado ([[mem-use]]).
 
 ## How it does it
-O resultado não depende da ordem em que os eventos chegam e é [idempotente](https://en.wikipedia.org/wiki/Idempotence) (aplicar um duplicado não muda nada); as duas propriedades são testadas. Os eventos são ordenados por hora e depois id, e duplicados contam uma vez. A função `brief()` encaixa o resultado em um orçamento de cerca de 2.900 caracteres, cerca de 2,5 % de uma primeira rodada típica; o número foi calibrado com `scripts/calibrate.py`.
+O resultado não depende da ordem em que os eventos chegam e é [idempotente](https://en.wikipedia.org/wiki/Idempotence) (aplicar um duplicado não muda nada); as duas propriedades são testadas. Os eventos são ordenados por hora e depois id, e duplicados contam uma vez. A função `brief()` encaixa as entradas em um orçamento de 2.900 caracteres (`BRIEF_BUDGET`); com cerca de 1.100 caracteres de texto fixo de instruções, o resumo inteiro tem cerca de 4.000 caracteres, que são 2,5 % da primeira rodada mediana medida em 2026-10-19 (44.860 tokens); os números foram calibrados com `scripts/calibrate.py`.
 
 ## Where it sits in the pipeline
 Entre o [[events-log]] e tudo o que mostra memória.

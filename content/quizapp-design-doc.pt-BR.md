@@ -1,12 +1,12 @@
 ---
 id: quizapp-design-doc
 lang: pt-BR
-source_hash: 91ffb0551caa
+source_hash: 02fbcae7ef90
 title: DESIGN.md do QuizApp
 ---
 
 ## What it is
-O `DESIGN.md` é o documento de design vivo do [[quizapp]]: o que o app é, sua arquitetura (diagramas C4, uma forma de desenhar software em vários níveis de zoom, escritos em Mermaid), repetição espaçada, conteúdo, persistência, a interface de usuário (UI), idiomas, depurabilidade, testes e o registro de decisões. "Vivo" significa que é mantido em dia com o código.
+O `DESIGN.md` é o documento de design vivo do [[quizapp]]: o que o app é, seus objetivos de design, sua arquitetura (diagramas C4, uma forma de desenhar software em vários níveis de zoom, escritos em Mermaid), repetição espaçada, conteúdo, persistência, gerenciamento de cartas (suspender e remover cartas), a interface de usuário (UI), idiomas, depurabilidade, testes, o registro de decisões e as limitações conhecidas. "Vivo" significa que é mantido em dia com o código.
 
 ## What it does
 Explica como o app é construído e por quê. Cada linha do registro de decisões tem um Tipo tirado das categorias de manutenção da norma ISO/IEC/IEEE 14764: corretiva (consertar uma falha), adaptativa (ajustar a um ambiente que muda), perfectiva (melhorar), preventiva (preparar-se contra problemas futuros) ou inicial.

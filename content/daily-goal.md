@@ -9,7 +9,7 @@ location: QuizApp:core/src/main/java/dev/yuji/quiz/domain/DailyGoal.kt
 fed_by: [training-store]
 feeds: [study-view-model]
 sources: [QuizApp:core/src/main/java/dev/yuji/quiz/domain/DailyGoal.kt]
-reviewed: 2026-10-22T16:33Z
+reviewed: 2026-10-25T02:02Z
 ---
 
 ## What it is

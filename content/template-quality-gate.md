@@ -9,7 +9,7 @@ location: project-template:tools/quality_gate.sh
 fed_by: [check-traceability]
 feeds: [quizapp-quality-gate, wiki-quality-gate]
 sources: [project-template:tools/quality_gate.sh]
-reviewed: 2026-10-22T16:33Z
+reviewed: 2026-10-24T22:03Z
 ---
 
 ## What it is
@@ -19,7 +19,7 @@ A quality gate is one script that decides whether a project is "passing". This i
 It has three steps for each project to fill in: build and tests; requirement traceability, meaning every requirement has a test and every test points to a requirement ([[check-traceability]]); and fitness functions, which are automatic checks that the design has not drifted. It also fails if the gate takes longer than 1200 seconds, because a slow gate gets skipped, and a skipped gate protects nothing.
 
 ## How it does it
-It is a [Bash](https://www.gnu.org/software/bash/) script with `set -euo pipefail` (stop at the first error), where each step is a command that exits with a non-zero code (the number a program returns to say something went wrong) on failure. The CI workflow (`.github/workflows/quality-gate.yml`) runs exactly this script.
+It is a [Bash](https://www.gnu.org/software/bash/) script with `set -euo pipefail` (stop at the first error), where each step is a command that exits with a non-zero code (the number a program returns to say something went wrong) on failure. The CI workflow (`.github/workflows/quality-gate.yml`) runs exactly this script. Steps 2 and 3 call the runner `tools/pipeline-check.sh` of [[pipeline-check]]: `--traceability` for the requirement check, which also fails when the regenerated `docs/TRACEABILITY.md` differs from the committed one, and `--measure-only` for the fitness limits written in `pipeline-check.toml`.
 
 ## Where it sits in the pipeline
 Copied into each new project ([[new-project]]).

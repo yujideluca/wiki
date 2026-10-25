@@ -1,12 +1,12 @@
 ---
 id: game-modes
 lang: de
-source_hash: 98486acd43c1
+source_hash: 0ccc7c1e2438
 title: Die fünf Spielmodi
 ---
 
 ## What it is
-Das sind die fünf Arten, wie [[quizapp]] und [[quizweb]] Deutsch auf B2-Niveau abfragen. Alle greifen auf einen festen Pool dessen zurück, was jeder B2-Sprecher wissen sollte. Ein „Spielmodus“ ist eine Art von Frage.
+Das sind die fünf Arten, wie [[quizapp]] und [[quizweb]] Deutsch auf B2-Niveau abfragen. Alle greifen auf einen kuratierten Pool dessen zurück, was jeder B2-Sprecher wissen sollte; der Pool kann ohne App-Update wachsen ([[question-pack]]), und die Zahlen unten sind die des in die App eingebauten Pools (Inhaltsversion 1). Ein „Spielmodus“ ist eine Art von Frage.
 
 ## What it does
 - **Der · Die · Das**: den Artikel von 484 Nomen wählen (der Artikel hängt vom Geschlecht des Nomens ab).

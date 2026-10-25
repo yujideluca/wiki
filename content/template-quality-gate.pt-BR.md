@@ -1,7 +1,7 @@
 ---
 id: template-quality-gate
 lang: pt-BR
-source_hash: cfef1c6bbef4
+source_hash: e7b52f9b0ce2
 title: Portão de qualidade do modelo
 ---
 
@@ -12,7 +12,7 @@ Um portão de qualidade (quality gate) é um script que decide se um projeto est
 Tem três passos para cada projeto preencher: build e testes; rastreabilidade de requisitos, isto é, todo requisito tem um teste e todo teste aponta para um requisito ([[check-traceability]]); e funções de aptidão (fitness functions), verificações automáticas de que o design não se desviou. Também falha se o portão demorar mais de 1200 segundos, porque um portão lento acaba pulado, e um portão pulado não protege nada.
 
 ## How it does it
-É um script [Bash](https://www.gnu.org/software/bash/) com `set -euo pipefail` (parar no primeiro erro), em que cada passo é um comando que termina com código diferente de zero (o número que um programa devolve para dizer que algo deu errado) em caso de falha. O workflow de CI (`.github/workflows/quality-gate.yml`) executa exatamente este script.
+É um script [Bash](https://www.gnu.org/software/bash/) com `set -euo pipefail` (parar no primeiro erro), em que cada passo é um comando que termina com código diferente de zero (o número que um programa devolve para dizer que algo deu errado) em caso de falha. O workflow de CI (`.github/workflows/quality-gate.yml`) executa exatamente este script. Os passos 2 e 3 chamam o executor `tools/pipeline-check.sh` do [[pipeline-check]]: `--traceability` para a verificação de requisitos, que também falha quando o `docs/TRACEABILITY.md` regenerado difere do versionado, e `--measure-only` para os limites de aptidão de `pipeline-check.toml`.
 
 ## Where it sits in the pipeline
 Copiado para cada novo projeto ([[new-project]]).

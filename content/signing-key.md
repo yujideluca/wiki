@@ -8,8 +8,8 @@ status: active
 location: home:.android
 fed_by: []
 feeds: [publish-apk]
-sources: [home:.android]
-reviewed: 2026-10-22T16:33Z
+sources: [home:.android/german-quiz-release.jks, home:.android/german-quiz-signing.properties]
+reviewed: 2026-10-25T02:07Z
 ---
 
 ## What it is

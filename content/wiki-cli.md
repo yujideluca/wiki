@@ -9,7 +9,7 @@ location: wiki:server/lib/wiki/cli.ex
 fed_by: [wiki-build, wiki-check, wiki-stale]
 feeds: [github]
 sources: [wiki:server/lib/wiki/cli.ex]
-reviewed: 2026-10-22T16:33Z
+reviewed: 2026-10-24T21:57Z
 ---
 
 ## What it is
@@ -30,6 +30,6 @@ Called at [[end-of-task]], before `mem use`.
 ## Functions
 - `wiki check [--local]`: validate the content
 - `wiki build`: content → site/data, Elm → site/assets
-- `wiki stale` ([[wiki-stale]]): pages whose sources changed after the page
+- `wiki stale` ([[wiki-stale]]): pages with a source changed after their reviewed time; exits 1 when it lists any
 - `wiki publish -m "msg"`: check --local, build, commit only content/, push
 - `wiki hook-stop`: the Claude Code Stop hook

@@ -1,7 +1,7 @@
 ---
 id: quizapp-release
 lang: pt-BR
-source_hash: d6c9e37ef648
+source_hash: d521404b4214
 title: Lançamento do QuizApp (beta → estável)
 ---
 
@@ -27,6 +27,6 @@ O Giovanni, no [[phone]].
 4. O [[quizapp-quality-gate]] passa localmente; push; a [[quizapp-ci]] precisa estar verde.
 5. O [[publish-apk]] publica um beta no branch `bleeding-edge` do [[release-feed]] (um APK, Android Package, é o arquivo instalável do app).
 6. O [[update-client]] do app beta oferece a atualização; o Giovanni a experimenta.
-7. `publish_apk.sh promote` (o portão com [[mutation-check]] e [[check-tests-updated]]) a leva ao `main` estável quando o Giovanni decide.
+7. `publish_apk.sh promote` (o portão com [[mutation-check]] e [[check-tests-updated]]) publica o app estável no `main` quando o Giovanni decide, e só se o `bleeding-edge` tiver exatamente este commit.
 8. A portabilidade do [[quizweb]] que espera no branch `web-<versão>` é mesclada ao `main`.
 9. Só perguntas novas não precisam de APK: editar os arquivos TSV (valores separados por tabulação), executar o [[build-vocab]], commitar, depois [[publish-content]] `beta` e, quando o Giovanni disser, `promote`.

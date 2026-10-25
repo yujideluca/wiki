@@ -9,7 +9,7 @@ location: processing-sketches:
 fed_by: []
 feeds: []
 sources: [processing-sketches:drachenkurve, processing-sketches:drachenfraktal]
-reviewed: 2026-10-22T16:33Z
+reviewed: 2026-10-25T02:05Z
 ---
 
 ## What it is

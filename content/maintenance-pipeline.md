@@ -8,7 +8,7 @@ status: active
 fed_by: []
 feeds: []
 sources: [QuizApp:docs/2026-10-24-pipeline-check-design.md, QuizApp:docs/adr/0013-program-measures-skill-judges.md]
-reviewed: 2026-10-24T12:43Z
+reviewed: 2026-10-24T22:03Z
 ---
 
 ## What it is
@@ -18,7 +18,7 @@ This is the way Giovanni's software projects are kept maintainable: a program me
 It turns the rules of [[maintenance-policy]] into something a machine enforces: the CI job (continuous integration, automatic checks on every push) fails on a `falha` (failure), and the monthly review reads the same numbers instead of measuring by hand.
 
 ## How it does it
-[[pipeline-check]] runs in CI and on the laptop; [[skill-revisao-manutencao]] reads its report. To really block a merge, GitHub's branch protection must require the CI job, and only Giovanni changes that. On a private repository of a free GitHub plan this protection is not available (GitHub answers with error 403), so a local pre-push check (`pipeline-check --pre-push`, enabled with `git config core.hooksPath tools/hooks`) stops the push of `main` when a check fails. Giovanni chose the local check on 2026-10-24. It was first applied to [[quizapp]], then copied to the other projects and to [[project-template]].
+[[pipeline-check]] runs in CI and on the laptop; [[skill-revisao-manutencao]] reads its report. The program is not copied into projects: it lives in its own repository, `yujideluca/pipeline-check`, and each project pins a version in `pipeline-check.version`. To really block a merge, GitHub's branch protection must require the CI job, and only Giovanni changes that. On a private repository of a free GitHub plan this protection is not available (GitHub answers with error 403), so a local pre-push check (`pipeline-check --pre-push`, enabled with `git config core.hooksPath tools/hooks`) stops the push of `main` when a check fails. Giovanni chose the local check on 2026-10-24. It was first applied to [[quizapp]], then copied to the other projects and to [[project-template]].
 
 ## Where it sits in the pipeline
 Between every push and the monthly review: [[quizapp-ci]], then [[monthly-architecture-review]].

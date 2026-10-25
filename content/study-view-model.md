@@ -9,7 +9,7 @@ location: QuizApp:app/src/main/java/dev/yuji/quiz/ui/StudyViewModel.kt
 fed_by: [activity-calendar, daily-goal, question-pool-updater, settings-store, study-controller]
 feeds: [phone]
 sources: [QuizApp:app/src/main/java/dev/yuji/quiz/ui/StudyViewModel.kt, QuizApp:app/src/main/java/dev/yuji/quiz/ui/Screens.kt]
-reviewed: 2026-10-22T16:33Z
+reviewed: 2026-10-25T02:03Z
 ---
 
 ## What it is
@@ -19,7 +19,7 @@ A [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmod
 It turns the results of the [[study-controller]] into what the screens show: the home screen (calendar, daily goal, mode cards), the question with feedback (green or red, the explanation, automatic advance after 0.5 s except in Fehler finden), the settings and the update popup.
 
 ## How it does it
-It survives the recreation of the screen that happens when the language is changed. Text that it produces itself goes through its `t()` helper, which picks the right language. The screens scale with the screen height (`ScreenScale`), and a "screen-fit" test checks that nothing is hidden below the fold on tall phones.
+It survives the recreation of the screen that happens when the language is changed. Text that it produces itself goes through its `t()` helper, which picks the right language. The `UiState` types live in `UiState.kt` and the update flow (asking the feed, the popup, downloading the APK, Android Package, the installable app file) in `AppUpdater.kt`, so the view model stays under 300 lines; a question pool downloaded by the update flow is handed back to it, and it decides when the deck may be replaced ([[question-pool-updater]]). The screens scale with the screen height (`ScreenScale`), and a "screen-fit" test checks that nothing is hidden below the fold on tall phones.
 
 ## Where it sits in the pipeline
 The top of the app: `ui → StudyController`.

@@ -8,7 +8,7 @@ status: active
 fed_by: [skill-brainstorming]
 feeds: []
 sources: [project-template:README.md]
-reviewed: 2026-10-22T16:33Z
+reviewed: 2026-10-24T22:03Z
 ---
 
 ## What it is
@@ -30,7 +30,7 @@ A new project repository on [[github]].
 1. Brainstorm what is wanted and size it ([[skill-brainstorming]]); a project gets a written design document that Giovanni approves.
 2. Giovanni chooses the programming language(s) ([[work-ask-language]]).
 3. `cp -r ~/dev/project-template ~/dev/NewProject`, then a fresh `git init -b main` ([[project-template]]).
-4. Fill in CLAUDE.md, section 1 of DESIGN.md, the first requirements and their tests, the gate steps ([[template-quality-gate]]) and ADR-0002 for the technology (an ADR is an architecture decision record, a short note that records a decision and its reasons).
-5. Create the private GitHub repository, push, check that the first CI run (continuous integration: automatic checks) is green, and create the labels `debt idea P1 P2 P3` ([[github]]).
+4. Fill in CLAUDE.md, section 1 of DESIGN.md, the first requirements and their tests, the gate steps ([[template-quality-gate]]), the limits in `pipeline-check.toml` ([[fitness-check]]) and ADR-0002 for the technology (an ADR is an architecture decision record, a short note that records a decision and its reasons).
+5. Create the private GitHub repository, push, check that the first CI run (continuous integration: automatic checks) is green, create the labels `debt idea P1 P2 P3` ([[github]]), and turn on the local pre-push check with `git config core.hooksPath tools/hooks` ([[maintenance-pipeline]]).
 6. Build end to end, then do the first-line debug pass ([[skill-verification-before-completion]]).
 7. Add the project's pages to this wiki ([[end-of-task]]).

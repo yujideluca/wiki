@@ -1,7 +1,7 @@
 ---
 id: maintenance-policy
 lang: pt-BR
-source_hash: a13b2e481871
+source_hash: e444782f41e5
 title: Política de manutenção (dívida técnica)
 ---
 
@@ -12,7 +12,7 @@ title: Política de manutenção (dívida técnica)
 Define dívida técnica: tudo o que funciona hoje, mas torna a próxima mudança mais lenta ou arriscada ([dívida técnica](https://en.wikipedia.org/wiki/Technical_debt)). A dívida vira uma issue do GitHub (uma tarefa rastreada) com o rótulo `debt` e uma prioridade de P1 (mais urgente) a P3; ideias de novas funções usam o rótulo `idea`. Cerca de uma em cada cinco sessões de trabalho vai para dívida ou prevenção: quando as últimas quatro sessões foram só de funcionalidades, o Claude avisa e propõe a principal issue de dívida, e o Giovanni decide.
 
 ## How it does it
-Uma limitação encontrada durante o trabalho vira uma issue na mesma sessão, e a revisão mensal confere a lista.
+Uma limitação encontrada durante o trabalho vira uma issue na mesma sessão, e a revisão mensal confere a lista. Desde 2026-10-24 um programa verifica as regras: o [[pipeline-check]] (em repositório próprio, fixado em `pipeline-check.version`) roda o portão, a regra de arquitetura e os limites de aptidão, calcula os números DORA e falha quando um limite é ultrapassado ([[maintenance-pipeline]]); em um repositório privado de um plano gratuito do GitHub, que não pode exigir a verificação, uma verificação local antes do push substitui a proteção de branch.
 
 ## Where it sits in the pipeline
 Parte do modelo, copiada para cada projeto.

@@ -9,7 +9,7 @@ location: project-template:docs/MAINTENANCE.md
 fed_by: []
 feeds: [monthly-architecture-review]
 sources: [project-template:docs/MAINTENANCE.md]
-reviewed: 2026-10-22T16:33Z
+reviewed: 2026-10-24T22:03Z
 ---
 
 ## What it is
@@ -19,7 +19,7 @@ This is the rulebook for keeping every project healthy as it changes over time (
 It defines technical debt: anything that works today but makes the next change slower or riskier ([technical debt](https://en.wikipedia.org/wiki/Technical_debt)). Debt becomes a GitHub Issue (a tracked task) with the label `debt` and a priority from P1 (most urgent) to P3; new feature ideas use the label `idea`. About one work session in five goes to debt or prevention: when the last four sessions were all about features, Claude says so and proposes the top debt issue, and Giovanni decides.
 
 ## How it does it
-A limitation found while working becomes an issue in the same session, and the monthly review checks the list.
+A limitation found while working becomes an issue in the same session, and the monthly review checks the list. Since 2026-10-24 a program checks the rules: [[pipeline-check]] (in its own repository, pinned in `pipeline-check.version`) runs the gate, the architecture rule and the fitness limits, computes the DORA figures and fails when a limit is crossed ([[maintenance-pipeline]]); on a private repository of a free GitHub plan, which cannot require the check, a local pre-push check stands in for branch protection.
 
 ## Where it sits in the pipeline
 Part of the template, copied into each project.

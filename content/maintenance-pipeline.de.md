@@ -1,7 +1,7 @@
 ---
 id: maintenance-pipeline
 lang: de
-source_hash: 6ae9643d1ebb
+source_hash: 578c1e89a7b3
 title: Wartungs-Pipeline (erst messen, dann urteilen)
 ---
 
@@ -12,7 +12,7 @@ So werden Giovannis Softwareprojekte wartbar gehalten: Ein Programm misst und bl
 Sie macht die Regeln aus [[maintenance-policy]] zu etwas, das eine Maschine durchsetzt: Der CI-Auftrag (Continuous Integration, automatische Prüfungen bei jedem Push) schlägt bei einer `falha` (Fehlschlag) fehl, und der Monats-Review liest dieselben Zahlen, statt von Hand zu messen.
 
 ## How it does it
-[[pipeline-check]] läuft in der CI und auf dem Laptop; [[skill-revisao-manutencao]] liest seinen Bericht. Um einen Merge wirklich zu blockieren, muss der Branch-Schutz von GitHub den CI-Auftrag verlangen, und das ändert nur Giovanni. Bei einem privaten Repository eines kostenlosen GitHub-Tarifs ist dieser Schutz nicht verfügbar (GitHub antwortet mit Fehler 403); deshalb stoppt eine lokale Prüfung vor dem Push (`pipeline-check --pre-push`, aktiviert mit `git config core.hooksPath tools/hooks`) den Push von `main`, wenn eine Prüfung fehlschlägt. Giovanni hat die lokale Prüfung am 2026-10-24 gewählt. Sie wurde zuerst auf [[quizapp]] angewandt, dann in die anderen Projekte und nach [[project-template]] kopiert.
+[[pipeline-check]] läuft in der CI und auf dem Laptop; [[skill-revisao-manutencao]] liest seinen Bericht. Das Programm wird nicht in Projekte kopiert: Es lebt in einem eigenen Repository, `yujideluca/pipeline-check`, und jedes Projekt legt in `pipeline-check.version` eine Version fest. Um einen Merge wirklich zu blockieren, muss der Branch-Schutz von GitHub den CI-Auftrag verlangen, und das ändert nur Giovanni. Bei einem privaten Repository eines kostenlosen GitHub-Tarifs ist dieser Schutz nicht verfügbar (GitHub antwortet mit Fehler 403); deshalb stoppt eine lokale Prüfung vor dem Push (`pipeline-check --pre-push`, aktiviert mit `git config core.hooksPath tools/hooks`) den Push von `main`, wenn eine Prüfung fehlschlägt. Giovanni hat die lokale Prüfung am 2026-10-24 gewählt. Sie wurde zuerst auf [[quizapp]] angewandt, dann in die anderen Projekte und nach [[project-template]] kopiert.
 
 ## Where it sits in the pipeline
 Zwischen jedem Push und dem Monats-Review: [[quizapp-ci]], dann [[monthly-architecture-review]].

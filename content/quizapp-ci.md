@@ -9,7 +9,7 @@ location: QuizApp:.github/workflows/quality-gate.yml
 fed_by: [quizapp-quality-gate, pipeline-check]
 feeds: [github]
 sources: [QuizApp:.github/workflows/quality-gate.yml]
-reviewed: 2026-10-22T16:33Z
+reviewed: 2026-10-24T22:03Z
 ---
 
 ## What it is

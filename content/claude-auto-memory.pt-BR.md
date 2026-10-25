@@ -1,7 +1,7 @@
 ---
 id: claude-auto-memory
 lang: pt-BR
-source_hash: cd7b746e912a
+source_hash: e61a27c84d0d
 title: Auto-memória do Claude Code
 ---
 
@@ -9,7 +9,7 @@ title: Auto-memória do Claude Code
 O Claude Code tem uma pequena memória própria, separada da compartilhada. É uma pasta de arquivos de texto curtos, um fato por arquivo, mais um arquivo de índice chamado `MEMORY.md`. É usada em conversas iniciadas na pasta pessoal, e o índice é carregado no começo de cada uma delas. Essa é a "auto-memory" descrita no [guia de memória do Claude Code](https://docs.claude.com/en/docs/claude-code/memory).
 
 ## What it does
-Guarda notas que só importam neste notebook: como verificar o assistente remoto, o projeto German Quiz, onde estão instaladas as ferramentas de espaço de usuário, a regra de que o código deve ser depurado antes de ser dado como pronto, o fato de que um certo aviso sobre uma skill de conversação em alemão não é para o Claude Code, e o fato de que o pipeline antigo foi desativado.
+Guarda notas que só importam neste notebook: como verificar o assistente remoto, o projeto German Quiz, onde estão instaladas as ferramentas de espaço de usuário, a regra de que o código deve ser depurado antes de ser dado como pronto, o fato de que um certo aviso sobre uma skill de conversação em alemão não é para o Claude Code, e o fato de que o serviço de atalhos globais da área de trabalho vive dentro do gerenciador de janelas (kwin), de modo que uma mensagem errada enviada a ele pelo DBus (o sistema que os programas da área de trabalho usam para conversar entre si) pode derrubar o programa que desenha a área de trabalho.
 
 ## How it does it
 O próprio Claude Code escreve esses arquivos, em um formato fixo (um pequeno cabeçalho, o fato, por que importa, como aplicar). Regras que precisam ser compartilhadas entre todas as instâncias do Claude não ficam aqui; vão para a memória compartilhada [[workflow-memory]].

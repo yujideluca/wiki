@@ -1,7 +1,7 @@
 ---
 id: wiki-hook-stop
 lang: pt-BR
-source_hash: 199f7cc67cef
+source_hash: c02e4a0d2dd4
 title: Hook Stop do wiki (rede de segurança)
 ---
 
@@ -12,7 +12,7 @@ Um "hook Stop" é um pequeno programa que o [[claude-code]] executa automaticame
 Quando o Claude termina uma rodada, ele olha os repositórios sob `~/dev` que alguma página do wiki cita como fonte. Se desde o último `wiki publish` houve commits que tocaram fontes de uma página, ou arquivos novos que nenhuma página cobre, ele bloqueia o término (código de saída 2) e diz ao Claude quais páginas atualizar. Nunca bloqueia antes da primeira publicação, para repositórios que o wiki não cobre, duas vezes na mesma sessão pelas mesmas mudanças, nem quando um hook Stop já está ativo, então não pode entrar em laço. Nunca dispara em conversas em alemão, clínicas ou outras sem código.
 
 ## How it does it
-Usa git somente de leitura e guarda seu estado em `~/.local/state/wiki/` (o momento da última publicação e as sessões já bloqueadas). Pastas de dados que mudam o tempo todo (eventos e visões da memória, backups do quiz, o feed de lançamentos) estão listadas em `content/_ignore.txt` e não são vigiadas arquivo a arquivo. Se nenhuma página precisa mudar, o Claude ainda executa `wiki publish -m "review: no page change"` para registrar que conferiu.
+Usa git somente de leitura e guarda seu estado em `~/.local/state/wiki/` (o momento da última publicação e as sessões já bloqueadas). Pastas de dados que mudam o tempo todo (eventos e visões da memória, backups do quiz, o feed de lançamentos) estão listadas em `content/_ignore.txt` e não são vigiadas arquivo a arquivo. A mensagem que ele imprime diz ao Claude para registrar uma página que conferiu e achou certa definindo o `reviewed` dela (a edição é a revisão, veja [[wiki-stale]]), e para rodar `wiki publish -m "review: no page change"` só quando o que mudou não é descrito por nenhuma página, por exemplo um arquivo de dados.
 
 ## Where it sits in the pipeline
 Roda no fim de cada rodada, ao lado do [[hook-stop]] da memória.
@@ -21,4 +21,4 @@ Roda no fim de cada rodada, ao lado do [[hook-stop]] da memória.
 O [[claude-code]] (a mensagem).
 
 ## Notes
-O `wiki stale` e este hook respondem a duas perguntas diferentes, por isso podem discordar. O `wiki stale` pergunta, página por página: "algum arquivo de origem recebeu um commit (uma mudança salva no git) depois do último commit da própria página?" O hook pergunta: "desde o último `wiki publish`, algum projeto recebeu commits que tocam as origens de uma página ou acrescentam arquivos que nenhuma página cobre?" Como o `wiki stale` olha para horários de commit e não para o que a página diz, qualquer commit posterior da página (por exemplo uma reescrita de muitas páginas, ou uma publicação) a faz parecer em dia mesmo que o texto não acompanhe a mudança; ele também nunca lista arquivos novos que nenhuma página cobre. O hook compara com o horário da última publicação e por isso ainda vê essas mudanças, mas um `wiki publish -m "review: no page change"` o silencia para elas, estejam as páginas certas ou não. As páginas não têm data de revisão própria (nenhuma das 139 páginas com origens tem o campo `reviewed:`), então a wiki não distingue "revisada e correta" de "tocada". Quando o hook aponta uma página que o `wiki stale` considera em dia, leia o `git log` do repositório de origem desde a última mudança da página e compare com o texto da página.
+O `wiki stale` e este hook respondem a duas perguntas diferentes, por isso uma página pode ser listada por um e não pelo outro. O `wiki stale` pergunta, página por página: "uma fonte mudou depois do horário em que a página diz ter sido conferida pela última vez (o campo `reviewed`)?" Ele não depende de publicar. O hook pergunta: "desde o último `wiki publish`, algum projeto ganhou commits que tocam as fontes de uma página ou adicionou arquivos que nenhuma página cobre?" Ele é a rede de segurança para o que o `wiki stale` não consegue ver: uma mudança no mesmo minuto de uma revisão, um arquivo novo que nenhuma página cita e o trabalho da sessão atual. Quando o hook aponta uma página, leia o `git log` do repositório da fonte e compare com o texto da página; se a página está certa, defina o `reviewed` dela. Antes de 2026-10-24 o `wiki stale` comparava o horário do commit da fonte com o do arquivo da página, então reescrever muitas páginas escondia toda mudança anterior e este hook era a única coisa que ainda as via (veja [[wiki-stale]]).

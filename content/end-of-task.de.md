@@ -1,7 +1,7 @@
 ---
 id: end-of-task
 lang: de
-source_hash: 9b32b66ea893
+source_hash: 883c3c32604a
 title: Ende einer Aufgabe (Wiki-Aktualisierungskette)
 ---
 
@@ -22,7 +22,7 @@ Der Wiki-Inhalt ([[wiki-content]]), [[github]] (wo das Wiki gespeichert ist) und
 
 ## Steps
 1. Die Arbeit der Aufgabe ist erledigt und durch ausgeführte Prüfungen belegt ([[skill-verification-before-completion]]).
-2. Claude aktualisiert oder erstellt die englischen Seiten in `~/dev/wiki/content` für das, was sich geändert hat, danach die deutschen und brasilianisch-portugiesischen Fassungen ([[wiki-content]]).
+2. Claude aktualisiert oder erstellt die englischen Seiten in `~/dev/wiki/content` für das, was sich geändert hat, danach die deutschen und brasilianisch-portugiesischen Fassungen ([[wiki-content]]). Eine Seite, die mit ihren Quellen verglichen und für richtig befunden wurde, bekommt ihren `reviewed`-Zeitpunkt auf die aktuelle UTC-Zeit gesetzt; das nimmt sie in [[wiki-stale]] aus der Liste.
 3. Alles, was die Seitenschwelle überschritten hat, bekommt eine eigene Seite (die Beförderungsregel, durchgesetzt von [[wiki-check]]).
 4. `wiki publish -m "…"` prüft den Inhalt, baut die Seite, committet nur den Ordner `content/` und lädt ihn hoch ([[wiki-cli]]).
 5. Die Live-Seite liefert die neuen Daten sofort aus ([[wiki-site]], [[wiki-router]]).

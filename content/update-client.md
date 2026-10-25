@@ -9,7 +9,7 @@ location: QuizApp:app/src/main/java/dev/yuji/quiz/data/UpdateClient.kt
 fed_by: [release-channels, release-feed]
 feeds: [apk-installer, question-pool-updater]
 sources: [QuizApp:app/src/main/java/dev/yuji/quiz/data/UpdateClient.kt, QuizApp:core/src/main/java/dev/yuji/quiz/domain/AppUpdate.kt, QuizApp:app/src/main/java/dev/yuji/quiz/ui/UpdatePrompt.kt]
-reviewed: 2026-10-22T16:33Z
+reviewed: 2026-10-25T02:02Z
 ---
 
 ## What it is

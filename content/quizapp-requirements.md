@@ -9,7 +9,7 @@ location: QuizApp:docs/REQUIREMENTS.md
 fed_by: []
 feeds: [check-traceability]
 sources: [QuizApp:docs/REQUIREMENTS.md, QuizApp:docs/TESTING.md, QuizApp:core/src/test, QuizApp:app/src/test]
-reviewed: 2026-10-22T16:33Z
+reviewed: 2026-10-25T02:04Z
 ---
 
 ## What it is

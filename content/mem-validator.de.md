@@ -1,7 +1,7 @@
 ---
 id: mem-validator
 lang: de
-source_hash: e43dcc2da722
+source_hash: cef217f52476
 title: Validator und Quarantäne (validate.py)
 ---
 
@@ -12,7 +12,7 @@ Der Validator ist der Datenschutz- und Formatwächter des Gedächtnisses, egal w
 Er weist Tokens und Schlüssel, E-Mail-Adressen, Telefonnummern, CPF-Nummern und fehlerhafte Ereignisse zurück. Eine abgelehnte Datei wird mit einer `.reason`-Notiz in den Ordner `quarantine/` verschoben und erscheint in der Prüfdatei. Einen Filter für Gesundheitsvokabular gibt es bewusst nicht (Giovannis Entscheidung vom 2026-10-19); klinische Daten über andere Personen nicht zu speichern ist eine dauerhafte Regel, der Claude folgt, keine automatische Prüfung.
 
 ## How it does it
-Die Funktion `check_event` prüft ein Ereignis, `load_checked` trennt gültige von ungültigen Ereignissen, und `quarantine` verschiebt die schlechten. Getestet wird er durch `test_privacy_boundary`.
+Die Funktion `check_event` prüft ein Ereignis, `load_checked` trennt gültige von ungültigen Ereignissen, und `quarantine` verschiebt die schlechten. Getestet wird er durch `test_privacy_boundary` und durch die Fehlersuch-Tests in `tests/test_bughunt.py`; die Token-Muster umfassen fein granulare GitHub-Tokens, GitLab-Tokens und Google-API-Schlüssel (API: Programmierschnittstelle), und Telefonnummern werden auch in der internationalen Form erkannt.
 
 ## Where it sits in the pipeline
 Vor jedem Schreiben durch [[mem]] und auf GitHub in [[mem-action]].

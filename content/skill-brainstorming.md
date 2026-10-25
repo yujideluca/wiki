@@ -9,7 +9,7 @@ location: home:.claude/skills/brainstorming
 fed_by: []
 feeds: [new-project]
 sources: [home:.claude/skills/brainstorming/SKILL.md]
-reviewed: 2026-10-22T16:33Z
+reviewed: 2026-10-25T02:07Z
 ---
 
 ## What it is

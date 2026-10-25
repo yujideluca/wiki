@@ -1,7 +1,7 @@
 ---
 id: maintenance-pipeline
 lang: pt-BR
-source_hash: 6ae9643d1ebb
+source_hash: 578c1e89a7b3
 title: Pipeline de manutenção (medir, depois julgar)
 ---
 
@@ -12,7 +12,7 @@ title: Pipeline de manutenção (medir, depois julgar)
 Transforma as regras da [[maintenance-policy]] em algo que uma máquina aplica: a tarefa de CI (integração contínua, verificações automáticas a cada push) falha diante de uma `falha`, e a revisão mensal lê os mesmos números em vez de medir à mão.
 
 ## How it does it
-O [[pipeline-check]] roda na CI e no notebook; a [[skill-revisao-manutencao]] lê o relatório dele. Para realmente bloquear um merge, a proteção de branch do GitHub precisa exigir a tarefa de CI, e só o Giovanni muda isso. Em um repositório privado de um plano gratuito do GitHub essa proteção não está disponível (o GitHub responde com erro 403), então uma verificação local antes do push (`pipeline-check --pre-push`, ativada com `git config core.hooksPath tools/hooks`) impede o push do `main` quando uma verificação falha. O Giovanni escolheu a verificação local em 2026-10-24. Foi aplicada primeiro ao [[quizapp]], depois copiada para os outros projetos e para o [[project-template]].
+O [[pipeline-check]] roda na CI e no notebook; a [[skill-revisao-manutencao]] lê o relatório dele. O programa não é copiado para os projetos: vive em um repositório próprio, `yujideluca/pipeline-check`, e cada projeto fixa uma versão em `pipeline-check.version`. Para realmente bloquear um merge, a proteção de branch do GitHub precisa exigir a tarefa de CI, e só o Giovanni muda isso. Em um repositório privado de um plano gratuito do GitHub essa proteção não está disponível (o GitHub responde com erro 403), então uma verificação local antes do push (`pipeline-check --pre-push`, ativada com `git config core.hooksPath tools/hooks`) impede o push do `main` quando uma verificação falha. O Giovanni escolheu a verificação local em 2026-10-24. Foi aplicada primeiro ao [[quizapp]], depois copiada para os outros projetos e para o [[project-template]].
 
 ## Where it sits in the pipeline
 Entre cada push e a revisão mensal: [[quizapp-ci]], depois [[monthly-architecture-review]].

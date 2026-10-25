@@ -9,7 +9,7 @@ location: wiki:server/lib/wiki/content/stale.ex
 fed_by: [claude-code-settings]
 feeds: [claude-code]
 sources: [wiki:server/lib/wiki/content/stale.ex]
-reviewed: 2026-10-22T16:33Z
+reviewed: 2026-10-25T02:11Z
 ---
 
 ## What it is
@@ -19,7 +19,7 @@ A "Stop hook" is a small program that [[claude-code]] runs automatically wheneve
 When Claude finishes a turn, it looks at the repositories under `~/dev` that some wiki page names as a source. If since the last `wiki publish` there are commits that touched a page's sources, or added files that no page covers, it blocks the stop (exit code 2) and tells Claude which pages to update. It never blocks before the first publish, for repositories the wiki does not cover, twice in one session for the same changes, or when a stop hook is already active, so it cannot loop. It never fires for German, clinical or other non-code chats.
 
 ## How it does it
-It uses read-only git, and keeps its state in `~/.local/state/wiki/` (the time of the last publish and the sessions already blocked). Data folders that change all the time (the memory events and views, quiz backups, the release feed) are listed in `content/_ignore.txt` and are not watched file by file. If no page needs to change, Claude still runs `wiki publish -m "review: no page change"` to record that it checked.
+It uses read-only git, and keeps its state in `~/.local/state/wiki/` (the time of the last publish and the sessions already blocked). Data folders that change all the time (the memory events and views, quiz backups, the release feed) are listed in `content/_ignore.txt` and are not watched file by file. The message it prints tells Claude to record a page it checked and found right by setting that page's `reviewed` time (the edit is the review, see [[wiki-stale]]), and to run `wiki publish -m "review: no page change"` only when what changed is described by no page, for example a data file.
 
 ## Where it sits in the pipeline
 It runs at the end of every turn, next to the memory's [[hook-stop]].
@@ -28,4 +28,4 @@ It runs at the end of every turn, next to the memory's [[hook-stop]].
 [[claude-code]] (the message).
 
 ## Notes
-`wiki stale` and this hook answer two different questions, so they can disagree. `wiki stale` asks, page by page: "did a source file get a commit (a saved change in git) after the page's own last commit?" The hook asks: "since the last `wiki publish`, did a project get commits that touch a page's sources, or add files no page covers?" Because `wiki stale` looks at commit times, not at what the page says, any later commit of the page (for example a rewrite of many pages, or a publish) makes it look fresh even if the text misses the change; it also never lists new files that no page covers. The hook compares with the time of the last publish, so it still sees those changes, but a `wiki publish -m "review: no page change"` silences it for them whether or not the pages are right. Pages do not carry a per-page review date (none of the 139 pages with sources has a `reviewed:` field), so the wiki cannot tell "reviewed and correct" from "touched". When the hook flags a page that `wiki stale` calls fresh, read the `git log` of the source repository since the page last changed and compare it with the page text.
+`wiki stale` and this hook answer two different questions, so a page can be listed by one and not by the other. `wiki stale` asks, page by page: "did a source change after the time the page says it was last checked (its `reviewed` field)?" It does not depend on publishing. The hook asks: "since the last `wiki publish`, did a project get commits that touch a page's sources, or add files no page covers?" It is the safety net for what `wiki stale` cannot see: a change in the same minute as a review, a new file that no page names, and the work of the current session. When the hook flags a page, read the `git log` of the source repository and compare it with the page text; if the page is right, set its `reviewed` time. Before 2026-10-24 `wiki stale` compared the commit time of the source with that of the page file, so a rewrite of many pages hid every earlier change, and this hook was the only thing that still saw them (see [[wiki-stale]]).

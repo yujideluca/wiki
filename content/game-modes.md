@@ -9,11 +9,11 @@ location: QuizApp:core/src/main/java/dev/yuji/quiz/domain/GameMode.kt
 fed_by: []
 feeds: [card-factory]
 sources: [QuizApp:core/src/main/java/dev/yuji/quiz/domain/GameMode.kt, QuizApp:DESIGN.md]
-reviewed: 2026-10-22T16:33Z
+reviewed: 2026-10-25T02:04Z
 ---
 
 ## What it is
-These are the five ways [[quizapp]] and [[quizweb]] quiz B2-level German. All of them draw on a fixed pool of what every B2 speaker should know. A "game mode" is one kind of question.
+These are the five ways [[quizapp]] and [[quizweb]] quiz B2-level German. All of them draw on a curated pool of what every B2 speaker should know; the pool can grow without an app update ([[question-pack]]), and the numbers below are those of the pool built into the app (content version 1). A "game mode" is one kind of question.
 
 ## What it does
 - **Der · Die · Das**: choose the article (the German word for "the", which depends on the noun's gender) of 484 nouns.

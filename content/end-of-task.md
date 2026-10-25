@@ -8,7 +8,7 @@ status: active
 fed_by: []
 feeds: []
 sources: [home:.claude/CLAUDE.md, wiki:server/lib/wiki/cli.ex]
-reviewed: 2026-10-22T16:33Z
+reviewed: 2026-10-25T02:06Z
 ---
 
 ## What it is
@@ -28,7 +28,7 @@ The wiki content ([[wiki-content]]), [[github]] (where the wiki is stored) and t
 
 ## Steps
 1. The task's work is done and proven by running checks ([[skill-verification-before-completion]]).
-2. Claude updates or creates the English pages in `~/dev/wiki/content` for what changed, then the German and Brazilian Portuguese versions ([[wiki-content]]).
+2. Claude updates or creates the English pages in `~/dev/wiki/content` for what changed, then the German and Brazilian Portuguese versions ([[wiki-content]]). A page that was compared with its sources and found right gets its `reviewed` time set to the current UTC time, which is what clears it in [[wiki-stale]].
 3. Anything that has grown past the page threshold gets its own page (the promotion rule, enforced by [[wiki-check]]).
 4. `wiki publish -m "…"` checks the content, builds the site, commits only the `content/` folder and uploads it ([[wiki-cli]]).
 5. The live site serves the new data at once ([[wiki-site]], [[wiki-router]]).

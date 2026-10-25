@@ -1,7 +1,7 @@
 ---
 id: quizweb
 lang: pt-BR
-source_hash: 57d297c63574
+source_hash: fdecab89a4c6
 title: QuizWeb (German Quiz, web)
 ---
 
@@ -12,7 +12,7 @@ O QuizWeb é a versão web do quiz de alemão, feita para funcionar em um iPhone
 Tem os mesmos cinco modos, agendador, meta diária e calendário de sequência do [[quizapp]] e funciona offline. O progresso fica no navegador daquele aparelho e é separado do app Android; Configurações > Backup o salva e restaura.
 
 ## How it does it
-É JavaScript simples em módulos ES (a forma padrão de dividir JavaScript em arquivos), sem etapa de build e sem dependências. As partes são: [[quizweb-domain]] (lógica pura), [[quizweb-content]], [[quizweb-controller]], [[quizweb-store]] e [[quizweb-app]] (os dois últimos são os únicos módulos que tocam o navegador), mais o cache offline [[quizweb-service-worker]]. O teste `tests/architecture.test.js` define quem pode importar quem, e a [[quizweb-ci]] executa `npm test` a cada push.
+É JavaScript simples em módulos ES (a forma padrão de dividir JavaScript em arquivos), sem etapa de build e sem dependências. As partes são: [[quizweb-domain]] (lógica pura), [[quizweb-content]], [[quizweb-controller]], [[quizweb-store]] e [[quizweb-app]] (os dois últimos são os únicos módulos que tocam o navegador), mais o cache offline [[quizweb-service-worker]]. O teste `tests/architecture.test.js` define quem pode importar quem, e a [[quizweb-ci]] executa `npm test` e os limites do [[pipeline-check]] a cada push.
 
 ## Where it sits in the pipeline
 É o gêmeo do [[quizapp]] (decisão ADR-0006 lá; uma ADR é um architecture decision record, uma nota curta que guarda os motivos de uma decisão): lê os mesmos arquivos de vocabulário e os mesmos vetores de conformidade, e o [[check-web-sync]] no QuizApp os compara. O QuizWeb segue só a versão lançada do app: a portabilidade de uma versão do app ainda em beta espera em um branch `web-<versão>` e é mesclada ao `main` quando o app é promovido.

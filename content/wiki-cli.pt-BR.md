@@ -1,7 +1,7 @@
 ---
 id: wiki-cli
 lang: pt-BR
-source_hash: 5cd5cb46038e
+source_hash: e301ad30ede8
 title: wiki (comando)
 ---
 
@@ -23,6 +23,6 @@ O [[github]] (o commit) e o site no ar (pelo [[wiki-site]]).
 ## Functions
 - `wiki check [--local]`: validar o conteúdo
 - `wiki build`: conteúdo → site/data, Elm → site/assets
-- `wiki stale` ([[wiki-stale]]): páginas cujas fontes mudaram depois da página
+- `wiki stale` ([[wiki-stale]]): páginas com uma fonte que mudou depois do `reviewed` delas; sai com 1 quando lista alguma
 - `wiki publish -m "msg"`: check --local, build, commit só de content/, push
 - `wiki hook-stop`: o hook Stop do Claude Code

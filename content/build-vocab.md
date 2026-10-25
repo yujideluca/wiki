@@ -9,7 +9,7 @@ location: QuizApp:tools/build_vocab.py
 fed_by: [vocab-tsv]
 feeds: [check-errors-languagetool, content-manifest, quizweb-content, vocab-assets]
 sources: [QuizApp:tools/build_vocab.py]
-reviewed: 2026-10-22T16:33Z
+reviewed: 2026-10-25T02:02Z
 ---
 
 ## What it is

@@ -8,7 +8,7 @@ status: active
 fed_by: [maintenance-policy, skill-revisao-manutencao]
 feeds: []
 sources: [project-template:docs/MAINTENANCE.md]
-reviewed: 2026-10-22T16:33Z
+reviewed: 2026-10-24T22:03Z
 ---
 
 ## What it is
@@ -18,7 +18,7 @@ Once a month, one working session looks at all of Giovanni's projects together, 
 It walks through the checklist of [[maintenance-policy]] for each active project in `~/dev` and records the outcome. Since 2026-10-24 it is run by the skill [[skill-revisao-manutencao]], based on the report of [[pipeline-check]] ([[maintenance-pipeline]]).
 
 ## How it does it
-It uses each project's quality gate, delivery metrics (`tools/metrics.py` where present), fitness functions, design file (DESIGN.md), ADRs and debt list.
+It uses each project's quality gate, delivery metrics (the `dora` block of the [[pipeline-check]] report), fitness functions, design file (DESIGN.md), ADRs and debt list. The skill [[skill-revisao-manutencao]] runs `tools/pipeline-check.sh` and reads `build/pipeline-check/report.json`; steps 1 to 3 below are what the program already measured, and the rest is judgement.
 
 ## Where it sits in the pipeline
 Monthly, across [[quizapp]], [[quizweb]], [[workflow-memory]], the [[wiki]] and the template.
