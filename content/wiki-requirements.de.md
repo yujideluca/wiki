@@ -1,12 +1,12 @@
 ---
 id: wiki-requirements
 lang: de
-source_hash: ed394c2510bc
+source_hash: 5d05c92c4107
 title: Wiki-Anforderungen
 ---
 
 ## What it is
-Eine Anforderung ist ein prüfbares Versprechen der Software. Diese Seite beschreibt die eigene Liste von Versprechen des Wikis (`docs/REQUIREMENTS.md`), jedes mit einer ID aus einer Zwei-Buchstaben-Familie und einer Nummer: AU (das Anmelde-Tor), DC (der Köder), CO (Inhaltsregeln), LG (Sprachen), BU (der Build), UP (die Aktualisierungskette), ST (die Veraltung von Seiten), MP (die Karte und die Seiten), MB (die Handy-Version), LN (die Linse auf der Karte) DY (die elastischen Punkte) und LY (die Berechnung des Layouts).
+Eine Anforderung ist ein prüfbares Versprechen der Software. Diese Seite beschreibt die eigene Liste von Versprechen des Wikis (`docs/REQUIREMENTS.md`), jedes mit einer ID aus einer Zwei-Buchstaben-Familie und einer Nummer: AU (das Anmelde-Tor), DC (der Köder), CO (Inhaltsregeln), LG (Sprachen), BU (der Build), UP (die Aktualisierungskette), ST (die Veraltung von Seiten), MP (die Karte und die Seiten), MB (die Handy-Version), LN (die Linse auf der Karte) DY (die elastischen Punkte) LY (die Berechnung des Layouts) und TC (Berührung auf der Karte).
 
 ## What it does
 Jede Zeile muss mindestens einen mit `REQ <ID>` getaggten Test haben; die erzeugte Datei `docs/TRACEABILITY.md` ordnet jede Anforderung ihren Tests zu.

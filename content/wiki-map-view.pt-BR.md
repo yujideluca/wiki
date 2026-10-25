@@ -1,7 +1,7 @@
 ---
 id: wiki-map-view
 lang: pt-BR
-source_hash: 8698b1835879
+source_hash: 0318a5f3e0bb
 title: Vista do mapa e caixas de informação
 ---
 
@@ -9,7 +9,7 @@ title: Vista do mapa e caixas de informação
 O mapa é a tela inicial do wiki: cada página é um ponto colorido conforme seu tipo, com linhas para a relação "alimenta" (setas: o que alimenta o quê) e a relação "menciona" (tracejadas: uma página aponta para outra), e quatro caixas de informação embaixo.
 
 ## What it does
-Passar o mouse sobre um ponto o ilumina, junto com seus vizinhos, em dourado e escurece o resto; as caixas mostram What it is, What it does, Fed by e Who receives its output (e mantêm o último ponto quando o mouse sai). Clicar em um ponto abre seu artigo. Arrasta-se para mover e usa-se a roda do mouse ou o gesto de pinça com dois dedos para dar zoom; o filtro de projeto e a linha do tempo escondem o que não pertence. O destaque é rápido (cada transição dura 0,07 segundo). Numa janela grande o mapa ocupa toda a altura de que as quatro caixas não precisam, então a página nunca rola ao passar o mouse sobre um ponto; um texto maior que sua caixa rola dentro dela.
+Passar o mouse sobre um ponto o ilumina, junto com seus vizinhos, em dourado e escurece o resto; as caixas mostram What it is, What it does, Fed by e Who receives its output (e mantêm o último ponto quando o mouse sai). Clicar em um ponto abre seu artigo. Arrasta-se para mover e usa-se a roda do mouse ou o gesto de pinça com dois dedos para dar zoom (em uma tela de toque um dedo move, de modo que o ponto do mapa sob o dedo continua sob ele, e dois dedos fazem zoom em torno do ponto médio; nada mais dá zoom, então um toque duplo, toques rápidos ou círculos desenhados com o dedo nunca dão zoom no mapa); o filtro de projeto e a linha do tempo escondem o que não pertence. O destaque é rápido (cada transição dura 0,07 segundo). Numa janela grande o mapa ocupa toda a altura de que as quatro caixas não precisam, então a página nunca rola ao passar o mouse sobre um ponto; um texto maior que sua caixa rola dentro dela.
 
 O mapa é vivo. Cada ponto descansa onde o layout o coloca, mas pode ser empurrado desse lugar e depois volta com um leve balanço, como um peso preso a um elástico: apertar um ponto e mover o mouse o arrasta, seus vizinhos se esticam atrás dele e se contraem de volta quando você solta (um clique sem movimento ainda abre a página, e um arrasto nunca abre). No celular os pontos são um pouco menos elásticos (mola mais rígida, vizinhos seguindo menos, mais atrito) e tocar em um ponto puxa seus vizinhos um pouco, como passar o mouse faz no desktop. Passar o mouse sobre um ponto puxa seus vizinhos um quinto do caminho em direção a ele (no máximo cerca de 14 pixels). Cada ponto responde ao mouse onde ele descansa, não onde está desenhado naquele momento; assim o movimento nunca desliza um ponto para baixo de um mouse parado e faz o destaque piscar. Quando a página carrega pela primeira vez, os pontos se abrem a partir do meio, e depois de redimensionar a janela eles deslizam de onde estavam até os novos lugares, em vez de pular.
 

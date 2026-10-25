@@ -9,14 +9,14 @@ location: wiki:frontend/src/MapView.elm
 fed_by: []
 feeds: [wiki-frontend]
 sources: [wiki:frontend/src/MapView.elm, wiki:frontend/src/Lens.elm, wiki:frontend/src/Motion.elm, wiki:frontend/src/Layout.elm, wiki:frontend/src/MapSize.elm, wiki:frontend/src/Filter.elm]
-reviewed: 2026-10-25T09:22Z
+reviewed: 2026-10-25T09:34Z
 ---
 
 ## What it is
 The map is the home screen of the wiki: every page is a dot coloured by its kind, with lines for the "feeds" relation (arrows: what feeds what) and the "mentions" relation (dashed: one page links to another), and four information boxes below it.
 
 ## What it does
-Hovering over a dot lights it and its neighbours in gold and dims the rest; the boxes show What it is, What it does, Fed by and Who receives its output (and keep the last dot when the mouse leaves). Clicking a dot opens its article. You drag to pan, and use the wheel or a two-finger pinch to zoom; the project filter and the timeline hide what does not belong. The highlight is quick (every fade lasts 0.07 seconds). On a large window the map takes all the height that the four boxes do not need, so the page never scrolls when a dot is hovered; a text longer than its box scrolls inside it.
+Hovering over a dot lights it and its neighbours in gold and dims the rest; the boxes show What it is, What it does, Fed by and Who receives its output (and keep the last dot when the mouse leaves). Clicking a dot opens its article. You drag to pan, and use the wheel or a two-finger pinch to zoom (on a touch screen one finger pans, so that the map point under the finger stays under it, and two fingers pinch around their midpoint; nothing else zooms, so a double tap, quick taps or circles drawn with a finger never zoom the map); the project filter and the timeline hide what does not belong. The highlight is quick (every fade lasts 0.07 seconds). On a large window the map takes all the height that the four boxes do not need, so the page never scrolls when a dot is hovered; a text longer than its box scrolls inside it.
 
 The map is alive. Each dot rests where the layout puts it but can be pushed away from that place and then springs back, with a little wobble, like a weight on elastic: pressing a dot and moving the mouse drags it, its neighbours stretch along behind it and contract back when you let go (a click without movement still opens the page, and a drag never does). On a phone the dots are slightly less elastic (a stiffer spring, less following of neighbours, more friction) and tapping a dot draws its neighbours in a little, as hovering does on a desktop. Hovering a dot draws its neighbours a fifth of the way towards it (at most about 14 pixels). Each dot answers the mouse where it rests, not where it is drawn at that moment, so the movement can never slide a dot under a still mouse and make the highlight flicker. When the page first loads the dots spring open from the middle, and after the window is resized they glide from where they were to their new places instead of jumping.
 
