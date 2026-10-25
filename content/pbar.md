@@ -26,3 +26,5 @@ At the bottom of every Claude Code terminal.
 
 ## Who receives its output
 Giovanni, watching the terminal.
+
+The Codex companion [[codex-pbar]] adapts this display for Codex sessions.

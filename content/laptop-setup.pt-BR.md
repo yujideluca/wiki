@@ -1,7 +1,7 @@
 ---
 id: laptop-setup
 lang: pt-BR
-source_hash: 7fe6d67d12e1
+source_hash: d9bab7b06b6d
 title: Configuração do notebook
 ---
 
@@ -19,3 +19,5 @@ Abaixo de todos os outros projetos: o [[quizapp]] é construído com suas ferram
 
 ## Who receives its output
 O [[claude-code]], o [[remote-assistant]] e todos os projetos em `~/dev`.
+
+O painel do Codex [[codex-pbar]] adapta essa exibição para sessões do Codex.

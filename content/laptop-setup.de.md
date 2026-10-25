@@ -1,7 +1,7 @@
 ---
 id: laptop-setup
 lang: de
-source_hash: 7fe6d67d12e1
+source_hash: d9bab7b06b6d
 title: Laptop-Einrichtung
 ---
 
@@ -19,3 +19,5 @@ Unter allen anderen Projekten: [[quizapp]] wird mit seiner Werkzeugkette gebaut,
 
 ## Who receives its output
 [[claude-code]], der [[remote-assistant]] und jedes Projekt in `~/dev`.
+
+Die Codex-Begleitanzeige [[codex-pbar]] passt diese Anzeige an Codex-Sitzungen an.

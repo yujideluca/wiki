@@ -26,3 +26,5 @@ Below all other projects: [[quizapp]] is built with its toolchain, the wiki runs
 
 ## Who receives its output
 [[claude-code]], the [[remote-assistant]] and every project in `~/dev`.
+
+The Codex companion [[codex-pbar]] adapts this display for Codex sessions.

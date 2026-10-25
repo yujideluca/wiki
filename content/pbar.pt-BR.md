@@ -1,7 +1,7 @@
 ---
 id: pbar
 lang: pt-BR
-source_hash: 87fde8bdca73
+source_hash: 96fc10bffeec
 title: pbar.py (linha de status)
 ---
 
@@ -19,3 +19,5 @@ Na parte de baixo de todo terminal do Claude Code.
 
 ## Who receives its output
 O Giovanni, olhando o terminal.
+
+O painel do Codex [[codex-pbar]] adapta essa exibição para sessões do Codex.

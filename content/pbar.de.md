@@ -1,7 +1,7 @@
 ---
 id: pbar
 lang: de
-source_hash: 87fde8bdca73
+source_hash: 96fc10bffeec
 title: pbar.py (Statuszeile)
 ---
 
@@ -19,3 +19,5 @@ Am unteren Rand jedes Claude-Code-Terminals.
 
 ## Who receives its output
 Giovanni, der das Terminal beobachtet.
+
+Die Codex-Begleitanzeige [[codex-pbar]] passt diese Anzeige an Codex-Sitzungen an.
