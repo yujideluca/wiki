@@ -114,6 +114,8 @@ defmodule Wiki.Content.BuildTest do
       assert msg =~ "r1: update pages a"
       assert msg =~ "new files no page covers: NEW.md"
       assert msg =~ "reviewed: <UTC time>", "UP-3: a page checked and found right is recorded by its reviewed time"
+      # REQ CO-10
+      assert msg =~ "complete SKILL.md"
       assert msg =~ ~r/only when\s+what\s+changed is described by no page/
       assert Stale.hook_message(store, %{"session_id" => "s"}) == nil, "must not block twice in a session"
       assert Stale.hook_message(store, %{"session_id" => "other", "stop_hook_active" => true}) == nil

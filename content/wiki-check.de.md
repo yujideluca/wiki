@@ -1,7 +1,7 @@
 ---
 id: wiki-check
 lang: de
-source_hash: 097283d94376
+source_hash: 9623aa129e24
 title: wiki check (Inhaltsregeln)
 ---
 
@@ -19,3 +19,7 @@ Der erste Schritt von `wiki publish` und Teil des [[wiki-quality-gate]].
 
 ## Who receives its output
 Die [[wiki-cli]] (das Veröffentlichen verweigert sich bei jedem Problem).
+
+## Notes
+
+Für Skill-Seiten verlangt [[wiki-skill-source]] die vollständige `SKILL.md`-Datei jeder angegebenen Skill-Quelle einschließlich Beschreibung und Anweisungen. Jede Kopie braucht einen passenden SHA-256-Fingerabdruck (einen aus ihrem Text berechneten Wert, der Änderungen erkennbar macht), und beide Übersetzungen müssen dieselben Originale behalten. Im lokalen Modus liest der Prüfer jede Quelldatei und vergleicht ihren vollständigen Text mit der Kopie. Ohne lokale Quellen prüft er Vorhandensein und Fingerabdrücke, kann aber die Aktualität nicht nachweisen. Der Parser beachtet Codeblöcke, sodass Quellüberschriften und Beispiellinks nicht als Wiki-Struktur gelten. Die Datenschutzprüfung liest weiterhin den gesamten kopierten Text.

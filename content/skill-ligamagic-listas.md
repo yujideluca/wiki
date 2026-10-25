@@ -8,8 +8,8 @@ status: active
 location: home:.claude/skills/ligamagic-listas
 fed_by: []
 feeds: [skill-ligamagic-replicar-carrinho-nas-lojas]
-sources: [home:.claude/skills/ligamagic-listas/SKILL.md]
-reviewed: 2026-10-22T16:33Z
+sources: [home:.claude/skills/ligamagic-listas/SKILL.md, home:.agents/skills/ligamagic-listas/SKILL.md]
+reviewed: 2026-10-25T14:46Z
 ---
 
 ## What it is
@@ -33,3 +33,88 @@ Giovanni's LigaMagic lists, and [[skill-ligamagic-replicar-carrinho-nas-lojas]] 
 3. **The shopping list** (`?view=mp/carrinho&open=1`). The same page has two structures: the shopping list (a table, below) and the per-store cart (blocks with rows and quantity inputs, one block per store), which belongs to [[skill-ligamagic-replicar-carrinho-nas-lojas]]. The item table is the first table on the page. Each row has a number input (quantity) and drop-down selects (edition, condition, language, extras); the name is in the first cell, with the English name on the last line. The first row with selects is the "Aplicar Valores" (apply values) row, not a card. The selected edition's text has the form `CODE - Name` (for example `PIP - Fallout`).
 4. **Removing items.** The remove button is `.btn-circle.remove`. Removal is immediate on the server (a notice appears saying the item was removed from the shopping list); while processing, the button turns into a spinner. The per-store cart uses the same class, so check which structure the button belongs to before clicking.
 5. **Pitfalls.** Clicking twice on an item that is being processed gives the alert "Ops! Não foi possível realizar a operação", which freezes the browser: remove one at a time and wait for the row to disappear. The `javascript_tool` can fail with selectors containing certain strings or with long outputs: use the first table, store results in `window.*` variables and read them in blocks of about 1,000 characters. The header shows "Total: N cards", which adds up the quantities.
+
+## Notes
+
+### Complete skill sources
+
+The following blocks contain the complete original `SKILL.md` files, including their full descriptions and instructions. The originals retain their source language; the explanation and Steps above describe them in this page's language. Claude and Codex versions are separate. Referenced auxiliary files are named in the originals but are not included in these copies. Each fingerprint identifies the entire copied text.
+
+#### Claude: `home:.claude/skills/ligamagic-listas/SKILL.md`
+
+```skill-source home:.claude/skills/ligamagic-listas/SKILL.md d0c466478a6b31dbb47d7dec088c8af5fae291714dc00e17ce2d3e9b1e0dc29a
+---
+name: "ligamagic-listas"
+description: "Use ao trabalhar com a Lista de Compras ou o Compra por Lista da LigaMagic - extrair cartas, gerar listas com edição, remover ou editar itens em lote. Para refazer ou conferir o carrinho por loja nos sites das lojas, use ligamagic-replicar-carrinho-nas-lojas."
+---
+
+# LigaMagic: listas e carrinho
+
+Lineage: origin=gui; base=8a97b14fecb67eb7def4bb7e9d387630f5236c2f
+
+Interop: role = domain; owns = formato do Compra por Lista e manuseio da Lista de Compras; defers to = browser-automacao-segura (ações em lote), ligamagic-replicar-carrinho-nas-lojas (carrinho por loja e montagem nos sites das lojas); honors = idioma da mensagem, flags !! *** ...
+
+Antes de ações em lote no navegador, siga também a skill `browser-automacao-segura`.
+
+## Formato do Compra por Lista (?view=cards/lista)
+Uma carta por linha: `[Quantidade] [Card] [TAGS]`. Tags aceitas (confirmadas no site):
+- Edição: `[EDICAO=PIP]` (sigla da edição, ex.: M10, MH3, PIP)
+- Qualidade mínima: `[QUALIDADE=NM]` (M, NM, SP, MP, HP, D)
+- Idioma: `[IDIOMA=PT]`, `[idioma=en]`; omita para "Qualquer idioma"
+- Extras: `[EXTRAS=FOIL]`, `[extras=textless, fnm]`
+
+Exemplo: `1 Command Tower [EDICAO=PIP] [QUALIDADE=NM]`
+Use o nome em inglês. Terrenos numerados funcionam assim: `1 Forest (#0326) [EDICAO=PIP]`.
+Sintaxes como `[PIP]`, `(PIP)` ou `|PIP` NÃO funcionam.
+Para conferir, cole a lista e clique em "Detalhar Características": a coluna Edição deve vir preenchida.
+
+## Lista de Compras (?view=mp/carrinho&open=1)
+A mesma página tem duas estruturas: a Lista de Compras (tabela, abaixo) e o carrinho por loja (blocos `.pad-bot-10` com `div.row` e `input.qty`, um bloco por loja). O carrinho por loja é tratado pela skill `ligamagic-replicar-carrinho-nas-lojas`.
+- A tabela de itens é `document.querySelectorAll('table')[0]`. Por linha: `input[type=number]` (quantidade) e selects (edição, qualidade, idioma, extras). O nome aparece em `cells[0]`, com o nome em inglês na última linha.
+- A primeira linha com selects é a de "Aplicar Valores", não uma carta.
+- O texto da edição selecionada tem o formato `SIGLA - Nome` (ex.: `PIP - Fallout`).
+- O botão de remover é `.btn-circle.remove`. A remoção é imediata no servidor (aparece um aviso "foi removido da sua Lista de Compras"). Durante o processamento, o botão vira um spinner. O carrinho por loja usa a mesma classe: confira em qual estrutura o botão está antes de clicar.
+- Clicar duas vezes no mesmo item em processamento gera o alerta "Ops! Não foi possível realizar a operação", que trava o navegador. Remova um por vez e espere a linha sumir.
+- O `javascript_tool` pode falhar com seletores contendo certas strings ou com saídas longas. Use `querySelectorAll('table')[0]`, guarde resultados em `window.*` e leia em blocos de ~1000 caracteres.
+- O cabeçalho mostra "Total: N cards", que soma as quantidades.
+```
+
+
+#### Codex: `home:.agents/skills/ligamagic-listas/SKILL.md`
+
+```skill-source home:.agents/skills/ligamagic-listas/SKILL.md d0c466478a6b31dbb47d7dec088c8af5fae291714dc00e17ce2d3e9b1e0dc29a
+---
+name: "ligamagic-listas"
+description: "Use ao trabalhar com a Lista de Compras ou o Compra por Lista da LigaMagic - extrair cartas, gerar listas com edição, remover ou editar itens em lote. Para refazer ou conferir o carrinho por loja nos sites das lojas, use ligamagic-replicar-carrinho-nas-lojas."
+---
+
+# LigaMagic: listas e carrinho
+
+Lineage: origin=gui; base=8a97b14fecb67eb7def4bb7e9d387630f5236c2f
+
+Interop: role = domain; owns = formato do Compra por Lista e manuseio da Lista de Compras; defers to = browser-automacao-segura (ações em lote), ligamagic-replicar-carrinho-nas-lojas (carrinho por loja e montagem nos sites das lojas); honors = idioma da mensagem, flags !! *** ...
+
+Antes de ações em lote no navegador, siga também a skill `browser-automacao-segura`.
+
+## Formato do Compra por Lista (?view=cards/lista)
+Uma carta por linha: `[Quantidade] [Card] [TAGS]`. Tags aceitas (confirmadas no site):
+- Edição: `[EDICAO=PIP]` (sigla da edição, ex.: M10, MH3, PIP)
+- Qualidade mínima: `[QUALIDADE=NM]` (M, NM, SP, MP, HP, D)
+- Idioma: `[IDIOMA=PT]`, `[idioma=en]`; omita para "Qualquer idioma"
+- Extras: `[EXTRAS=FOIL]`, `[extras=textless, fnm]`
+
+Exemplo: `1 Command Tower [EDICAO=PIP] [QUALIDADE=NM]`
+Use o nome em inglês. Terrenos numerados funcionam assim: `1 Forest (#0326) [EDICAO=PIP]`.
+Sintaxes como `[PIP]`, `(PIP)` ou `|PIP` NÃO funcionam.
+Para conferir, cole a lista e clique em "Detalhar Características": a coluna Edição deve vir preenchida.
+
+## Lista de Compras (?view=mp/carrinho&open=1)
+A mesma página tem duas estruturas: a Lista de Compras (tabela, abaixo) e o carrinho por loja (blocos `.pad-bot-10` com `div.row` e `input.qty`, um bloco por loja). O carrinho por loja é tratado pela skill `ligamagic-replicar-carrinho-nas-lojas`.
+- A tabela de itens é `document.querySelectorAll('table')[0]`. Por linha: `input[type=number]` (quantidade) e selects (edição, qualidade, idioma, extras). O nome aparece em `cells[0]`, com o nome em inglês na última linha.
+- A primeira linha com selects é a de "Aplicar Valores", não uma carta.
+- O texto da edição selecionada tem o formato `SIGLA - Nome` (ex.: `PIP - Fallout`).
+- O botão de remover é `.btn-circle.remove`. A remoção é imediata no servidor (aparece um aviso "foi removido da sua Lista de Compras"). Durante o processamento, o botão vira um spinner. O carrinho por loja usa a mesma classe: confira em qual estrutura o botão está antes de clicar.
+- Clicar duas vezes no mesmo item em processamento gera o alerta "Ops! Não foi possível realizar a operação", que trava o navegador. Remova um por vez e espere a linha sumir.
+- O `javascript_tool` pode falhar com seletores contendo certas strings ou com saídas longas. Use `querySelectorAll('table')[0]`, guarde resultados em `window.*` e leia em blocos de ~1000 caracteres.
+- O cabeçalho mostra "Total: N cards", que soma as quantidades.
+```

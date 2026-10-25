@@ -9,7 +9,7 @@ location: home:.claude/skills
 fed_by: []
 feeds: []
 sources: [home:.claude/skills]
-reviewed: 2026-10-25T07:41Z
+reviewed: 2026-10-25T14:46Z
 ---
 
 ## What it is
@@ -48,3 +48,5 @@ Beside every task: a skill is loaded by the Claude instance when its description
 - [[skill-ligamagic-replicar-carrinho-nas-lojas]]
 - [[skill-regras-magic]]
 - [[skill-reparo-kubuntu]]
+
+The 20 locally maintained skills have separate installed Claude and Codex copies, in `~/.claude/skills` and `~/.agents/skills`. Their pages now retain both complete original `SKILL.md` files in Notes, beside the translated explanations. This includes the entire frontmatter description and instructions, rather than only a trigger summary. Referenced auxiliary files are not embedded. The complete-source rule and its checks are described in [[wiki-content]] and [[wiki-skill-source]].

@@ -22,6 +22,7 @@ Source: G = stated by Giovanni, D = derived by Claude Code and accepted (design 
 | CO-7 | Sources are written repo:path; local mode checks that they and the memory refs exist | D |
 | CO-8 | A page of kind skill has a non-empty Steps section: the skill's own definition (rules or steps), so the page is enough to understand the skill | G |
 | CO-9 | The first use of every acronym listed in content/_acronyms.tsv is next to its full name (the name appears before it or within 100 characters after it), outside code quotes | G |
+| CO-10 | Every skill page carries the complete source SKILL.md, including its description and all instructions, without shortening it. The writer locates and reads that source before writing; the Stop reminder repeats this rule. Each translation retains the same original source beside its translated explanation. Local validation compares the copy with the source, and all validation checks its fingerprint and presence; code fences keep source headings and examples separate from wiki structure | G |
 | ST-1 | `wiki stale` lists a page when any of its sources changed after the page's reviewed time; commits that touch only the page file never clear it | G |
 | ST-2 | A source outside git (home:) counts as changed at the newest modification time of its file or folder | G |
 | ST-3 | `wiki stale` prints for each page the source and both times, and exits 1 when it lists a page and 0 when it lists none | D |

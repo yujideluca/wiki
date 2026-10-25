@@ -22,9 +22,30 @@ rewriteLinks titleOf text =
     outsideCode (rewriteProse titleOf) text
 
 
-{-| Applies `f` only to the parts of the text that are not between backticks. -}
+{-| Preserve whole fenced sources before handling ordinary inline code. -}
 outsideCode : (String -> String) -> String -> String
 outsideCode f text =
+    let
+        appendBlock block ( offset, chunks ) =
+            ( block.index + String.length block.match
+            , chunks
+                ++ [ outsideInlineCode f (String.slice offset block.index text), block.match ]
+            )
+
+        ( end, parts ) =
+            Regex.find fencedCode text |> List.foldl appendBlock ( 0, [] )
+    in
+    String.concat (parts ++ [ outsideInlineCode f (String.dropLeft end text) ])
+
+
+fencedCode : Regex
+fencedCode =
+    Regex.fromString "(^|\\n)(`{3,}|~{3,})[^\\n]*\\n[\\s\\S]*?\\n\\2[ \\t]*(?=\\n|$)"
+        |> Maybe.withDefault Regex.never
+
+
+outsideInlineCode : (String -> String) -> String -> String
+outsideInlineCode f text =
     String.split "`" text
         |> List.indexedMap
             (\i part ->

@@ -8,8 +8,8 @@ status: active
 location: wiki:content
 fed_by: [claude-code, skill-wiki-page-writer]
 feeds: [wiki-build, wiki-check]
-sources: [wiki:content/_kinds.json, wiki:content/_ignore.txt]
-reviewed: 2026-10-24T21:57Z
+sources: [wiki:content/_kinds.json, wiki:content/_ignore.txt, wiki:AGENTS.md, wiki:CLAUDE.md]
+reviewed: 2026-10-25T14:46Z
 ---
 
 ## What it is
@@ -28,3 +28,7 @@ Written by [[claude-code]] at the end of every task ([[end-of-task]]); checked b
 
 ## Who receives its output
 [[wiki-check]] and [[wiki-build]].
+
+## Notes
+
+For a page of kind `skill`, the writer first locates and reads the complete installed `SKILL.md`. The page keeps its readable explanation and Steps, then includes the full original file in Notes: the frontmatter description, all instructions, examples, limits and reference paths. Separate Claude and Codex files are copied separately. German and Portuguese pages retain the same originals, with introductions in their own language. A summary or link alone does not satisfy this rule. Referenced auxiliary files are not included automatically. Each source is listed in `sources`; its fenced copy carries a SHA-256 (Secure Hash Algorithm 256) fingerprint (a value calculated from the entire text to detect changes). The copy uses LF line endings and adds a final newline if the original has none. [[wiki-skill-source]] validates these copies; `wiki check --local` compares them with the installed files. The project rule lives in `AGENTS.md`, is linked from `CLAUDE.md`, and is repeated in [[skill-wiki-page-writer]] and the [[wiki-hook-stop]] reminder.

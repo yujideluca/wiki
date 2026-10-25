@@ -1,7 +1,7 @@
 ---
 id: wiki-hook-stop
 lang: de
-source_hash: c02e4a0d2dd4
+source_hash: f78451b3159b
 title: Wiki-Stop-Hook (Sicherheitsnetz)
 ---
 
@@ -22,3 +22,5 @@ Er läuft am Ende jedes Durchgangs, neben dem [[hook-stop]] des Gedächtnisses.
 
 ## Notes
 `wiki stale` und dieser Hook beantworten zwei verschiedene Fragen, deshalb kann eine Seite von dem einen aufgelistet werden und von dem anderen nicht. `wiki stale` fragt Seite für Seite: „Hat sich eine Quelle nach dem Zeitpunkt geändert, zu dem die Seite angibt, zuletzt geprüft worden zu sein (ihr Feld `reviewed`)?“ Es hängt nicht vom Veröffentlichen ab. Der Hook fragt: „Haben seit dem letzten `wiki publish` Projekte Commits bekommen, die die Quellen einer Seite berühren oder Dateien hinzufügen, die keine Seite abdeckt?“ Er ist das Sicherheitsnetz für das, was `wiki stale` nicht sehen kann: eine Änderung in derselben Minute wie eine Prüfung, eine neue Datei, die keine Seite nennt, und die Arbeit der aktuellen Sitzung. Meldet der Hook eine Seite, das `git log` des Quell-Repositorys lesen und mit dem Seitentext vergleichen; ist die Seite richtig, ihren `reviewed`-Zeitpunkt setzen. Vor dem 2026-10-24 verglich `wiki stale` die Commit-Zeit der Quelle mit der der Seitendatei, sodass eine Überarbeitung vieler Seiten jede frühere Änderung verbarg und dieser Hook das Einzige war, das sie noch sah (siehe [[wiki-stale]]).
+
+Die Erinnerung verweist Skill-Seiten ausdrücklich auf die Regel für vollständige Quellen: die ganze `SKILL.md` suchen und lesen, die vollständige Beschreibung und alle Anweisungen mit einem Fingerabdruck in die englische Seite und beide Übersetzungen übernehmen und danach `wiki check --local` ausführen. Sie verweist auf `AGENTS.md` und [[skill-wiki-page-writer]]. Der Hook erinnert den Verfasser; er erzeugt den Seitentext nicht selbst.

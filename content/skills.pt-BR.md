@@ -1,7 +1,7 @@
 ---
 id: skills
 lang: pt-BR
-source_hash: 22aaae483c68
+source_hash: 01f6ed4fe161
 title: Skills
 ---
 
@@ -41,3 +41,5 @@ O [[claude-code]], o [[remote-assistant]] e, por suas cópias, o [[claude-app]].
 - [[skill-ligamagic-replicar-carrinho-nas-lojas]]
 - [[skill-regras-magic]]
 - [[skill-reparo-kubuntu]]
+
+As 20 skills mantidas localmente têm cópias instaladas separadas do Claude e do Codex, em `~/.claude/skills` e `~/.agents/skills`. Suas páginas agora mantêm os dois arquivos `SKILL.md` originais completos em Notes, junto das explicações traduzidas. Isso inclui toda a descrição do cabeçalho e as instruções, em vez de apenas um resumo dos gatilhos. Arquivos auxiliares citados não ficam embutidos. A regra de fontes completas e suas verificações são descritas em [[wiki-content]] e [[wiki-skill-source]].

@@ -6,7 +6,7 @@ defmodule Wiki.Content.Check do
   `local: true` adds the checks that need the laptop (sources exist, memory refs exist);
   CI runs without them because it cannot see the other private repositories.
   """
-  alias Wiki.Content.{Page, Store, Sources, Privacy}
+  alias Wiki.Content.{Page, Store, Sources, Privacy, SkillSource}
 
   @statuses ~w(active beta retired planned)
   @no_edges_ok ~w(actor external)
@@ -60,7 +60,7 @@ defmodule Wiki.Content.Check do
         if(local, do: local_checks(p), else: []) ++
         Privacy.scan(p)
 
-    errs |> Enum.filter(&is_binary/1) |> Enum.map(&prefix(p, &1))
+    (errs |> Enum.filter(&is_binary/1) |> Enum.map(&prefix(p, &1))) ++ SkillSource.check(p, store, local)
   end
 
   # A skill page holds the skill's own definition (its rules or steps), so a reader never needs the SKILL.md file.

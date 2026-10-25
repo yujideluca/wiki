@@ -1,7 +1,7 @@
 ---
 id: skills
 lang: de
-source_hash: 22aaae483c68
+source_hash: 01f6ed4fe161
 title: Skills
 ---
 
@@ -41,3 +41,5 @@ Neben jeder Aufgabe: Eine Skill wird von der Claude-Instanz geladen, wenn ihre B
 - [[skill-ligamagic-replicar-carrinho-nas-lojas]]
 - [[skill-regras-magic]]
 - [[skill-reparo-kubuntu]]
+
+Die 20 lokal gepflegten Skills haben getrennte installierte Kopien für Claude und Codex unter `~/.claude/skills` und `~/.agents/skills`. Ihre Seiten enthalten beide vollständigen ursprünglichen `SKILL.md`-Dateien in Notes neben den übersetzten Erklärungen. Dazu gehören die gesamte Beschreibung im Kopf und alle Anweisungen statt nur einer Zusammenfassung der Auslöser. Zusätzliche Referenzdateien sind nicht eingebettet. Die Regel für vollständige Quellen und ihre Prüfungen stehen in [[wiki-content]] und [[wiki-skill-source]].

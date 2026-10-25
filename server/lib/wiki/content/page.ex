@@ -77,17 +77,26 @@ defmodule Wiki.Content.Page do
   defp parse_sections(body) do
     by_heading = Map.new(@sections, fn {k, h} -> {h, k} end)
 
-    body
-    |> String.split(~r/^## /m)
-    |> Enum.drop(1)
-    |> Enum.reduce({[], []}, fn chunk, {acc, errs} ->
-      [heading | rest] = String.split(chunk, "\n", parts: 2)
-      heading = String.trim(heading)
-      text = rest |> List.first("") |> String.trim()
+    {chunks, _} =
+      body
+      |> fenced_lines()
+      |> Enum.reduce({[], nil}, fn {line, mode}, {chunks, current} ->
+        if mode == :prose and String.starts_with?(line, "## ") do
+          {[{String.trim(String.slice(line, 3..-1//1)), []} | chunks], true}
+        else
+          case {chunks, current} do
+            {[{heading, lines} | rest], true} -> {[{heading, [line | lines]} | rest], true}
+            _ -> {chunks, current}
+          end
+        end
+      end)
 
+    chunks
+    |> Enum.reverse()
+    |> Enum.reduce({[], []}, fn {heading, lines}, {acc, errs} ->
       case by_heading[heading] do
         nil -> {acc, errs ++ ["unknown section heading: ## #{heading}"]}
-        key -> {acc ++ [{key, text}], errs}
+        key -> {acc ++ [{key, lines |> Enum.reverse() |> Enum.join("\n") |> String.trim()}], errs}
       end
     end)
   end
@@ -99,7 +108,9 @@ defmodule Wiki.Content.Page do
   @doc "Every `[[id]]` or `[[id|label]]` link in the page body (not inside `code` quotes)."
   def links(page) do
     page.sections
-    |> Enum.flat_map(fn {_, text} -> Regex.scan(~r/\[\[([^\]|]+)(?:\|[^\]]*)?\]\]/, strip_code(text)) end)
+    |> Enum.flat_map(fn {_, text} ->
+      Regex.scan(~r/\[\[([^\]|]+)(?:\|[^\]]*)?\]\]/, strip_code(text))
+    end)
     |> Enum.map(fn [_, id] -> String.trim(id) end)
     |> Enum.uniq()
   end
@@ -107,8 +118,56 @@ defmodule Wiki.Content.Page do
   @doc "Text with inline code spans and fenced code blocks removed, so examples are not read as links."
   def strip_code(text) do
     text
-    |> String.replace(~r/```.*?```/s, "")
+    |> fenced_lines()
+    |> Enum.filter(fn {_, mode} -> mode == :prose end)
+    |> Enum.map_join("\n", &elem(&1, 0))
     |> String.replace(~r/`[^`]*`/, "")
+  end
+
+  @doc "Closed Markdown code blocks as {info string, original contents}, including nested shorter fences."
+  def fenced_blocks(text) do
+    {blocks, _} =
+      Enum.reduce(fenced_lines(text), {[], nil}, fn
+        {_, {:open, info}}, {blocks, _} ->
+          {blocks, {info, []}}
+
+        {_, :close}, {blocks, {info, lines}} ->
+          {[{info, (Enum.reverse(lines) |> Enum.join("\n")) <> "\n"} | blocks], nil}
+
+        {line, :code}, {blocks, {info, lines}} ->
+          {blocks, {info, [line | lines]}}
+
+        _, acc ->
+          acc
+      end)
+
+    Enum.reverse(blocks)
+  end
+
+  # CO-10: headings and example links inside the complete skill are source text, not wiki structure.
+  defp fenced_lines(text) do
+    {lines, _} =
+      text
+      |> String.split("\n")
+      |> Enum.map_reduce(nil, fn line, fence ->
+        if fence do
+          trimmed = String.trim(line)
+
+          if String.length(trimmed) >= String.length(fence) and
+               String.trim(trimmed, String.first(fence)) == "" do
+            {{line, :close}, nil}
+          else
+            {{line, :code}, fence}
+          end
+        else
+          case Regex.run(~r/^ {0,3}(`{3,}|~{3,})(.*)$/, line) do
+            [_, marker, info] -> {{line, {:open, String.trim(info)}}, marker}
+            nil -> {{line, :prose}, nil}
+          end
+        end
+      end)
+
+    lines
   end
 
   @doc "Names listed in the `Functions` section: lines starting with - `name`."
@@ -159,6 +218,9 @@ defmodule Wiki.Content.Page do
   @doc "Hash of the English text a translation was made from (title + all sections)."
   def source_hash(%__MODULE__{lang: "en"} = page) do
     text = [page.header["title"] || "" | Enum.map(page.sections, fn {k, t} -> k <> "\n" <> t end)]
-    :crypto.hash(:sha256, Enum.join(text, "\n\n")) |> Base.encode16(case: :lower) |> binary_part(0, 12)
+
+    :crypto.hash(:sha256, Enum.join(text, "\n\n"))
+    |> Base.encode16(case: :lower)
+    |> binary_part(0, 12)
   end
 end

@@ -1,7 +1,7 @@
 ---
 id: skill-verification-before-completion
 lang: de
-source_hash: af65dd9e3ccb
+source_hash: 59d636710c18
 title: Skill: verification-before-completion
 ---
 
@@ -31,3 +31,272 @@ Das eiserne Gesetz: keine Fertigmeldungen ohne frischen Prüfbeleg. Wurde der Pr
 Was als Beleg zählt: „Tests bestehen“ braucht die Ausgabe des Testbefehls mit 0 Fehlern (nicht einen früheren Lauf oder „sollte bestehen“); „Linter sauber“ braucht Linter-Ausgabe mit 0 Fehlern; „Build gelingt“ braucht den Exit-Code 0 des Build-Befehls (ein bestandener Linter ist kein Build); „Bug behoben“ braucht den Test des ursprünglichen Symptoms; ein Regressionstest braucht den Rot-Grün-Zyklus (schreiben, ausführen und bestehen, Fix zurücknehmen, ausführen und Fehlschlag sehen, wiederherstellen, ausführen und bestehen); „Agent fertig“ braucht einen Blick auf den Versionskontroll-Diff, nicht den Bericht des Agenten; „Anforderungen erfüllt“ braucht eine Zeile-für-Zeile-Checkliste, nicht nur bestandene Tests.
 
 Warnzeichen, die Stopp bedeuten: Wörter wie „sollte“, „wahrscheinlich“, „scheint“; Zufriedenheit äußern („Super!“, „Fertig!“) vor der Prüfung; kurz davor sein, ohne Prüfung zu committen, zu pushen oder einen Pull Request zu öffnen; dem Erfolgsbericht eines Hilfsassistenten vertrauen; sich auf eine Teilprüfung stützen; „nur dieses eine Mal“; müde sein. Ausreden ändern die Regel nicht: Zuversicht ist kein Beleg, ein Linter ist kein Compiler, und andere Wortwahl entkommt der Regel nicht. Sie gilt vor jeder Erfolgsbehauptung, jeder Äußerung von Zufriedenheit, dem Committen, Pull Requests, dem Übergang zur nächsten Aufgabe und dem Delegieren.
+
+## Notes
+
+### Vollständige Skill-Quellen
+
+Die folgenden Blöcke enthalten die vollständigen ursprünglichen `SKILL.md`-Dateien einschließlich ihrer Beschreibungen und Anweisungen. Die Originale bleiben in ihrer Ausgangssprache; die Erklärung und die Schritte oben beschreiben sie in der Sprache dieser Seite. Die Fassungen für Claude und Codex sind getrennt. Zusätzliche Referenzdateien werden in den Originalen genannt, sind aber nicht Teil dieser Kopien. Jeder Fingerabdruck kennzeichnet den gesamten kopierten Text.
+
+#### Claude: `home:.claude/skills/verification-before-completion/SKILL.md`
+
+````skill-source home:.claude/skills/verification-before-completion/SKILL.md e634cc29dba539d72868c7ff66d7e61d77ae7368defd016e34fc080c99ac9ae1
+---
+name: verification-before-completion
+description: "Use in Claude Code before saying work is done, fixed, passing or complete, and before committing: run the verification commands and read their output first; evidence before assertions. Feeds the `Verified by:` line that every done report ends with."
+---
+
+# Verification Before Completion
+
+Lineage: origin=code; base=none
+
+Interop: role = process; owns = proof before any success claim; defers to = the project's CLAUDE.md (its build/test/device steps, e.g. QuizApp: adb install, launch, logcat), the global CLAUDE.md (closing steps: mem use, wiki publish); honors = reply-language rule, debug-after-coding.
+
+Adapted from obra/superpowers 7.0.0 (commit bb92a77, MIT, LICENSE in this folder), without its always-on startup hook.
+
+## Overview
+
+**Core principle:** Evidence before claims, always.
+
+**Violating the letter of this rule is violating the spirit of this rule.**
+
+## The Iron Law
+
+```
+NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE
+```
+
+If you haven't run the verification command in this message, you cannot claim it passes.
+
+## The Gate Function
+
+```
+BEFORE claiming any status or expressing satisfaction:
+
+1. IDENTIFY: What command proves this claim?
+2. RUN: Execute the FULL command (fresh, complete)
+3. READ: Full output, check exit code, count failures
+4. VERIFY: Does output confirm the claim?
+   - If NO: State actual status with evidence
+   - If YES: State claim WITH evidence
+5. ONLY THEN: Make the claim
+
+Skip any step = lying, not verifying
+```
+
+## Common Failures
+
+| Claim | Requires | Not Sufficient |
+|-------|----------|----------------|
+| Tests pass | Test command output: 0 failures | Previous run, "should pass" |
+| Linter clean | Linter output: 0 errors | Partial check, extrapolation |
+| Build succeeds | Build command: exit 0 | Linter passing, logs look good |
+| Bug fixed | Test original symptom: passes | Code changed, assumed fixed |
+| Regression test works | Red-green cycle verified | Test passes once |
+| Agent completed | VCS diff shows changes | Agent reports "success" |
+| Requirements met | Line-by-line checklist | Tests passing |
+
+## Red Flags - STOP
+
+- Using "should", "probably", "seems to"
+- Expressing satisfaction before verification ("Great!", "Perfect!", "Done!", etc.)
+- About to commit/push/PR without verification
+- Trusting agent success reports
+- Relying on partial verification
+- Thinking "just this once"
+- Tired and wanting work over
+- **ANY wording implying success without having run verification**
+
+## Rationalization Prevention
+
+| Excuse | Reality |
+|--------|---------|
+| "Should work now" | RUN the verification |
+| "I'm confident" | Confidence ≠ evidence |
+| "Just this once" | No exceptions |
+| "Linter passed" | Linter ≠ compiler |
+| "Agent said success" | Verify independently |
+| "I'm tired" | Exhaustion ≠ excuse |
+| "Partial check is enough" | Partial proves nothing |
+| "Different words so rule doesn't apply" | Spirit over letter |
+
+## Key Patterns
+
+**Tests:**
+```
+✅ [Run test command] [See: 34/34 pass] "All tests pass"
+❌ "Should pass now" / "Looks correct"
+```
+
+**Regression tests (TDD Red-Green):**
+```
+✅ Write → Run (pass) → Revert fix → Run (MUST FAIL) → Restore → Run (pass)
+❌ "I've written a regression test" (without red-green verification)
+```
+
+**Build:**
+```
+✅ [Run build] [See: exit 0] "Build passes"
+❌ "Linter passed" (linter doesn't check compilation)
+```
+
+**Requirements:**
+```
+✅ Re-read plan → Create checklist → Verify each → Report gaps or completion
+❌ "Tests pass, phase complete"
+```
+
+**Agent delegation:**
+```
+✅ Agent reports success → Check VCS diff → Verify changes → Report actual state
+❌ Trust agent report
+```
+
+## When To Apply
+
+**ALWAYS before:**
+- ANY variation of success/completion claims
+- ANY expression of satisfaction
+- ANY positive statement about work state
+- Committing, PR creation, task completion
+- Moving to next task
+- Delegating to agents
+
+**Rule applies to:**
+- Exact phrases
+- Paraphrases and synonyms
+- Implications of success
+- ANY communication suggesting completion/correctness
+````
+
+
+#### Codex: `home:.agents/skills/verification-before-completion/SKILL.md`
+
+````skill-source home:.agents/skills/verification-before-completion/SKILL.md b32d0130264cd2d225a7832c22c35780a33b8b575f4cdaa794d6c7da9b1f9b27
+---
+name: verification-before-completion
+description: "Use in Codex before saying work is done, fixed, passing or complete, and before committing: run the verification commands and read their output first; evidence before assertions. Feeds the `Verified by:` line that every done report ends with."
+---
+
+# Verification Before Completion
+
+Lineage: origin=code; base=none
+
+Interop: role = process; owns = proof before any success claim; defers to = the project's AGENTS.md (its build/test/device steps, e.g. QuizApp: adb install, launch, logcat), the global AGENTS.md (closing steps: mem use, wiki publish); honors = reply-language rule, debug-after-coding.
+
+Adapted from obra/superpowers 7.0.0 (commit bb92a77, MIT, LICENSE in this folder), without its always-on startup hook.
+
+## Overview
+
+**Core principle:** Evidence before claims, always.
+
+**Violating the letter of this rule is violating the spirit of this rule.**
+
+## The Iron Law
+
+```
+NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE
+```
+
+If you haven't run the verification command in this message, you cannot claim it passes.
+
+## The Gate Function
+
+```
+BEFORE claiming any status or expressing satisfaction:
+
+1. IDENTIFY: What command proves this claim?
+2. RUN: Execute the FULL command (fresh, complete)
+3. READ: Full output, check exit code, count failures
+4. VERIFY: Does output confirm the claim?
+   - If NO: State actual status with evidence
+   - If YES: State claim WITH evidence
+5. ONLY THEN: Make the claim
+
+Skip any step = lying, not verifying
+```
+
+## Common Failures
+
+| Claim | Requires | Not Sufficient |
+|-------|----------|----------------|
+| Tests pass | Test command output: 0 failures | Previous run, "should pass" |
+| Linter clean | Linter output: 0 errors | Partial check, extrapolation |
+| Build succeeds | Build command: exit 0 | Linter passing, logs look good |
+| Bug fixed | Test original symptom: passes | Code changed, assumed fixed |
+| Regression test works | Red-green cycle verified | Test passes once |
+| Agent completed | VCS diff shows changes | Agent reports "success" |
+| Requirements met | Line-by-line checklist | Tests passing |
+
+## Red Flags - STOP
+
+- Using "should", "probably", "seems to"
+- Expressing satisfaction before verification ("Great!", "Perfect!", "Done!", etc.)
+- About to commit/push/PR without verification
+- Trusting agent success reports
+- Relying on partial verification
+- Thinking "just this once"
+- Tired and wanting work over
+- **ANY wording implying success without having run verification**
+
+## Rationalization Prevention
+
+| Excuse | Reality |
+|--------|---------|
+| "Should work now" | RUN the verification |
+| "I'm confident" | Confidence ≠ evidence |
+| "Just this once" | No exceptions |
+| "Linter passed" | Linter ≠ compiler |
+| "Agent said success" | Verify independently |
+| "I'm tired" | Exhaustion ≠ excuse |
+| "Partial check is enough" | Partial proves nothing |
+| "Different words so rule doesn't apply" | Spirit over letter |
+
+## Key Patterns
+
+**Tests:**
+```
+✅ [Run test command] [See: 34/34 pass] "All tests pass"
+❌ "Should pass now" / "Looks correct"
+```
+
+**Regression tests (TDD Red-Green):**
+```
+✅ Write → Run (pass) → Revert fix → Run (MUST FAIL) → Restore → Run (pass)
+❌ "I've written a regression test" (without red-green verification)
+```
+
+**Build:**
+```
+✅ [Run build] [See: exit 0] "Build passes"
+❌ "Linter passed" (linter doesn't check compilation)
+```
+
+**Requirements:**
+```
+✅ Re-read plan → Create checklist → Verify each → Report gaps or completion
+❌ "Tests pass, phase complete"
+```
+
+**Agent delegation:**
+```
+✅ Agent reports success → Check VCS diff → Verify changes → Report actual state
+❌ Trust agent report
+```
+
+## When To Apply
+
+**ALWAYS before:**
+- ANY variation of success/completion claims
+- ANY expression of satisfaction
+- ANY positive statement about work state
+- Committing, PR creation, task completion
+- Moving to next task
+- Delegating to agents
+
+**Rule applies to:**
+- Exact phrases
+- Paraphrases and synonyms
+- Implications of success
+- ANY communication suggesting completion/correctness
+````

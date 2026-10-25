@@ -159,7 +159,11 @@ defmodule Wiki.Content.Stale do
     """
     Wiki update needed: code changed since the last `wiki publish`.
     #{Enum.join(lines, "\n")}
-    Update or create those pages in ~/dev/wiki/content (English, then de and pt-BR). A page you compared with its
+    Update or create those pages in ~/dev/wiki/content (English, then de and pt-BR).
+    For every page of kind skill, locate and read the complete SKILL.md (description and all instructions),
+    then include its full original text and fingerprint on the page and in both translations; a summary is
+    insufficient. Follow AGENTS.md and wiki-page-writer, and run wiki check --local to compare with the sources.
+    A page you compared with its
     sources and found right still needs `reviewed: <UTC time>` (date -u +%Y-%m-%dT%H:%MZ): that edit is the review.
     Then run `wiki publish -m "..."`, then `mem use`. Use `wiki publish -m "review: no page change"` only when what
     changed is described by no page (for example a data file).

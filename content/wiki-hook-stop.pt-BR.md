@@ -1,7 +1,7 @@
 ---
 id: wiki-hook-stop
 lang: pt-BR
-source_hash: c02e4a0d2dd4
+source_hash: f78451b3159b
 title: Hook Stop do wiki (rede de segurança)
 ---
 
@@ -22,3 +22,5 @@ O [[claude-code]] (a mensagem).
 
 ## Notes
 O `wiki stale` e este hook respondem a duas perguntas diferentes, por isso uma página pode ser listada por um e não pelo outro. O `wiki stale` pergunta, página por página: "uma fonte mudou depois do horário em que a página diz ter sido conferida pela última vez (o campo `reviewed`)?" Ele não depende de publicar. O hook pergunta: "desde o último `wiki publish`, algum projeto ganhou commits que tocam as fontes de uma página ou adicionou arquivos que nenhuma página cobre?" Ele é a rede de segurança para o que o `wiki stale` não consegue ver: uma mudança no mesmo minuto de uma revisão, um arquivo novo que nenhuma página cita e o trabalho da sessão atual. Quando o hook aponta uma página, leia o `git log` do repositório da fonte e compare com o texto da página; se a página está certa, defina o `reviewed` dela. Antes de 2026-10-24 o `wiki stale` comparava o horário do commit da fonte com o do arquivo da página, então reescrever muitas páginas escondia toda mudança anterior e este hook era a única coisa que ainda as via (veja [[wiki-stale]]).
+
+O lembrete encaminha explicitamente páginas de skills para a regra de fontes completas: localizar e ler o `SKILL.md` inteiro, incluir sua descrição completa e todas as instruções com uma impressão digital na página em inglês e nas duas traduções e rodar `wiki check --local`. Ele aponta para `AGENTS.md` e [[skill-wiki-page-writer]]. O hook lembra quem escreve; não gera o texto da página sozinho.

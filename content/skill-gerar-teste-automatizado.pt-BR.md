@@ -1,7 +1,7 @@
 ---
 id: skill-gerar-teste-automatizado
 lang: pt-BR
-source_hash: 4fda3dff3f6f
+source_hash: 111014cbaa27
 title: Skill: gerar-teste-automatizado
 ---
 
@@ -29,3 +29,116 @@ Agir como um engenheiro sênior em testes automatizados e detecção de defeitos
 4. **Verificar que os testes conseguem detectar defeitos.** Executar os testes novos e investigar toda falha (nunca mudar uma expectativa só para passar). Executar de novo depois de correções reais e rodar a suíte existente em busca de regressões. Quando viável, fazer teste de mutação: plantar falhas controladas e verificar que os testes as pegam, classificando cada sobrevivente como mutante equivalente, irrelevante ou lacuna real. Repetir execuções para confirmar independência e resultados estáveis. Medir cobertura de linhas e de ramos se houver ferramenta; cobertura não é prova de correção.
 5. **Restrições.** Não alterar o código de produção para fazer testes passarem; não editar requisitos, dados de referência ou resultados esperados sem motivo verificável; não apagar testes, desativar validações nem enfraquecer verificações para ficar verde. Uma correção de produção necessária é proposta separadamente (defeito, evidência, mudança proposta) e implementada só dentro do escopo autorizado. Nunca afirmar que um teste passou sem executá-lo; declarar toda limitação (ferramenta ausente, ambiente).
 6. **Entregar: escrever `docs/TESTES-AUTOMATIZADOS.md` e relatar.** O registro guarda: o resumo da análise e a estratégia; a matriz de testes (requisito, cenário, resultado esperado, prioridade); os arquivos e seus propósitos; os comandos de execução; os resultados reais (executados, passaram, falharam, ignorados); cobertura com a ferramenta e lacunas; defeitos achados (descrição, evidência, impacto, reprodução); limitações e riscos residuais; recomendações; e a linha de cabeçalho `Last reviewed: <sha do commit> <data>` que o modo atualizar lê. Marcar com clareza o que foi observado, o que é inferido e o que é hipótese. Só está pronto quando os testes estão implementados e organizados, os resultados esperados têm base identificável, os comandos de execução estão documentados, os testes foram executados (ou os limites registrados), as falhas foram investigadas e classificadas e os riscos e lacunas estão documentados. Não parar em plano ou exemplos de código. Terminar com "Verified by:".
+
+## Notes
+
+### Fontes completas da skill
+
+Os blocos abaixo contêm os arquivos `SKILL.md` originais completos, incluindo todas as descrições e instruções. Os originais mantêm seu idioma de origem; a explicação e os passos acima os descrevem no idioma desta página. As versões do Claude e do Codex ficam separadas. Arquivos auxiliares são citados nos originais, mas não estão incluídos nestas cópias. Cada impressão digital identifica o texto inteiro que foi copiado.
+
+#### Claude: `home:.claude/skills/gerar-teste-automatizado/SKILL.md`
+
+```skill-source home:.claude/skills/gerar-teste-automatizado/SKILL.md 5ef692eacb4e55d231aba1007926f683002fd53247ef6043d6be0d73d9ca077e
+---
+name: gerar-teste-automatizado
+description: "Use in Claude Code to create or update the automated bug-finding test suite of a software project: full diagnosis of the code, test matrix, tests that detect real defects, mutation and coverage checks (criar testes automatizados, suíte de testes, buscar bugs). Called by revisao-manutencao on the first review of a project (create) and on later reviews (update); can also be asked for directly. Not for fixing a single failing test or a bug (systematic-debugging)."
+---
+
+# Automated bug-finding tests (gerar-teste-automatizado)
+
+Lineage: origin=code; base=none
+
+Interop: role = domain; owns = the bug-finding test suite and its record `docs/TESTES-AUTOMATIZADOS.md`; defers to = the project's existing test framework, requirements catalogue and CLAUDE.md (REQ tags, gate), systematic-debugging (fixing a defect found), verification-before-completion; called by = revisao-manutencao; honors = reply-language rule, work.ask-language, work.test-yourself.
+
+Act as a senior engineer in automated testing and defect detection. The aim is tests that **find real errors, regressions, invalid inputs, boundaries and integration failures**, not tests that confirm the easy path.
+
+## Mode (decide first)
+- **Create**: `docs/TESTES-AUTOMATIZADOS.md` does not exist in the project. Full diagnosis, then build the suite. That file is the marker that the suite exists. The record lives at the root of the project; for a component with its own manifest (for example QuizApp's `tools/pipeline-check`) it lives at that component's root, `tools/pipeline-check/docs/TESTES-AUTOMATIZADOS.md`, and the review checks each component that has one.
+- **Update**: it exists. Read it and the suite, find what changed in the code, requirements and ADRs since the "Last reviewed" commit in the file, and bring the matrix and tests up to date: new behaviours get cases, removed ones lose them (with a reason), mutants that survived last time are retried. Do not rewrite what still holds.
+Programming language and framework: use what the project already uses; if there is none, ask Giovanni (work.ask-language). Never run destructive operations on databases or external systems; no secrets or personal data in tests or reports.
+
+## 1. Analyse before writing any test
+1. Structure, language, dependencies, architecture, relevant modules, test tools already installed.
+2. Explicit requirements, business rules, function contracts, input and output formats (the project's `docs/REQUIREMENTS.md` first).
+3. Critical components, external dependencies, main failure modes.
+4. Existing tests and the gaps in their coverage.
+5. Ambiguous or missing requirements: do not invent rules. Record the uncertainty and proceed only on stated, justified hypotheses.
+Keep the project's architecture and patterns unless there is a documented technical reason.
+
+## 2. Plan: the test matrix
+Map each requirement or behaviour to cases, chosen by risk and defect-finding power, not by count. Consider where applicable: normal scenarios; equivalence classes of valid and invalid input; boundary values; null, missing, wrong-typed and malformed data; extreme cases and combinations; exceptions, network failure, unavailable dependencies; invalid states and forbidden transitions; duplicates and integrity violations; regressions; concurrency, idempotency, performance, security when in scope. No redundant cases.
+
+## 3. Implement
+Prefer the project's frameworks. Each test: a specific purpose and a name that describes the behaviour; builds its own inputs; acts; compares with an expected result **defined independently of the code under test** (hand-computed, from the requirement); checks relevant side effects; fails with a clear message. Arrange-Act-Assert. Do not call code without asserting on the result. Do not turn current behaviour into the oracle: confront it with the requirements. Tag tests with the project's convention (QuizApp: `REQ <ID>` comment). Choose levels as needed (unit, integration, end-to-end, property-based, regression) and justify gaps; do not force every level.
+
+Qualities: deterministic, reproducible, isolated, low coupling (public behaviour and contracts), maintainable, external services faked in unit tests and real only in integration tests; no arbitrary waits, order dependence, internet calls, or uncontrolled time.
+
+## 4. Verify the tests can detect defects
+1. Run the new tests; investigate every failure. Never change an expectation just to pass.
+2. Run again after real fixes; run the existing suite for regressions.
+3. When viable, mutation testing: plant controlled faults and check the tests catch them. Classify each survivor: equivalent mutant, irrelevant, or a real gap.
+4. Repeat runs to confirm independence and stable results.
+5. Measure line and branch coverage if a tool exists. Coverage is not proof of correctness.
+
+## 5. Restrictions
+Do not change production code to make tests pass; do not edit requirements, reference data or expected results without a verifiable reason; do not delete tests, disable validations or weaken checks to get green. A needed production fix is **proposed separately** (defect, evidence, proposed change) and implemented only if inside the authorised scope. Never claim a test passed without running it; state every limitation (missing tool, environment).
+
+## 6. Deliver: write `docs/TESTES-AUTOMATIZADOS.md` and report
+The record keeps, in the project: analysis summary and strategy; the test matrix (requirement, scenario, expected result, priority); files and purposes; run commands; real results (run, passed, failed, ignored); coverage with tool and gaps; defects found (description, evidence, impact, reproduction); limitations and residual risks; recommendations; and the header line `Last reviewed: <commit sha> <date>` that Update mode reads. Mark clearly what was observed, what is inferred, and what is a hypothesis.
+
+Done only when: tests implemented and organised; expected results have an identifiable basis; run commands documented; tests executed (or limits recorded); failures investigated and classified; risks and gaps documented. Do not stop at a plan or code samples. End with `Verified by:`.
+```
+
+
+#### Codex: `home:.agents/skills/gerar-teste-automatizado/SKILL.md`
+
+```skill-source home:.agents/skills/gerar-teste-automatizado/SKILL.md 8fd0f846b4a0ac089cc419d19ff831421f301e84397a9799a463e78a8363812a
+---
+name: gerar-teste-automatizado
+description: "Use in Codex to create or update the automated bug-finding test suite of a software project: full diagnosis of the code, test matrix, tests that detect real defects, mutation and coverage checks (criar testes automatizados, suíte de testes, buscar bugs). Called by revisao-manutencao on the first review of a project (create) and on later reviews (update); can also be asked for directly. Not for fixing a single failing test or a bug (systematic-debugging)."
+---
+
+# Automated bug-finding tests (gerar-teste-automatizado)
+
+Lineage: origin=code; base=none
+
+Interop: role = domain; owns = the bug-finding test suite and its record `docs/TESTES-AUTOMATIZADOS.md`; defers to = the project's existing test framework, requirements catalogue and AGENTS.md (REQ tags, gate), systematic-debugging (fixing a defect found), verification-before-completion; called by = revisao-manutencao; honors = reply-language rule, work.ask-language, work.test-yourself.
+
+Act as a senior engineer in automated testing and defect detection. The aim is tests that **find real errors, regressions, invalid inputs, boundaries and integration failures**, not tests that confirm the easy path.
+
+## Mode (decide first)
+- **Create**: `docs/TESTES-AUTOMATIZADOS.md` does not exist in the project. Full diagnosis, then build the suite. That file is the marker that the suite exists. The record lives at the root of the project; for a component with its own manifest (for example QuizApp's `tools/pipeline-check`) it lives at that component's root, `tools/pipeline-check/docs/TESTES-AUTOMATIZADOS.md`, and the review checks each component that has one.
+- **Update**: it exists. Read it and the suite, find what changed in the code, requirements and ADRs since the "Last reviewed" commit in the file, and bring the matrix and tests up to date: new behaviours get cases, removed ones lose them (with a reason), mutants that survived last time are retried. Do not rewrite what still holds.
+Programming language and framework: use what the project already uses; if there is none, ask Giovanni (work.ask-language). Never run destructive operations on databases or external systems; no secrets or personal data in tests or reports.
+
+## 1. Analyse before writing any test
+1. Structure, language, dependencies, architecture, relevant modules, test tools already installed.
+2. Explicit requirements, business rules, function contracts, input and output formats (the project's `docs/REQUIREMENTS.md` first).
+3. Critical components, external dependencies, main failure modes.
+4. Existing tests and the gaps in their coverage.
+5. Ambiguous or missing requirements: do not invent rules. Record the uncertainty and proceed only on stated, justified hypotheses.
+Keep the project's architecture and patterns unless there is a documented technical reason.
+
+## 2. Plan: the test matrix
+Map each requirement or behaviour to cases, chosen by risk and defect-finding power, not by count. Consider where applicable: normal scenarios; equivalence classes of valid and invalid input; boundary values; null, missing, wrong-typed and malformed data; extreme cases and combinations; exceptions, network failure, unavailable dependencies; invalid states and forbidden transitions; duplicates and integrity violations; regressions; concurrency, idempotency, performance, security when in scope. No redundant cases.
+
+## 3. Implement
+Prefer the project's frameworks. Each test: a specific purpose and a name that describes the behaviour; builds its own inputs; acts; compares with an expected result **defined independently of the code under test** (hand-computed, from the requirement); checks relevant side effects; fails with a clear message. Arrange-Act-Assert. Do not call code without asserting on the result. Do not turn current behaviour into the oracle: confront it with the requirements. Tag tests with the project's convention (QuizApp: `REQ <ID>` comment). Choose levels as needed (unit, integration, end-to-end, property-based, regression) and justify gaps; do not force every level.
+
+Qualities: deterministic, reproducible, isolated, low coupling (public behaviour and contracts), maintainable, external services faked in unit tests and real only in integration tests; no arbitrary waits, order dependence, internet calls, or uncontrolled time.
+
+## 4. Verify the tests can detect defects
+1. Run the new tests; investigate every failure. Never change an expectation just to pass.
+2. Run again after real fixes; run the existing suite for regressions.
+3. When viable, mutation testing: plant controlled faults and check the tests catch them. Classify each survivor: equivalent mutant, irrelevant, or a real gap.
+4. Repeat runs to confirm independence and stable results.
+5. Measure line and branch coverage if a tool exists. Coverage is not proof of correctness.
+
+## 5. Restrictions
+Do not change production code to make tests pass; do not edit requirements, reference data or expected results without a verifiable reason; do not delete tests, disable validations or weaken checks to get green. A needed production fix is **proposed separately** (defect, evidence, proposed change) and implemented only if inside the authorised scope. Never claim a test passed without running it; state every limitation (missing tool, environment).
+
+## 6. Deliver: write `docs/TESTES-AUTOMATIZADOS.md` and report
+The record keeps, in the project: analysis summary and strategy; the test matrix (requirement, scenario, expected result, priority); files and purposes; run commands; real results (run, passed, failed, ignored); coverage with tool and gaps; defects found (description, evidence, impact, reproduction); limitations and residual risks; recommendations; and the header line `Last reviewed: <commit sha> <date>` that Update mode reads. Mark clearly what was observed, what is inferred, and what is a hypothesis.
+
+Done only when: tests implemented and organised; expected results have an identifiable basis; run commands documented; tests executed (or limits recorded); failures investigated and classified; risks and gaps documented. Do not stop at a plan or code samples. End with `Verified by:`.
+```

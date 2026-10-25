@@ -1,7 +1,7 @@
 ---
 id: wiki-content
 lang: pt-BR
-source_hash: 2c1860ca69fd
+source_hash: a946348bf82d
 title: Conteúdo do wiki (páginas Markdown)
 ---
 
@@ -21,3 +21,7 @@ Escrito pelo [[claude-code]] no fim de cada tarefa ([[end-of-task]]); verificado
 
 ## Who receives its output
 O [[wiki-check]] e o [[wiki-build]].
+
+## Notes
+
+Para uma página do tipo `skill`, quem escreve primeiro localiza e lê o `SKILL.md` instalado inteiro. A página mantém a explicação legível e os passos e inclui em Notes o arquivo original completo: a descrição do cabeçalho, todas as instruções, exemplos, limites e caminhos de referências. Arquivos distintos do Claude e do Codex são copiados separadamente. As páginas em alemão e português mantêm os mesmos originais, com introduções em seus próprios idiomas. Um resumo ou link sozinho não cumpre esta regra. Arquivos auxiliares citados não são incluídos automaticamente. Cada fonte aparece em `sources`; sua cópia em bloco de código leva uma impressão digital SHA-256 (um valor calculado a partir de todo o texto para detectar mudanças). A cópia usa finais de linha LF e acrescenta uma quebra de linha final se faltar no original. O [[wiki-skill-source]] valida as cópias; `wiki check --local` as compara com os arquivos instalados. A regra do projeto fica em `AGENTS.md`, é ligada pelo `CLAUDE.md` e se repete na [[skill-wiki-page-writer]] e no lembrete do [[wiki-hook-stop]].

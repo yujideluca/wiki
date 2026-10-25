@@ -8,8 +8,8 @@ status: active
 location: home:.claude/skills/regras-magic
 fed_by: []
 feeds: []
-sources: [home:.claude/skills/regras-magic/SKILL.md]
-reviewed: 2026-10-22T16:33Z
+sources: [home:.claude/skills/regras-magic/SKILL.md, home:.agents/skills/regras-magic/SKILL.md]
+reviewed: 2026-10-25T14:46Z
 ---
 
 ## What it is
@@ -30,3 +30,70 @@ Giovanni.
 ## Steps
 1. **Use this template.** *Ruling* (the result in one line); *Cards (Oracle)* (the relevant text of each card; mark "from memory" if it was not checked on [Scryfall](https://scryfall.com/) or Gatherer); *Timeline* (step by step: cast → stack → resolution → state-based actions → triggers); *Rules* (numbers from the [Comprehensive Rules](https://magic.wizards.com/en/rules)); *Confidence* (high, or medium when the card text is from memory or the case is rare).
 2. **Annotated example.** Question: "Kona, Rescue Beastie puts a Brontodon onto the battlefield with her trigger. Can I counter it with Remove Soul?" Ruling: no, there is no spell to counter. Cards: Remove Soul counters a creature spell; Kona puts the creature onto the battlefield (from memory, check on Scryfall). Timeline: Kona's trigger resolves → the Brontodon is put directly onto the battlefield without being cast → it never existed as a spell on the stack. Rules: 601.2a (casting starts by moving the card to the stack; putting onto the battlefield skips that). Confidence: high.
+
+## Notes
+
+### Complete skill sources
+
+The following blocks contain the complete original `SKILL.md` files, including their full descriptions and instructions. The originals retain their source language; the explanation and Steps above describe them in this page's language. Claude and Codex versions are separate. Referenced auxiliary files are named in the originals but are not included in these copies. Each fingerprint identifies the entire copied text.
+
+#### Claude: `home:.claude/skills/regras-magic/SKILL.md`
+
+```skill-source home:.claude/skills/regras-magic/SKILL.md eae8b79d04abe6950def6f44fe6ecd80d65beb4178fa40ab7a85b2fba524fb01
+---
+name: "regras-magic"
+description: "Responde dúvidas de regras de Magic: The Gathering do Giovanni — interações entre cartas, pilha, gatilhos, camadas, cópias, tokens, comandante; não para listas/compras da LigaMagic."
+---
+
+# Regras de Magic
+
+Lineage: origin=gui; base=bba4d064687fa0cf1f4d04312cd7433c5e7785aa
+
+Interop: role = domain; owns = formato de rulings de Magic; defers to = ligamagic-listas (compras), browser-automacao-segura (se usar navegador); honors = idioma da mensagem, flags !! *** ...
+
+## Template
+**Ruling:** <resultado em 1 linha>
+**Cartas (Oracle):** <texto relevante de cada carta; marque "de memória" se não conferiu no Scryfall/Gatherer>
+**Linha do tempo:** <passo a passo: lançar → pilha → resolução → ações baseadas em estado → gatilhos>
+**Regras:** <números das Comprehensive Rules>
+**Confiança:** alta / média (texto de memória ou caso raro)
+
+## Exemplo
+P: "Kona, Rescue Beastie coloca um Brontodon no campo pelo gatilho dela. Posso anular com Remove Soul?"
+**Ruling:** não — não há magia para anular.
+**Cartas (Oracle):** Remove Soul anula uma *mágica* de criatura; Kona *coloca* a criatura no campo de batalha (de memória — conferir no Scryfall).
+**Linha do tempo:** o gatilho da Kona resolve → o Brontodon é colocado direto no campo, sem ser lançado → nunca existiu como mágica na pilha.
+**Regras:** 601.2a (lançar começa movendo a carta para a pilha; colocar no campo pula isso).
+**Confiança:** alta.
+```
+
+
+#### Codex: `home:.agents/skills/regras-magic/SKILL.md`
+
+```skill-source home:.agents/skills/regras-magic/SKILL.md eae8b79d04abe6950def6f44fe6ecd80d65beb4178fa40ab7a85b2fba524fb01
+---
+name: "regras-magic"
+description: "Responde dúvidas de regras de Magic: The Gathering do Giovanni — interações entre cartas, pilha, gatilhos, camadas, cópias, tokens, comandante; não para listas/compras da LigaMagic."
+---
+
+# Regras de Magic
+
+Lineage: origin=gui; base=bba4d064687fa0cf1f4d04312cd7433c5e7785aa
+
+Interop: role = domain; owns = formato de rulings de Magic; defers to = ligamagic-listas (compras), browser-automacao-segura (se usar navegador); honors = idioma da mensagem, flags !! *** ...
+
+## Template
+**Ruling:** <resultado em 1 linha>
+**Cartas (Oracle):** <texto relevante de cada carta; marque "de memória" se não conferiu no Scryfall/Gatherer>
+**Linha do tempo:** <passo a passo: lançar → pilha → resolução → ações baseadas em estado → gatilhos>
+**Regras:** <números das Comprehensive Rules>
+**Confiança:** alta / média (texto de memória ou caso raro)
+
+## Exemplo
+P: "Kona, Rescue Beastie coloca um Brontodon no campo pelo gatilho dela. Posso anular com Remove Soul?"
+**Ruling:** não — não há magia para anular.
+**Cartas (Oracle):** Remove Soul anula uma *mágica* de criatura; Kona *coloca* a criatura no campo de batalha (de memória — conferir no Scryfall).
+**Linha do tempo:** o gatilho da Kona resolve → o Brontodon é colocado direto no campo, sem ser lançado → nunca existiu como mágica na pilha.
+**Regras:** 601.2a (lançar começa movendo a carta para a pilha; colocar no campo pula isso).
+**Confiança:** alta.
+```

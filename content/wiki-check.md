@@ -8,8 +8,8 @@ status: active
 location: wiki:server/lib/wiki/content/check.ex
 fed_by: [wiki-content]
 feeds: [wiki-cli]
-sources: [wiki:server/lib/wiki/content/check.ex, wiki:server/lib/wiki/content/privacy.ex]
-reviewed: 2026-10-24T21:57Z
+sources: [wiki:server/lib/wiki/content/check.ex, wiki:server/lib/wiki/content/privacy.ex, wiki:server/lib/wiki/content/skill_source.ex, wiki:server/lib/wiki/content/page.ex]
+reviewed: 2026-10-25T14:46Z
 ---
 
 ## What it is
@@ -26,3 +26,7 @@ The first step of `wiki publish`, and part of the [[wiki-quality-gate]].
 
 ## Who receives its output
 The [[wiki-cli]] (publishing refuses on any problem).
+
+## Notes
+
+For skill pages, [[wiki-skill-source]] requires the complete `SKILL.md` file for each declared skill source, including the description and instructions. Every copy must have a matching SHA-256 (Secure Hash Algorithm 256) fingerprint (a value calculated from its text to detect changes), and both translations must retain exactly the same originals. Local mode also reads each source file and compares its complete text with the copy. Without local sources the checker validates presence and fingerprints, but cannot prove freshness. The parser respects code fences, so source headings and example links are not treated as wiki structure. Privacy checks still scan the full copied text.

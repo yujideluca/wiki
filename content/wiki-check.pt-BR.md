@@ -1,7 +1,7 @@
 ---
 id: wiki-check
 lang: pt-BR
-source_hash: 097283d94376
+source_hash: 9623aa129e24
 title: wiki check (regras de conteúdo)
 ---
 
@@ -19,3 +19,7 @@ O primeiro passo de `wiki publish` e parte do [[wiki-quality-gate]].
 
 ## Who receives its output
 A [[wiki-cli]] (a publicação recusa diante de qualquer problema).
+
+## Notes
+
+Para páginas de skills, o [[wiki-skill-source]] exige o arquivo `SKILL.md` completo de cada fonte declarada, incluindo descrição e instruções. Cada cópia precisa de uma impressão digital SHA-256 correspondente (um valor calculado a partir de seu texto para detectar mudanças), e as duas traduções precisam manter exatamente os mesmos originais. No modo local, o verificador também lê cada arquivo de origem e compara seu texto inteiro com a cópia. Sem fontes locais, ele valida a presença e as impressões digitais, mas não comprova a atualidade. O leitor respeita blocos de código, de modo que títulos e links de exemplo do original não viram estrutura da wiki. A verificação de privacidade continua lendo todo o texto copiado.

@@ -39,3 +39,7 @@ Tailscale Funnel, behind Google sign-in for yujideluca@gmail.com only. Design: `
   (decoy logged out, map, hover, click, languages, phone width).
 - Keep `DESIGN.md` current in the same commit as any design change; structural changes get an ADR.
 - Never force-push. Ask Giovanni before anything outward-facing or destructive.
+
+## Complete skill pages (CO-10)
+
+For `kind: skill`, follow the complete-source rule in `AGENTS.md`: locate and read the entire installed `SKILL.md`, include its full description and instructions beside the readable explanation, and preserve the same originals in all three language versions. Include separate Claude and Codex sources when both exist. Summaries alone do not pass. `wiki check --local` compares each copy with its source.
