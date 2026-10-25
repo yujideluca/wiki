@@ -15,12 +15,15 @@ import Http
 import I18n exposing (Lang)
 import Json.Decode as D
 import Layout
+import Lens exposing (Lens)
 import MapSize
 import MapView
+import Motion
 import Route exposing (Route(..))
 import Search
-import Set
+import Set exposing (Set)
 import Task
+import TopBar
 import Types exposing (Load(..), Model, Msg(..))
 import Url exposing (Url)
 import Zoom
@@ -67,6 +70,14 @@ init flags url key =
             , month = Nothing
             , article = Loading
             , step = 0
+            , selected = Nothing
+            , menuOpen = False
+            , openSecs = Set.empty
+            , motion = Dict.empty
+            , adj = Dict.empty
+            , moving = False
+            , drag = Nothing
+            , justDragged = False
             }
     in
     ( model
@@ -149,11 +160,19 @@ centreOn id model =
             let
                 k =
                     max 1.1 (Zoom.asRecord model.zoom).scale
+
+                -- on a phone the balloon covers the lower half, so the node goes to the upper part
+                targetY =
+                    if MapSize.isPhone model.width then
+                        model.height * 0.3
+
+                    else
+                        (lensFor model).cy
             in
             { model
                 | zoom =
                     Zoom.setTransform (Zoom.animatedAround ( model.width / 2, model.height / 2 ))
-                        { scale = k, translate = { x = model.width / 2 - k * x, y = model.height / 2 - k * y } }
+                        { scale = k, translate = { x = model.width / 2 - k * x, y = targetY - k * y } }
                         model.zoom
             }
 
@@ -161,14 +180,92 @@ centreOn id model =
             model
 
 
-currentSuggestions : Model -> List Data.Node
-currentSuggestions model =
-    case model.graph of
-        Loaded g ->
-            Search.suggestions model.lang 8 model.query g.nodes
+{-| The lens of the map area: centred in what the floating controls leave free, as strong as it is on a desktop and off
+on a phone (LN-1). -}
+lensFor : Model -> Lens
+lensFor model =
+    let
+        ( top, bottom ) =
+            MapSize.insets model.width
 
-        _ ->
-            []
+        areaHeight =
+            max 100 (model.height - top - bottom)
+    in
+    { cx = model.width / 2
+    , cy = top + areaHeight / 2
+    , hw = model.width / 2
+    , hh = areaHeight / 2
+    , strength =
+        if MapSize.isPhone model.width then
+            0
+
+        else
+            1.2
+    }
+
+
+{-| After the layout or the window changed, the dots start where they were on screen and spring to their new places
+(DY-4); on the first load they start gathered towards the middle and spring open. -}
+reflow : Model -> Model -> Model
+reflow old new =
+    let
+        oldLive =
+            Motion.apply old.motion old.positions
+
+        offset ( id, ( bx, by ) ) =
+            case Dict.get id oldLive of
+                Just w ->
+                    let
+                        ( x, y ) =
+                            Lens.unproject new.zoom (Lens.project old.zoom w)
+                    in
+                    ( id, ( x - bx, y - by ) )
+
+                Nothing ->
+                    ( id, ( -0.55 * bx, -0.55 * by ) )
+    in
+    { new | motion = Motion.from (Dict.fromList (List.map offset (Dict.toList new.positions))), moving = True }
+
+
+{-| Where the dots are drawn from. On a phone, once everything has settled, the resting places themselves: the same value
+every time, so the map's cached drawing is reused while the map is panned or zoomed. -}
+livePositions : Model -> Layout.Positions
+livePositions model =
+    if MapSize.isPhone model.width && not model.moving then
+        model.positions
+
+    else
+        Motion.apply model.motion model.positions
+
+
+{-| Displacements the hovered dot's neighbours are drawn towards: a fifth of the way to it (DY-3). -}
+hoverPulls : Model -> Dict.Dict String ( Float, Float )
+hoverPulls model =
+    case model.hovered |> Maybe.andThen (\h -> Dict.get h model.positions |> Maybe.map (Tuple.pair h)) of
+        Just ( h, ( hx, hy ) ) ->
+            Dict.get h model.adj
+                |> Maybe.withDefault []
+                |> List.filterMap
+                    (\n -> Dict.get n model.positions |> Maybe.map (\( nx, ny ) -> ( n, ( 0.2 * (hx - nx), 0.2 * (hy - ny) ) )))
+                |> Dict.fromList
+
+        Nothing ->
+            Dict.empty
+
+
+{-| The dragged dot is held at the pointer once the pointer has moved. -}
+pinOf : Model -> Maybe ( String, ( Float, Float ) )
+pinOf model =
+    case model.drag of
+        Just d ->
+            if d.moved then
+                Dict.get d.id model.positions |> Maybe.map (\( bx, by ) -> ( d.id, ( Tuple.first d.target - bx, Tuple.second d.target - by ) ))
+
+            else
+                Nothing
+
+        Nothing ->
+            Nothing
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -187,12 +284,12 @@ update msg model =
         UrlChanged url ->
             let
                 m =
-                    { model | route = Route.fromUrl url, article = Loading, step = 0, suggestionsOpen = False }
+                    { model | route = Route.fromUrl url, article = Loading, step = 0, suggestionsOpen = False, selected = Nothing, menuOpen = False, openSecs = Set.empty }
             in
             ( m, Cmd.batch [ loadArticle m, Task.perform (always NoOp) (Browser.Dom.setViewport 0 0) ] )
 
         GotGraph (Ok g) ->
-            ( fit { model | graph = Loaded g, layout = Layout.compute g }, Cmd.none )
+            ( reflow model (fit { model | graph = Loaded g, layout = Layout.compute g, adj = Motion.adjacency g.edges }), Cmd.none )
 
         GotGraph (Err _) ->
             ( { model | graph = Failed }, Cmd.none )
@@ -204,19 +301,92 @@ update msg model =
             ( { model | article = Failed }, Cmd.none )
 
         GotViewport vp ->
-            ( fit (resized vp.viewport.width vp.viewport.height model), Cmd.none )
+            ( reflow model (fit (resized vp.viewport.width vp.viewport.height model)), Cmd.none )
 
         Resized w h ->
-            ( fit (resized (toFloat w) (toFloat h) model), Cmd.none )
+            if MapSize.isPhone model.width && toFloat w == model.width && model.graph /= Loading then
+                -- on a phone only the height changes when the keyboard or the address bar comes and goes: the view stays
+                ( resized (toFloat w) (toFloat h) model, Cmd.none )
+
+            else
+                ( reflow model (fit (resized (toFloat w) (toFloat h) model)), Cmd.none )
 
         Hover id ->
-            ( { model | hovered = Just id, focused = Just id }, Cmd.none )
+            -- a tap also sends mouseover on a phone; there the balloon (SelectNode) is the only preview
+            if MapSize.isPhone model.width then
+                ( model, Cmd.none )
+
+            else
+                ( { model | hovered = Just id, focused = Just id, justDragged = False, moving = True }, Cmd.none )
 
         Unhover ->
-            ( { model | hovered = Nothing }, Cmd.none )
+            ( { model | hovered = Nothing, justDragged = False, moving = True }, Cmd.none )
+
+        Frame ms ->
+            let
+                ( state, settled ) =
+                    Motion.step (min 0.033 (ms / 1000)) model.adj { pulls = hoverPulls model, pin = pinOf model } model.motion
+            in
+            ( { model | motion = state, moving = not settled }, Cmd.none )
+
+        DragStart id x y ->
+            if MapSize.isPhone model.width then
+                ( model, Cmd.none )
+
+            else
+                ( { model | drag = Just { id = id, startX = x, startY = y, moved = False, target = Dict.get id model.positions |> Maybe.withDefault ( 0, 0 ) }, justDragged = False }, Cmd.none )
+
+        DragMove x y ->
+            case model.drag of
+                Just d ->
+                    ( { model
+                        | drag =
+                            Just
+                                { d
+                                    | moved = d.moved || sqrt ((x - d.startX) ^ 2 + (y - d.startY) ^ 2) > 4
+                                    , target = Lens.unproject model.zoom (Lens.invert (lensFor model) ( x, y ))
+                                }
+                        , moving = True
+                      }
+                    , Cmd.none
+                    )
+
+                Nothing ->
+                    ( model, Cmd.none )
+
+        DragEnd ->
+            ( { model | drag = Nothing, justDragged = (model.drag |> Maybe.map .moved |> Maybe.withDefault False), moving = True }, Cmd.none )
 
         OpenNode id ->
-            ( model, Nav.pushUrl model.key (Route.toPath (ArticleView id)) )
+            if model.justDragged then
+                ( { model | justDragged = False }, Cmd.none )
+
+            else if MapSize.isPhone model.width then
+                update (SelectNode id) model
+
+            else
+                ( model, Nav.pushUrl model.key (Route.toPath (ArticleView id)) )
+
+        SelectNode id ->
+            ( centreOn id { model | selected = Just id, focused = Just id, menuOpen = False, suggestionsOpen = False }, Cmd.none )
+
+        CloseSheet ->
+            ( { model | selected = Nothing }, Cmd.none )
+
+        ToggleMenu ->
+            ( { model | menuOpen = not model.menuOpen }, Cmd.none )
+
+        ToggleSection key ->
+            ( { model
+                | openSecs =
+                    if Set.member key model.openSecs then
+                        Set.remove key model.openSecs
+
+                    else
+                        Set.insert key model.openSecs
+              }
+            , Cmd.none
+            )
 
         QueryChanged q ->
             ( { model | query = q, suggestionIndex = 0, suggestionsOpen = True }, Cmd.none )
@@ -224,7 +394,7 @@ update msg model =
         SearchKey key ->
             let
                 list =
-                    currentSuggestions model
+                    TopBar.currentSuggestions model
 
                 n =
                     List.length list
@@ -253,14 +423,28 @@ update msg model =
         PickSuggestion id ->
             let
                 m =
-                    { model | query = "", suggestionsOpen = False, focused = Just id, project = Nothing, month = Nothing }
+                    { model
+                        | query = ""
+                        , suggestionsOpen = False
+                        , focused = Just id
+                        , selected =
+                            if MapSize.isPhone model.width then
+                                Just id
+
+                            else
+                                model.selected
+                        , menuOpen = False
+                        , project = Nothing
+                        , month = Nothing
+                    }
             in
             case model.route of
                 MapView ->
-                    ( centreOn id m, Cmd.none )
+                    -- on a phone the keyboard would cover the balloon: let the search field go
+                    ( centreOn id m, Task.attempt (always NoOp) (Browser.Dom.blur "search-input") )
 
                 ArticleView _ ->
-                    ( m, Nav.pushUrl model.key (Route.toPath (ArticleView id)) )
+                    ( m, Cmd.batch [ Nav.pushUrl model.key (Route.toPath (ArticleView id)), Task.attempt (always NoOp) (Browser.Dom.blur "search-input") ] )
 
         CloseSuggestions ->
             ( { model | suggestionsOpen = False }, Cmd.none )
@@ -323,6 +507,20 @@ subscriptions model =
     Sub.batch
         [ Zoom.subscriptions model.zoom ZoomMsg
         , Browser.Events.onResize Resized
+        , if model.moving then
+            Browser.Events.onAnimationFrameDelta Frame
+
+          else
+            Sub.none
+        , case model.drag of
+            Just _ ->
+                Sub.batch
+                    [ Browser.Events.onMouseMove (D.map2 DragMove (D.field "clientX" D.float) (D.field "clientY" D.float))
+                    , Browser.Events.onMouseUp (D.succeed DragEnd)
+                    ]
+
+            Nothing ->
+                Sub.none
         ]
 
 
@@ -345,7 +543,7 @@ view model =
                 "Wiki"
     , body =
         [ div [ A.class ("app " ++ routeClass model.route) ]
-            [ topBar model
+            [ TopBar.topBar model
             , case model.graph of
                 Loading ->
                     div [ A.class "status" ] [ text s.loading ]
@@ -367,7 +565,7 @@ view model =
                                     div [ A.class "status" ] [ text s.loadError ]
 
                                 Loaded art ->
-                                    ArticleView.view model.lang g model.step art
+                                    ArticleView.view model.lang g model.step (MapSize.isPhone model.width) model.openSecs art
             ]
         ]
     }
@@ -383,107 +581,26 @@ routeClass route =
             "on-article"
 
 
-topBar : Model -> Html Msg
-topBar model =
-    let
-        s =
-            I18n.strings model.lang
-
-        suggestions =
-            currentSuggestions model
-    in
-    header [ A.class "topbar" ]
-        [ a [ A.class "brand", A.href "/" ]
-            [ span [ A.class "brand-dot" ] []
-            , text
-                (case model.route of
-                    MapView ->
-                        "Wiki"
-
-                    ArticleView _ ->
-                        s.backToMap
-                )
-            ]
-        , div [ A.class "search" ]
-            [ input
-                [ A.type_ "search"
-                , A.placeholder s.search
-                , A.value model.query
-                , A.attribute "aria-label" s.search
-                , A.attribute "autocomplete" "off"
-                , E.onInput QueryChanged
-                , E.on "keydown" (D.map SearchKey (D.field "key" D.string))
-                , E.onBlur CloseSuggestions
-                ]
-                []
-            , if model.suggestionsOpen && model.query /= "" then
-                ul [ A.class "suggestions", A.attribute "role" "listbox" ]
-                    (if List.isEmpty suggestions then
-                        [ li [ A.class "none" ] [ text s.noResults ] ]
-
-                     else
-                        List.indexedMap (suggestionView model) suggestions
-                    )
-
-              else
-                text ""
-            ]
-        , a [ A.class "glossary", A.href "/p/glossary" ] [ text s.glossary ]
-        , select [ A.class "lang", E.onInput SetLang, A.attribute "aria-label" "Language" ]
-            (List.map
-                (\l -> option [ A.value (I18n.code l), A.selected (l == model.lang) ] [ text (I18n.label l) ])
-                I18n.all
-            )
-        , a [ A.class "logout", A.href "/logout", A.attribute "data-native" "1" ] [ text s.logout ]
-        ]
-
-
-suggestionView : Model -> Int -> Data.Node -> Html Msg
-suggestionView model i node =
-    let
-        graphKinds =
-            case model.graph of
-                Loaded g ->
-                    Data.kindColour g node.kind
-
-                _ ->
-                    "#888"
-    in
-    li
-        [ A.classList [ ( "sel", i == model.suggestionIndex ) ]
-        , E.preventDefaultOn "mousedown" (D.succeed ( PickSuggestion node.id, True ))
-        , A.attribute "role" "option"
-        ]
-        [ span [ A.class "sdot", A.style "background" graphKinds ] []
-        , span [ A.class "stitle" ] [ text (Data.title model.lang node) ]
-        , span [ A.class "skind" ]
-            [ text
-                (if node.project == "none" then
-                    node.kind
-
-                 else
-                    node.kind ++ " · " ++ node.project
-                )
-            ]
-        ]
-
-
 mapScreen : Model -> Graph -> Html Msg
 mapScreen model g =
     let
         s =
             I18n.strings model.lang
 
-        visibleIds =
-            Filter.visible model.project model.month g
+        phone =
+            MapSize.isPhone model.width
 
         active =
-            case model.hovered of
-                Just h ->
-                    Just h
+            if phone then
+                model.selected
 
-                Nothing ->
-                    model.focused
+            else
+                case model.hovered of
+                    Just h ->
+                        Just h
+
+                    Nothing ->
+                        model.focused
 
         stops =
             Filter.days g.nodes
@@ -503,8 +620,8 @@ mapScreen model g =
             active |> Maybe.andThen (Data.nodeById g) |> Maybe.map (MapView.info model.lang g)
     in
     div [ A.class "map-screen" ]
-        [ div [ A.class "map-wrap" ]
-            [ MapView.map model.lang g model.positions model.zoom model.width model.height visibleIds active
+        (div [ A.class "map-wrap" ]
+            [ MapView.map model.lang g (livePositions model) model.zoom (lensFor model) model.width model.height model.project model.month active
             , div [ A.class "controls" ]
                 [ select [ E.onInput SetProject, A.attribute "aria-label" s.project ]
                     (option [ A.value "" ] [ text s.allProjects ]
@@ -528,7 +645,28 @@ mapScreen model g =
                 ]
             , legend model g
             ]
-        , div [ A.class "focus-title" ]
+            :: (if phone then
+                    [ case active |> Maybe.andThen (Data.nodeById g) of
+                        Just n ->
+                            MapView.sheet model.lang g n
+
+                        Nothing ->
+                            div [ A.class "tap-hint" ] [ text s.tapHint ]
+                    ]
+
+                else
+                    desktopLower model g active focusInfo
+               )
+        )
+
+
+desktopLower : Model -> Graph -> Maybe String -> Maybe MapView.Info -> List (Html Msg)
+desktopLower model g active focusInfo =
+    let
+        s =
+            I18n.strings model.lang
+    in
+    [ div [ A.class "focus-title" ]
             (case ( active |> Maybe.andThen (Data.nodeById g), focusInfo ) of
                 ( Just n, Just i ) ->
                     [ span [ A.class "ft-title" ] [ text i.title ]
@@ -552,8 +690,8 @@ mapScreen model g =
                 _ ->
                     []
             )
-        , MapView.infoBoxes model.lang model.boxHeight focusInfo
-        ]
+    , MapView.infoBoxes model.lang model.boxHeight focusInfo
+    ]
 
 
 orLast : List String -> Maybe String -> Maybe String

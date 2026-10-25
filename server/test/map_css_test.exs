@@ -21,4 +21,28 @@ defmodule Wiki.MapCssTest do
     assert seconds != [], "no map transition found: the pattern no longer matches the stylesheet"
     assert Enum.max(seconds) <= 0.08, "slowest map transition is #{Enum.max(seconds)} s"
   end
+
+  # REQ MB-5
+  test "the box around the step circles leaves room for the lit circle's growth and glow" do
+    [_, rule] = Regex.run(~r/^\.chain\s*\{([^}]*)\}/m, File.read!(@css))
+    # `overflow-x: auto` clips vertically too: the lit step grows by 12 % of 34 px and glows 18 px beyond its circle
+    [_, top, side] = Regex.run(~r/padding:\s*(\d+)px\s+(\d+)px/, rule)
+    assert String.to_integer(top) >= 20, "padding above and below the steps is #{top}px"
+    assert String.to_integer(side) >= 20, "padding left and right of the steps is #{side}px"
+  end
+
+  # REQ MB-6
+  test "on a phone the map's fades and dashes are switched off" do
+    css = File.read!(@css)
+    [_, phone] = Regex.run(~r/@media \(max-width: 760px\) \{\n  body:has\(\.on-map\)(.*?)\n\}\n@keyframes sheetUp/s, css)
+    assert phone =~ ~r/\.edge, \.node, \.node \.dot \{ transition: none; \}/
+    assert phone =~ ~r/\.edge\.mentions \{ stroke-dasharray: none;/
+  end
+
+  # REQ MB-7
+  test "the page is declared not translatable" do
+    html = File.read!(Path.expand("../../frontend/static/index.html", __DIR__))
+    assert html =~ ~s(translate="no")
+    assert html =~ ~s(<meta name="google" content="notranslate">)
+  end
 end

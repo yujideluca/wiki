@@ -76,10 +76,10 @@ button, select, input { font: inherit; }
 svg.map { display: block; cursor: grab; max-width: 100%; }
 html, body { overflow-x: hidden; }
 svg.map:active { cursor: grabbing; }
-.edge { stroke: #2f343c; stroke-width: 1.1; transition: stroke .07s, opacity .07s; }
+.edge { stroke: #2f343c; transition: stroke .07s, opacity .07s; }
 .edge.mentions { stroke-dasharray: 3 4; }
 .edge.feeds { marker-end: url(#arrow); }
-.edge.lit { stroke: var(--gold); stroke-width: 2; opacity: 1; }
+.edge.lit { stroke: var(--gold); opacity: 1; }
 .edge.dim { opacity: .25; }
 .arrowhead { fill: #4a4f57; }
 .node { cursor: pointer; transition: opacity .07s; }
@@ -162,7 +162,9 @@ svg.map:active { cursor: grabbing; }
 
 /* Process step-through */
 .stepper { font-family: var(--ui); background: #0f1318; color: var(--text); border-radius: 10px; padding: 16px; margin: 8px 0 16px; }
-.chain { display: flex; align-items: center; gap: 0; overflow-x: auto; padding-bottom: 6px; }
+/* The chain scrolls sideways, and a scroll box also clips vertically: the padding leaves room for the lit step's glow and
+   growth (a step is scaled up by 12 % and glows 18 px), the negative margin gives the room back to the layout. */
+.chain { display: flex; align-items: center; gap: 0; overflow-x: auto; padding: 22px 24px; margin: -14px -16px -8px; scrollbar-width: none; }
 .dot-step {
   flex: none; width: 34px; height: 34px; border-radius: 50%; border: 2px solid #3a3f47; background: var(--panel);
   color: var(--muted); cursor: pointer; transition: all .35s ease; position: relative; margin-right: 22px;
@@ -204,3 +206,105 @@ svg.map:active { cursor: grabbing; }
 .on-map .topbar { position: fixed; top: 0; left: 0; right: 0; background: rgba(7, 9, 12, .72); }
 .on-map .controls { top: 72px; }
 @media (max-width: 760px) { .on-map .controls { top: 116px; } }
+
+/* ---- Phone (MB-1..MB-4): map on the whole screen with a search pill on top, balloon for the node, Wikipedia-mobile article ---- */
+svg.map { touch-action: none; }
+@media (max-width: 760px) {
+  body:has(.on-map) { overflow: hidden; height: 100dvh; }
+  .map-wrap { border-bottom: 0; }
+  /* A phone cannot repaint 150 dots and 350 lines with a fade on each at every frame (measured on the phone: 118 ms a
+     frame after a tap, 36 ms without the fades, 27 ms also without the dashes), so the map has no transitions and
+     its "mentions" lines are plain and fainter instead of dashed. */
+  .edge, .node, .node .dot { transition: none; }
+  .edge.mentions { stroke-dasharray: none; opacity: .6; }
+  .edge.mentions.lit { opacity: 1; }
+  .edge.mentions.dim { opacity: .15; }
+
+  .phone-bar { display: block; padding: 10px 12px; background: transparent; border: 0; backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .on-article .phone-bar { background: rgba(7, 9, 12, .96); border-bottom: 1px solid var(--line); }
+  .pill-bar {
+    display: flex; align-items: center; gap: 2px; padding: 2px 8px 2px 4px; background: #12161c;
+    border: 1px solid var(--line); border-radius: 999px; box-shadow: 0 4px 18px rgba(0, 0, 0, .5);
+  }
+  .pill-bar:focus-within { border-color: var(--gold); }
+  .pill-bar .search { order: 0; flex: 1; flex-basis: auto; min-width: 0; max-width: none; }
+  .pill-bar .search input { border: 0; background: transparent; box-shadow: none; padding: 12px 8px; font-size: 16px; }
+  .menu-btn, .back-btn {
+    flex: none; width: 44px; height: 44px; display: grid; place-items: center; background: none; border: 0; border-radius: 50%;
+    color: var(--text); font-size: 20px; text-decoration: none; cursor: pointer;
+  }
+  .menu-btn:active, .back-btn:active { background: var(--gold-soft); }
+  .menu-panel {
+    display: flex; flex-direction: column; margin-top: 8px; padding: 6px; background: #12161c; border: 1px solid var(--line);
+    border-radius: 16px; box-shadow: 0 12px 32px rgba(0, 0, 0, .55);
+  }
+  .menu-panel a { padding: 13px 14px; color: var(--text); text-decoration: none; font-size: 16px; border-radius: 10px; }
+  .menu-panel a:active { background: var(--gold-soft); }
+  .menu-panel select { margin: 4px 8px; padding: 10px; font-size: 16px; }
+  .suggestions { border-radius: 16px; max-height: 50dvh; }
+  .suggestions li { padding: 12px 10px; }
+
+  /* filter chips under the search pill */
+  .on-map .controls {
+    top: 72px; left: 0; right: 0; padding: 0 12px 4px; flex-wrap: nowrap; overflow-x: auto; pointer-events: none;
+    scrollbar-width: none;
+  }
+  .on-map .controls > * { pointer-events: auto; flex: none; }
+  .controls select, .timeline {
+    background: #12161c; border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; font-size: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .4);
+  }
+  .timeline { gap: 8px; }
+
+  /* the node's balloon */
+  .sheet {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; display: flex; flex-direction: column; max-height: 52dvh;
+    padding: 0 16px calc(12px + env(safe-area-inset-bottom)); background: var(--panel); border-top: 1px solid var(--line);
+    border-radius: 20px 20px 0 0; box-shadow: 0 -10px 40px rgba(0, 0, 0, .6); animation: sheetUp .22s ease;
+  }
+  .sheet-grip { flex: none; width: 40px; height: 4px; margin: 8px auto 6px; border-radius: 2px; background: #3a3f47; }
+  .sheet-head { flex: none; display: flex; align-items: flex-start; gap: 8px; }
+  .sheet-titles { flex: 1; min-width: 0; }
+  .sheet-title { font-size: 22px; line-height: 1.25; overflow-wrap: anywhere; }
+  .sheet-kind { display: flex; align-items: center; gap: 6px; margin-top: 3px; color: var(--muted); font-size: 13px; }
+  .sheet-close {
+    flex: none; width: 36px; height: 36px; border: 0; border-radius: 50%; background: #1c2129; color: var(--text);
+    font-size: 22px; line-height: 1; cursor: pointer;
+  }
+  .sheet-open {
+    flex: none; display: block; margin: 10px 0 2px; padding: 11px; border-radius: 999px; background: var(--gold);
+    color: #111; font-weight: 600; text-align: center; text-decoration: none;
+  }
+  .sheet-body { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding-bottom: 4px; }
+  .sheet-body h4 { margin: 14px 0 4px; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
+  .sheet-body p { margin: 0; font-size: 15px; line-height: 1.55; color: #d4cec2; }
+  .pills { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pill { color: var(--text); font-size: 13px; padding: 6px 12px; cursor: pointer; }
+  .tap-hint {
+    position: fixed; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 10;
+    max-width: calc(100vw - 32px); padding: 9px 16px; border: 1px solid var(--line); border-radius: 999px;
+    background: rgba(18, 22, 28, .92); color: var(--muted); font-size: 13px; text-align: center; pointer-events: none;
+  }
+
+  /* article, as the Wikipedia mobile site: title, lead, infobox, then sections that open on a tap */
+  .article { display: flex; flex-direction: column; padding: 16px 16px 48px; }
+  .article .infobox { order: 1; }
+  .article .sec { order: 2; }
+  .article h1 { font-size: 28px; }
+  .article .lead { font-size: 17px; }
+  .article .sec.collapsible { margin: 0; border-bottom: 1px solid var(--rule); }
+  .article .collapsible:first-of-type { border-top: 1px solid var(--rule); }
+  .article .collapsible h2 { margin: 0; border: 0; padding: 0; font-size: 20px; }
+  .sec-toggle {
+    display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 48px; padding: 10px 0;
+    background: none; border: 0; color: inherit; font: inherit; text-align: left; cursor: pointer;
+  }
+  .sec-toggle::after { content: "▾"; color: var(--ink-muted); transition: transform .2s; }
+  h2.open .sec-toggle::after { transform: rotate(180deg); }
+  .sec-body { padding-bottom: 12px; }
+  .history { order: 3; }
+  .infobox { margin-top: 12px; }
+  .stepper { padding: 12px; }
+}
+@keyframes sheetUp { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .sheet { animation: none; } }

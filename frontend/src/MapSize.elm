@@ -1,4 +1,4 @@
-module MapSize exposing (Sizes, boxesAbove, insets, isWide, sizes)
+module MapSize exposing (Sizes, boxesAbove, insets, isPhone, isWide, sizes)
 
 {-| How tall the map is and how tall the four info boxes under it are (MP-5).
 
@@ -21,6 +21,13 @@ type alias Sizes =
 isWide : Float -> Bool
 isWide width =
     width > 1100
+
+
+{-| A phone-width window (the stylesheet's breakpoint is 760 px): the map fills the whole screen and the node's
+description opens as a balloon over it (MB-1, MB-2). -}
+isPhone : Float -> Bool
+isPhone width =
+    width <= 760
 
 
 {-| What is under the map apart from the boxes: its bottom border, the line with the page title (56) and the boxes'
@@ -52,7 +59,10 @@ sizes width viewportHeight =
         room =
             viewportHeight - boxesAbove - wantedBox width
     in
-    if isWide width && room >= share then
+    if isPhone width then
+        { map = viewportHeight, box = Nothing }
+
+    else if isWide width && room >= share then
         { map = room, box = Just (wantedBox width) }
 
     else
@@ -63,7 +73,11 @@ sizes width viewportHeight =
 bar, the legend), so the graph is centred in what is left. -}
 insets : Float -> ( Float, Float )
 insets width =
-    if isWide width then
+    if isPhone width then
+        -- the search bar and the chip row float over the top of the map
+        ( 116, 8 )
+
+    else if isWide width then
         ( 112, 34 )
 
     else

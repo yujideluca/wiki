@@ -83,6 +83,9 @@ type alias Strings =
     , next : String
     , loading : String
     , loadError : String
+    , menu : String
+    , close : String
+    , tapHint : String
     , logout : String
     , glossary : String
     , notTranslated : String
@@ -123,6 +126,9 @@ strings lang =
             , next = "Next →"
             , loading = "Loading…"
             , loadError = "Could not load the wiki data."
+            , menu = "Menu"
+            , close = "Close"
+            , tapHint = "Tap a dot to see what it is."
             , logout = "Log out"
             , glossary = "Glossary"
             , notTranslated = "This page has no translation yet; showing English."
@@ -159,6 +165,9 @@ strings lang =
             , next = "Weiter →"
             , loading = "Wird geladen…"
             , loadError = "Die Wiki-Daten konnten nicht geladen werden."
+            , menu = "Menü"
+            , close = "Schließen"
+            , tapHint = "Tippe auf einen Punkt, um zu sehen, was er ist."
             , logout = "Abmelden"
             , glossary = "Glossar"
             , notTranslated = "Diese Seite ist noch nicht übersetzt; Anzeige auf Englisch."
@@ -195,6 +204,9 @@ strings lang =
             , next = "Próximo →"
             , loading = "Carregando…"
             , loadError = "Não foi possível carregar os dados do wiki."
+            , menu = "Menu"
+            , close = "Fechar"
+            , tapHint = "Toque em um ponto para ver o que é."
             , logout = "Sair"
             , glossary = "Glossário"
             , notTranslated = "Esta página ainda não foi traduzida; exibindo em inglês."

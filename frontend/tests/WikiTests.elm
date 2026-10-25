@@ -1,5 +1,6 @@
 module WikiTests exposing (suite)
 
+import ArticleView
 import Data exposing (EdgeType(..), Graph, Node)
 import Dict
 import Expect
@@ -8,6 +9,8 @@ import Html
 import Html.Attributes
 import I18n exposing (Lang(..))
 import Layout
+import Lens
+import Motion
 import MapSize
 import MapView
 import Search
@@ -62,6 +65,38 @@ graph =
     }
 
 
+phoneArticle : Data.Article
+phoneArticle =
+    { id = "mem"
+    , lang = "en"
+    , title = "mem"
+    , kind = "program"
+    , project = "none"
+    , status = "active"
+    , location = Nothing
+    , since = "2026-10-01"
+    , until = Nothing
+    , reviewed = Nothing
+    , mayBeStale = False
+    , fedBy = []
+    , feeds = []
+    , memory = []
+    , sources = []
+    , sections = [ { key = "what", markdown = "Lead text." }, { key = "does", markdown = "Body text." } ]
+    , history = []
+    }
+
+
+look : MapView.Look
+look =
+    { active = False, dim = False, label = True, radiusScale = 1, labelSize = 12 }
+
+
+lens : Lens.Lens
+lens =
+    { cx = 500, cy = 300, hw = 500, hh = 300, strength = 1.2 }
+
+
 ids : List Node -> List String
 ids =
     List.map .id
@@ -105,7 +140,7 @@ suite =
         , describe "map interaction"
             [ test "hovering a node asks to preview it" <|
                 \_ ->
-                    MapView.node En graph ( 0, 0 ) False False True 12 (mkNode "mem" "mem" "p" [] [])
+                    MapView.node En graph ( 0, 0 ) look (mkNode "mem" "mem" "p" [] [])
                         |> (\n -> Svg.svg [] [ n ])
                         |> Query.fromHtml
                         |> Query.find [ Selector.attribute (Html.Attributes.attribute "data-id" "mem") ]
@@ -113,12 +148,12 @@ suite =
                         |> Event.expect (Hover "mem")
             , test "the map declares a viewBox matching its size, so zoom and drag use real pointer positions" <|
                 \_ ->
-                    MapView.map En graph Dict.empty (Zoom.init { width = 800, height = 500 }) 800 500 Set.empty Nothing
+                    MapView.map En graph Dict.empty (Zoom.init { width = 800, height = 500 }) { cx = 400, cy = 250, hw = 400, hh = 250, strength = 1.2 } 800 500 Nothing Nothing Nothing
                         |> Query.fromHtml
                         |> Query.has [ Selector.attribute (Svg.Attributes.viewBox "0 0 800 500") ]
             , test "clicking a node opens its page" <|
                 \_ ->
-                    MapView.node En graph ( 0, 0 ) False False True 12 (mkNode "mem" "mem" "p" [] [])
+                    MapView.node En graph ( 0, 0 ) look (mkNode "mem" "mem" "p" [] [])
                         |> (\n -> Svg.svg [] [ n ])
                         |> Query.fromHtml
                         |> Query.find [ Selector.attribute (Html.Attributes.attribute "data-id" "mem") ]
@@ -143,6 +178,216 @@ suite =
                     Data.nodeById graph "mem"
                         |> Maybe.map (MapView.info De graph >> .receives)
                         |> Expect.equal (Just [ "events/ (de)" ])
+            ]
+
+        -- REQ LN-1
+        -- REQ LN-2
+        -- REQ LN-3
+        , describe "lens"
+            [ test "the middle is magnified, the ellipse touching the sides is not, the border is squeezed" <|
+                \_ ->
+                    ( (Lens.apply lens ( 500, 300 )).scale, (Lens.apply lens ( 1000, 300 )).scale, (Lens.apply lens ( 1000, 600 )).scale )
+                        |> (\( mid, edge, corner ) -> mid > 1.5 && edge < 1 && corner < edge)
+                        |> Expect.equal True
+            , test "dots near the middle end up further apart, dots near the border closer together" <|
+                \_ ->
+                    let
+                        gap a b =
+                            abs ((Lens.apply lens b).x - (Lens.apply lens a).x)
+                    in
+                    ( gap ( 500, 300 ) ( 540, 300 ) > 40 * 1.5, gap ( 940, 300 ) ( 980, 300 ) < 40 )
+                        |> Expect.equal ( True, True )
+            , test "points on the ellipse that touches the sides stay where they are, everything stays inside the window" <|
+                \_ ->
+                    let
+                        corner =
+                            Lens.apply lens ( 1000, 600 )
+                    in
+                    ( (Lens.apply lens ( 1000, 300 )).x, corner.x < 1000 && corner.y < 600 && corner.x > 500 )
+                        |> Expect.equal ( 1000, True )
+            , test "order along a line is kept" <|
+                \_ ->
+                    List.range 0 20
+                        |> List.map (\i -> (Lens.apply lens ( 500 + toFloat i * 25, 300 )).x)
+                        |> (\xs -> List.map2 (<) xs (List.drop 1 xs) |> List.all identity)
+                        |> Expect.equal True
+            , test "strength 0 changes nothing (phones)" <|
+                \_ ->
+                    Lens.apply { lens | strength = 0 } ( 123, 456 ) |> (\s -> ( s.x, s.y, s.scale )) |> Expect.equal ( 123, 456, 1 )
+            , test "a pointer position maps back to the dot under it" <|
+                \_ ->
+                    [ ( 520, 310 ), ( 100, 80 ), ( 900, 500 ), ( 500, 300 ) ]
+                        |> List.all
+                            (\p ->
+                                let
+                                    spot =
+                                        Lens.apply lens p
+
+                                    ( bx, by ) =
+                                        Lens.invert lens ( spot.x, spot.y )
+                                in
+                                abs (bx - Tuple.first p) < 0.01 && abs (by - Tuple.second p) < 0.01
+                            )
+                        |> Expect.equal True
+            , test "a dot in the middle is drawn bigger and with its label, one at the border smaller and without" <|
+                \_ ->
+                    let
+                        mid =
+                            MapView.lookAt 0.45 (Lens.apply lens ( 500, 300 ))
+
+                        border =
+                            MapView.lookAt 0.45 (Lens.apply lens ( 1000, 300 ))
+                    in
+                    ( mid.radiusScale > border.radiusScale * 1.4, mid.labelled, border.labelled )
+                        |> Expect.equal ( True, True, False )
+            ]
+
+        -- REQ DY-1
+        -- REQ DY-2
+        -- REQ DY-3
+        , describe "elastic motion"
+            [ test "a map at rest stays at rest and keeps its layout" <|
+                \_ ->
+                    let
+                        positions =
+                            Dict.fromList [ ( "mem", ( 10, 20 ) ), ( "events", ( 30, 40 ) ) ]
+
+                        ( st, settled ) =
+                            Motion.step 0.016 (Motion.adjacency graph.edges) { pulls = Dict.empty, pin = Nothing } Dict.empty
+                    in
+                    ( settled, Motion.apply st positions ) |> Expect.equal ( True, positions )
+            , test "a dragged dot stretches its neighbour along, and the neighbour contracts back when it is let go" <|
+                \_ ->
+                    let
+                        adj =
+                            Motion.adjacency graph.edges
+
+                        run n forces st =
+                            List.foldl (\_ s -> Motion.step 0.016 adj forces s |> Tuple.first) st (List.range 1 n)
+
+                        held =
+                            run 120 { pulls = Dict.empty, pin = Just ( "mem", ( 100, 0 ) ) } Dict.empty
+
+                        nbr st =
+                            Dict.get "events" st |> Maybe.map .dx |> Maybe.withDefault 0
+
+                        freed =
+                            run 600 { pulls = Dict.empty, pin = Nothing } held
+                    in
+                    ( nbr held > 10 && nbr held < 100, abs (nbr freed) < 0.5, Dict.get "mem" held |> Maybe.map .dx )
+                        |> Expect.equal ( True, True, Just 100 )
+            , test "the neighbours of a hovered dot are drawn towards it and settle there" <|
+                \_ ->
+                    let
+                        adj =
+                            Motion.adjacency graph.edges
+
+                        pulls =
+                            Dict.fromList [ ( "events", ( -20, 0 ) ) ]
+
+                        loop n st =
+                            if n == 0 then
+                                st
+
+                            else
+                                loop (n - 1) (Motion.step 0.016 adj { pulls = pulls, pin = Nothing } st |> Tuple.first)
+
+                        end =
+                            loop 900 Dict.empty
+                    in
+                    ( Dict.get "events" end |> Maybe.map .dx |> Maybe.withDefault 0 |> (\x -> x < -8 && x > -20.5)
+                    , Motion.step 0.016 adj { pulls = pulls, pin = Nothing } end |> Tuple.second
+                    )
+                        |> Expect.equal ( True, True )
+            ]
+
+        -- REQ DY-4
+        , describe "motion start"
+            [ test "dots can start displaced and at rest, to spring to their place" <|
+                \_ ->
+                    Motion.from (Dict.fromList [ ( "mem", ( 5, -5 ) ) ])
+                        |> Dict.get "mem"
+                        |> Expect.equal (Just { dx = 5, dy = -5, vx = 0, vy = 0 })
+            ]
+
+        -- REQ MB-1
+        -- REQ MB-8
+        , describe "phone map"
+            [ test "on a phone the map is as tall as the window and no boxes are left under it" <|
+                \_ ->
+                    [ ( 360, 640 ), ( 412, 915 ), ( 760, 1000 ) ]
+                        |> List.map (\( w, h ) -> ( (MapSize.sizes w h).map, (MapSize.sizes w h).box ))
+                        |> Expect.equal [ ( 640, Nothing ), ( 915, Nothing ), ( 1000, Nothing ) ]
+            , test "761 px is not a phone" <|
+                \_ -> ( MapSize.isPhone 760, MapSize.isPhone 761 ) |> Expect.equal ( True, False )
+            , test "the graph is centred below the search bar and its chips" <|
+                \_ -> MapSize.insets 390 |> Tuple.first |> Expect.greaterThan 100
+            ]
+
+        -- REQ MB-2
+        -- REQ MB-3
+        , describe "phone balloon"
+            [ test "it shows the node's title, the link to its page and both texts" <|
+                \_ ->
+                    case Data.nodeById graph "mem" of
+                        Just n ->
+                            MapView.sheet En graph n
+                                |> Query.fromHtml
+                                |> Expect.all
+                                    [ Query.has [ Selector.text "mem is a thing." ]
+                                    , Query.has [ Selector.text "Does mem." ]
+                                    , Query.find [ Selector.class "sheet-open" ] >> Query.has [ Selector.attribute (Html.Attributes.href "/p/mem") ]
+                                    ]
+
+                        Nothing ->
+                            Expect.fail "no node"
+            , test "a neighbour is a button that selects it" <|
+                \_ ->
+                    case Data.nodeById graph "mem" of
+                        Just n ->
+                            MapView.sheet En graph n
+                                |> Query.fromHtml
+                                |> Query.find [ Selector.class "pill", Selector.containing [ Selector.text "Giovanni" ] ]
+                                |> Event.simulate Event.click
+                                |> Event.expect (SelectNode "giovanni")
+
+                        Nothing ->
+                            Expect.fail "no node"
+            , test "the close button closes it" <|
+                \_ ->
+                    case Data.nodeById graph "mem" of
+                        Just n ->
+                            MapView.sheet En graph n
+                                |> Query.fromHtml
+                                |> Query.find [ Selector.class "sheet-close" ]
+                                |> Event.simulate Event.click
+                                |> Event.expect CloseSheet
+
+                        Nothing ->
+                            Expect.fail "no node"
+            ]
+
+        -- REQ MB-4
+        , describe "phone article"
+            [ test "on a phone a section's text is hidden until its heading is tapped" <|
+                \_ ->
+                    ArticleView.view En graph 0 True Set.empty phoneArticle
+                        |> Query.fromHtml
+                        |> Expect.all
+                            [ Query.has [ Selector.text "Lead text." ]
+                            , Query.hasNot [ Selector.text "Body text." ]
+                            , Query.find [ Selector.class "sec-toggle" ] >> Event.simulate Event.click >> Event.expect (ToggleSection "does")
+                            ]
+            , test "an opened section shows its text" <|
+                \_ ->
+                    ArticleView.view En graph 0 True (Set.fromList [ "does" ]) phoneArticle
+                        |> Query.fromHtml
+                        |> Query.has [ Selector.text "Body text." ]
+            , test "on a wide window the sections are always open" <|
+                \_ ->
+                    ArticleView.view En graph 0 False Set.empty phoneArticle
+                        |> Query.fromHtml
+                        |> Query.has [ Selector.text "Body text." ]
             ]
 
         -- REQ MP-5
@@ -180,7 +425,7 @@ suite =
                         , \_ -> (MapSize.sizes 1366 768).box |> Expect.equal Nothing
                         , \_ -> (MapSize.sizes 1000 1000).map |> Expect.within (Expect.Absolute 0.001) 580
                         , \_ -> (MapSize.sizes 1000 1000).box |> Expect.equal Nothing
-                        , \_ -> (MapSize.sizes 400 500).map |> Expect.equal 320
+                        , \_ -> (MapSize.sizes 800 500).map |> Expect.equal 320
                         , \_ -> (MapSize.sizes 1920 500).map |> Expect.equal 320
                         ]
                         ()

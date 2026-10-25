@@ -11,7 +11,7 @@ import Html exposing (Html, a, aside, button, code, div, h1, h2, li, p, section,
 import Html.Attributes as A
 import Html.Events as E
 import I18n exposing (Lang)
-import Set
+import Set exposing (Set)
 import Svg
 import Svg.Attributes as S
 import Svg.Events as SE
@@ -19,8 +19,8 @@ import Types exposing (Msg(..))
 import WikiText
 
 
-view : Lang -> Graph -> Int -> Article -> Html Msg
-view lang graph step art =
+view : Lang -> Graph -> Int -> Bool -> Set String -> Article -> Html Msg
+view lang graph step phone openSecs art =
     let
         s =
             I18n.strings lang
@@ -28,17 +28,56 @@ view lang graph step art =
         titleOf id =
             Data.nodeById graph id |> Maybe.map (Data.title lang) |> Maybe.withDefault id
 
-        sectionView sec =
-            section [ A.class ("sec sec-" ++ sec.key) ]
-                ([ h2 [] [ text (I18n.sectionHeading lang sec.key) ] ]
-                    ++ (if sec.key == "steps" then
-                            [ stepper lang graph step (WikiText.steps sec.markdown) ]
+        body sec =
+            (if sec.key == "steps" then
+                [ stepper lang graph step (WikiText.steps sec.markdown) ]
 
-                        else
-                            []
-                       )
-                    ++ WikiText.toHtml titleOf sec.markdown
-                )
+             else
+                []
+            )
+                ++ WikiText.toHtml titleOf sec.markdown
+
+        -- On a phone every section starts closed and a tap on its heading opens it, as in Wikipedia's mobile site (MB-4).
+        sectionView sec =
+            if phone then
+                let
+                    isOpen =
+                        Set.member sec.key openSecs
+                in
+                section [ A.class ("sec sec-" ++ sec.key ++ " collapsible") ]
+                    (h2
+                        [ A.class
+                            (if isOpen then
+                                "open"
+
+                             else
+                                ""
+                            )
+                        ]
+                        [ button
+                            [ A.class "sec-toggle"
+                            , E.onClick (ToggleSection sec.key)
+                            , A.attribute "aria-expanded"
+                                (if isOpen then
+                                    "true"
+
+                                 else
+                                    "false"
+                                )
+                            ]
+                            [ text (I18n.sectionHeading lang sec.key) ]
+                        ]
+                        :: (if isOpen then
+                                [ div [ A.class "sec-body" ] (body sec) ]
+
+                            else
+                                []
+                           )
+                    )
+
+            else
+                section [ A.class ("sec sec-" ++ sec.key) ]
+                    (h2 [] [ text (I18n.sectionHeading lang sec.key) ] :: body sec)
 
         lead =
             art.sections |> List.filter (\x -> x.key == "what") |> List.head

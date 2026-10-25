@@ -1,4 +1,4 @@
-module Types exposing (Load(..), Model, Msg(..))
+module Types exposing (Drag, Load(..), Model, Msg(..))
 
 import Browser
 import Browser.Dom
@@ -7,7 +7,9 @@ import Data exposing (Article, Graph)
 import Http
 import I18n exposing (Lang)
 import Layout exposing (Positions)
+import Motion
 import Route exposing (Route)
+import Set exposing (Set)
 import Url exposing (Url)
 import Zoom exposing (OnZoom, Zoom)
 
@@ -38,6 +40,24 @@ type alias Model =
     , month : Maybe String
     , article : Load Article
     , step : Int
+    , selected : Maybe String -- phone: the node whose balloon is open
+    , menuOpen : Bool -- phone: the menu under the search bar
+    , openSecs : Set String -- phone: article sections opened by a tap (all start closed)
+    , motion : Motion.State -- the elastic displacement of every dot on top of its resting place in `positions`
+    , adj : Motion.Adjacency
+    , moving : Bool -- the dots are not at rest: ask for animation frames
+    , drag : Maybe Drag
+    , justDragged : Bool -- a click that ends a drag must not open the page
+    }
+
+
+{-| A dot held by the mouse. It is only pinned once the pointer has moved a few pixels, so a plain click still opens the page. -}
+type alias Drag =
+    { id : String
+    , startX : Float
+    , startY : Float
+    , moved : Bool
+    , target : ( Float, Float ) -- where the pointer is, in map coordinates
     }
 
 
@@ -60,4 +80,12 @@ type Msg
     | SetMonth String
     | ZoomMsg OnZoom
     | StepTo Int
+    | SelectNode String
+    | CloseSheet
+    | ToggleMenu
+    | ToggleSection String
+    | Frame Float
+    | DragStart String Float Float
+    | DragMove Float Float
+    | DragEnd
     | NoOp

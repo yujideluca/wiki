@@ -42,3 +42,19 @@ Source: G = stated by Giovanni, D = derived by Claude Code and accepted (design 
 | MP-7 | Hovering a node lights it, its neighbours and its edges within 80 ms: every transition on the map is at most 0.08 s | G |
 | MP-8 | A link to another site in an article opens in a new tab; a link to a wiki page stays in the tab | G |
 | MP-9 | The top bar of every screen links to the glossary page, labelled in the chosen language | G |
+| MB-1 | On a phone-width window (760 px or less) the map fills the whole screen and the search bar floats over its top with the menu button inside it | G |
+| MB-2 | On a phone, tapping a node opens a balloon over the lower part of the map with what it is, what it does, what feeds it, who receives its output and a link to its page; tapping a node never leaves the map by itself | G |
+| MB-3 | On a phone the balloon's neighbours are buttons that select that node, and the search selects the node it finds | D |
+| MB-4 | On a phone an article shows its title, lead and infobox first, and every other section starts closed and opens when its heading is tapped | G |
+| MB-5 | The lit step of a process page is drawn whole: its circle, glow and growth are not cut off by the box around the steps | G |
+| LN-1 | On a desktop window the map is seen through a lens: dots in the middle of the area are bigger and further apart, dots near the border smaller and closer, and no dot leaves the window because of it; on a phone the lens is off | G |
+| LN-2 | Detail follows the lens: dots in the middle get their labels, dots near the border have none, and the dashed "mentions" lines are left out there unless lit | G |
+| LN-3 | A pointer position maps back through the lens to the dot under it, so dragging and clicking work where the dots are drawn | D |
+| DY-1 | The dots have an elastic layer on top of the layout: at rest every displacement is zero (the layout, MP-6, is unchanged) and when everything has settled no animation frames are requested | G |
+| DY-2 | Pressing a dot and moving the mouse drags it, its neighbours stretch along and contract back when it is let go; a press without movement still opens the page and a drag never does | G |
+| DY-3 | Hovering a dot draws its neighbours a fifth of the way towards it, and they return when the pointer leaves | G |
+| DY-4 | On first load the dots spring open from the middle, and after a window resize they spring from where they were to their new places instead of jumping | G |
+| MB-6 | On a phone the map has no CSS transitions and no dashed lines, and its dots sit in one group that the browser moves, redrawn only when something but the pan changes, so a tap, a pan and a pinch keep frames near 60 per second (measured on the phone: 118 ms a frame after a tap before, 19 ms after) | G |
+| MB-7 | The page declares itself not translatable, so the browser's own translation offer neither covers the search bar nor rewrites the app's text | D |
+| MB-8 | On a phone, choosing a search result closes the keyboard, and a change of the window's height alone (keyboard, address bar) keeps the map's zoom and place | D |
+
