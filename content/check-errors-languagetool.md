@@ -9,7 +9,7 @@ location: QuizApp:tools/check_errors_languagetool.py
 fed_by: [build-vocab]
 feeds: []
 sources: [QuizApp:tools/check_errors_languagetool.py]
-reviewed: 2026-10-22T16:33Z
+reviewed: 2026-10-25T08:08Z
 ---
 
 ## What it is
@@ -19,7 +19,7 @@ reviewed: 2026-10-22T16:33Z
 It enforces two rules. (1) Every corrected sentence must be clean at the PICKY level (LanguageTool's strictest setting), so no sentence teaches German that LanguageTool rejects. (2) No warning may fall on a chunk other than the marked one, so the player never meets a second, unintended error.
 
 ## How it does it
-A [Python](https://www.python.org/) script that calls the LanguageTool command-line program (a Java archive, Java 17 or newer). LanguageTool recognises only about a quarter of the planted errors, so whether the marked chunk is really wrong is still reviewed by hand.
+A [Python](https://www.python.org/) script that calls the LanguageTool command-line program (a Java archive, Java 17 or newer; installed on the laptop in `~/.local/opt/languagetool-dl`, LanguageTool 6.6). LanguageTool recognises only about a quarter of the planted errors, so whether the marked chunk is really wrong is still reviewed by hand.
 
 ## Where it sits in the pipeline
 After [[build-vocab]], whenever error sentences change.

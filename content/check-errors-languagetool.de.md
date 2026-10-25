@@ -1,7 +1,7 @@
 ---
 id: check-errors-languagetool
 lang: de
-source_hash: c7d207f9477b
+source_hash: 9aebd9a95f23
 title: check_errors_languagetool.py
 ---
 
@@ -12,7 +12,7 @@ title: check_errors_languagetool.py
 Es erzwingt zwei Regeln. (1) Jeder korrigierte Satz muss auf der Stufe PICKY (der strengsten Einstellung von LanguageTool) sauber sein, damit kein Satz Deutsch lehrt, das LanguageTool ablehnt. (2) Keine Warnung darf auf einen anderen als den markierten Teil fallen, damit der Spieler nie einem zweiten, unbeabsichtigten Fehler begegnet.
 
 ## How it does it
-Ein [Python](https://www.python.org/)-Skript, das das Kommandozeilenprogramm von LanguageTool aufruft (ein Java-Archiv, Java 17 oder neuer). LanguageTool erkennt nur etwa ein Viertel der eingebauten Fehler, daher wird, ob der markierte Teil wirklich falsch ist, weiterhin von Hand geprüft.
+Ein [Python](https://www.python.org/)-Skript, das das Kommandozeilenprogramm von LanguageTool aufruft (ein Java-Archiv, Java 17 oder neuer; auf dem Laptop in `~/.local/opt/languagetool-dl` installiert, LanguageTool 6.6). LanguageTool erkennt nur etwa ein Viertel der eingebauten Fehler, daher wird, ob der markierte Teil wirklich falsch ist, weiterhin von Hand geprüft.
 
 ## Where it sits in the pipeline
 Nach [[build-vocab]], wenn sich Fehlersätze ändern.
