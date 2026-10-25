@@ -1,7 +1,7 @@
 ---
 id: skill-wiki-page-writer
 lang: pt-BR
-source_hash: e8af8075e8f6
+source_hash: b06d528086ae
 title: Skill: wiki-page-writer
 ---
 
@@ -118,7 +118,7 @@ Scenarios the skill must handle: (1) a new function with a real source file; (2)
 
 #### Codex: `home:.agents/skills/wiki-page-writer/SKILL.md`
 
-````skill-source home:.agents/skills/wiki-page-writer/SKILL.md ca0c4cb11bce73beb9d565c9cb3356d0067d68d8a43830e1eec1ed4c92d3149a
+````skill-source home:.agents/skills/wiki-page-writer/SKILL.md 6608b6c4a57c67138765b460c770ffb689b8545dec95d5c96b1ddc19026bd3b3
 ---
 name: wiki-page-writer
 description: "Use this skill for any work on the content of Giovanni's wiki (~/dev/wiki, content/): writing, updating, translating or retiring a page. This covers the English page and its .de and .pt-BR versions (translations, source_hash fixes, wiki check failures in page files), and wiki publish. Trigger after finishing a task that changed something in his systems (project, program, module, function, script, skill, hook, service, data store, process, decision), when the Stop hook says 'Wiki update needed', or when he asks for a wiki page (página da wiki). Pages are written for a reader who knows nothing about the system. Not for general encyclopedia articles, code comments, DESIGN.md, ADRs, memory entries, or debugging and explaining the wiki tool itself."
@@ -135,10 +135,10 @@ Pages say what exists, to a stranger. The rules of format are not copied here: `
 ## Steps
 
 1. **Guard the tree. Always run it, even when you expect a clean tree** (a clean tree is only known by looking). `git -C ~/dev/wiki status --short`. `wiki publish` commits all of `content/`, so changes you did not make are not yours to publish. If there are changes you did not make (another assistant session or Giovanni editing):
-   - name the files to Giovanni and do not publish, stage or reset anything;
-   - if the foreign changes are in pages your task does not touch, you may write your own pages (so the work is ready) but you must not run `wiki publish`; tell Giovanni that publishing waits until the other edit is committed or discarded;
-   - if they are in pages you need to change, stop and ask;
-   - a failing `wiki check --local` caused by their edit (for example outdated translations of their page) is theirs: report it, do not fix it.
+   - name the occupied files and do not stage, reset or publish unrelated edits from that working tree;
+   - first investigate an isolated worktree based on committed code. Apply only this task’s documentation there, test required committed prerequisites, and run `wiki publish` from the clean worktree with `WIKI_ROOT` set. Integrate by a verified fast-forward when authorized; never copy the entire dirty tree into a publication. A dirty tree alone is not a blocker;
+   - for shared pages, reconcile this task’s precise source blocks, notes and matching translation fingerprints while preserving other text and staged work. Check for concurrent changes before writing. Ask only when a real content conflict or required authorization cannot be resolved within scope;
+   - distinguish failures caused by this task from other edits. A stale copied skill source after this task changed the installed skill is this task’s responsibility. Verify both isolated publication and the actual served data. Do not reset the primary task counter for an automatic hook; record genuinely blocked follow-ups in memory.
 2. **Learn the current rules.** Read `~/dev/wiki/CLAUDE.md` and `content/wiki-content.md`, and skim `content/_kinds.json` and `content/_acronyms.tsv`. Do not rely on memory or on this file for header fields, kinds or required sections; they change. Run `wiki check --local` once now: a failing baseline is a problem to report, not to hide.
 3. **Find the work.** Take the subject from the request, or run `wiki stale` (it lists the pages with a source changed after their `reviewed` time and exits 1 when it lists any) and read the Stop hook message (it lists pages to update and files "no page covers"; it compares the code with the last publish, so it also sees what `wiki stale` cannot: a change in the same minute as a review, and new files). For each listed page run `git log` in the source repository since the page's `reviewed` time (for a source outside git, read the file) and read what changed. For each subject decide the granularity (rule D11 in the wiki CLAUDE.md): own page, or a line in a module page's `## Functions`. Edit an existing page rather than create a near-duplicate (`ls content`, grep for the name and its aliases).
 4. **Verify before you write.** Every sentence must come from something read or run in this session: the code and config in the `sources` repositories, `git log` for what changed and when, tests and requirement IDs, a real run (`--help`, a dry run, `systemctl status`). Re-check old page text before keeping it; older pages go stale (a pinned version, a requirement range, a renamed file are the usual casualties). Copy numbers, versions, paths and IDs from the source. Label intent and plans as such. If you cannot verify a point, write "not verified" or leave it out; never fill it with a guess. Do not claim to have read or run what you did not. A page you compared with its sources this session, and found right or made right, gets a new `reviewed` time (step 6); a page you did not compare does not.

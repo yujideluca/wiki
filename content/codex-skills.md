@@ -9,7 +9,7 @@ location: codex-skills:README.md
 fed_by: []
 feeds: []
 sources: [codex-skills:README.md, codex-skills:manifest.json, codex-skills:DESIGN.md]
-reviewed: 2026-10-25T20:41Z
+reviewed: 2026-10-25T20:46Z
 ---
 
 ## What it is
