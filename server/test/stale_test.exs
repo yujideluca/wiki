@@ -76,6 +76,17 @@ defmodule Wiki.Content.StaleTest do
   end
 
   # REQ ST-1
+  test "a review at minute M covers all of that minute: a change at M:30 is not listed, one at M+1 is", %{content: c, repo: repo} do
+    change_source(repo, "2026-01-05T10:00:30Z")
+
+    review(c, "2026-01-05T10:00Z")
+    assert stale_ids(c) == [], "changed 30 seconds into the minute the page was reviewed"
+
+    change_source(repo, "2026-01-05T10:01:00Z")
+    assert stale_ids(c) == ["a"], "changed in the next minute"
+  end
+
+  # REQ ST-1
   test "of several changed sources the newest is named; pages without sources are never listed; a page with sources and no review is listed",
        %{content: c, repo: repo} do
     File.write!(Path.join(repo, "lib/y.ex"), "1")

@@ -123,6 +123,17 @@ defmodule Wiki.Content.Page do
   """
   def reviewed_at(%__MODULE__{header: header}), do: parse_reviewed(header["reviewed"])
 
+  @doc """
+  The last second the review covers: the whole minute for `2026-10-24T18:30Z`, so a change made earlier in that minute
+  is not "after" the review; for a date alone it is the start of the day (any change that day is listed).
+  """
+  def reviewed_until(%__MODULE__{header: header} = page) do
+    case reviewed_at(page) do
+      nil -> nil
+      time -> if Regex.match?(~r/T\d{2}:\d{2}Z$/, header["reviewed"]), do: time + 59, else: time
+    end
+  end
+
   def parse_reviewed(value) when is_binary(value) do
     case Regex.run(~r/^(\d{4}-\d{2}-\d{2})(?:T(\d{2}:\d{2})Z)?$/, value) do
       [_, date] -> to_unix(date, "00:00")

@@ -41,7 +41,8 @@ defmodule Wiki.Content.Stale do
         %{id: id, reason: "has no reviewed time (missing or not understood), so it was never compared with its sources"}
 
       reviewed ->
-        changed = for source <- sources, time = Sources.last_change(source), time > reviewed, do: {time, source}
+        covered = Page.reviewed_until(page)
+        changed = for source <- sources, time = Sources.last_change(source), time > covered, do: {time, source}
 
         case Enum.sort(changed, :desc) do
           [{time, source} | _] ->

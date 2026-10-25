@@ -70,3 +70,10 @@ folder) are listed often.
 Kept true by: REQ CO-6 (every page has a valid, non-future review time), ST-1 (page commits never clear it; the 14:44
 incident is a test), ST-2 (sources outside git), ST-3 (output and exit code), UP-3 (hook message). Tests:
 `server/test/stale_test.exs`, `server/test/check_test.exs`, `server/test/build_test.exs`.
+
+## Update 2026-10-24
+
+A review time with minutes covers its whole minute: a source change made earlier in that minute is not "after" the
+review (the first implementation compared with the start of the minute, so it was, which contradicted the rule that a
+change in the same minute is not seen). A date alone still means the start of that day. Test: `server/test/stale_test.exs`
+(ST-1, "a review at minute M covers all of that minute").
