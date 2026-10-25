@@ -1,7 +1,7 @@
 ---
 id: wiki-map-view
 lang: de
-source_hash: 2e1f5eee1345
+source_hash: 742bb87180bb
 title: Kartenansicht und Infokästen
 ---
 
@@ -11,7 +11,7 @@ Die Karte ist der Startbildschirm des Wikis: Jede Seite ist ein nach ihrer Art g
 ## What it does
 Fährt man über einen Punkt, leuchten er und seine Nachbarn golden auf, der Rest wird abgedunkelt; die Kästen zeigen What it is, What it does, Fed by und Who receives its output (und behalten den letzten Punkt, wenn die Maus weggeht). Ein Klick auf einen Punkt öffnet seinen Artikel. Man zieht zum Verschieben und nutzt das Mausrad oder eine Zwei-Finger-Geste zum Zoomen; der Projektfilter und die Zeitleiste blenden aus, was nicht dazugehört. Die Hervorhebung ist schnell (jedes Ein- und Ausblenden dauert 0,07 Sekunden). In einem großen Fenster nimmt die Karte die gesamte Höhe, die die vier Kästen nicht brauchen, sodass die Seite beim Überfahren eines Punkts nie scrollt; ein Text, der länger als sein Kasten ist, scrollt darin.
 
-Die Karte lebt. Jeder Punkt ruht dort, wo ihn das Layout hinsetzt, kann aber von diesem Platz weggeschoben werden und federt dann mit etwas Nachschwingen zurück, wie ein Gewicht an einem Gummiband: Drückt man auf einen Punkt und bewegt die Maus, wird er gezogen, seine Nachbarn werden hinter ihm gedehnt und ziehen sich beim Loslassen wieder zusammen (ein Klick ohne Bewegung öffnet weiter die Seite, ein Ziehen nie). Fährt man über einen Punkt, werden seine Nachbarn um ein Fünftel des Wegs zu ihm hingezogen. Beim ersten Laden springen die Punkte aus der Mitte auf, und nach einer Größenänderung des Fensters gleiten sie von ihrer alten Stelle an die neue, statt zu springen.
+Die Karte lebt. Jeder Punkt ruht dort, wo ihn das Layout hinsetzt, kann aber von diesem Platz weggeschoben werden und federt dann mit etwas Nachschwingen zurück, wie ein Gewicht an einem Gummiband: Drückt man auf einen Punkt und bewegt die Maus, wird er gezogen, seine Nachbarn werden hinter ihm gedehnt und ziehen sich beim Loslassen wieder zusammen (ein Klick ohne Bewegung öffnet weiter die Seite, ein Ziehen nie). Fährt man über einen Punkt, werden seine Nachbarn um ein Fünftel des Wegs zu ihm hingezogen (höchstens etwa 14 Pixel). Jeder Punkt antwortet der Maus dort, wo er ruht, nicht dort, wo er gerade gezeichnet ist; so kann die Bewegung nie einen Punkt unter eine stillstehende Maus schieben und die Hervorhebung zum Flackern bringen. Beim ersten Laden springen die Punkte aus der Mitte auf, und nach einer Größenänderung des Fensters gleiten sie von ihrer alten Stelle an die neue, statt zu springen.
 
 Auf einem Desktop wird die Karte außerdem durch eine Linse (ein Fischauge) gesehen: Punkte in der Mitte des Bereichs sind größer, weiter auseinander und beschriftet, Punkte am Rand kleiner, enger beieinander und ohne Beschriftung, und die gestrichelten „erwähnt“-Linien entfallen dort. Wegen der Linse verlässt kein Punkt das Fenster, und beim Verschieben oder Zoomen wandern die Punkte durch die Linse. Auf einem Handy ist die Linse aus.
 
