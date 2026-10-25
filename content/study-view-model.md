@@ -9,7 +9,7 @@ location: QuizApp:app/src/main/java/dev/yuji/quiz/ui/StudyViewModel.kt
 fed_by: [activity-calendar, daily-goal, question-pool-updater, settings-store, study-controller]
 feeds: [phone]
 sources: [QuizApp:app/src/main/java/dev/yuji/quiz/ui/StudyViewModel.kt, QuizApp:app/src/main/java/dev/yuji/quiz/ui/Screens.kt]
-reviewed: 2026-10-25T02:03Z
+reviewed: 2026-10-25T07:53Z
 ---
 
 ## What it is
