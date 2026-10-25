@@ -1,12 +1,12 @@
 ---
 id: wiki-requirements
 lang: pt-BR
-source_hash: 820256afa240
+source_hash: ed394c2510bc
 title: Requisitos do wiki
 ---
 
 ## What it is
-Um requisito é uma promessa testável do software. Esta página descreve a lista de promessas do próprio wiki (`docs/REQUIREMENTS.md`), cada uma com um ID formado por uma família de duas letras e um número: AU (o portão de login), DC (a isca), CO (regras de conteúdo), LG (idiomas), BU (o build), UP (a cadeia de atualização), ST (a desatualização das páginas), MP (o mapa e as páginas), MB (a versão para celular), LN (a lente no mapa) e DY (os pontos elásticos).
+Um requisito é uma promessa testável do software. Esta página descreve a lista de promessas do próprio wiki (`docs/REQUIREMENTS.md`), cada uma com um ID formado por uma família de duas letras e um número: AU (o portão de login), DC (a isca), CO (regras de conteúdo), LG (idiomas), BU (o build), UP (a cadeia de atualização), ST (a desatualização das páginas), MP (o mapa e as páginas), MB (a versão para celular), LN (a lente no mapa) DY (os pontos elásticos) e LY (o cálculo do layout).
 
 ## What it does
 Toda linha precisa ter pelo menos um teste etiquetado `REQ <ID>`; o arquivo gerado `docs/TRACEABILITY.md` liga cada requisito aos seus testes.

@@ -9,11 +9,11 @@ location: wiki:docs/REQUIREMENTS.md
 fed_by: []
 feeds: [check-traceability, wiki-quality-gate]
 sources: [wiki:docs/REQUIREMENTS.md]
-reviewed: 2026-10-25T09:04Z
+reviewed: 2026-10-25T09:22Z
 ---
 
 ## What it is
-A requirement is a testable promise of the software. This page describes the wiki's own list of promises (`docs/REQUIREMENTS.md`), each with an ID built from a two-letter family and a number: AU (the login gate), DC (the decoy), CO (content rules), LG (languages), BU (the build), UP (the update chain), ST (the staleness of pages), MP (the map and the pages), MB (the phone version), LN (the lens on the map) and DY (the elastic dots).
+A requirement is a testable promise of the software. This page describes the wiki's own list of promises (`docs/REQUIREMENTS.md`), each with an ID built from a two-letter family and a number: AU (the login gate), DC (the decoy), CO (content rules), LG (languages), BU (the build), UP (the update chain), ST (the staleness of pages), MP (the map and the pages), MB (the phone version), LN (the lens on the map), DY (the elastic dots) and LY (the layout computation).
 
 ## What it does
 Every row must have at least one test tagged `REQ <ID>`; the generated file `docs/TRACEABILITY.md` maps each requirement to its tests.
