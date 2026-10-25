@@ -22,7 +22,7 @@ defmodule Wiki.ContentCase do
 
   @doc "Runs git in `dir` and fails the test unless it exits 0."
   def git(dir, args, env \\ []) do
-    {_, 0} = System.cmd("git", ["-C", dir | args], env: env, stderr_to_stdout: true)
+    {_, 0} = System.cmd("git", ["-C", dir | args], env: Wiki.Content.Git.env() ++ env, stderr_to_stdout: true)
   end
 
   def init_repo(dir) do

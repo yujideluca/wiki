@@ -68,7 +68,7 @@ defmodule Wiki.Content.Sources do
     with {_, dir, path} <- resolve(source),
          full = Path.expand(Path.join(dir, path)),
          base = if(File.dir?(full), do: full, else: Path.dirname(full)),
-         {top, 0} <- System.cmd("git", ["-C", base, "rev-parse", "--show-toplevel"], stderr_to_stdout: true) do
+         {top, 0} <- System.cmd("git", ["-C", base, "rev-parse", "--show-toplevel"], env: Wiki.Content.Git.env(), stderr_to_stdout: true) do
       top = String.trim(top)
       {top, Path.relative_to(full, top)}
     else

@@ -110,7 +110,7 @@ defmodule Wiki.CLI do
     r = root()
 
     with 0 <- commit_only_content(r, msg) do
-      if System.cmd("git", ["remote"], cd: r) |> elem(0) |> String.trim() == "",
+      if System.cmd("git", ["remote"], cd: r, env: Wiki.Content.Git.env()) |> elem(0) |> String.trim() == "",
         do: 0,
         else: sh("git", ["push", "-q"], r)
     end
@@ -119,7 +119,7 @@ defmodule Wiki.CLI do
   @doc "Stages and commits content/ only, so unrelated work in the repo is never swept into a publish."
   def commit_only_content(r, msg) do
     with 0 <- sh("git", ["add", "content"], r) do
-      case System.cmd("git", ["diff", "--cached", "--quiet", "--", "content"], cd: r) do
+      case System.cmd("git", ["diff", "--cached", "--quiet", "--", "content"], cd: r, env: Wiki.Content.Git.env()) do
         {_, 0} ->
           IO.puts("no content changes to commit")
           0
@@ -133,7 +133,7 @@ defmodule Wiki.CLI do
   end
 
   defp sh(cmd, args, dir) do
-    {out, code} = System.cmd(cmd, args, cd: dir, stderr_to_stdout: true)
+    {out, code} = System.cmd(cmd, args, cd: dir, env: Wiki.Content.Git.env(), stderr_to_stdout: true)
     if code != 0, do: IO.puts(out)
     code
   end
