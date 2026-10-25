@@ -1,7 +1,7 @@
 ---
 id: wiki-site
 lang: de
-source_hash: ccfb383e550a
+source_hash: 54822600cea1
 title: site/ (gebautes Wiki)
 ---
 
@@ -9,7 +9,7 @@ title: site/ (gebautes Wiki)
 Der Ordner `site/` ist das gebaute Wiki, fertig zur Anzeige: `index.html`, `assets/` (die kompilierte Elm-App `app.js`, `boot.js` und `style.css`) und `data/` (die Graph- und Seitendateien in [JSON](https://en.wikipedia.org/wiki/JSON), JavaScript Object Notation, einem Klartext-Datenformat).
 
 ## What it does
-Er ist alles, was der Browser nach der Anmeldung braucht. Nichts davon wird je vor der Anmeldung gesendet.
+Er ist alles, was der Browser nach der Anmeldung braucht. Seine `index.html` sagt dem Browser, dass er keine eigene Übersetzung der Seite anbieten soll. Nichts davon wird je vor der Anmeldung gesendet.
 
 ## How it does it
 Er wird von [[wiki-build]] erzeugt und nicht in Git committet (er ist abgeleitet und lässt sich jederzeit neu erzeugen). Der [[wiki-router]] liefert ihn von der Festplatte aus, sodass eine Veröffentlichung ohne Neustart des Servers sichtbar wird.
