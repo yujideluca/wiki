@@ -8,7 +8,7 @@ status: active
 fed_by: []
 feeds: []
 sources: [QuizApp:tools/publish_apk.sh, QuizApp:CLAUDE.md]
-reviewed: 2026-10-25T02:04Z
+reviewed: 2026-10-25T08:22Z
 ---
 
 ## What it is
@@ -35,4 +35,4 @@ Giovanni, on the [[phone]].
 6. The beta app's [[update-client]] offers the update; Giovanni tries it.
 7. `publish_apk.sh promote` (the gate with the [[mutation-check]] and [[check-tests-updated]]) publishes the stable app to `main` when Giovanni decides, and only if `bleeding-edge` holds exactly this commit.
 8. The [[quizweb]] port waiting on the branch `web-<version>` is merged to `main`.
-9. New questions alone need no APK: edit the TSV files (tab-separated values), run [[build-vocab]], commit, then [[publish-content]] `beta` and, when Giovanni says so, `promote`.
+9. New questions alone need no APK: edit the TSV files (tab-separated values), run [[build-vocab]], commit, then [[publish-content]] `beta` and `promote` once the automated pipeline (the gate and the [[mutation-check]]) has passed: since 25 October 2026 Giovanni's standing permission covers question-pool updates, so no separate go-ahead is needed. App releases still wait for Giovanni.

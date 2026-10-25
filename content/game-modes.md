@@ -9,7 +9,7 @@ location: QuizApp:core/src/main/java/dev/yuji/quiz/domain/GameMode.kt
 fed_by: []
 feeds: [card-factory]
 sources: [QuizApp:core/src/main/java/dev/yuji/quiz/domain/GameMode.kt, QuizApp:DESIGN.md]
-reviewed: 2026-10-25T08:08Z
+reviewed: 2026-10-25T08:22Z
 ---
 
 ## What it is
