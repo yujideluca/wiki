@@ -1,7 +1,7 @@
 ---
 id: skill-skill-forge
 lang: de
-source_hash: aff6e9fbdcb8
+source_hash: 760068d70caf
 title: Skill: skill-forge
 ---
 
@@ -121,7 +121,7 @@ Compare versions per requirement. Pick the best; merge clearly superior elements
 
 #### Codex: `home:.agents/skills/skill-forge/SKILL.md`
 
-````skill-source home:.agents/skills/skill-forge/SKILL.md 873c7d2bf32e627ff666875ae577d69bd57e40aae7173c7854a488daeb5eb9da
+````skill-source home:.agents/skills/skill-forge/SKILL.md 380625c475372530c07f8f3fd085ed044008eeca30fc275699ebd9b0818f30c1
 ---
 name: "skill-forge"
 description: "Full skill pipeline for Giovanni: three competing versions, tests, compatibility checks with his other skills, then validation and packaging through skill-creator. Use when he asks to create, rebuild, optimize or forge a skill, turn a rule or workflow into a new skill, or wants tested or compared versions. For small changes to one skill (fix a line, rename, change the description, add an example) or just packaging a skill file, skill-creator alone is enough."
@@ -195,12 +195,12 @@ Goal: a new or changed skill must not collide with his other skills, settings or
 Compare versions per requirement. Pick the best; merge clearly superior elements from the others if they do not conflict. Re-check the merged version against the self-built scenarios, then run 4c.
 
 ## 6. Deliver (hand-off to skill-creator)
-1. **Validate:** if skill-creator is available, copy each final skill folder to a scratch path and run its `scripts/quick_validate.py` on it; fix every error. Keep the original skill name for updates.
+1. **Validate:** use the bundled Codex skill-creator at `$CODEX_HOME/skills/.system/skill-creator` (normally `~/.codex/skills/.system/skill-creator`), not a same-name Claude copy. Copy each final skill folder to a scratch path and run the bundled `scripts/quick_validate.py` on it; fix every error. Keep the original skill name for updates.
 2. **Save (Codex route):** write the complete SKILL.md to its owned Codex repository folder (managed adaptations: `~/dev/codex-skills/skills/<name>/`) (plus the impact updates from 4c), then write or update the skill's wiki page with the skill `wiki-page-writer` (its `## Steps` section holds the skill's own rules; `wiki check` fails without it) and run `wiki publish` and `mem use`. Codex cannot save claude.ai skill cards.
 3. **Records:** save a design note, the evaluation results and the compatibility report in the wiki page of the skill; list limitations, open gaps from 4b and pending impact proposals from 4c.
 4. **Optional evaluation tooling:** use an actual supported runner only when requested and available. Do not translate Claude command names or flags into guessed Codex flags. Prefer an independent read-only subagent evaluation when available under the current delegation rules; give it the skill and realistic cases, not expected answers. Never install a skill into an evaluator that is meant to test a temporary version. Report routing results as manual or observed; structural validation is not a measured routing score.
 
 ## Codex ownership
 
-Managed adaptations live in ~/dev/codex-skills/skills and are linked into ~/.agents/skills. Edit the repository source, validate, seal fingerprints and install through tools/skillsctl.py. Do not write through synced source copies or edit ~/.claude. Inspect the actual skill catalog (including bundled and plugin skills); do not assume Claude built-ins are present. Existing project guides named CLAUDE.md remain valid fallback references; prefer AGENTS.md where provided. For wiki updates, the tree guard takes precedence over registry or publication steps; stage a proposal in this project's docs/wiki if the target pages are occupied.
+Managed adaptations live in ~/dev/codex-skills/skills and are linked into ~/.agents/skills. Edit the repository source, validate, seal fingerprints and install through tools/skillsctl.py. Do not write through synced source copies or edit ~/.claude. Inspect the actual skill catalog (including bundled and plugin skills); do not assume Claude built-ins are present. Existing project guides named CLAUDE.md remain valid fallback references; prefer AGENTS.md where provided. For wiki updates, follow wiki-page-writer: investigate an isolated committed worktree and narrow reconciliation before declaring publication blocked. Preserve other text and staged work.
 ````

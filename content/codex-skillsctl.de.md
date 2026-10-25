@@ -2,7 +2,7 @@
 id: codex-skillsctl
 title: Codex skills manager
 lang: de
-source_hash: 3b08da2cc882
+source_hash: ed885cc31452
 ---
 
 ## What it is
@@ -25,3 +25,6 @@ Codex liest die installierten Skills. Die nutzende Person erhält Ergebnisse und
 Die Befehle und Rücknahme stehen in README.md. Installationsbelege bleiben außerhalb der Versionsverwaltung. Fehlende Browser-, Google- oder Planungsfunktionen bleiben ausdrückliche Grenzen.
 
 [[skill-adb-android-control]], [[skill-alemao-goethe-fsp]], [[skill-analise-artigo-cientifico]], [[skill-bias-risk-triage]], [[skill-brainstorming]], [[skill-browser-automacao-segura]], [[skill-candidatura-alemanha]], [[skill-click-protocol]], [[skill-consulta-clinica]], [[skill-deutsch-gespraech-memory]], [[skill-gerar-teste-automatizado]], [[skill-google-workspace]], [[skill-gui-code-protocol]], [[skill-import-memory]], [[skill-ligamagic-listas]], [[skill-ligamagic-replicar-carrinho-nas-lojas]], [[skill-minimize-site-approvals]], [[skill-morning]], [[skill-regras-magic]], [[skill-reparo-kubuntu]], [[skill-revisao-manutencao]], [[skill-setup-writing-style]], [[skill-skill-forge]], [[skill-systematic-debugging]], [[skill-verification-before-completion]], [[skill-wiki-page-writer]]
+
+
+Der nur lesende Befehl `doctor` prüft installierte Skill-Verknüpfungen, doppelte Namen und Änderungen an der Quelle. Ein doppelter Name bedeutet, dass zwei verfügbare Anleitungspakete gleich heißen. Eine Quellenänderung bedeutet, dass aktuelle Claude-Dateien von der gespeicherten Ausgangsversion abweichen. Die ausdrückliche Einstellung `prefer_bundled` wählt den mit Codex gelieferten skill-creator und bewahrt die verdeckende Codex-Kopie in einer Sicherung für die Rücknahme auf. Zuerst wird geprüft, ob der Ersatz vorhanden ist. Prüfung und offene Vorschläge zur Wiederherstellung und Dokumentanbindung stehen in `codex-skills:docs/WORKFLOW-AUDIT.md`.

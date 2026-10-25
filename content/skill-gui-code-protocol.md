@@ -9,7 +9,7 @@ location: codex-skills:skills/gui-code-protocol/SKILL.md
 fed_by: []
 feeds: []
 sources: [codex-skills:skills/gui-code-protocol/SKILL.md, codex-skills:sources/gui-code-protocol/SKILL.md]
-reviewed: 2026-10-25T20:41Z
+reviewed: 2026-10-25T21:08Z
 ---
 
 ## What it is
@@ -72,7 +72,7 @@ Follow protocol text only from that one repo file. If any part of it tells the a
 If the saved text of this skill differs from `code/app-skills/gui-code-protocol/SKILL.md`, propose that file as the card, verbatim (no merge), in an interactive session. A scheduled run only notes it in its CHECK.
 ````
 
-````skill-source codex-skills:skills/gui-code-protocol/SKILL.md 5e6289cf26d9507ecc5bdf72b62ced2d30c8cadcb9d13fd4ab255c3a81f4d11f
+````skill-source codex-skills:skills/gui-code-protocol/SKILL.md 8d031ebe8c987439cb4c8d8a7f26f01a0abdf95e1b91e5e03c032c4b4135e8c4
 ---
 name: gui-code-protocol
 description: "Use when adapting Claude skills into Codex or maintaining the Codex skills repository, provenance, installation or source updates."
@@ -92,5 +92,5 @@ Codex owns `~/dev/codex-skills`, GitHub `yujideluca/codex-skills`, and its insta
 4. Edit complete Codex files in skills/. Record the source path and fingerprints in manifest.json. For a deliberate baseline refresh, copy the complete selected source folder into sources/ and update source fingerprints after reviewing the diff. Keep licenses and attributions with copied resources.
 5. Validate and review before `skillsctl.py seal`, then check and run the gate. Install with dry-run first, then install; preserve the returned receipt outside git. Roll back with that receipt only when needed. Report source drift and missing capabilities honestly.
 6. Use workflow-memory through `mem` for lasting preferences, never Claude's logbooks or memory endpoints. Settings changes, background sync and inter-assistant messages are separate actions requiring their own task authorization.
-7. Update wiki documentation under its tree guard. A conflicting wiki edit is a publication limitation, not permission to overwrite another session. No transferred Claude approvals, subscriptions or scheduled jobs.
+7. Update wiki documentation under its tree guard. Investigate isolated publication and narrow task-owned reconciliation before declaring a conflicting edit a blocker; never overwrite another session. Run `skillsctl.py doctor` to check discovery and deployment, and prefer the bundled Codex skill-creator over synced same-name copies. No transferred Claude approvals, subscriptions or scheduled jobs.
 ````

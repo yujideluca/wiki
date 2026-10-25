@@ -9,7 +9,7 @@ location: codex-skills:tools/skillsctl.py
 fed_by: []
 feeds: []
 sources: [codex-skills:tools/skillsctl.py, codex-skills:manifest.json, codex-skills:DESIGN.md]
-reviewed: 2026-10-25T20:46Z
+reviewed: 2026-10-25T21:08Z
 ---
 
 ## What it is
@@ -32,3 +32,6 @@ Codex reads the installed skills. The user receives task results and reports of 
 The full command and rollback instructions are in README.md. Installation receipts stay outside version control. Missing browser, Google or scheduling capabilities remain explicit limitations.
 
 [[skill-adb-android-control]], [[skill-alemao-goethe-fsp]], [[skill-analise-artigo-cientifico]], [[skill-bias-risk-triage]], [[skill-brainstorming]], [[skill-browser-automacao-segura]], [[skill-candidatura-alemanha]], [[skill-click-protocol]], [[skill-consulta-clinica]], [[skill-deutsch-gespraech-memory]], [[skill-gerar-teste-automatizado]], [[skill-google-workspace]], [[skill-gui-code-protocol]], [[skill-import-memory]], [[skill-ligamagic-listas]], [[skill-ligamagic-replicar-carrinho-nas-lojas]], [[skill-minimize-site-approvals]], [[skill-morning]], [[skill-regras-magic]], [[skill-reparo-kubuntu]], [[skill-revisao-manutencao]], [[skill-setup-writing-style]], [[skill-skill-forge]], [[skill-systematic-debugging]], [[skill-verification-before-completion]], [[skill-wiki-page-writer]]
+
+
+The read-only `doctor` command checks installed skill links, duplicate discovery names and source changes. A duplicate means two available instruction packages use the same name. A source change means the current Claude files differ from the recorded baseline. The explicit `prefer_bundled` setting selects Codex’s bundled skill-creator and preserves the shadowing Codex-side copy in a rollback backup, only after checking that the bundled replacement exists. The audit and remaining backup/document integration proposals are recorded in `codex-skills:docs/WORKFLOW-AUDIT.md`.
