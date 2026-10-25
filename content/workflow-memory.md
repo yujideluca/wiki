@@ -13,7 +13,7 @@ reviewed: 2026-10-25T07:34Z
 ---
 
 ## What it is
-workflow-memory is the shared, long-lived memory of all the Claude assistants Giovanni uses. A Claude chat normally forgets everything when it ends; this project is what lets a preference said once ("answer in the language I wrote in") still apply months later, in a different chat, on a different device. It is a public repository (`yujideluca/workflow-memory`, since 2026-10-25) and lives in `~/dev/workflow-memory`. It replaced the retired protocol described in [[retired-workflow-pipeline]].
+workflow-memory is the shared, long-lived memory of all the Claude assistants Giovanni uses. A Claude chat normally forgets everything when it ends; this project is what lets a preference said once ("answer in the language I wrote in") still apply months later, in a different chat, on a different device. It is a public repository (`yujideluca/workflow-memory`, since 2026-10-25) and lives in `~/dev/workflow-memory`. It has no branch protection on purpose: its `mem` job pushes derived files to `main` and a required check would reject them, so the local pre-push check stands in and `pipeline-check.toml` records the exception ([[maintenance-pipeline]]). It replaced the retired protocol described in [[retired-workflow-pipeline]].
 
 ## What it does
 It keeps preferences, facts, decisions and open items (things still to be done), and shows the relevant ones at the start of every chat as the [[session-brief]]. It is the only channel between the different Claude instances ([[claude-code]], the [[remote-assistant]] and the [[claude-app]]); this is decision ADR-0003 in [[memory-adrs]] (an ADR, "architecture decision record", is a short note that records one decision and its reasons).
