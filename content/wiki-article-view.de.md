@@ -1,7 +1,7 @@
 ---
 id: wiki-article-view
 lang: de
-source_hash: d646d9738ac7
+source_hash: 44e710d67918
 title: Artikelansicht
 ---
 
@@ -23,3 +23,7 @@ Im [[wiki-frontend]], unter `/p/<id>`.
 
 ## Who receives its output
 Das [[wiki-frontend]].
+
+## Notes
+
+Auf Skill-Seiten zeigt der Abschnitt Steps nur den gestalteten interaktiven Schrittkasten. Die wiederholte Textliste darunter entfällt. Zurück und Weiter zeigen weiterhin jeden nummerierten Schritt; die vollständigen Originaldateien der Skills bleiben in Notes. Dies gilt auf dem Desktop und in geöffneten Handy-Abschnitten in allen drei Sprachen. Andere Seitenarten behalten ihre bisherige Darstellung.

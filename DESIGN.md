@@ -117,3 +117,8 @@ Tracked as GitHub Issues labelled `debt` (see `docs/MAINTENANCE.md`). At the sta
 ### 2026-10-25: complete skill pages (CO-10)
 
 Giovanni requires the full skill description and instructions on every skill page. The end-of-task writer rule and Stop-hook reminder now require locating and reading the complete installed SKILL.md. Pages retain their readable explanation and add fingerprinted original files in Notes, separately for Claude and Codex; translations retain the same originals in their source language. Local checks compare the whole copied text with each source. Checks without local files validate fingerprints and copies in translations, but cannot establish source freshness. Parsing and rendering preserve fenced source headings and example links. This closes the gap in CO-8, where any nonempty Steps summary passed. Referenced auxiliary files remain outside the automatic copy scope.
+
+
+### 2026-10-25: remove duplicate skill steps (AR-1)
+
+Skill pages render their Steps section only through the existing interactive box; the second plain-text rendering is removed. The complete skill sources remain in Notes. Regression tests cover both layouts and all three languages, switching to the next step, and preservation of other page kinds.

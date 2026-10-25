@@ -8,8 +8,8 @@ status: active
 location: wiki:frontend/src/ArticleView.elm
 fed_by: []
 feeds: [wiki-frontend]
-sources: [wiki:frontend/src/ArticleView.elm, wiki:frontend/src/WikiText.elm]
-reviewed: 2026-10-25T09:04Z
+sources: [wiki:frontend/src/ArticleView.elm, wiki:frontend/src/WikiText.elm, wiki:frontend/tests/ArticleStepsTests.elm]
+reviewed: 2026-10-25T15:01Z
 ---
 
 ## What it is
@@ -28,3 +28,7 @@ Inside the [[wiki-frontend]], at `/p/<id>`.
 
 ## Who receives its output
 The [[wiki-frontend]].
+
+## Notes
+
+On skill pages, the Steps section displays only the styled interactive steps box. The repeated plain-text list underneath is omitted. Previous and Next still expose every numbered step, and the full original skill files remain in Notes. This applies on desktop and in expanded phone sections, in all three languages. Other kinds of page retain their existing display.

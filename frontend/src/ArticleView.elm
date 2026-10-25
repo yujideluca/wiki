@@ -2,7 +2,8 @@ module ArticleView exposing (view)
 
 {-| The article page, Wikipedia-style: text on the left, infobox on the right with the pipeline strip
 (what feeds it → it → who receives its output) and the small map of connected pages. Process pages get a
-step-through diagram. -}
+step-through diagram.
+-}
 
 import Data exposing (Article, Graph)
 import Dict
@@ -29,13 +30,17 @@ view lang graph step phone openSecs art =
             Data.nodeById graph id |> Maybe.map (Data.title lang) |> Maybe.withDefault id
 
         body sec =
-            (if sec.key == "steps" then
+            if sec.key == "steps" && art.kind == "skill" then
                 [ stepper lang graph step (WikiText.steps sec.markdown) ]
 
-             else
-                []
-            )
-                ++ WikiText.toHtml titleOf sec.markdown
+            else
+                (if sec.key == "steps" then
+                    [ stepper lang graph step (WikiText.steps sec.markdown) ]
+
+                 else
+                    []
+                )
+                    ++ WikiText.toHtml titleOf sec.markdown
 
         -- On a phone every section starts closed and a tap on its heading opens it, as in Wikipedia's mobile site (MB-4).
         sectionView sec =
@@ -151,7 +156,13 @@ infobox lang graph art =
         [ div [ A.class "ib-title" ] [ text art.title ]
         , div [ A.class "ib-kind" ] [ span [ A.class "chip", A.style "--c" (Data.kindColour graph art.kind) ] [ text art.kind ] ]
         , table []
-            (row s.project [ if art.project == "none" then text "—" else pageLink art.project ]
+            (row s.project
+                [ if art.project == "none" then
+                    text "—"
+
+                  else
+                    pageLink art.project
+                ]
                 :: row s.status [ text art.status ]
                 :: maybeRow s.location art.location (\l -> [ code [] [ text l ] ])
                 ++ [ row s.since [ text art.since ] ]
@@ -176,7 +187,8 @@ infobox lang graph art =
         ]
 
 
-{-| inputs → this → outputs, as small boxes with arrows. -}
+{-| inputs → this → outputs, as small boxes with arrows.
+-}
 pipelineStrip : Lang -> Graph -> Article -> Html Msg
 pipelineStrip lang graph art =
     let
@@ -201,7 +213,8 @@ pipelineStrip lang graph art =
         ]
 
 
-{-| The page in the middle, its direct neighbours on a circle (Obsidian's local graph). -}
+{-| The page in the middle, its direct neighbours on a circle (Obsidian's local graph).
+-}
 localGraph : Lang -> Graph -> String -> Html Msg
 localGraph lang graph id =
     let
@@ -259,7 +272,8 @@ shorten t =
 
 
 {-| Step-through diagram for process pages: the steps as a chain, the current one lit, with its text and
-the pages it involves. -}
+the pages it involves.
+-}
 stepper : Lang -> Graph -> Int -> List String -> Html Msg
 stepper lang graph current steps =
     let
