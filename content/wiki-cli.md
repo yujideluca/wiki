@@ -16,7 +16,7 @@ reviewed: 2026-10-25T07:34Z
 `wiki` is the command that Claude uses to keep the wiki current: an Elixir escript (a program packed into a single runnable file) installed as `~/.local/bin/wiki`.
 
 ## What it does
-`wiki publish` is the end-of-task step. It runs [[wiki-check]] in local mode, then [[wiki-build]], then commits only the `content/` folder (so unrelated work in the repository is never swept in) and pushes it to the private repository on [[github]], and finally records the time of the publish for the [[wiki-hook-stop]]. It refuses on any failure. Every `git` command it runs first unsets `GIT_DIR`, `GIT_WORK_TREE` and `GIT_INDEX_FILE` (variables that git itself sets inside hooks such as pre-push), so the command always acts on the repository it was given and never on the one that started the hook.
+`wiki publish` is the end-of-task step. It runs [[wiki-check]] in local mode, then [[wiki-build]], then commits only the `content/` folder (so unrelated work in the repository is never swept in) and pushes it to the public repository on [[github]], and finally records the time of the publish for the [[wiki-hook-stop]]. It refuses on any failure. Every `git` command it runs first unsets `GIT_DIR`, `GIT_WORK_TREE` and `GIT_INDEX_FILE` (variables that git itself sets inside hooks such as pre-push), so the command always acts on the repository it was given and never on the one that started the hook.
 
 ## How it does it
 It is built with `mix escript.build` from the server project; the variable `WIKI_ROOT` points at the repository (default `~/dev/wiki`). It never force-pushes.

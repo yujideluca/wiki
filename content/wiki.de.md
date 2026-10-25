@@ -1,12 +1,12 @@
 ---
 id: wiki
 lang: de
-source_hash: e6dac1a598c3
+source_hash: d3d738b452f0
 title: Wiki (diese Seite)
 ---
 
 ## What it is
-Diese Website ist ein Wiki: eine Enzyklopädie aller Projekte, Programme, Skills und Abläufe in Giovannis Systemen, mit einer Karte, die zeigt, wie sie zusammenhängen. Jedes Thema hat seine eigene Seite, so geschrieben, dass ein Leser, der nichts über das System oder seine Fachsprache weiß, folgen kann. Ein Wort neu? Öffne das [[glossary]], das die auf den Seiten verwendeten Begriffe erklärt. Das Repository `yujideluca/wiki` ist privat, der Ordner ist `~/dev/wiki`, und das Projekt wurde am 2026-10-22 aus [[project-template]] gestartet.
+Diese Website ist ein Wiki: eine Enzyklopädie aller Projekte, Programme, Skills und Abläufe in Giovannis Systemen, mit einer Karte, die zeigt, wie sie zusammenhängen. Jedes Thema hat seine eigene Seite, so geschrieben, dass ein Leser, der nichts über das System oder seine Fachsprache weiß, folgen kann. Ein Wort neu? Öffne das [[glossary]], das die auf den Seiten verwendeten Begriffe erklärt. Das Repository `yujideluca/wiki` ist öffentlich (seit 2026-10-25), der Ordner ist `~/dev/wiki`, und das Projekt wurde am 2026-10-22 aus [[project-template]] gestartet.
 
 ## What it does
 Es lässt Giovanni eine Architekturfrage nach einer Suche und höchstens zwei Klicks beantworten: Suche mit Vorschlägen beim Tippen, über einen Punkt der Karte fahren, um in vier Kästen zu sehen, was er ist, auf den Punkt klicken für die vollständige Seite ([[wiki-frontend]]). Es wird am Ende jeder Aufgabe automatisch aktuell gehalten ([[end-of-task]]).

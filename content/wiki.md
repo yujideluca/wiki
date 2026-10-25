@@ -14,7 +14,7 @@ reviewed: 2026-10-25T07:34Z
 ---
 
 ## What it is
-This site is a wiki: an encyclopedia of every project, program, skill and process in Giovanni's systems, with a map that shows how they connect. Each topic has its own page, written so that a reader who knows nothing about the system or its technical language can follow it. New to a word? Open the [[glossary]], which explains the terms used on the pages. The repository `yujideluca/wiki` is private, the folder is `~/dev/wiki`, and the project was started on 2026-10-22 from [[project-template]].
+This site is a wiki: an encyclopedia of every project, program, skill and process in Giovanni's systems, with a map that shows how they connect. Each topic has its own page, written so that a reader who knows nothing about the system or its technical language can follow it. New to a word? Open the [[glossary]], which explains the terms used on the pages. The repository `yujideluca/wiki` is public (since 2026-10-25), the folder is `~/dev/wiki`, and the project was started on 2026-10-22 from [[project-template]].
 
 ## What it does
 It lets Giovanni answer an architecture question after one search and at most two clicks: search with suggestions while typing, hover over a dot on the map to see what it is in four boxes, click the dot for the full page ([[wiki-frontend]]). It is kept up to date automatically at the end of every task ([[end-of-task]]).

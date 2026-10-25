@@ -19,7 +19,7 @@ Small generative-art programs (art made by code) written in [Processing](https:/
 It draws the Heighway dragon curve in two versions: [[drachenkurve]] (exported as an app; it rendered the QuizApp launcher icon) and [[drachenfraktal]].
 
 ## How it does it
-Each sketch is a `.pde` file in its own folder; `drachenkurve` also has an exported build. Since 2026-10-24 the folder is a private GitHub repository (`yujideluca/processing-sketches`) with a quality gate, CI (continuous integration, automatic checks on every push) and the [[pipeline-check]] pre-push check; the build output is ignored by git.
+Each sketch is a `.pde` file in its own folder; `drachenkurve` also has an exported build. Since 2026-10-24 the folder is a GitHub repository (`yujideluca/processing-sketches`, public since 2026-10-25) with a quality gate, CI (continuous integration, automatic checks on every push) and the [[pipeline-check]] pre-push check; the build output is ignored by git.
 
 ## Where it sits in the pipeline
 Off to the side of the other projects; its one link into them is the icon of [[quizapp]].

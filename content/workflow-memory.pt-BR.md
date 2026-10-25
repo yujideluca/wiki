@@ -1,12 +1,12 @@
 ---
 id: workflow-memory
 lang: pt-BR
-source_hash: 7c137c5a7ace
+source_hash: 055ea82e3582
 title: workflow-memory (memória compartilhada)
 ---
 
 ## What it is
-O workflow-memory é a memória compartilhada e duradoura de todos os assistentes Claude que o Giovanni usa. Uma conversa do Claude normalmente esquece tudo quando termina; este projeto faz com que uma preferência dita uma vez ("responda no idioma em que eu escrevi") ainda valha meses depois, em outra conversa, em outro aparelho. É um repositório privado (`yujideluca/workflow-memory`) e fica em `~/dev/workflow-memory`. Substituiu o protocolo desativado descrito em [[retired-workflow-pipeline]].
+O workflow-memory é a memória compartilhada e duradoura de todos os assistentes Claude que o Giovanni usa. Uma conversa do Claude normalmente esquece tudo quando termina; este projeto faz com que uma preferência dita uma vez ("responda no idioma em que eu escrevi") ainda valha meses depois, em outra conversa, em outro aparelho. É um repositório público (`yujideluca/workflow-memory`, desde 2026-10-25) e fica em `~/dev/workflow-memory`. Substituiu o protocolo desativado descrito em [[retired-workflow-pipeline]].
 
 ## What it does
 Guarda preferências, fatos, decisões e pendências (coisas ainda por fazer) e mostra as relevantes no início de toda conversa como o [[session-brief]]. É o único canal entre as diferentes instâncias do Claude ([[claude-code]], o [[remote-assistant]] e o [[claude-app]]); é a decisão ADR-0003 em [[memory-adrs]] (uma ADR, "architecture decision record", é uma nota curta que registra uma decisão e seus motivos).
