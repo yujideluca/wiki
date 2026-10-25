@@ -1,7 +1,7 @@
 ---
 id: skill-bias-risk-triage
 lang: de
-source_hash: 61a26c201cdb
+source_hash: a0f472943f46
 title: Skill: bias-risk-triage
 ---
 
@@ -29,6 +29,8 @@ Die darauf folgende Antwort (ihre Tiefe).
 6. **Flags und Markierungen.** `!!` macht die Antwort auf jeder Stufe kurz, aber T2–T3 behalten eine Warnzeile und die Hauptquelle. `***` bei Stufe T2 oder höher gibt die volle T3-Struktur. `...` (Artikelmodus) nutzt die Artikelstruktur von [[skill-analise-artigo-cientifico]], nicht die T3-Struktur. Nur bei T2–T3 markieren (zum Beispiel „(umstrittene Definition)“). „show triage“ gibt den Schritt und die Zeile aus, die ausgelöst hat.
 
 ## Notes
+
+Codex verwendet jetzt die getrennt gepflegte Version in [[codex-skills]]. Der vollständige Quelltext unten enthält die Ausführungsregeln für Codex; das oben beschriebene Claude-Verfahren bleibt die Claude-Version. Browser-, Speicher- und Verbindungsfunktionen können sich unterscheiden.
 
 ### Vollständige Skill-Quellen
 
@@ -86,7 +88,7 @@ Tag only at T2-T3 (e.g. "(contested definition)"). "show triage" -> print step +
 
 #### Codex: `home:.agents/skills/bias-risk-triage/SKILL.md`
 
-```skill-source home:.agents/skills/bias-risk-triage/SKILL.md 49abcacd42f44ce99af49f4bf731922ffc0929c5baab66221b11719e3447a028
+````skill-source home:.agents/skills/bias-risk-triage/SKILL.md 7e4d6797df0e0fa9efe75ca70d4a86c094fbdca5d4b10aa0b9aae9e6af742d2a
 ---
 name: "bias-risk-triage"
 description: "Before answering any short factual question, run a compiled check (guard, lookup, decision table) for bias, myth, conspiracy, staleness or stakes and set verification depth T0-T3."
@@ -94,7 +96,7 @@ description: "Before answering any short factual question, run a compiled check 
 
 # Bias-Risk Triage v3.3 (compiled; validated on TruthfulQA + WebQuestions)
 
-Lineage: origin=gui; base=c3fb4e1397b48a0389f58e4e1fc14249a452a826
+Lineage: origin=claude; base=sha256:5e166459e4ebd81382d8a42911662b359fc75c186aae824b730546127ad3f565; adaptation=codex
 
 Silent pre-answer check. Output = tier T0-T3; it sets answer depth only.
 
@@ -131,4 +133,8 @@ Failing the guard does NOT raise the tier; it only means: continue to steps 2-3,
 
 Flags: `!!` short at any tier, but T2-T3 keep 1 warning line + key source. `***` with T>=2 -> full T3 structure. `...` (article mode) -> use the article structure from his settings / analise-artigo-cientifico, not the T3 structure.
 Tag only at T2-T3 (e.g. "(contested definition)"). "show triage" -> print step + row that fired.
-```
+
+## Codex execution
+
+Use the actual tools exposed in this session and read their schemas before calling them. Discover deferred capabilities through the tool catalog; missing tools are a reported limitation, never an invented call. Current user instructions and host tool documentation take precedence. Domain skills own the answer format; cross-cutting skills set minimum verification and interaction requirements. Claude permissions, subscriptions and scheduled jobs do not transfer.
+````

@@ -9,7 +9,7 @@ location: home:.claude/skills/reparo-kubuntu
 fed_by: []
 feeds: []
 sources: [home:.claude/skills/reparo-kubuntu/SKILL.md, home:.agents/skills/reparo-kubuntu/SKILL.md]
-reviewed: 2026-10-25T14:46Z
+reviewed: 2026-10-25T20:41Z
 ---
 
 ## What it is
@@ -36,6 +36,8 @@ The [[acer-nitro]].
 5. **Retest and record.** Reboot, run the block of step 1 again and compare with the previous one. Record the cause, the fix and how to undo it in `~/fixes/LEIAME.md`.
 
 ## Notes
+
+Codex now uses the independently maintained version in [[codex-skills]]. Its complete source below includes the Codex-specific execution rules; the Claude procedure above remains the Claude version. Browser, memory and connector behavior can differ between versions.
 
 ### Complete skill sources
 
@@ -99,17 +101,16 @@ Reiniciar, rodar o bloco do passo 1, comparar com o anterior. Registre causa, co
 
 #### Codex: `home:.agents/skills/reparo-kubuntu/SKILL.md`
 
-````skill-source home:.agents/skills/reparo-kubuntu/SKILL.md 0c5e4a90aec10b60b12f39f9c05cf3e076bf0325677f2c6b25941c915a7b4906
+````skill-source home:.agents/skills/reparo-kubuntu/SKILL.md 4e416dd2a7aba1d72057fff20977a5e6d3e8fe21418d8f5cdaa8c0036b866389
 ---
 name: "reparo-kubuntu"
 description: "Diagnostica e corrige problemas do notebook Acer Nitro do Giovanni (Kubuntu 24.04, Plasma 5.27, X11, Nvidia) e torna as correções permanentes entre reinicializações."
 ---
 
 
-Code version: adapted for Codex on the laptop from `gui/skills/reparo-kubuntu`. Edited only by Codex; the app keeps its own version.
 # Reparo Kubuntu
 
-Lineage: origin=gui; base=00a09e5a0e1ea10c59d76c038d4b1cc404987b9a
+Lineage: origin=claude; base=sha256:bc5e579a53a63a9eb03ee01733abe8f2b2bfdf3fc533b675d008ad1fd1c92cbc; adaptation=codex
 
 Interop: role = domain; owns = fluxo de diagnóstico/correção no Linux dele; defers to = browser-automacao-segura (se usar navegador); honors = idioma da mensagem, flags !! *** ...
 
@@ -119,7 +120,7 @@ Método (Google SRE "Effective Troubleshooting" 2016; Ubuntu Seven-Step Troubles
 Conclusão primeiro: hipótese principal + o próximo passo. `!!` → até 5 linhas: hipótese, 1 teste, 1 correção, como verificar. Toda resposta que propõe correção termina com **Verificar** (o que checar após reiniciar) e **Desfazer** (como reverter).
 
 ## 1. Estabilizar e coletar (sem mudar nada)
-Codex roda no próprio notebook: rode você mesmo, sem pedir para colar. Comandos com `sudo` pedem senha; entregue a linha para ele rodar com `! sudo ...` no prompt.
+Codex roda no próprio notebook: rode você mesmo, sem pedir para colar. Comandos com `sudo` pedem senha; entregue a linha para ele rodar com `sudo ...` num terminal local.
 ```bash
 { lsb_release -ds; uname -r; plasmashell --version; echo "session=$XDG_SESSION_TYPE";
   nvidia-smi --query-gpu=driver_version --format=csv,noheader 2>/dev/null;
@@ -141,7 +142,7 @@ Pergunte só o que o log não responde: o que mudou (update, config, tema) e se 
 ## 3. Mudar com segurança
 - Uma mudança por vez; diga o que ela prova.
 - Antes de editar: backup com data (`cp -a`). Nunca `rm -rf` em `~/.config` ou `/etc`: mova para quarentena. Antes de mexer em driver/kernel: snapshot (Timeshift) se disponível.
-- Comandos com `sudo` explicados em uma linha; ele roda com `! sudo ...`. Sem sudo, rode você mesmo e mostre a saída relevante.
+- Comandos com `sudo` explicados em uma linha; ele roda com `sudo ...` num terminal local. Sem sudo, rode você mesmo e mostre a saída relevante.
 
 ## 4. Tornar permanente (prioridade dele)
 - Correção vira `~/fixes/<nome>.sh` (idempotente, com checagem final).
@@ -150,4 +151,8 @@ Pergunte só o que o log não responde: o que mudou (update, config, tema) e se 
 
 ## 5. Retestar e registrar
 Reiniciar, rodar o bloco do passo 1, comparar com o anterior. Registre causa, correção e como desfazer em `~/fixes/LEIAME.md`.
+
+## Codex execution
+
+Use the actual tools exposed in this session and read their schemas before calling them. Discover deferred capabilities through the tool catalog; missing tools are a reported limitation, never an invented call. Current user instructions and host tool documentation take precedence. Domain skills own the answer format; cross-cutting skills set minimum verification and interaction requirements. Claude permissions, subscriptions and scheduled jobs do not transfer.
 ````

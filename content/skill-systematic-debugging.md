@@ -9,7 +9,7 @@ location: home:.claude/skills/systematic-debugging
 fed_by: []
 feeds: []
 sources: [home:.claude/skills/systematic-debugging/SKILL.md, home:.agents/skills/systematic-debugging/SKILL.md]
-reviewed: 2026-10-25T14:46Z
+reviewed: 2026-10-25T20:41Z
 ---
 
 ## What it is
@@ -38,6 +38,8 @@ The iron law: no fixes without root-cause investigation first. Four phases, each
 7. **When there is truly no root cause** (environmental, timing, external): document what was investigated, add handling such as a retry, a timeout or a clear error message, and add logging for the future. But 95 % of "no root cause" cases are incomplete investigations.
 
 ## Notes
+
+Codex now uses the independently maintained version in [[codex-skills]]. Its complete source below includes the Codex-specific execution rules; the Claude procedure above remains the Claude version. Browser, memory and connector behavior can differ between versions.
 
 ### Complete skill sources
 
@@ -340,7 +342,7 @@ These techniques are part of systematic debugging and available in this director
 
 #### Codex: `home:.agents/skills/systematic-debugging/SKILL.md`
 
-````skill-source home:.agents/skills/systematic-debugging/SKILL.md 6732a82c227631b25a0cbdcc873b86bbf7a4b0e1e10668f38c4921e92ae56b49
+````skill-source home:.agents/skills/systematic-debugging/SKILL.md ed853b635a8e08605bbbc7ef39dede0c3c5d0dc2c6c6db8d1056496e2300bbd1
 ---
 name: systematic-debugging
 description: "Use in Codex on any bug, test failure, crash or unexpected behaviour (code, scripts, the sync pipeline, an app on the phone), before proposing a fix: find the root cause first, one change at a time, stop after three failed fixes. Not for Kubuntu desktop repair (reparo-kubuntu)."
@@ -348,9 +350,9 @@ description: "Use in Codex on any bug, test failure, crash or unexpected behavio
 
 # Systematic Debugging
 
-Lineage: origin=code; base=none
+Lineage: origin=claude; base=sha256:f0f5b372a67c1ff1c6b4e036851097bb203ccb1570ffe97ffb0220901f654e75; adaptation=codex
 
-Interop: role = process; owns = root-cause method for software failures; defers to = reparo-kubuntu (desktop/system problems), workflow-memory (record a lasting correction with mem add --type pref), the project's AGENTS.md; honors = reply-language rule, verification-before-completion.
+Interop: role = process; owns = root-cause method for software failures; defers to = reparo-kubuntu (desktop/system problems), workflow-memory (record a lasting correction with mem add --type pref), the project's AGENTS.md (or CLAUDE.md when it is the existing project guide); honors = reply-language rule, verification-before-completion.
 
 Adapted from obra/superpowers 7.0.0 (commit bb92a77, MIT, LICENSE in this folder), without its always-on startup hook.
 
@@ -630,4 +632,9 @@ These techniques are part of systematic debugging and available in this director
 - **`root-cause-tracing.md`** - Trace bugs backward through call stack to find original trigger
 - **`defense-in-depth.md`** - Add validation at multiple layers after finding root cause
 - **`condition-based-waiting.md`** - Replace arbitrary timeouts with condition polling
+
+
+## Codex execution
+
+Use the actual tools exposed in this session and read their schemas before calling them. Discover deferred capabilities through the tool catalog; missing tools are a reported limitation, never an invented call. Current user instructions and host tool documentation take precedence. Domain skills own the answer format; cross-cutting skills set minimum verification and interaction requirements. Claude permissions, subscriptions and scheduled jobs do not transfer.
 ````

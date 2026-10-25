@@ -1,7 +1,7 @@
 ---
 id: skill-candidatura-alemanha
 lang: de
-source_hash: 4ea0c03da932
+source_hash: 0d862a77018c
 title: Skill: candidatura-alemanha (Bewerbungen in Deutschland)
 ---
 
@@ -31,6 +31,8 @@ Giovanni (Entwürfe, die er persönlich versendet; Claude sendet nichts).
 8. **Strategie.** Bei der Frage nach einer Meinung zu Land oder Klinik berichtete Bearbeitungszeit, Sprachanforderungen, Radiologie-Stellen und Lebenshaltungskosten vergleichen; klar machen, was amtliche Angabe und was Schlussfolgerung ist; Quelle und Datum nennen.
 
 ## Notes
+
+Codex verwendet jetzt die getrennt gepflegte Version in [[codex-skills]]. Der vollständige Quelltext unten enthält die Ausführungsregeln für Codex; das oben beschriebene Claude-Verfahren bleibt die Claude-Version. Browser-, Speicher- und Verbindungsfunktionen können sich unterscheiden.
 
 ### Vollständige Skill-Quellen
 
@@ -101,7 +103,7 @@ Quando ele pedir opinião sobre estado/hospital: compare tempo de processamento 
 
 #### Codex: `home:.agents/skills/candidatura-alemanha/SKILL.md`
 
-```skill-source home:.agents/skills/candidatura-alemanha/SKILL.md f7aaf2906135d142f47757791a3f19151d096d2319ed3be349ec3d27e4e7e774
+````skill-source home:.agents/skills/candidatura-alemanha/SKILL.md 064014469210d9cabcf118956146b4500e3769b0fe182e4dc811ceb4b2bc50bd
 ---
 name: "candidatura-alemanha"
 description: "Candidatura do Giovanni a vagas médicas na Alemanha (Facharztausbildung Radiologie, Hospitation, Assistenzarzt) e processo de Approbation/Anerkennung como médico formado fora da UE. Use sempre que ele pedir Lebenslauf, Anschreiben, Bewerbung, e-mail para hospital/Chefarzt, Bestätigung über beabsichtigte Beschäftigung, checklist de documentos, escolha de estado (Bundesland), Kenntnisprüfung, FSP ou dúvidas sobre prazos e órgãos de reconhecimento."
@@ -109,7 +111,7 @@ description: "Candidatura do Giovanni a vagas médicas na Alemanha (Facharztausb
 
 # Candidatura e Approbation na Alemanha
 
-Lineage: origin=gui; base=bf3031f254f4779b8af5fa407e346952e87b71b9
+Lineage: origin=claude; base=sha256:353268065a7d927e96a566c2dd8c2e21412fcc92d506e41c60c17e12aa1f0804; adaptation=codex
 
 Interop: role = domain; owns = CV mestre e versões, Anschreiben, checklist de Approbation; defers to = alemao-goethe-fsp (correção de textos que ele mesmo escreveu); honors = idioma da mensagem (documentos em alemão), flags !! *** ...
 
@@ -159,4 +161,8 @@ Não pergunte de volta se houver contexto suficiente: escolha o objetivo mais pr
 
 ## 5. Estratégia
 Quando ele pedir opinião sobre estado/hospital: compare tempo de processamento relatado, exigências de idioma, oferta de vagas em radiologia, custo de vida; deixe claro o que é dado oficial e o que é inferência; cite fonte e data.
-```
+
+## Codex execution
+
+Use the actual tools exposed in this session and read their schemas before calling them. Discover deferred capabilities through the tool catalog; missing tools are a reported limitation, never an invented call. Current user instructions and host tool documentation take precedence. Domain skills own the answer format; cross-cutting skills set minimum verification and interaction requirements. Claude permissions, subscriptions and scheduled jobs do not transfer.
+````

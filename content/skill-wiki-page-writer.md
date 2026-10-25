@@ -10,7 +10,7 @@ location: home:.claude/skills/wiki-page-writer
 fed_by: []
 feeds: [wiki-content]
 sources: [home:.claude/skills/wiki-page-writer/SKILL.md, home:.agents/skills/wiki-page-writer/SKILL.md]
-reviewed: 2026-10-25T14:46Z
+reviewed: 2026-10-25T20:41Z
 ---
 
 ## What it is
@@ -43,6 +43,8 @@ The wiki content ([[wiki-content]]), which [[wiki-check]] then validates.
 12. **Close.** `mem use` for the memory entries that shaped the work, then a short reply: pages changed, anything not verified, the check and publish results, and a `Verified by:` line.
 
 ## Notes
+
+Codex now uses the independently maintained version in [[codex-skills]]. Its complete source below includes the Codex-specific execution rules; the Claude procedure above remains the Claude version. Browser, memory and connector behavior can differ between versions.
 - Limits found in testing: the guard rule had to say "always run it" because runners skipped it when they expected a clean tree; fresh readers still missed a few terms (gate, finding codes), which is why the skill lists the usual misses.
 - The description optimizer was run on 2026-10-24 (the script `run_loop.py` of the skill-creator skill: it plants the description as a temporary command, asks a nested `claude -p` session each test query, and counts whether the session calls the skill). The installed description scored 11 of 12 on the training queries and 8 of 8 on the held-out ones; its one miss was a request that only asked for the translations. A rewrite scored 12 of 12 and 8 of 8. Because the held-out scores tied, the two were compared on 16 new queries (8 that should trigger, 8 that should not, 3 runs each): the old description scored 14 of 16 (both misses were translation-only requests) and the new one 16 of 16, so the new one is installed. The sample is small. The test setup had to be isolated to be valid: the real skill and the hooks hidden, only `Skill` and `Read` allowed, and a match on any temporary command name, because parallel workers plant identical commands and the model picks one at random.
 - The rule about `reviewed` was added on 2026-10-24, after the rewrite of all pages hid unreviewed source changes from `wiki stale` ([[wiki-stale]]): the skill now sets the time only for pages it really compared, and never in bulk.
@@ -124,7 +126,7 @@ Scenarios the skill must handle: (1) a new function with a real source file; (2)
 
 #### Codex: `home:.agents/skills/wiki-page-writer/SKILL.md`
 
-```skill-source home:.agents/skills/wiki-page-writer/SKILL.md 873896a817c6ceb68224b638333c14dacf914bcd764e5fb69533536880d510e2
+````skill-source home:.agents/skills/wiki-page-writer/SKILL.md ca0c4cb11bce73beb9d565c9cb3356d0067d68d8a43830e1eec1ed4c92d3149a
 ---
 name: wiki-page-writer
 description: "Use this skill for any work on the content of Giovanni's wiki (~/dev/wiki, content/): writing, updating, translating or retiring a page. This covers the English page and its .de and .pt-BR versions (translations, source_hash fixes, wiki check failures in page files), and wiki publish. Trigger after finishing a task that changed something in his systems (project, program, module, function, script, skill, hook, service, data store, process, decision), when the Stop hook says 'Wiki update needed', or when he asks for a wiki page (página da wiki). Pages are written for a reader who knows nothing about the system. Not for general encyclopedia articles, code comments, DESIGN.md, ADRs, memory entries, or debugging and explaining the wiki tool itself."
@@ -132,21 +134,21 @@ description: "Use this skill for any work on the content of Giovanni's wiki (~/d
 
 # Wiki page writer (wiki-page-writer)
 
-Lineage: origin=code; base=none
+Lineage: origin=claude; base=sha256:391d37651277ea19e86770aad05e6d9c12b5371266e883517b7e64e55207f9d6; adaptation=codex
 
-Interop: role = process; owns = the content of wiki pages and their three-language versions; defers to = `~/dev/wiki/AGENTS.md` and the page `wiki-content` (format), `wiki check` (the rules, enforced), verification-before-completion (the closing `Verified by:`), revisao-manutencao (it calls this skill's publish step at the end of a review), skill-forge (creating or changing a skill; this skill then writes the skill's page); honors = reply-language rule, plain-language rule, work.verified-by, policy.third-party-data, safety.ask-before-outward.
+Interop: role = process; owns = the content of wiki pages and their three-language versions; defers to = `~/dev/wiki/CLAUDE.md` and the page `wiki-content` (format), `wiki check` (the rules, enforced), verification-before-completion (the closing `Verified by:`), revisao-manutencao (it calls this skill's publish step at the end of a review), skill-forge (creating or changing a skill; this skill then writes the skill's page); honors = reply-language rule, plain-language rule, work.verified-by, policy.third-party-data, safety.ask-before-outward.
 
 Pages say what exists, to a stranger. The rules of format are not copied here: `wiki check` knows them and fails on a violation; `wiki-content` describes them. This skill is the method for writing true, understandable pages and for not breaking the publishing flow.
 
 ## Steps
 
-1. **Guard the tree. Always run it, even when you expect a clean tree** (a clean tree is only known by looking). `git -C ~/dev/wiki status --short`. `wiki publish` commits all of `content/`, so changes you did not make are not yours to publish. If there are changes you did not make (another Codex session or Giovanni editing):
+1. **Guard the tree. Always run it, even when you expect a clean tree** (a clean tree is only known by looking). `git -C ~/dev/wiki status --short`. `wiki publish` commits all of `content/`, so changes you did not make are not yours to publish. If there are changes you did not make (another assistant session or Giovanni editing):
    - name the files to Giovanni and do not publish, stage or reset anything;
    - if the foreign changes are in pages your task does not touch, you may write your own pages (so the work is ready) but you must not run `wiki publish`; tell Giovanni that publishing waits until the other edit is committed or discarded;
    - if they are in pages you need to change, stop and ask;
    - a failing `wiki check --local` caused by their edit (for example outdated translations of their page) is theirs: report it, do not fix it.
-2. **Learn the current rules.** Read `~/dev/wiki/AGENTS.md` and `content/wiki-content.md`, and skim `content/_kinds.json` and `content/_acronyms.tsv`. Do not rely on memory or on this file for header fields, kinds or required sections; they change. Run `wiki check --local` once now: a failing baseline is a problem to report, not to hide.
-3. **Find the work.** Take the subject from the request, or run `wiki stale` (it lists the pages with a source changed after their `reviewed` time and exits 1 when it lists any) and read the Stop hook message (it lists pages to update and files "no page covers"; it compares the code with the last publish, so it also sees what `wiki stale` cannot: a change in the same minute as a review, and new files). For each listed page run `git log` in the source repository since the page's `reviewed` time (for a source outside git, read the file) and read what changed. For each subject decide the granularity (rule D11 in the wiki AGENTS.md): own page, or a line in a module page's `## Functions`. Edit an existing page rather than create a near-duplicate (`ls content`, grep for the name and its aliases).
+2. **Learn the current rules.** Read `~/dev/wiki/CLAUDE.md` and `content/wiki-content.md`, and skim `content/_kinds.json` and `content/_acronyms.tsv`. Do not rely on memory or on this file for header fields, kinds or required sections; they change. Run `wiki check --local` once now: a failing baseline is a problem to report, not to hide.
+3. **Find the work.** Take the subject from the request, or run `wiki stale` (it lists the pages with a source changed after their `reviewed` time and exits 1 when it lists any) and read the Stop hook message (it lists pages to update and files "no page covers"; it compares the code with the last publish, so it also sees what `wiki stale` cannot: a change in the same minute as a review, and new files). For each listed page run `git log` in the source repository since the page's `reviewed` time (for a source outside git, read the file) and read what changed. For each subject decide the granularity (rule D11 in the wiki CLAUDE.md): own page, or a line in a module page's `## Functions`. Edit an existing page rather than create a near-duplicate (`ls content`, grep for the name and its aliases).
 4. **Verify before you write.** Every sentence must come from something read or run in this session: the code and config in the `sources` repositories, `git log` for what changed and when, tests and requirement IDs, a real run (`--help`, a dry run, `systemctl status`). Re-check old page text before keeping it; older pages go stale (a pinned version, a requirement range, a renamed file are the usual casualties). Copy numbers, versions, paths and IDs from the source. Label intent and plans as such. If you cannot verify a point, write "not verified" or leave it out; never fill it with a guess. Do not claim to have read or run what you did not. A page you compared with its sources this session, and found right or made right, gets a new `reviewed` time (step 6); a page you did not compare does not.
 5. **Write for a stranger.** The reader has never seen the system and does not know its vocabulary (Diátaxis: reference describes neutrally and mirrors the system's structure; explanation adds the why and the connections; each page here is a short mix, so keep the what in "What it does" and "How it does it", and the why in one sentence next to the step it explains).
    - Open with the purpose in everyday words, then the mechanism. Present tense, active voice, short words, one idea per sentence, no hidden verbs ("analyze", not "conduct an analysis"). No "obviously", "simply", "just".
@@ -189,4 +191,9 @@ For each source, use a Markdown fenced block whose info string is `skill-source 
 ## Testing this skill
 
 Scenarios the skill must handle: (1) a new function with a real source file; (2) a skill page (needs `## Steps`); (3) a stale page after a code change (a version or count changed); (4) a claim that cannot be verified; (5) another session's uncommitted changes in `content/`; (6) acronym-heavy subject; (7) a source containing a secret or personal data; (8) the Stop hook lists pages that are already correct. Pass means: `wiki check` passes, every claim traces to a source read, nothing outside the task is published, and a stranger can paraphrase the page.
-```
+
+
+## Codex execution
+
+Use the actual tools exposed in this session and read their schemas before calling them. Discover deferred capabilities through the tool catalog; missing tools are a reported limitation, never an invented call. Current user instructions and host tool documentation take precedence. Domain skills own the answer format; cross-cutting skills set minimum verification and interaction requirements. Claude permissions, subscriptions and scheduled jobs do not transfer.
+````

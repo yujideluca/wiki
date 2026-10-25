@@ -1,7 +1,7 @@
 ---
 id: skill-skill-forge
 lang: de
-source_hash: 31e8bea46470
+source_hash: aff6e9fbdcb8
 title: Skill: skill-forge
 ---
 
@@ -32,6 +32,8 @@ Der Ordner [[skills]] (und die Kopien der Claude-App, [[claude-ai-skills]]).
 8. **Abliefern (Übergabe an skill-creator).** Validieren: Ist skill-creator verfügbar, jeden fertigen Skill-Ordner in einen Arbeitspfad kopieren und dessen Schnellvalidierung ausführen, jeden Fehler beheben und bei Aktualisierungen den ursprünglichen Skill-Namen behalten. Speichern (der Claude-Code-Weg): die vollständige SKILL.md nach `~/.claude/skills/<Name>/` schreiben (plus die Auswirkungsupdates), dann `wiki publish` und `mem use` ausführen; die Wiki-Seite des Skills schreibt oder aktualisiert [[skill-wiki-page-writer]]; Claude Code kann die Skill-Karten der Claude-App nicht speichern. Unterlagen: eine Entwurfsnotiz, die Bewertungsergebnisse und den Verträglichkeitsbericht auf der Wiki-Seite der Skill ablegen und Einschränkungen, offene Lücken und ausstehende Auswirkungsvorschläge auflisten. Optional den Beschreibungs-Optimierer von skill-creator auf die endgültige Beschreibung anwenden, nachdem Giovanni die Skill genehmigt hat, aber nur isoliert, sonst ist sein Ergebnis ungültig: auf einer angepassten Kopie seiner Skripte, mit der verschachtelten `claude -p`-Sitzung beschränkt auf die Werkzeuge `Skill` und `Read` und auf die eigenen Einstellungen des Projekts (damit sie nichts bearbeiten, veröffentlichen oder Giovannis Hooks starten kann), mit der zu testenden Skill nicht im Projekt installiert (die installierte Kopie würde statt des temporären Befehls aufgerufen) und seinen anderen Skills hineinkopiert, wobei der Aufruf irgendeines temporären Befehls dieser Skill als Auslösung zählt (parallele Arbeiter legen identische Befehle an und das Modell wählt zufällig einen), und mit einem Vergleich der alten und der neuen Beschreibung an frischen Anfragen, wenn die zurückgehaltenen Werte gleich sind.
 
 ## Notes
+
+Codex verwendet jetzt die getrennt gepflegte Version in [[codex-skills]]. Der vollständige Quelltext unten enthält die Ausführungsregeln für Codex; das oben beschriebene Claude-Verfahren bleibt die Claude-Version. Browser-, Speicher- und Verbindungsfunktionen können sich unterscheiden.
 
 ### Vollständige Skill-Quellen
 
@@ -119,11 +121,14 @@ Compare versions per requirement. Pick the best; merge clearly superior elements
 
 #### Codex: `home:.agents/skills/skill-forge/SKILL.md`
 
-```skill-source home:.agents/skills/skill-forge/SKILL.md 6d0de4fdaf505022d5d1ff447b0ceab1a81fe5b3a028427d458675453b7ce529
+````skill-source home:.agents/skills/skill-forge/SKILL.md 873c7d2bf32e627ff666875ae577d69bd57e40aae7173c7854a488daeb5eb9da
 ---
 name: "skill-forge"
 description: "Full skill pipeline for Giovanni: three competing versions, tests, compatibility checks with his other skills, then validation and packaging through skill-creator. Use when he asks to create, rebuild, optimize or forge a skill, turn a rule or workflow into a new skill, or wants tested or compared versions. For small changes to one skill (fix a line, rename, change the description, add an example) or just packaging a skill file, skill-creator alone is enough."
 ---
+
+Lineage: origin=claude; adaptation=codex; baseline recorded in manifest.json.
+
 
 
 # Skill Forge (knowledge engineering / design science)
@@ -161,7 +166,7 @@ Write a short design note: modules, order, what is in SKILL.md vs references.
 ## 4b. Unreproducible results (gap resolution)
 When an output disagrees with an expected answer, label, verifier or the user's own example and you cannot explain why, do not record it as a "known gap" yet:
 1. **Pin the gap:** state exactly what differs (your value vs expected, which case, which step) and list 2-3 hypotheses for the missing information (a definition, filter, convention, data source, version, or an error in the reference).
-2. **Ask for complementary explanations:** ask the user targeted questions with AskUserQuestion, one round, at most 3 questions, offering your hypotheses as options (e.g. "Is 'stock' meant to exclude ADRs and class B shares?"; "Where did the expected value come from?"; "Which guideline or version defines this?"). Ask only what the user can plausibly know; never ask him to do the research for you.
+2. **Ask for complementary explanations:** ask the user targeted questions with the available user-input tool, one round, at most 3 questions, offering your hypotheses as options (e.g. "Is 'stock' meant to exclude ADRs and class B shares?"; "Where did the expected value come from?"; "Which guideline or version defines this?"). Ask only what the user can plausibly know; never ask him to do the research for you.
 3. **Research in parallel:** while waiting, search for the source of the expected answer (reference code, dataset documentation, guideline text, benchmark repository) and try to reproduce it.
 4. **Resolve:** encode the explanation that reproduces the result, labelled with its source ("per user", "per <doc, year>", or "reproduces a quirk/bug in <reference>"). If the user's explanation conflicts with the evidence, show both and let him decide.
 5. **If still unresolved** (or the session is unattended): keep the most defensible behavior, flag the gap explicitly in the skill and the report, and list the open question for him.
@@ -169,7 +174,7 @@ When an output disagrees with an expected answer, label, verifier or the user's 
 ## 4c. Compatibility layer (run on the winning version, before delivery)
 Goal: a new or changed skill must not collide with his other skills, settings or scheduled tasks, and every affected skill gets an update proposal.
 
-1. **Inventory.** Read the skills table in the wiki page `skills` (`~/dev/wiki/content/skills.md`). Then read every one of his skills in full (`~/.Codex/skills/<name>/SKILL.md`), his saved preferences/settings rules, and scheduled tasks that invoke a skill (CronList, `crontab -l`, `systemctl --user list-timers`). Also read work that is not live yet: open items (`mem search skill`) and skill proposals waiting under `~/.Codex/`. A pending skill or a project instruction set counts as existing: extend it instead of building a parallel one.
+1. **Inventory.** Read the skills table in the wiki page `skills` (`~/dev/wiki/content/skills.md`). Then read every one of his skills in full (`~/.agents/skills/<name>/SKILL.md`), his saved preferences/settings rules, and scheduled tasks that invoke a skill (available scheduling tools, `crontab -l`, `systemctl --user list-timers`). Also read work that is not live yet: open items (`mem search skill`) and Codex skill proposals and the repository manifest. A pending skill or a project instruction set counts as existing: extend it instead of building a parallel one.
 2. **Interop header.** Give the new skill one line under its title: `Interop: role = domain | cross-cutting; owns = <format / workflow / facts>; defers to = <skills>; honors = language rule, flags !! *** ...`. Domain skills own the format of their answers; cross-cutting skills (e.g. bias-risk-triage, browser-automacao-segura) only set minimums or safety rules and never dictate format.
 3. **Conflict matrix.** Compare the new skill against each overlapping skill on these axes and record any clash:
    - trigger overlap (would both load for the same prompt?);
@@ -177,13 +182,13 @@ Goal: a new or changed skill must not collide with his other skills, settings or
    - depth flags `!!` `***` `...` and answer length;
    - output format and structure;
    - evidence/sourcing depth and date-checking;
-   - tools and environment (built-in browser vs Codex in Chrome, connectors, file locations);
+   - tools and environment (built-in browser vs the available browser tool, connectors, file locations);
    - safety and destructive actions;
    - cross-references (skills named inside other skills must exist with the exact name);
    - duplication of always-on rules that belong in settings.
 4. **Resolve by precedence, not by copying rules:** domain skill > cross-cutting skill for format; stricter rule wins for safety and sourcing; the user's explicit flag or message beats any skill default. Write the precedence line into whichever skill needs it.
 5. **Routing regression.** Re-run a routing check with the full, current skill list (including Anthropic's built-in skills such as skill-creator, docs, pdf): about 10 prompts that should trigger the new skill, 10 that should trigger neighbours, 5 that should trigger none. Fix descriptions until each prompt lands on exactly one intended skill.
-6. **Impact proposals.** For every existing skill the change affects, prepare a complete updated SKILL.md (read the whole current file first). Deliver them the most critical first and list the rest as pending. Write each complete file to `~/.Codex/skills/<name>/SKILL.md`. Skills under `~/.Codex/skills/synced/` come from the claude.ai app and are never edited here. Built-in Anthropic skills cannot be edited: add the precedence line to his own skill instead, or give him a one-line settings text to paste. Changes to settings or scheduled-task prompts are suggested as exact text, never applied silently.
+6. **Impact proposals.** For every existing skill the change affects, prepare a complete updated SKILL.md (read the whole current file first). Deliver them the most critical first and list the rest as pending. Write complete managed files under `~/dev/codex-skills/skills/<name>/SKILL.md`; update a non-managed Codex skill only in its actual writable location. Skills under `~/.agents/skills/synced/` come from the claude.ai app and are never edited here. Built-in Anthropic skills cannot be edited: add the precedence line to his own skill instead, or give him a one-line settings text to paste. Changes to settings or scheduled-task prompts are suggested as exact text, never applied silently.
 7. **Registry.** Update the skills table in the wiki page `skills` (and its `.de` and `.pt-BR` versions): one row per skill (name, role, owns, defers to, trigger summary, last changed, known conflicts resolved). The next forge run starts from it.
 
 ## 5. Synthesis
@@ -191,7 +196,11 @@ Compare versions per requirement. Pick the best; merge clearly superior elements
 
 ## 6. Deliver (hand-off to skill-creator)
 1. **Validate:** if skill-creator is available, copy each final skill folder to a scratch path and run its `scripts/quick_validate.py` on it; fix every error. Keep the original skill name for updates.
-2. **Save (Codex route):** write the complete SKILL.md to `~/.Codex/skills/<name>/` (plus the impact updates from 4c), then write or update the skill's wiki page with the skill `wiki-page-writer` (its `## Steps` section holds the skill's own rules; `wiki check` fails without it) and run `wiki publish` and `mem use`. Codex cannot save claude.ai skill cards.
+2. **Save (Codex route):** write the complete SKILL.md to its owned Codex repository folder (managed adaptations: `~/dev/codex-skills/skills/<name>/`) (plus the impact updates from 4c), then write or update the skill's wiki page with the skill `wiki-page-writer` (its `## Steps` section holds the skill's own rules; `wiki check` fails without it) and run `wiki publish` and `mem use`. Codex cannot save claude.ai skill cards.
 3. **Records:** save a design note, the evaluation results and the compatibility report in the wiki page of the skill; list limitations, open gaps from 4b and pending impact proposals from 4c.
-4. **Optional:** skill-creator's description optimizer (`run_loop.py`, needs `Codex -p`) on the final description after he approves the skill. Run it only in isolation, or its score is invalid (found 2026-10-24): on a patched copy of the scripts (never edit the installed skill-creator), the nested `Codex -p` runs with `--setting-sources project --tools Skill,Read --strict-mcp-config` so it cannot edit, publish or fire his hooks; the skill under test is NOT installed in that project (the installed copy would be called instead of the temporary command) while his other skills are copied in as project skills; a call to any `<name>-skill-*` command counts as a trigger (parallel workers plant identical commands side by side and the model picks one at random); and when the held-out scores tie, compare the old and the new description on fresh queries before installing either.
-```
+4. **Optional evaluation tooling:** use an actual supported runner only when requested and available. Do not translate Claude command names or flags into guessed Codex flags. Prefer an independent read-only subagent evaluation when available under the current delegation rules; give it the skill and realistic cases, not expected answers. Never install a skill into an evaluator that is meant to test a temporary version. Report routing results as manual or observed; structural validation is not a measured routing score.
+
+## Codex ownership
+
+Managed adaptations live in ~/dev/codex-skills/skills and are linked into ~/.agents/skills. Edit the repository source, validate, seal fingerprints and install through tools/skillsctl.py. Do not write through synced source copies or edit ~/.claude. Inspect the actual skill catalog (including bundled and plugin skills); do not assume Claude built-ins are present. Existing project guides named CLAUDE.md remain valid fallback references; prefer AGENTS.md where provided. For wiki updates, the tree guard takes precedence over registry or publication steps; stage a proposal in this project's docs/wiki if the target pages are occupied.
+````

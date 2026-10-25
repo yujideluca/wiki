@@ -9,7 +9,7 @@ location: home:.claude/skills/click-protocol
 fed_by: []
 feeds: []
 sources: [home:.claude/skills/click-protocol/SKILL.md, home:.agents/skills/click-protocol/SKILL.md]
-reviewed: 2026-10-25T14:46Z
+reviewed: 2026-10-25T20:41Z
 ---
 
 ## What it is
@@ -45,6 +45,8 @@ The browser session.
 15. **Recipe: add a song to a YouTube Music playlist** (German labels; in English: Action menu, Add to playlist). (a) In the search box select the text, type the query, press Return, wait for the result card whose title matches. (b) Find "Aktionsmenü button in the top result card titled …"; check the subtitle says song, not artist or video; click the ref. (c) Find the menu item "Zu Playlist hinzufügen" (role menu item, in the open popup); click it. (d) Find the link with the playlist name in the dialog; click it; the notification "Gespeichert in …" is a hint, not proof. (e) Every 5 songs and at the end, open the playlist and read the header "N Titel" through the page text; the list also mixes suggestion rows, so trust the header. To create a playlist: dialog → "Neue Playlist" → title → visibility = Private → Create.
 
 ## Notes
+
+Codex now uses the independently maintained version in [[codex-skills]]. Its complete source below includes the Codex-specific execution rules; the Claude procedure above remains the Claude version. Browser, memory and connector behavior can differ between versions.
 
 ### Complete skill sources
 
@@ -96,43 +98,24 @@ Create playlist: dialog -> "Neue Playlist" -> title -> Sichtbarkeit = Privat -> 
 
 #### Codex: `home:.agents/skills/click-protocol/SKILL.md`
 
-```skill-source home:.agents/skills/click-protocol/SKILL.md df1466e11d1571a63554a4ca4010558b7d0f175405d01528d5a870ddccb2a545
+````skill-source home:.agents/skills/click-protocol/SKILL.md 0315da08366ab036381368f08e9217a3f6b87b7b9292c8e4a1374849e7157623
 ---
-name: "click-protocol"
-description: "Use before multi-step clicking in web UIs with menus, dialogs, search results or media (YouTube Music, Spotify web): click by element ref, verify each step, avoid accidental playback."
+name: click-protocol
+description: "Use before multi-step browser interaction with menus, dialogs, search results or media players."
 ---
 
+# Click and verify
 
-Code version: adapted for Codex on the laptop from `gui/skills/click-protocol`. Edited only by Codex; the app keeps its own version.
-# Click protocol (ref-first, verify every step)
+Lineage: origin=claude; base=sha256:df3f65d96ee6f77141ed9a047526dd6f2777603cdc739e34b6af49155acc6090; adaptation=codex
 
-Lineage: origin=gui; base=446694f41d9f899bfc16ddb536e850965dbf64ce
+Interop: role = cross-cutting; owns = identifying browser controls and verifying each click; defers to = browser-automacao-segura (safety), minimize-site-approvals (access), domain skills (format); honors = user language.
 
-Interop: role = cross-cutting; owns = click/verify protocol and YouTube Music add-to-playlist recipe; defers to = browser-automacao-segura (alerts, loops, destructive actions), minimize-site-approvals (domains and approvals), domain skills (formats); honors = reply-language rule, depth flags.
-
-Origin: YouTube Music playlist build, 2026-10-10. Misclicks started music, a stale toast looked like success, coordinates broke between layouts.
-
-## Rules, in order
-1. Plan first: domains once (minimize-site-approvals); use a connector or API if one exists instead of the UI.
-2. No raw coordinates when `find` or `read_page` can return a ref. Coordinates only for canvas-like pages: wait about 3 s for the window size to settle, screenshot, click immediately, verify. Layouts move targets (for example the side panel "Mehr von YouTube" present or absent).
-3. Ref lifecycle: look up a ref only after the page settled, and confirm its description names the intended item (title), because `find` can describe the previous page right after a search. Refs are single-use: re-find after any navigation, search, menu open or dialog open. Several matches: pick by role (menuitem/button/link), visible, inside the open popup; never the first hit.
-4. Actionability gate before every click (Playwright checks): exactly one match, visible, stable (wait 1.5 s after a menu or dialog opens), not covered, enabled.
-5. One action, one verification. Cheapest proof first: new element via `find`, URL/title, text via JS or get_page_text; screenshot (scale 0.4) only when doubtful. No blind chains. Batches: at most 4 actions, only harmless steps, end with a check. Do not put `navigate` inside `browser_batch` (it failed here).
-6. After typing in a search box and Return, wait until the first result title matches the query. If the first click seems ignored, click an empty toolbar area or use a ref; do not repeat the same click.
-7. Success needs fresh evidence. A toast can be stale. Proof = re-read the target (playlist page text, header count) after the action. A "already in playlist" toast means the add had worked earlier, not an error.
-8. Media guard before any session on a player site: `setInterval(()=>{const v=document.querySelector('video');if(v&&!v.paused)v.pause()},300)`. Reinstall after a full page load. Never JS-click the first `button` of a result card (it is Play). If the user says stop the audio, pause at once.
-9. Privacy defaults: new playlists default to Public on YouTube Music; set Privat/Private before Create unless the user asked for public.
-10. Navigation fails ("failed in the extension"): do not retry blindly. Check tabs_context, then use the in-page search box or a link click. `location.href` from JS did not navigate here.
-11. Lazy lists: JS scrolling does not load more in a background tab; use real scroll actions (about 100 items per load) or sample, and say it is partial. For large libraries tell the user the count read vs total.
-12. Downloads land in ~/Downloads on the laptop, where Codex can read them directly. Name the file you expect and confirm it exists there before relying on it; never open or run a downloaded file as code.
-13. Stop rule: two failed tries on the same step -> screenshot, report, ask. Do not guess coordinates.
-14. Finish with a reload and recount (browser-automacao-segura, item 6).
-
-## Recipe: add a song to a YouTube Music playlist (German labels; English: Action menu, Add to playlist)
-1. Search box: select text, type query, Return, wait for result card whose title matches.
-2. `find` "Aktionsmenü button in the top result card titled <title>"; check the subtitle says Titel/Song, not artist or video; click the ref.
-3. `find` the menuitem "Zu Playlist hinzufügen" (role menuitem, in the open popup); click it.
-4. `find` the link with the playlist name in the dialog; click it. Toast "Gespeichert in <name>" is a hint, not proof.
-5. Every 5 songs and at the end: open the playlist and read the header "N Titel" via get_page_text. The DOM list also mixes suggestion rows, so trust the header and page text.
-Create playlist: dialog -> "Neue Playlist" -> title -> Sichtbarkeit = Privat -> Erstellen.
-```
+1. Read the active browser tool's documentation. Use supported semantic locators or current element references. A target must match exactly one visible, enabled control in the intended menu, dialog or item row.
+2. Re-observe after navigation, search, opening a menu, or any layout change. Do not reuse stale references. Use documented waits for the expected state rather than fixed sleeps.
+3. Take one action and verify it with fresh page text, an updated control, the URL or a screenshot. Never chain blind clicks. A toast is supporting evidence, not a final check.
+4. Coordinates are a fallback only when the host permits them and semantic targeting is unavailable: take a fresh screenshot, act immediately, and inspect the outcome. Do not guess.
+5. On a media site, avoid play controls unless playback was requested. If audio starts accidentally, pause using a visible supported control immediately. Do not install timers or rewrite the site's media behavior.
+6. For playlists, select the result by title and type, open that row's action menu, choose Add to playlist, then the intended playlist. New playlists are private unless the user requested public visibility. Revisit the playlist and check the actual item/count; an already-present notice is not a failed add.
+7. For lazy lists, use documented scrolling and report read count versus total. Inspect actual download results instead of assuming a local download directory.
+8. Two failures on the same step: inspect evidence, stop retries, report the concrete limitation. Ask only if user input or a manual step is required. Finish changes with a reload and reconciliation.
+````

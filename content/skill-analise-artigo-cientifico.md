@@ -9,7 +9,7 @@ location: home:.claude/skills/analise-artigo-cientifico
 fed_by: []
 feeds: []
 sources: [home:.claude/skills/analise-artigo-cientifico/SKILL.md, home:.agents/skills/analise-artigo-cientifico/SKILL.md]
-reviewed: 2026-10-25T14:46Z
+reviewed: 2026-10-25T20:41Z
 ---
 
 ## What it is
@@ -38,6 +38,8 @@ Giovanni.
 8. **Study summaries** (when Giovanni asks for a summary, not a full analysis): short bullets, acronyms spelled out, absolute effect with confidence interval and certainty, and one line for the main limitation.
 
 ## Notes
+
+Codex now uses the independently maintained version in [[codex-skills]]. Its complete source below includes the Codex-specific execution rules; the Claude procedure above remains the Claude version. Browser, memory and connector behavior can differ between versions.
 
 ### Complete skill sources
 
@@ -116,7 +118,7 @@ Quando ele pedir resumo (não análise completa): tópicos curtos, siglas por ex
 
 #### Codex: `home:.agents/skills/analise-artigo-cientifico/SKILL.md`
 
-```skill-source home:.agents/skills/analise-artigo-cientifico/SKILL.md e2bf1d6b1361e036d652c9a24019e6b5c3a7673d203bc2aafabdeaa317fc415f
+````skill-source home:.agents/skills/analise-artigo-cientifico/SKILL.md d7e31843bedca642047d4f4f94a5b9efa8c3b10068445b956ed7f7eb44f7daac
 ---
 name: "analise-artigo-cientifico"
 description: "Análise crítica de artigos científicos e de perguntas clínicas baseadas em evidência para o Giovanni (médico). Use sempre que ele enviar um artigo, PDF, DOI, PMID ou link de estudo, pedir \"analise este estudo\", perguntar se uma conduta/terapia/exame \"funciona\", pedir nível de evidência, GRADE, comparação de diretrizes, ou resumo de estudo — mesmo que não diga \"análise crítica\"."
@@ -124,7 +126,7 @@ description: "Análise crítica de artigos científicos e de perguntas clínicas
 
 # Análise de artigo científico / pergunta clínica
 
-Lineage: origin=gui; base=bacc7b719b48640060f5b235d5c5cb43d9ea2c2d
+Lineage: origin=claude; base=sha256:f50705aa5fe5e237660ff3e4ec96a73c3518bc8ec0f9151d77e1ea5097eccc64; adaptation=codex
 
 Objetivo: entregar uma leitura crítica que ele possa usar na prática e treinar como raciocínio, sem inventar dados. Ele é médico (emergência/pré-hospitalar, futuro radiologista); escreva em nível de pós-graduação, didático, com mecanismos e tamanhos de efeito.
 
@@ -182,4 +184,8 @@ Marque o que é dado da fonte e o que é sua inferência ("Interpretação:"). S
 
 ## 7. Formato para resumos de estudo
 Quando ele pedir resumo (não análise completa): tópicos curtos, siglas por extenso, efeito absoluto + intervalo de confiança + certeza, uma linha de limitação principal.
-```
+
+## Codex execution
+
+Use the actual tools exposed in this session and read their schemas before calling them. Discover deferred capabilities through the tool catalog; missing tools are a reported limitation, never an invented call. Current user instructions and host tool documentation take precedence. Domain skills own the answer format; cross-cutting skills set minimum verification and interaction requirements. Claude permissions, subscriptions and scheduled jobs do not transfer.
+````

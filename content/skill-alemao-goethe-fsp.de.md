@@ -1,7 +1,7 @@
 ---
 id: skill-alemao-goethe-fsp
 lang: de
-source_hash: 6d77c3b47c91
+source_hash: d76cfcb8ef6c
 title: Skill: alemao-goethe-fsp (Deutsch-Training)
 ---
 
@@ -32,6 +32,8 @@ Giovanni.
 9. **Export nach Anki auf Wunsch.** Eine UTF-8-`.txt` mit den Kopfzeilen `#separator:Tab`, `#html:true`, `#notetype:Cloze`, `#deck:Deutsch::Fehler`, `#tags column:2`; eine Zeile pro Muster mit dem richtigen Satz, der die Korrektur als Cloze enthält (`Der Patient leidet {{c1::an}} Diabetes.`), plus der kurzen Regel, und Tags `categoria::<Kategorie> padrao::<Bezeichnung>`; keine Duplikate und keine Tabs oder Zeilenumbrüche in Feldern.
 
 ## Notes
+
+Codex verwendet jetzt die getrennt gepflegte Version in [[codex-skills]]. Der vollständige Quelltext unten enthält die Ausführungsregeln für Codex; das oben beschriebene Claude-Verfahren bleibt die Claude-Version. Browser-, Speicher- und Verbindungsfunktionen können sich unterscheiden.
 
 ### Vollständige Skill-Quellen
 
@@ -120,7 +122,7 @@ Linha por exemplo mais recente de cada padrão: campo 1 = frase correta com a co
 
 #### Codex: `home:.agents/skills/alemao-goethe-fsp/SKILL.md`
 
-````skill-source home:.agents/skills/alemao-goethe-fsp/SKILL.md dc68a58e941d1bcfcd5c3b4f3d7acc4c3f3f94b4916ab355ac01f14eda6221b1
+````skill-source home:.agents/skills/alemao-goethe-fsp/SKILL.md 59dff242837abdd22d6d4a729d2c664e7105e2f124be01e5ac224d6ddd06d3cc
 ---
 name: "alemao-goethe-fsp"
 description: "Treino de alemão do Giovanni para o Goethe-Zertifikat B2 e, depois, a Fachsprachprüfung (FSP, C1 Medizin). Use sempre que ele enviar frases ou textos em alemão para corrigir, pedir exercícios, simular prova (Schreiben, Sprechen, Arzt-Patienten-Gespräch, Arztbrief, Arzt-Arzt-Gespräch), pedir vocabulário médico PT–DE, explicação gramatical ou heurísticas para verbos com preposição, casos e declinação."
@@ -128,7 +130,7 @@ description: "Treino de alemão do Giovanni para o Goethe-Zertifikat B2 e, depoi
 
 # Alemão: Goethe B2 → FSP
 
-Lineage: origin=gui; base=05bc4383689271c40d28eeb798105d3c931c1552
+Lineage: origin=claude; base=sha256:f00556785e9957a68d53eec0e693d04af9a394a02fd1272d47910b95a334db6f; adaptation=codex
 
 Interop: role = domain; owns = correção de alemão, exercícios, simulações e o registro de erros/Anki; defers to = candidatura-alemanha (documentos de candidatura); honors = idioma da mensagem, flags !! *** ...
 
@@ -178,7 +180,7 @@ Tabela PT – DE (Fachbegriff) – DE (laienverständlich) – frase-exemplo cl�
 ## 6. Registro de erros entre sessões e Anki
 Base: prática de recuperação supera releitura (Roediger & Karpicke 2006); intervalos crescentes e ~10–20% do horizonte de retenção otimizam memória (Cepeda et al. 2008); feedback corretivo focado em poucos padrões funciona melhor (Kang & Han 2015). Até a prova (nov/2026), o horizonte é de semanas → intervalos 1, 3, 7, 14 dias.
 
-**Armazenamento:** `alemao-erros.jsonl` — no projeto ativo (Projects `Codex/alemao-erros.jsonl`), senão na pasta conectada, senão entregue o bloco para ele salvar. O ambiente pode indicar outro caminho. Uma linha por **padrão** (não por frase):
+**Armazenamento:** `alemao-erros.jsonl` — no projeto ativo (arquivo `alemao-erros.jsonl` na pasta de estudo existente), senão na pasta conectada, senão entregue o bloco para ele salvar. O ambiente pode indicar outro caminho. Uma linha por **padrão** (não por frase):
 `{"padrao":"mit + Dativ","categoria":"Präposition","exemplos":[{"data":"AAAA-MM-DD","errado":"...","correto":"..."}],"regra":"...","heuristica":"...","ocorrencias":1,"caixa":1,"proxima":"AAAA-MM-DD"}`
 
 **Algoritmo (Leitner, 4 caixas):**
@@ -196,4 +198,8 @@ Base: prática de recuperação supera releitura (Roediger & Karpicke 2006); int
 #tags column:2
 ```
 Linha por exemplo mais recente de cada padrão: campo 1 = frase correta com a correção em cloze (`Der Patient leidet {{c1::an}} Diabetes.`) + `<br>` + regra curta; campo 2 = tags `categoria::<cat> padrao::<rótulo sem espaços>`. Sem duplicatas, sem tab ou quebra de linha dentro dos campos.
+
+## Codex execution
+
+Use the actual tools exposed in this session and read their schemas before calling them. Discover deferred capabilities through the tool catalog; missing tools are a reported limitation, never an invented call. Current user instructions and host tool documentation take precedence. Domain skills own the answer format; cross-cutting skills set minimum verification and interaction requirements. Claude permissions, subscriptions and scheduled jobs do not transfer.
 ````

@@ -1,7 +1,7 @@
 ---
 id: skill-ligamagic-listas
 lang: de
-source_hash: 6aecdf82064d
+source_hash: 4534aa382f44
 title: Skill: ligamagic-listas
 ---
 
@@ -28,6 +28,8 @@ Giovannis LigaMagic-Listen und [[skill-ligamagic-replicar-carrinho-nas-lojas]] f
 5. **Fallen.** Zweimal auf ein gerade bearbeitetes Element zu klicken ergibt die Warnung „Ops! Não foi possível realizar a operação“, die den Browser einfriert: eines nach dem anderen entfernen und warten, bis die Zeile verschwindet. Das `javascript_tool` kann bei Selektoren mit bestimmten Zeichenfolgen oder langen Ausgaben scheitern: die erste Tabelle benutzen, Ergebnisse in `window.*`-Variablen speichern und in Blöcken von etwa 1.000 Zeichen lesen. Der Kopf zeigt „Total: N cards“, was die Mengen addiert.
 
 ## Notes
+
+Codex verwendet jetzt die getrennt gepflegte Version in [[codex-skills]]. Der vollständige Quelltext unten enthält die Ausführungsregeln für Codex; das oben beschriebene Claude-Verfahren bleibt die Claude-Version. Browser-, Speicher- und Verbindungsfunktionen können sich unterscheiden.
 
 ### Vollständige Skill-Quellen
 
@@ -75,7 +77,7 @@ A mesma página tem duas estruturas: a Lista de Compras (tabela, abaixo) e o car
 
 #### Codex: `home:.agents/skills/ligamagic-listas/SKILL.md`
 
-```skill-source home:.agents/skills/ligamagic-listas/SKILL.md d0c466478a6b31dbb47d7dec088c8af5fae291714dc00e17ce2d3e9b1e0dc29a
+````skill-source home:.agents/skills/ligamagic-listas/SKILL.md 3449cdde304f211f961af116215c58e34e55b059d89c57e4345e4577093735fc
 ---
 name: "ligamagic-listas"
 description: "Use ao trabalhar com a Lista de Compras ou o Compra por Lista da LigaMagic - extrair cartas, gerar listas com edição, remover ou editar itens em lote. Para refazer ou conferir o carrinho por loja nos sites das lojas, use ligamagic-replicar-carrinho-nas-lojas."
@@ -83,7 +85,7 @@ description: "Use ao trabalhar com a Lista de Compras ou o Compra por Lista da L
 
 # LigaMagic: listas e carrinho
 
-Lineage: origin=gui; base=8a97b14fecb67eb7def4bb7e9d387630f5236c2f
+Lineage: origin=claude; base=sha256:32a511da7caa37b7661f299f9c058c911d2aeae0ea3a9c9bc4eb9d1220d884c9; adaptation=codex
 
 Interop: role = domain; owns = formato do Compra por Lista e manuseio da Lista de Compras; defers to = browser-automacao-segura (ações em lote), ligamagic-replicar-carrinho-nas-lojas (carrinho por loja e montagem nos sites das lojas); honors = idioma da mensagem, flags !! *** ...
 
@@ -108,6 +110,12 @@ A mesma página tem duas estruturas: a Lista de Compras (tabela, abaixo) e o car
 - O texto da edição selecionada tem o formato `SIGLA - Nome` (ex.: `PIP - Fallout`).
 - O botão de remover é `.btn-circle.remove`. A remoção é imediata no servidor (aparece um aviso "foi removido da sua Lista de Compras"). Durante o processamento, o botão vira um spinner. O carrinho por loja usa a mesma classe: confira em qual estrutura o botão está antes de clicar.
 - Clicar duas vezes no mesmo item em processamento gera o alerta "Ops! Não foi possível realizar a operação", que trava o navegador. Remova um por vez e espere a linha sumir.
-- O `javascript_tool` pode falhar com seletores contendo certas strings ou com saídas longas. Use `querySelectorAll('table')[0]`, guarde resultados em `window.*` e leia em blocos de ~1000 caracteres.
+- O a ferramenta de leitura disponível pode falhar com seletores contendo certas strings ou com saídas longas. Use `querySelectorAll('table')[0]`, retorne os resultados em blocos pequenos, sem gravar estado na página.
 - O cabeçalho mostra "Total: N cards", que soma as quantidades.
-```
+
+## Codex execution
+
+Use the actual tools exposed in this session and read their schemas before calling them. Discover deferred capabilities through the tool catalog; missing tools are a reported limitation, never an invented call. Current user instructions and host tool documentation take precedence. Domain skills own the answer format; cross-cutting skills set minimum verification and interaction requirements. Claude permissions, subscriptions and scheduled jobs do not transfer.
+
+Os seletores históricos são pistas, não prova de que o site atual os usa. Confirme a estrutura observável. Só use extração de DOM quando a documentação da ferramenta permitir; caso contrário leia a interface e reporte os campos não acessíveis.
+````

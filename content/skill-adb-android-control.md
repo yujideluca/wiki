@@ -9,7 +9,7 @@ location: home:.claude/skills/adb-android-control
 fed_by: [android-toolchain, study-debug-log]
 feeds: []
 sources: [home:.claude/skills/adb-android-control/SKILL.md, home:.agents/skills/adb-android-control/SKILL.md]
-reviewed: 2026-10-25T14:46Z
+reviewed: 2026-10-25T20:41Z
 ---
 
 ## What it is
@@ -44,6 +44,8 @@ The skill is a reference of commands, grouped by task. The groups are:
 13. **Troubleshooting.** Device not found: restart the adb server and list devices. Device offline: disconnect and connect again. Permission denied: some operations need root. Connection refused: pair the device again with `adb pair <ip>:PORT CODE`.
 
 ## Notes
+
+Codex now uses the independently maintained version in [[codex-skills]]. Its complete source below includes the Codex-specific execution rules; the Claude procedure above remains the Claude version. Browser, memory and connector behavior can differ between versions.
 
 ### Complete skill sources
 
@@ -708,7 +710,7 @@ adb pair <device-ip>:PORT PAIRING_CODE
 
 #### Codex: `home:.agents/skills/adb-android-control/SKILL.md`
 
-````skill-source home:.agents/skills/adb-android-control/SKILL.md b86b3900d2b2edbe9825bacc074be391c8457cc7fb29b6ed875ec43494d1a7a7
+````skill-source home:.agents/skills/adb-android-control/SKILL.md 25be6a8d38f0771c046eb37f793a41cf3203e49cda64d6408712906d16edda65
 ---
 name: adb-android-control
 description: "Use in Codex for Android work over adb on Giovanni's phone (Motorola edge 50 fusion) during app development such as QuizApp: install an APK, launch the app, tap/swipe/type to exercise a flow, take a screenshot, read logcat for crashes, dumpsys, permissions. The command reference for the debug pass after coding. Not for general phone questions, USB/Kubuntu problems (reparo-kubuntu) or anything without adb."
@@ -716,9 +718,9 @@ description: "Use in Codex for Android work over adb on Giovanni's phone (Motoro
 
 # ADB Android Control
 
-Lineage: origin=code; base=none
+Lineage: origin=claude; base=sha256:f691e42c4c8b839421e7b03b727cfe7548bcaf63ef3cbbdf9e1660047eecea90; adaptation=codex
 
-Interop: role = domain (adb command reference); owns = adb commands for installing, driving and inspecting an app on the phone; defers to = the project's AGENTS.md (QuizApp: `source ~/dev/env.sh` puts adb on PATH, build and install steps), verification-before-completion (what counts as proof), reparo-kubuntu (USB/host problems); honors = reply-language rule, debug-after-coding.
+Interop: role = domain (adb command reference); owns = adb commands for installing, driving and inspecting an app on the phone; defers to = the project's AGENTS.md (or CLAUDE.md when it is the existing project guide) (QuizApp: `source ~/dev/env.sh` puts adb on PATH, build and install steps), verification-before-completion (what counts as proof), reparo-kubuntu (USB/host problems); honors = reply-language rule, debug-after-coding.
 
 Adapted from hah23255/adb-android-control 2.0.1 (commit cc1cb29, MIT, LICENSE in this folder): the command reference and workflows only. Left out: the Termux auto-connect scripts, the network port scanner, radio scanner and Python package (phone-side and LAN-scanning tools this setup does not need). Never run a network scan from this skill.
 
@@ -736,6 +738,10 @@ Use this skill when user asks about:
 - **Shell Access**: Run commands on device
 - **Debugging**: Logcat, dumpsys, process info
 - **Automation**: Scripted workflows, batch operations
+
+## Device-state guard
+
+Never change stay-awake, stay_on_while_plugged_in or screen timeout for testing. Read any other setting before changing it and restore exactly the prior value. App-data clearing, uninstall, reboot, shutdown and other destructive reference commands require task-specific authorization; their presence here is not permission.
 
 ## Quick Reference
 
@@ -1078,8 +1084,7 @@ adb shell settings list secure
 # Brightness (0-255)
 adb shell settings put system screen_brightness 200
 
-# Screen timeout (ms)
-adb shell settings put system screen_off_timeout 60000
+# Screen timeout is preserved; do not change it for tests.
 
 # Enable/disable animations
 adb shell settings put global window_animation_scale 0
@@ -1133,11 +1138,8 @@ adb reboot bootloader
 # Shutdown device (root required)
 adb shell reboot -p
 
-# Keep device awake while connected
-adb shell svc power stayon usb
-
-# Disable stay awake
-adb shell svc power stayon false
+# Preserve stay-awake settings. To wake for a test, use:
+adb shell input keyevent KEYCODE_WAKEUP
 
 # Get battery level
 adb shell dumpsys battery | grep level
@@ -1360,4 +1362,9 @@ adb root   # If device is rooted
 adb pair <device-ip>:PORT PAIRING_CODE
 ```
 
+
+
+## Codex execution
+
+Use the actual tools exposed in this session and read their schemas before calling them. Discover deferred capabilities through the tool catalog; missing tools are a reported limitation, never an invented call. Current user instructions and host tool documentation take precedence. Domain skills own the answer format; cross-cutting skills set minimum verification and interaction requirements. Claude permissions, subscriptions and scheduled jobs do not transfer.
 ````

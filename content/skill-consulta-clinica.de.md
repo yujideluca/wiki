@@ -1,7 +1,7 @@
 ---
 id: skill-consulta-clinica
 lang: de
-source_hash: 1313a859947a
+source_hash: a3984072b927
 title: Skill: consulta-clinica (klinische Antworten)
 ---
 
@@ -30,6 +30,8 @@ Giovanni, als Unterstützung des klinischen Denkens bei der Arbeit.
 7. **Kommentiertes Beispiel.** Frage: „Adrenalin bei der Reanimation eines Kindes von 18 kg?“ Vorgehen: Adrenalin 0,18 mg i.v./i.o. so früh wie möglich, alle 3–5 Minuten wiederholen. Leitlinie: pädiatrische Reanimation, AHA PALS 2025 und ERC 2025 (aktuelle Auflage prüfen). Dosis: 0,01 mg/kg → 0,18 mg i.v./i.o. alle 3–5 Minuten (Maximum 1 mg pro Dosis). Berechnung: 18 kg × 0,01 mg/kg = 0,18 mg; 0,18 ≤ 1 mg ✔ (keine Konzentration genannt, also mg und kein mL). Evidenz: Empfehlung auf Grundlage begrenzter, beobachtender Evidenz. Brasilien × Europa × USA: kein relevanter Dosisunterschied.
 
 ## Notes
+
+Codex verwendet jetzt die getrennt gepflegte Version in [[codex-skills]]. Der vollständige Quelltext unten enthält die Ausführungsregeln für Codex; das oben beschriebene Claude-Verfahren bleibt die Claude-Version. Browser-, Speicher- und Verbindungsfunktionen können sich unterscheiden.
 
 ### Vollständige Skill-Quellen
 
@@ -81,7 +83,7 @@ Pergunta: "Adrenalina na PCR de criança de 18 kg?"
 
 #### Codex: `home:.agents/skills/consulta-clinica/SKILL.md`
 
-```skill-source home:.agents/skills/consulta-clinica/SKILL.md 08fddc15e2ef4d1546cd0d986c0c5dcfb00045cc824e92f67615ee6a949d79b5
+````skill-source home:.agents/skills/consulta-clinica/SKILL.md dbfa0af3c703e67c14aedaa31cdf04b8ab768957820fc066284a1f64b9093ff1
 ---
 name: "consulta-clinica"
 description: "Respostas clínicas rápidas e cálculos de dose para o Giovanni (médico de emergência/pré-hospitalar): conduta, dose, diluição, infusão, escores, calculadoras, interações e suplementos — não para análise de artigo ou estudo."
@@ -89,7 +91,7 @@ description: "Respostas clínicas rápidas e cálculos de dose para o Giovanni (
 
 # Consulta clínica
 
-Lineage: origin=gui; base=e84b0a76232ca638950f72dda47804287d84d56a
+Lineage: origin=claude; base=sha256:09f7bd22bc5fe8ff2711a9a41613551d0e175aa37e5a1afe9b48d4c2d44aa03e; adaptation=codex
 
 Interop: role = domain; owns = formato de respostas clínicas e de cálculo; defers to = analise-artigo-cientifico (artigo, estudo, "isso funciona?" com pedido de evidência aprofundada), bias-risk-triage (só profundidade mínima de verificação); honors = idioma da mensagem, flags !! *** ...
 
@@ -120,4 +122,8 @@ Pergunta: "Adrenalina na PCR de criança de 18 kg?"
 (Concentração não informada → dose em mg, sem mL.)
 **Evidência:** recomendação baseada em evidência limitada (observacional).
 **BR × DE/EU × EUA:** sem diferença relevante de dose.
-```
+
+## Codex execution
+
+Use the actual tools exposed in this session and read their schemas before calling them. Discover deferred capabilities through the tool catalog; missing tools are a reported limitation, never an invented call. Current user instructions and host tool documentation take precedence. Domain skills own the answer format; cross-cutting skills set minimum verification and interaction requirements. Claude permissions, subscriptions and scheduled jobs do not transfer.
+````

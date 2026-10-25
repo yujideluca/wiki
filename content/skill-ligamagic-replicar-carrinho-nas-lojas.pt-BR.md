@@ -1,7 +1,7 @@
 ---
 id: skill-ligamagic-replicar-carrinho-nas-lojas
 lang: pt-BR
-source_hash: 60aca2fb554c
+source_hash: e4df24589328
 title: Skill: ligamagic-replicar-carrinho-nas-lojas
 ---
 
@@ -43,6 +43,8 @@ S4. **Conciliar a loja** (do mais barato ao mais caro; parar na primeira que fal
 S5. **Relatório** (no idioma da mensagem do Giovanni): uma tabela loja | itens | total da Liga | subtotal na loja; depois só o que houver: itens prévios mantidos (e seu valor), carrinho de visitante, variantes ausentes, quantidades acima de 1 vindas da Liga, divergência de cabeçalho explicada. Dizer que parou antes do checkout. Com `!!`: só a tabela e as ressalvas. Com `***`: incluir a conciliação por chave de cada loja.
 
 ## Notes
+
+O Codex agora usa a versão mantida separadamente em [[codex-skills]]. A fonte completa abaixo contém as regras de execução do Codex; o procedimento Claude acima continua sendo a versão Claude. Navegador, memória e conexões podem funcionar de formas diferentes.
 
 ### Fontes completas da skill
 
@@ -135,7 +137,7 @@ Tabela: loja | itens | total Liga | subtotal na loja. Depois, só o que houver: 
 
 #### Codex: `home:.agents/skills/ligamagic-replicar-carrinho-nas-lojas/SKILL.md`
 
-````skill-source home:.agents/skills/ligamagic-replicar-carrinho-nas-lojas/SKILL.md 60a05b266877b38d5f46218c8665c3c8fcb90b0d516eedc4919cefbcf9ff1a7c
+````skill-source home:.agents/skills/ligamagic-replicar-carrinho-nas-lojas/SKILL.md 392830fa60233256808c81596c1908be71f8be438a47121c23f817d6e8f5cbba
 ---
 name: "ligamagic-replicar-carrinho-nas-lojas"
 description: "Refaz o carrinho por loja da LigaMagic no site próprio de cada loja (mesma carta, edição, idioma, qualidade, extras e quantidade) e concilia os dois antes do checkout. Use quando o Giovanni pedir para conferir os carrinhos da LigaMagic e montá-los ou conferi-los nos sites das lojas, sem usar os links da Liga."
@@ -143,7 +145,7 @@ description: "Refaz o carrinho por loja da LigaMagic no site próprio de cada lo
 
 # Carrinho LigaMagic → sites das lojas
 
-Lineage: origin=gui; base=d489ee85219ba7d7e9b4eaec3b69b34afc1470a3
+Lineage: origin=claude; base=sha256:21b562c3f42e4e30e6c22fd771e3363de67b30db3c56d59d7cf8ebc71adacff7; adaptation=codex
 
 Interop: role = domain; owns = fluxo Liga→loja, scripts de leitura do carrinho por loja e da página de produto, conciliação e relatório final; defers to = ligamagic-listas (Lista de Compras e Compra por Lista), browser-automacao-segura (alertas, laços, ações destrutivas: prevalece), click-protocol (mecânica de clique), minimize-site-approvals (domínios); honors = idioma da mensagem, flags !! *** ...
 
@@ -154,9 +156,9 @@ Origem: tarefa de 12/10/2026 (5 lojas, 90 itens). Erros que esta skill previne: 
 2. Na loja: buscar, COMPRAR e corrigir quantidade. Nada de login, conta, pagamento, formulário ou o botão COMPRAR do carrinho (checkout).
 3. Itens que já estavam no carrinho da loja ficam (padrão dele: manter e acrescentar). Pergunte só se ele não tiver dito.
 4. Não chegue às lojas pelos links da Liga.
-5. Antes de adicionar, instale o registro de alertas (`browser-automacao-segura`, regra 3). Um item por vez; nunca dois cliques sem verificação entre eles.
+5. Antes de adicionar, leia browser-automacao-segura. Trate diálogos com APIs documentadas, sem substituir handlers. Um item por vez, com verificação entre cliques.
 6. Mensagem curta de progresso a cada 5 itens e a cada troca de loja.
-7. `navigate` sozinho, fora de `browser_batch`. Lotes de no máximo 4 ações inofensivas, terminando em verificação (click-protocol).
+7. Navegue com a API documentada do navegador; uma ação por vez, seguida de leitura e verificação (click-protocol).
 
 ## Checklist (copie e marque)
 - [ ] S1 Ler a Liga (script A) → E por loja; listar domínios e pedir acesso de uma vez
@@ -169,27 +171,27 @@ Origem: tarefa de 12/10/2026 (5 lojas, 90 itens). Erros que esta skill previne: 
 Script A (testado em 12/10/2026; 90 linhas, 5 lojas):
 ```js
 (()=>{const t=e=>e?e.innerText.replace(/\s+/g,' ').trim():'';
-window.LM=[...document.querySelectorAll('.pad-bot-10')].filter(b=>b.querySelector('input.qty')).map(b=>{const f=t(b.querySelector('.footer'));return {loja:t(b.querySelector('.loja-titulo')),hdr:+(f.match(/(\d+) itens?/)||[])[1],total:(f.match(/Valor Total:.*?(R\$ [\d.,]+)\s*(R\$ [\d.,]+)\s*(R\$ [\d.,]+)/)||[])[3]||'',
+const LM=[...document.querySelectorAll('.pad-bot-10')].filter(b=>b.querySelector('input.qty')).map(b=>{const f=t(b.querySelector('.footer'));return {loja:t(b.querySelector('.loja-titulo')),hdr:+(f.match(/(\d+) itens?/)||[])[1],total:(f.match(/Valor Total:.*?(R\$ [\d.,]+)\s*(R\$ [\d.,]+)\s*(R\$ [\d.,]+)/)||[])[3]||'',
 itens:[...b.querySelectorAll('input.qty')].map(q=>{const r=q.closest('div.row');const a=[...r.querySelectorAll('table.listasimples td')].map(td=>(td.querySelector('img')||{}).title||t(td)).filter(x=>x&&x.length<40);
 return {nome:t(r.querySelector('a.pretoG')).split(' / ').pop(),ed:(r.querySelector('img.icon-edicao')||{}).title||'',lang:a.find(x=>/Portugu|Ingl|Japon|Alem|Espanh|Franc|Italian|Russ|Chin|Corean/.test(x))||'',qual:a.find(x=>/^(M|NM|SP|MP|HP|D)$/.test(x))||'',extras:a.filter(x=>/^(Foil|Promo|Pre-?release|Textless|Etched|Assinad|Alterad|Oversize)/i.test(x)).join(','),qty:+q.value,est:(t(r).match(/(\d+) unids?\./)||[])[1]||'',sub:t(r.querySelector('.item-total'))}})}});
 return LM.map(s=>s.loja+' | hdr '+s.hdr+' | linhas '+s.itens.length+' | soma '+s.itens.reduce((x,i)=>x+i.qty,0)+' | '+s.total).join('\n')})()
 ```
 - Valide antes de usar: `hdr` = linhas de cada loja e nenhum campo `ed`, `lang` ou `qual` vazio. Se falhar (o site mudou), leia linha a linha pela página: `div.row` com `input.qty`, edição no `title` do ícone, Foil/Promo na própria linha.
-- Leia os itens em fatias (`LM[k].itens.slice(0,12)`). O `javascript_tool` corta saídas longas e bloqueia URLs.
+- Se a API permitir leitura do DOM, retorne apenas o trecho necessário do resultado, sem gravar variáveis na página. Os scripts abaixo são modelos de extração para adaptar à leitura permitida; não são APIs do host. Leia os itens em fatias. O a ferramenta de leitura disponível corta saídas longas e bloqueia URLs.
 - "N unids." é ESTOQUE (`est`), nunca quantidade. Quantidade é `input.qty` (`qty`).
 - `qty` > 1: pergunte se é intencional antes de replicar (já houve cópia extra por engano).
 - Mesma página, outra estrutura: a "Lista de Compras" (tabela com selects) é da skill ligamagic-listas; não a confunda com o carrinho por loja.
-- Site da loja: clique no nome da loja (`.loja-titulo`) e o link aparece. Domínios confirmados: primemtg.com.br, tavernagamehouse.com.br.
+- Site da loja: leia o domínio exibido sem seguir links de redirecionamento da Liga; abra o domínio independentemente. Domínios confirmados: primemtg.com.br, tavernagamehouse.com.br.
 
 ## S2. R0 da loja
-`https://<loja>/?view=ecom/carrinho` + `get_page_text`: guarde linhas, subtotal e os campos `txt_qty_*` (JS: inputs cujo `name` começa com `txt_qty_`). Sem "Olá, <nome>" no topo: carrinho de visitante, avise no fim.
+`https://<loja>/?view=ecom/carrinho` + a leitura de texto disponível: guarde linhas, subtotal e os campos `txt_qty_*` (JS: inputs cujo `name` começa com `txt_qty_`). Sem "Olá, <nome>" no topo: carrinho de visitante, avise no fim.
 
 ## S3. Adicionar um item
 1. Busca direta: `https://<loja>/?view=ecom/itens&busca=<nome EN>`. Um resultado abre o produto. Vários: Art Card, "com assinatura" e tokens são outros produtos; abra candidatos até achar a edição.
 2. Script B (página do produto; testado na Prime MTG, mesma plataforma das outras lojas):
 ```js
 (()=>{const t=e=>e?e.innerText.replace(/\s+/g,' ').trim():'';
-window.V=[...document.querySelectorAll('.table-cards-body .table-cards-row')].map((r,i)=>{const c=r.children;return {i,ed:(c[0].querySelector('img')||{}).title||t(c[0]),lang:(c[1].querySelector('img')||{}).title||t(c[1]),q:t(c[2]),x:t(c[3]).replace(/^-$/,''),st:t(c[4]),p:t(c[5]),buy:!!r.querySelector('button.product--btn')}});
+const V=[...document.querySelectorAll('.table-cards-body .table-cards-row')].map((r,i)=>{const c=r.children;return {i,ed:(c[0].querySelector('img')||{}).title||t(c[0]),lang:(c[1].querySelector('img')||{}).title||t(c[1]),q:t(c[2]),x:t(c[3]).replace(/^-$/,''),st:t(c[4]),p:t(c[5]),buy:!!r.querySelector('button.product--btn')}});
 return V.filter(v=>v.buy).map(v=>[v.i,v.ed,v.lang,v.q,v.x,v.st,v.p].join(' | ')).join('\n')})()
 ```
    Se não achar linhas: passe o mouse no ícone de edição de cada linha e dê zoom (a dica aparece acima do ícone da linha sob o cursor).
@@ -200,7 +202,7 @@ return V.filter(v=>v.buy).map(v=>[v.i,v.ed,v.lang,v.q,v.x,v.st,v.p].join(' | '))
    | + estoque = `est` e preço final = unitário da Liga | desempata |
    | 0 linhas | variante ausente: não substitua, registre |
    As lojas usam o sistema da Liga: edição, idioma, estoque e preço vêm com o mesmo texto. Edições parecidas são linhas diferentes. Exemplo: Blitzball Stadium tinha "FINAL FANTASY Commander (Extended Art)" (a certa) e "FINAL FANTASY Commander" na mesma página.
-4. COMPRAR na linha `i`, um clique só. No primeiro item da sessão, teste o clique por JS: `document.querySelectorAll('.table-cards-body .table-cards-row')[i].querySelector('button.product--btn').click()`. Se o contador não subir, use `find` (ref do COMPRAR daquela linha) ou, se `find` falhar, `scrollIntoView({block:'center'})` na linha + screenshot + clique no COMPRAR da linha central. Use o caminho que funcionou no resto da loja.
+4. Localize o botão COMPRAR na linha cuja variante foi conferida, por referência ou localizador semântico observado. Clique uma vez com a API documentada; não dispare cliques por JavaScript. Se necessário e permitido, use screenshot atual para uma coordenada observada.
 5. Mudança esperada: o contador do carrinho (número ao lado do ícone, no topo à direita; screenshot a 0.5 lê) = anterior + 1. Qualquer outro valor: pare e leia o carrinho antes de clicar de novo. Duas falhas no mesmo passo: screenshot, relate, pergunte.
 
 ## S4. Conciliar a loja (do mais barato ao mais caro; pare no primeiro que falhar)
@@ -215,4 +217,10 @@ return V.filter(v=>v.buy).map(v=>[v.i,v.ed,v.lang,v.q,v.x,v.st,v.p].join(' | '))
 
 ## S5. Relatório (no idioma da mensagem dele)
 Tabela: loja | itens | total Liga | subtotal na loja. Depois, só o que houver: itens prévios mantidos (e valor), carrinho de visitante, variantes ausentes, quantidades > 1 vindas da Liga, divergência de cabeçalho explicada. Diga que parou antes do checkout. `!!`: só a tabela e as ressalvas. `***`: inclua a conciliação por chave de cada loja.
+
+## Codex execution
+
+Use the actual tools exposed in this session and read their schemas before calling them. Discover deferred capabilities through the tool catalog; missing tools are a reported limitation, never an invented call. Current user instructions and host tool documentation take precedence. Domain skills own the answer format; cross-cutting skills set minimum verification and interaction requirements. Claude permissions, subscriptions and scheduled jobs do not transfer.
+
+Os seletores históricos são pistas, não prova de que o site atual os usa. Confirme a estrutura observável. Só use extração de DOM quando a documentação da ferramenta permitir; caso contrário leia a interface e reporte os campos não acessíveis.
 ````

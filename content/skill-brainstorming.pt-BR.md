@@ -1,7 +1,7 @@
 ---
 id: skill-brainstorming
 lang: pt-BR
-source_hash: 656049e9ed47
+source_hash: 47545dd79c85
 title: Skill: brainstorming
 ---
 
@@ -35,6 +35,8 @@ O Giovanni (as perguntas e o documento de design) e a construção que se segue.
 12. **Sinais de alerta.** Oferecer opções "para poupar esforço" conduz em vez de ouvir; padrões não ditos não podem ser rejeitados, então diga-os em voz alta; "parece bom" aprova só o que foi mostrado; manter um spike é um novo pedido.
 
 ## Notes
+
+O Codex agora usa a versão mantida separadamente em [[codex-skills]]. A fonte completa abaixo contém as regras de execução do Codex; o procedimento Claude acima continua sendo a versão Claude. Navegador, memória e conexões podem funcionar de formas diferentes.
 
 ### Fontes completas da skill
 
@@ -284,17 +286,17 @@ starting the server.
 
 #### Codex: `home:.agents/skills/brainstorming/SKILL.md`
 
-```skill-source home:.agents/skills/brainstorming/SKILL.md ffd72e9b301559d8eb0efd112e09a17ab76917de228ed4e8dc1c7f65ed339452
+````skill-source home:.agents/skills/brainstorming/SKILL.md d281dc30e0962bb22d9365d57c5d88e2f53e726b0cc84559337b4df179ddd41e
 ---
 name: brainstorming
-description: "Use in Codex before building something new in software or in the Codex-workflow pipeline (an app feature, a tool, a multi-step change): ask the clarifying questions, size the work and get Giovanni's go before writing code. Not for writing tasks (CV, letters, German exercises), clinical questions, or creating skills (skill-forge)."
+description: "Use in Codex before building something new in software or in the Codex workflow pipeline (an app feature, a tool, a multi-step change): ask the clarifying questions, size the work and get Giovanni's go before writing code. Not for writing tasks (CV, letters, German exercises), clinical questions, or creating skills (skill-forge)."
 ---
 
 # Brainstorming
 
-Lineage: origin=code; base=none
+Lineage: origin=claude; base=sha256:b5dd965f2ad0d20bb9c0bb057f7f79ede0412be6dda32421efffe878f4e3b5d2; adaptation=codex
 
-Interop: role = process; owns = requirements and size check before a build (the size-and-fit rule); defers to = skill-forge (new or rebuilt skills), revisao-manutencao (maintenance reviews are not brainstorms), the project's AGENTS.md; honors = reply-language rule, plain-language explanations (define every term on first use).
+Interop: role = process; owns = requirements and size check before a build (the size-and-fit rule); defers to = skill-forge (new or rebuilt skills), revisao-manutencao (maintenance reviews are not brainstorms), the project's AGENTS.md (or CLAUDE.md when it is the existing project guide); honors = reply-language rule, plain-language explanations (define every term on first use).
 
 Adapted from obra/superpowers 7.0.0 (commit bb92a77, MIT, LICENSE in this folder), without its always-on startup hook.
 
@@ -521,4 +523,9 @@ question about a UI topic isn't automatically a visual question.
 
 If they accept, read `visual-companion.md` in this directory before
 starting the server.
-```
+
+
+## Codex execution
+
+Use the actual tools exposed in this session and read their schemas before calling them. Discover deferred capabilities through the tool catalog; missing tools are a reported limitation, never an invented call. Current user instructions and host tool documentation take precedence. Domain skills own the answer format; cross-cutting skills set minimum verification and interaction requirements. Claude permissions, subscriptions and scheduled jobs do not transfer.
+````

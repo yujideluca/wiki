@@ -1,7 +1,7 @@
 ---
 id: skill-gerar-teste-automatizado
 lang: de
-source_hash: 111014cbaa27
+source_hash: 43a04db3b402
 title: Skill: gerar-teste-automatizado
 ---
 
@@ -31,6 +31,8 @@ Als erfahrener Ingenieur für automatisiertes Testen und Fehlererkennung handeln
 6. **Abliefern: `docs/TESTES-AUTOMATIZADOS.md` schreiben und berichten.** Das Protokoll enthält: die Zusammenfassung der Analyse und die Strategie; die Testmatrix (Anforderung, Szenario, erwartetes Ergebnis, Priorität); die Dateien und ihre Zwecke; die Ausführungsbefehle; die echten Ergebnisse (ausgeführt, bestanden, fehlgeschlagen, ignoriert); Abdeckung mit Werkzeug und Lücken; gefundene Defekte (Beschreibung, Beleg, Auswirkung, Reproduktion); Einschränkungen und Restrisiken; Empfehlungen; und die Kopfzeile `Last reviewed: <Commit-SHA> <Datum>`, die der Update-Modus liest. Klar kennzeichnen, was beobachtet, was geschlossen und was Hypothese ist. Fertig ist es erst, wenn die Tests umgesetzt und geordnet sind, erwartete Ergebnisse eine erkennbare Grundlage haben, Ausführungsbefehle dokumentiert sind, Tests ausgeführt wurden (oder Grenzen festgehalten), Fehlschläge untersucht und eingeordnet wurden und Risiken und Lücken dokumentiert sind. Nicht bei einem Plan oder Codebeispielen stehen bleiben. Mit „Verified by:“ enden.
 
 ## Notes
+
+Codex verwendet jetzt die getrennt gepflegte Version in [[codex-skills]]. Der vollständige Quelltext unten enthält die Ausführungsregeln für Codex; das oben beschriebene Claude-Verfahren bleibt die Claude-Version. Browser-, Speicher- und Verbindungsfunktionen können sich unterscheiden.
 
 ### Vollständige Skill-Quellen
 
@@ -92,7 +94,7 @@ Done only when: tests implemented and organised; expected results have an identi
 
 #### Codex: `home:.agents/skills/gerar-teste-automatizado/SKILL.md`
 
-```skill-source home:.agents/skills/gerar-teste-automatizado/SKILL.md 8fd0f846b4a0ac089cc419d19ff831421f301e84397a9799a463e78a8363812a
+````skill-source home:.agents/skills/gerar-teste-automatizado/SKILL.md ad3648f66cccf231e6b3a3d522a6704e48238928825846a4bce7324502efd6b2
 ---
 name: gerar-teste-automatizado
 description: "Use in Codex to create or update the automated bug-finding test suite of a software project: full diagnosis of the code, test matrix, tests that detect real defects, mutation and coverage checks (criar testes automatizados, suíte de testes, buscar bugs). Called by revisao-manutencao on the first review of a project (create) and on later reviews (update); can also be asked for directly. Not for fixing a single failing test or a bug (systematic-debugging)."
@@ -100,9 +102,9 @@ description: "Use in Codex to create or update the automated bug-finding test su
 
 # Automated bug-finding tests (gerar-teste-automatizado)
 
-Lineage: origin=code; base=none
+Lineage: origin=claude; base=sha256:5ef692eacb4e55d231aba1007926f683002fd53247ef6043d6be0d73d9ca077e; adaptation=codex
 
-Interop: role = domain; owns = the bug-finding test suite and its record `docs/TESTES-AUTOMATIZADOS.md`; defers to = the project's existing test framework, requirements catalogue and AGENTS.md (REQ tags, gate), systematic-debugging (fixing a defect found), verification-before-completion; called by = revisao-manutencao; honors = reply-language rule, work.ask-language, work.test-yourself.
+Interop: role = domain; owns = the bug-finding test suite and its record `docs/TESTES-AUTOMATIZADOS.md`; defers to = the project's existing test framework, requirements catalogue and CLAUDE.md (REQ tags, gate), systematic-debugging (fixing a defect found), verification-before-completion; called by = revisao-manutencao; honors = reply-language rule, work.ask-language, work.test-yourself.
 
 Act as a senior engineer in automated testing and defect detection. The aim is tests that **find real errors, regressions, invalid inputs, boundaries and integration failures**, not tests that confirm the easy path.
 
@@ -141,4 +143,9 @@ Do not change production code to make tests pass; do not edit requirements, refe
 The record keeps, in the project: analysis summary and strategy; the test matrix (requirement, scenario, expected result, priority); files and purposes; run commands; real results (run, passed, failed, ignored); coverage with tool and gaps; defects found (description, evidence, impact, reproduction); limitations and residual risks; recommendations; and the header line `Last reviewed: <commit sha> <date>` that Update mode reads. Mark clearly what was observed, what is inferred, and what is a hypothesis.
 
 Done only when: tests implemented and organised; expected results have an identifiable basis; run commands documented; tests executed (or limits recorded); failures investigated and classified; risks and gaps documented. Do not stop at a plan or code samples. End with `Verified by:`.
-```
+
+
+## Codex execution
+
+Use the actual tools exposed in this session and read their schemas before calling them. Discover deferred capabilities through the tool catalog; missing tools are a reported limitation, never an invented call. Current user instructions and host tool documentation take precedence. Domain skills own the answer format; cross-cutting skills set minimum verification and interaction requirements. Claude permissions, subscriptions and scheduled jobs do not transfer.
+````

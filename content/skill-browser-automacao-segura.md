@@ -9,7 +9,7 @@ location: home:.claude/skills/browser-automacao-segura
 fed_by: []
 feeds: []
 sources: [home:.claude/skills/browser-automacao-segura/SKILL.md, home:.agents/skills/browser-automacao-segura/SKILL.md]
-reviewed: 2026-10-25T14:46Z
+reviewed: 2026-10-25T20:41Z
 ---
 
 ## What it is
@@ -38,6 +38,8 @@ Why it matters: a native `alert()` dialog that is open blocks all browser tools 
 7. **Destructive actions** (remove, send, buy) only on the user's explicit request. Test on one item first, check the result and only then run the batch.
 
 ## Notes
+
+Codex now uses the independently maintained version in [[codex-skills]]. Its complete source below includes the Codex-specific execution rules; the Claude procedure above remains the Claude version. Browser, memory and connector behavior can differ between versions.
 
 ### Complete skill sources
 
@@ -94,48 +96,23 @@ Armadilha conhecida: quando o `javascript_tool` falha por tempo esgotado, o scri
 
 #### Codex: `home:.agents/skills/browser-automacao-segura/SKILL.md`
 
-````skill-source home:.agents/skills/browser-automacao-segura/SKILL.md 81b21c5cd2f78261a2302ff4d2957e38675f187359b836248c49b7b87d6a0b21
+````skill-source home:.agents/skills/browser-automacao-segura/SKILL.md 13853b38c3eb189733876aabe72c8b3f61570d474b84e6e10c42fc377a9201b9
 ---
-name: "browser-automacao-segura"
-description: "Use sempre que for executar ações em qualquer navegador (navegador embutido do app ou Codex in Chrome), especialmente ações em lote, remoções, edições em massa ou scripts JS em páginas."
+name: browser-automacao-segura
+description: "Use when controlling a browser in Codex, especially multi-step changes, batch edits, removals or page scripts."
 ---
 
-# Automação de navegador segura
+# Safe browser automation
 
-Lineage: origin=gui; base=5b02179bdeb6f1c75930350dbdd74cf0992d71eb
+Lineage: origin=claude; base=sha256:93af23975c340f1b49850a522a06f32810163e27da6787527ab91f8dd12f740b; adaptation=codex
 
-Objetivo: evitar que alertas/diálogos do site (alert, confirm) ou ações sobrepostas travem a tarefa. Vale para os dois navegadores (embutido e Codex in Chrome); para reduzir cliques de aprovação de sites, veja também a skill minimize-site-approvals. Para a mecânica dos cliques (refs, verificação a cada passo, menus, diálogos, players de mídia), siga também a skill click-protocol; as regras de segurança abaixo prevalecem.
+Interop: role = cross-cutting; owns = sequential browser actions and verified effects; defers to = host browser documentation, click-protocol (target selection), minimize-site-approvals (access), domain skills (format); honors = user language and existing authorization.
 
-## Por que isso importa
-Um `alert()` nativo aberto bloqueia TODAS as ferramentas do navegador (screenshot, JS, cliques) até alguém clicar em OK. Ele costuma surgir quando duas ações concorrentes atingem o mesmo item (ex.: dois laços clicando em "remover" na mesma linha), e o servidor recusa a segunda.
-
-Armadilha conhecida: quando o `javascript_tool` falha por tempo esgotado, o script **continua rodando na página**. Iniciar outro laço depois disso cria execução paralela.
-
-## Regras
-1. **Nunca rode laços sobrepostos** na mesma página. Antes de iniciar um novo laço, pare o anterior (flag `window.stopRem = true`) e confirme que terminou.
-2. **Sequencial e com espera real**: após cada ação, espere o efeito acontecer (ex.: a linha sumir do DOM) em vez de um intervalo fixo. Pule itens em processamento (sem botão de ação / com spinner).
-3. **Neutralize alertas antes de ações em lote** e registre-os para leitura posterior:
-   ```js
-   window.alertLog = [];
-   window.alert = m => window.alertLog.push(String(m));
-   ```
-   Não sobrescreva `confirm` para retornar `true` automaticamente, pois isso pode aprovar ações destrutivas não pedidas. Se um `confirm` for esperado para a ação que o usuário pediu, trate-o pontualmente.
-4. **Laços longos em segundo plano**: inicie com uma IIFE assíncrona sem `await` no topo, que retorna imediatamente, e consulte o progresso em chamadas separadas:
-   ```js
-   window.stopRem = false; window.doneRem = false;
-   (async () => {
-     for (let i = 0; i < 500 && !window.stopRem; i++) {
-       const alvo = encontrarProximo();          // só itens com botão ativo
-       if (!alvo) break;
-       const linha = alvo.closest('tr');
-       alvo.click();
-       for (let t = 0; t < 40 && linha.isConnected; t++)  // espera a linha sumir (até ~10 s)
-         await new Promise(r => setTimeout(r, 250));
-     }
-     window.doneRem = true;
-   })(); 'iniciado'
-   ```
-5. **Se um alerta já estiver aberto**: as ferramentas falham. Tente `key Return` uma vez; se continuar bloqueado, peça ao usuário para clicar em OK e explique o motivo. Depois pare laços (`window.stopRem = true`) e instale o override de alert.
-6. **Verifique no final recarregando a página** e contando de novo. O DOM local pode não refletir o servidor. Leia `window.alertLog` para ver erros ocorridos.
-7. Ações destrutivas (remover, enviar, comprar) só com pedido explícito do usuário. Teste em 1 item primeiro, confira o resultado e só então rode o lote.
+1. Prefer a connected service tool when it can complete the task. For browser control, initialize the actual browser tool exactly as documented, read its returned instructions, and use only the APIs it exposes. In the CUA REPL, the first call contains exactly one documented entrypoint.
+2. Inspect the current page before acting. Use visible, uniquely identified controls and observed page state. Never infer selectors from memory of a previous site version.
+3. One mutation at a time. After each action, read fresh state and verify the expected effect before continuing. Batch only independent reads. For a batch change, test one authorized item, verify it, then continue sequentially.
+4. A timeout does not prove cancellation. Inspect whether the previous action finished; do not start a duplicate loop. Use only documented cancellation or dialog APIs. Do not replace page alert/confirmation handlers, auto-accept dialogs, inject detached loops, or use page JavaScript for hidden state, network calls, or mutations when the host does not permit it.
+5. Handle an expected confirmation individually, within the user's authorization. If a native dialog blocks every available tool and there is no documented handler, explain the specific block and ask for that manual step.
+6. End by reloading or revisiting the target and checking server-backed state, quantities and errors. Local page changes and toasts alone are insufficient proof.
+7. Authorization persists within scope. Do not ask repeatedly for routine reversible work already requested; ask for an unapproved destructive action, purchase, message send or required technical permission. A skill cannot grant it.
 ````

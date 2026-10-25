@@ -9,7 +9,7 @@ location: home:.claude/skills
 fed_by: []
 feeds: []
 sources: [home:.claude/skills]
-reviewed: 2026-10-25T14:46Z
+reviewed: 2026-10-25T20:41Z
 ---
 
 ## What it is
@@ -50,3 +50,35 @@ Beside every task: a skill is loaded by the Claude instance when its description
 - [[skill-reparo-kubuntu]]
 
 The 20 locally maintained skills have separate installed Claude and Codex copies, in `~/.claude/skills` and `~/.agents/skills`. Their pages now retain both complete original `SKILL.md` files in Notes, beside the translated explanations. This includes the entire frontmatter description and instructions, rather than only a trigger summary. Referenced auxiliary files are not embedded. The complete-source rule and its checks are described in [[wiki-content]] and [[wiki-skill-source]].
+
+
+Codex-owned adaptations live in [[codex-skills]] and are installed by [[codex-skillsctl]]. Vendor document skills stay vendor-managed. The following registry lists every Codex adaptation; each link contains its complete source.
+
+| Skill | Version |
+|---|---|
+| [[skill-adb-android-control]] | Codex |
+| [[skill-alemao-goethe-fsp]] | Codex |
+| [[skill-analise-artigo-cientifico]] | Codex |
+| [[skill-bias-risk-triage]] | Codex |
+| [[skill-brainstorming]] | Codex |
+| [[skill-browser-automacao-segura]] | Codex |
+| [[skill-candidatura-alemanha]] | Codex |
+| [[skill-click-protocol]] | Codex |
+| [[skill-consulta-clinica]] | Codex |
+| [[skill-deutsch-gespraech-memory]] | Codex |
+| [[skill-gerar-teste-automatizado]] | Codex |
+| [[skill-google-workspace]] | Codex |
+| [[skill-gui-code-protocol]] | Codex |
+| [[skill-import-memory]] | Codex |
+| [[skill-ligamagic-listas]] | Codex |
+| [[skill-ligamagic-replicar-carrinho-nas-lojas]] | Codex |
+| [[skill-minimize-site-approvals]] | Codex |
+| [[skill-morning]] | Codex |
+| [[skill-regras-magic]] | Codex |
+| [[skill-reparo-kubuntu]] | Codex |
+| [[skill-revisao-manutencao]] | Codex |
+| [[skill-setup-writing-style]] | Codex |
+| [[skill-skill-forge]] | Codex |
+| [[skill-systematic-debugging]] | Codex |
+| [[skill-verification-before-completion]] | Codex |
+| [[skill-wiki-page-writer]] | Codex |

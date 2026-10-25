@@ -1,0 +1,158 @@
+---
+id: skill-google-workspace
+title: Skill: google-workspace in Codex
+aliases: [google-workspace]
+kind: skill
+project: codex-skills
+status: active
+location: codex-skills:skills/google-workspace/SKILL.md
+fed_by: []
+feeds: []
+sources: [codex-skills:skills/google-workspace/SKILL.md, codex-skills:sources/google-workspace/SKILL.md]
+reviewed: 2026-10-25T20:41Z
+---
+
+## What it is
+A skill is a saved set of instructions for a recurring task. Codex reads its description to decide when to load the complete instructions. This skill handles `google-workspace`; its exact trigger and exclusions appear in the complete source below.
+
+## What it does
+Produces the task-specific result described in its source. Required capabilities: `google-drive, matching-google-editor-for-edits`. Missing capabilities are reported; the skill does not provide new tools.
+
+## How it does it
+Lives in `~/dev/codex-skills/skills/google-workspace` and is linked into `~/.agents/skills`. [[codex-skillsctl]] checks the files and installs the link. Claude remains the source baseline, while the Codex version has its own execution rules.
+
+## Where it sits in the pipeline
+Loaded when its description matches a request, alongside [[codex-skills]].
+
+## Who receives its output
+Codex and the user receive the result. Connected services receive only explicitly authorized operations.
+
+## Steps
+1. Read the complete Codex instructions below.
+2. Discover the required capabilities and follow their actual schemas.
+3. Perform the authorized task and verify the result.
+4. Report any unavailable capability.
+
+## Notes
+The blocks retain the complete original sources, including descriptions, workflow, examples and limits. Referenced auxiliary resources are not embedded.
+
+````skill-source codex-skills:sources/google-workspace/SKILL.md 073e4f759b4aa054be72a4f5bb9d8f51d3df3f8e02149605cf5c5dad3412bc83
+---
+name: google-workspace
+description: "Read this before the first Google Drive, Docs, Sheets or Slides connector call whenever the task creates or changes a Google file. Use this skill whenever the user wants to create or change a Google Doc, Sheet or Slides file in their Google Drive. Triggers include: a request that names Google Docs, Sheets, Slides or Drive and asks to make, edit, format, copy or rename a file; a docs.google.com link with a request to change that file, even a one-line fix or suggested edits; and any follow-up change to a Google file from earlier in the chat, even \"change it\" or \"add a tab\". Includes helper scripts for document positions, cell ranges and slide layout. However, if the user asks for a doc, deck or spreadsheet without naming Google, or gives a Google file only as source material for something new, use Claude's own output type instead. Do NOT use for read-only questions about a Google file, or for Word, Excel, PowerPoint or PDF files."
+---
+
+# Google Docs, Sheets, and Slides
+
+The Google connectors are thin wrappers over Google's raw APIs, with almost no guidance of their own. This skill supplies that guidance: which connector does what, the rules that keep edits in the user's file, and, in one reference file per app, how each API really behaves. Most of the app-specific rules in the references were tested against Google's Docs, Sheets and Slides APIs; the rest were seen through the connectors, and a few have not been checked yet.
+
+## Read the reference before you touch the file
+
+| Working on | Read first | Why it matters |
+|---|---|---|
+| A Google Doc | `references/docs.md` | Docs edits address UTF-16 positions that shift after every insert and go stale after every write. Tabs and pending suggestions change the positions too. |
+| A Google Sheet | `references/sheets.md` | Both write tools parse input like the Sheets UI, so text can silently become numbers or dates. Formatting needs numeric sheet IDs, 0-based ranges, and field masks without parentheses. |
+| A Google Slides deck | `references/slides.md` | Positions are in EMU, an element's real size is its size times its scale, and an unmasked read can exceed 150 KB for three slides. Slides never shrinks text to fit. |
+
+Read the reference for every app the task touches before the first edit. Embedding a Sheets chart in a deck means reading both. The references are short, and skipping one is how edits land in the wrong place.
+
+## 1. Check the connectors before you start
+
+| Connector | What it can do |
+|---|---|
+| Google Drive | Create files, upload and convert content, rename, read a file as text, export (PDF and other formats), search, trash |
+| Google Docs | Read a doc's full structure and edit it in place, directly or as suggestions |
+| Google Sheets | Read values and structure, write values and formulas, format, add tabs and charts |
+| Google Slides | Read a deck, add and edit slides, shapes, text, tables, and linked charts |
+
+Drive can create all three file types. It can't edit a file after that. Without the matching editor connector, every change means a new file and a new link, and the user loses the link they already have.
+
+1. Check which Google tools are available in this conversation. On surfaces where tools are deferred, search for and load the tools you need first, such as "google sheets update". Tool names differ by surface, so use the names your surface lists. If a search returns nothing, list all available tools before deciding the connector is missing, because the tool may exist under a different name.
+2. If the editor tools are missing, tell the user. When you can list the conversation's connectors, say which case it is: a connector that is set up but turned off in this chat (ask them to turn it on in the chat's connector settings, then continue), or one that isn't connected at all (tell them which connector to add and what it enables).
+3. With an editor connector missing, a request to create a new file continues with Drive. A change to an existing file stops and asks. See the missing-connector rule in section 2.
+4. If the user asks only for a new file, create it with Drive. If the editor connector is off, add one line saying edits will need it.
+
+Example: "I can create the sheet now. If you want changes later, turn on the Google Sheets connector in this chat first. Then I can edit this file, and the link will stay the same."
+
+## 2. Rules for every file
+
+- **A change goes in the same file.** "Change", "update", "fix", "add", and "switch it to" all mean the user wants the same file and link. Do not recreate the file to skip an edit.
+- **A missing editor connector is a choice for the user, not a workaround for you.** When the user asks for a change to an existing file and the editor connector is missing, your whole reply is a short question, not a deliverable. Building the next-best thing feels helpful, but the user's file is still untouched and now there are two artifacts, which is the exact failure this skill exists to prevent. Lead with the fix: name the connector and say that with it on, the edit lands in their existing file and the link stays the same. You may offer an alternative, such as drafted text to paste or a file to import by hand, but only as a named option, and build it only after the user picks it. Example reply, in full: "To add the slide to your deck directly, turn on the Google Slides connector in this chat and I'll do it. Same deck, same link. Or I can draft the slide as a file you'd import by hand. Which do you prefer?"
+- **Never trash a file the user didn't ask you to delete.** Drive can trash a file, but it can't restore one. The Docs, Sheets, and Slides connectors can't open a trashed file.
+- **Read before you edit, and guard the write.** Send every Docs and Slides batch with `writeControl.requiredRevisionId` set to the `revisionId` from a read taken after your last write, including batches built on IDs or positions from your own earlier writes. The only exception is a batch made entirely of `replaceAllText` requests, even one limited to some tabs or slides. If the file changed since that read, whether from your own write or someone else's, Google rejects the whole batch instead of applying it at stale positions or IDs. Read again before each guarded batch, and don't reuse a revision ID from a write reply. On a rejection, read again and rebuild; never drop the guard. `read_doc` and `read_presentation` (the mask in `references/slides.md` includes it) return the ID. `read_slide_page` returns it only if its mask includes `revisionId`; `read_slide_page_thumbnail` and Drive `read_file_content` never do. For a saved read, the first line of `docs_index.py outline` or `slides_helper.py outline` shows it; if that line says `None`, read again with `read_doc` or `read_presentation`. `get_spreadsheet` returns a `revisionId` even with a field mask, but don't send it: send Sheets writes without `writeControl`, and read again right before a write that depends on positions.
+- **Put everything for one step in one batch.** Batch requests run in order and atomically: if one is invalid, none apply. One call per logical step is faster and leaves no half-finished state.
+- **Sheets field masks.** Write each path in full, with no parentheses: one path per item in `get_spreadsheet`'s `fields` list (`["spreadsheetId", "sheets.properties"]`), and comma-separated in a batch update request's `fields` string (`"userEnteredFormat.numberFormat,userEnteredFormat.textFormat.bold"`).
+- **Verify the result.** Read the file again after each edit and check the result before you report it. A tool accepting the call does not mean the content is correct. Each reference has a Verify section.
+- **Rename with Drive `update_file`.** A rename keeps the same link.
+- **Link every file you name.** When you name a Google file you created, copied, found, or edited, make its title a link, inside the sentence that says what you did: "I added the row to [Team roster](its link)." Don't set the file apart after a colon or on a line of its own ("I've created a file for you: Team roster"). If a Drive result says the user can already see or open a file from the chat, leave that file's link out unless they ask. Always give the link when the user asks for it, wants to send it to someone, or says they can't see or open the file, even if a result said they could. Don't tell the user to use a card or preview unless a result said one is shown. After an edit, say that the link stays the same.
+
+## 3. Drive, for all three apps
+
+- **Find a file:** use Drive search when the user names a file without a link. Confirm the match with the user if more than one file fits. A page can be short even when more files match (5 files at page size 20) and can repeat the previous page's last file, so follow the next-page token until none comes back, and drop repeated ids.
+- **Create:** `create_file` with `contentMimeType` set to `application/vnd.google-apps.document`, `.spreadsheet`, or `.presentation` creates an empty file. Uploading content with a source type (HTML, CSV, .xlsx, .pptx) converts it into the matching Google type. Each reference says which route fits that app.
+- **Read as text:** `read_file_content` returns a compact text rendering: Markdown for a Doc. It is a few KB where the editor connector's full read can be over 100 KB, so use it to understand content, then use the editor read when you need positions. For a Doc, pass `includeComments: true`; without it, emoji come out garbled and the end of the text is cut off. For a Sheet, read the data with `get_values`: Drive returns only a sample (the first rows, long values cut).
+- **Export:** `download_file_content` with `exportMimeType: "application/pdf"` returns the rendered file as base64. It is large (about 65 KB of text for a four-slide deck), so export only for a visual check, and only where you can run code.
+
+## 4. Helper scripts
+
+The `scripts/` folder next to this file holds tested helpers. They turn the APIs' raw JSON into short readable summaries, and turn simple specs into correct request batches, so the error-prone arithmetic never happens by hand. Use them wherever you can run Python. Run them by their full path inside this skill's folder; the references write that folder as `<skill>`.
+
+| Script | Commands | Used for |
+|---|---|---|
+| `docs_index.py` | `outline`, `find`, `new-table`, `fill-table` | Docs positions, text search with bold and suggestion state, adding a filled table in one call, filling an existing table |
+| `sheets_helper.py` | `range`, `format`, `cells` | A1 ranges to grid ranges, formatting batches from a short spec, reading formulas and error cells |
+| `slides_helper.py` | `outline`, `build` | Real slide geometry with overflow and overlap warnings, building slides from an inch-based spec |
+| `render_export.py` | one command | Decoding a PDF export into page images to look at |
+
+**Getting JSON to a script.** Large tool results are often saved to a file by the app, and the result tells you the path. Point the script at that path; the scripts read the file as the app saved it. When a result comes back in context and is small (a few KB, such as a masked read or sheet metadata), write it to a file and run the script on it. Don't re-type a large result into a file: that doubles the cost and invites copying errors. If a large result was cut off and not saved, read a smaller slice instead (a field mask, a range, or one tab) rather than guessing.
+
+Every script prints `--help` with its full usage. Each reference shows the commands in context.
+
+## 5. Common failures across apps
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| "No such tool available" | The tool is deferred, or the name is different on this surface | Search for and load the tool. Use the exact name your surface lists. |
+| Permission denied on a file you created | The file is in the trash | Ask the user to restore it from Drive's trash. You can't restore it with the connectors. |
+| 400: required revision ID does not match | The file changed after your read: your own previous write, or someone else editing | Read again, rebuild the requests from the new read, and send them with the new revision. For Sheets, send them without `writeControl`. |
+| A whole batch failed on one bad request | Batches are atomic | Fix the named request and resend the full batch. Nothing from the failed call was applied. |
+| A read is too large or cut off | Unmasked editor reads include everything | Use Drive `read_file_content` (not for a Sheet), a field mask, a range, or a single tab. Run the helper on a saved result. |
+| Two files where the user expected one | An edit was done by creating a new file | Make changes in place with the editor connector. Tell the user about the extra file; don't trash it without asking. |
+
+Each reference ends with the failures specific to that app.
+
+## 6. What the connectors can't do
+
+When a request runs into one of these, say so plainly and do the alternative. *Reported*: seen through the connectors or in their tool schemas. *Untested*: not yet checked.
+
+- **Claude can't see the user's screen.** No connector shows what the user has selected, or which file, tab or slide they have open. If "this" or "here" isn't clear from the chat, ask which file, heading, slide number or cell range they mean. *Reported.*
+- **Comments:** `read_doc` with `commentsIncluded: true` has returned each comment with its place in the text. If the result shows `COMMENTS_VIEW_MODE_OMITTED` instead, use Drive `read_file_content` with `includeComments: true`, or ask the user to paste them. `update_doc` has accepted `insertComment` in one report, although its description is cut before listing it; if that request fails, say you can't add comments and offer to list your notes in the reply. *Reported.*
+- **Suggestion mode can be refused** with "Unsupported WriteControl mode". Never make direct edits in its place: offer to list the proposed changes or to edit directly (see `references/docs.md`). *Reported.*
+- **Request lists are cut short.** The `update_doc`, `update_spreadsheet` and `update_presentation` descriptions stop partway through their request lists. Requests missing from the description, such as `addDocumentTab` and `addChart`, have still worked, so try one before deciding it isn't supported. *Reported.*
+- **Uploads travel inside the call.** `create_file` takes the whole file as text or base64, so an .xlsx or .pptx upload is slow and often fails. Build in the file with the editor connectors where you can, and keep uploads small. *Reported.*
+- **Images need a public URL.** Slides `createImage` and Docs `insertInlineImage` fetch the image from a URL Google can reach; a file from the chat can't be inserted this way. For a deck, offer the .pptx route; otherwise ask the user to insert the image. *Untested.*
+- **A Slides chart must already exist in a Sheet.** Create it there with `addChart`, then embed it with `createSheetsChart`. *Reported.*
+- **Drive search uses `title`, not `name`.** `name contains '…'` fails with "Unsupported query field: name"; write `title contains '…'`, and put the file type in a `mimeType` clause. *Reported.*
+- **Slides edits may not show in an open deck right away.** If the user doesn't see a change, ask them to reload the deck before you change anything again. *Reported; may be fixed.*
+````
+
+````skill-source codex-skills:skills/google-workspace/SKILL.md f4748d9b9c3380eeefe8d8c127f0a4d4c5c9f95724d210976aaf7d2f895fea03
+---
+name: google-workspace
+description: "Use before creating or editing native Google Drive, Docs, Sheets or Slides files; preserve the existing file and link when editing."
+---
+
+# Google Workspace in Codex
+
+Lineage: origin=claude; base=sha256:073e4f759b4aa054be72a4f5bb9d8f51d3df3f8e02149605cf5c5dad3412bc83; adaptation=codex
+
+Interop: role = cross-cutting; owns = same-file editing and Google write verification; defers to = google-drive:google-drive and the matching connected Google application skill; honors = user language and authorization.
+
+1. Discover the available Google tools and their schemas in this session. Read the installed google-drive:google-drive skill, then google-drive:google-docs, google-drive:google-sheets or google-drive:google-slides as needed. Their actual connector contracts take precedence over assumptions from Claude's connectors.
+2. Read the current target file before changing it. Edit the same file and retain its link. Do not silently create a replacement because an editor capability is missing. Explain the missing capability and ask about a draft or import alternative only when necessary.
+3. Docs and Slides edits based on positions or object identifiers need a fresh structural read and, when supported, writeControl.requiredRevisionId. On a revision conflict, re-read, rebuild and retry once; never drop the guard. Use the actual connector's revision requirements. Sheets uses its actual range/value semantics, not a Docs write-control field.
+4. Use compact reads for understanding and structural reads for positions. Batch one logical operation where the API supports atomic changes. Re-read after each edit and verify the intended content, formatting and file identity before reporting success.
+5. Find ambiguous files through Drive search; ask only when multiple plausible matches remain. Never trash or replace an unrequested file. Link the file you changed, created or found.
+6. Helpers shipped in scripts/ are optional local computation tools, not connector calls. Read their --help and the corresponding reference before using one. References describe Claude-era observations, not proof that today's connector behaves the same way. Verify schemas rather than passing guessed method names.
+7. Google file comments use the connected google-drive:google-drive-comments skill when available. For a generic local deliverable, use the session's appropriate document or format skill. No Google copy unless the task calls for one.
+````

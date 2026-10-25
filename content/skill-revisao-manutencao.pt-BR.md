@@ -1,7 +1,7 @@
 ---
 id: skill-revisao-manutencao
 lang: pt-BR
-source_hash: 9b811c76642d
+source_hash: 6b84917b9efa
 title: Skill: revisao-manutencao
 ---
 
@@ -31,6 +31,8 @@ Nunca medir à mão: nada de `wc`, de contar com `git log`, nem de reexecutar o 
 7. **Saída.** Responder no idioma da mensagem do Giovanni. Começar pelo veredito (quantas falhas, avisos, ignoradas), depois a tabela de propostas, depois os achados "a máquina não vê", depois o que precisa de decisão do Giovanni. Definir cada termo técnico no primeiro uso.
 
 ## Notes
+
+O Codex agora usa a versão mantida separadamente em [[codex-skills]]. A fonte completa abaixo contém as regras de execução do Codex; o procedimento Claude acima continua sendo a versão Claude. Navegador, memória e conexões podem funcionar de formas diferentes.
 
 ### Fontes completas da skill
 
@@ -82,7 +84,7 @@ Given an example `report.json` and no repository access to measure with, the ski
 
 #### Codex: `home:.agents/skills/revisao-manutencao/SKILL.md`
 
-```skill-source home:.agents/skills/revisao-manutencao/SKILL.md 16194b4877f2bb1228753e7f4a1b682cb32ccdb2c161ef663c6c004e574b7cc2
+````skill-source home:.agents/skills/revisao-manutencao/SKILL.md 6b67cd47dcdf3b7429517b645334881c390806d01df5435ddcdb4a72374d50d6
 ---
 name: revisao-manutencao
 description: "Use in Codex for the monthly architecture review of Giovanni's software projects (open item in workflow-memory, #4dcb2c) and at the end of a task in a software project (revisão mensal, revisão de manutenção, dívida técnica, debt, pipeline-check, report.json). Runs pipeline-check, reads its report.json, proposes debt issues P1-P3 and a Preventive decision-log row. Not for writing code, not for a single bug, not for non-software work."
@@ -90,9 +92,9 @@ description: "Use in Codex for the monthly architecture review of Giovanni's sof
 
 # Maintenance review (revisao-manutencao)
 
-Lineage: origin=code; base=none
+Lineage: origin=claude; base=sha256:2a5174eb299fddbe05f8431f1e8a14a3c6ecb1ee8edbd9ba31706d706b34a4f8; adaptation=codex
 
-Interop: role = process; owns = the monthly and end-of-task maintenance review; defers to = `pipeline-check` (all measuring), `gerar-teste-automatizado` (the bug-finding test), verification-before-completion (the closing `Verified by:`), the project's AGENTS.md and `~/dev/project-template/docs/MAINTENANCE.md` (the checklist); honors = reply-language rule, plain-language rule, work.ask-with-context.
+Interop: role = process; owns = the monthly and end-of-task maintenance review; defers to = `pipeline-check` (all measuring), `gerar-teste-automatizado` (the bug-finding test), verification-before-completion (the closing `Verified by:`), the project's AGENTS.md (or CLAUDE.md when it is the existing project guide) and `~/dev/project-template/docs/MAINTENANCE.md` (the checklist); honors = reply-language rule, plain-language rule, work.ask-with-context.
 
 The program measures, this skill judges (ADR-0013). **Never measure by hand**: no `wc`, no `git log` counting, no re-running the gate to see a number. If a number is missing from `report.json`, say so and propose a check for `pipeline-check.toml`; do not compute it yourself.
 
@@ -114,11 +116,16 @@ The program measures, this skill judges (ADR-0013). **Never measure by hand**: n
    - The DORA block: rising `retrabalho`, or `parcela_preventiva` far below 20 %, is a reason to schedule top debt; say it, do not act on it.
 4. **Bug-finding test.** Look for `docs/TESTES-AUTOMATIZADOS.md` in the project. (The program `pipeline-check` is its own repository and is reviewed as its own project, with its own record, in update mode.) Missing: this is the first review, so do a full diagnosis of the code and call the skill `gerar-teste-automatizado` in **create** mode. Present: call it in **update** mode (it checks the test against what was implemented since). This writes test files, so tell Giovanni first and give the plan.
 5. **Decision log.** Add a Preventive row "Monthly architecture review" (or "Maintenance review" at end of task) to each reviewed project's `DESIGN.md` decision log, newest first, with **today's date** (not the report's), the report's date and mode, the counts (falhas, avisos, pulados, proposals) and where the proposals live (issue numbers once Giovanni has had them created, otherwise "proposals listed in the review reply, not yet created"). Write the row after Giovanni has seen the proposals; use the columns Date | Type | Decision | Why of the project's table. Bump "Last updated". Only that row; no other `DESIGN.md` edits unless Giovanni agrees.
-6. **Close.** `mem use REF --note "how"` for the entries that shaped the review (the monthly item stays open as the reminder), `wiki publish -m "..."` as the global AGENTS.md requires (when pages need changing, write them with the skill `wiki-page-writer`, which also guards against publishing someone else's uncommitted edits) (`-m "review: no page change"` only when no page describes what changed; a page that was checked and found right gets a new `reviewed` time instead), and end with `Verified by:` listing what ran (pipeline-check mode, the report file, which projects) and what could not be checked (every `pulado` check, any project without a config, GitHub if `gh` was unavailable).
+6. **Close.** `mem use REF --note "how"` for the entries that shaped the review (the monthly item stays open as the reminder), `wiki publish -m "..."` as the global CLAUDE.md requires (when pages need changing, write them with the skill `wiki-page-writer`, which also guards against publishing someone else's uncommitted edits) (`-m "review: no page change"` only when no page describes what changed; a page that was checked and found right gets a new `reviewed` time instead), and end with `Verified by:` listing what ran (pipeline-check mode, the report file, which projects) and what could not be checked (every `pulado` check, any project without a config, GitHub if `gh` was unavailable).
 
 ## Output
 Reply in the language of Giovanni's message (Portuguese or English; memory entry language.reply). Lead with the verdict (how many `falha`, `aviso`, `pulado`), then the proposal table, then the "machine cannot see" findings, then what needs a decision from Giovanni. Define each technical term on first use.
 
 ## Testing this skill
 Given an example `report.json` and no repository access to measure with, the skill must produce prioritised proposals and one Preventive row text without running anything but `pipeline-check` or reading the file. A step that needs a number the report lacks is a finding, not a measurement.
-```
+
+
+## Codex execution
+
+Use the actual tools exposed in this session and read their schemas before calling them. Discover deferred capabilities through the tool catalog; missing tools are a reported limitation, never an invented call. Current user instructions and host tool documentation take precedence. Domain skills own the answer format; cross-cutting skills set minimum verification and interaction requirements. Claude permissions, subscriptions and scheduled jobs do not transfer.
+````

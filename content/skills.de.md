@@ -1,7 +1,7 @@
 ---
 id: skills
 lang: de
-source_hash: 01f6ed4fe161
+source_hash: 9c6d93a525ca
 title: Skills
 ---
 
@@ -43,3 +43,35 @@ Neben jeder Aufgabe: Eine Skill wird von der Claude-Instanz geladen, wenn ihre B
 - [[skill-reparo-kubuntu]]
 
 Die 20 lokal gepflegten Skills haben getrennte installierte Kopien für Claude und Codex unter `~/.claude/skills` und `~/.agents/skills`. Ihre Seiten enthalten beide vollständigen ursprünglichen `SKILL.md`-Dateien in Notes neben den übersetzten Erklärungen. Dazu gehören die gesamte Beschreibung im Kopf und alle Anweisungen statt nur einer Zusammenfassung der Auslöser. Zusätzliche Referenzdateien sind nicht eingebettet. Die Regel für vollständige Quellen und ihre Prüfungen stehen in [[wiki-content]] und [[wiki-skill-source]].
+
+
+Die Codex-Anpassungen liegen in [[codex-skills]] und werden durch [[codex-skillsctl]] installiert. Dokument-Skills des Anbieters bleiben bei diesem. Die folgende Liste erfasst jede Codex-Anpassung mit vollständiger Quelle.
+
+| Skill | Version |
+|---|---|
+| [[skill-adb-android-control]] | Codex |
+| [[skill-alemao-goethe-fsp]] | Codex |
+| [[skill-analise-artigo-cientifico]] | Codex |
+| [[skill-bias-risk-triage]] | Codex |
+| [[skill-brainstorming]] | Codex |
+| [[skill-browser-automacao-segura]] | Codex |
+| [[skill-candidatura-alemanha]] | Codex |
+| [[skill-click-protocol]] | Codex |
+| [[skill-consulta-clinica]] | Codex |
+| [[skill-deutsch-gespraech-memory]] | Codex |
+| [[skill-gerar-teste-automatizado]] | Codex |
+| [[skill-google-workspace]] | Codex |
+| [[skill-gui-code-protocol]] | Codex |
+| [[skill-import-memory]] | Codex |
+| [[skill-ligamagic-listas]] | Codex |
+| [[skill-ligamagic-replicar-carrinho-nas-lojas]] | Codex |
+| [[skill-minimize-site-approvals]] | Codex |
+| [[skill-morning]] | Codex |
+| [[skill-regras-magic]] | Codex |
+| [[skill-reparo-kubuntu]] | Codex |
+| [[skill-revisao-manutencao]] | Codex |
+| [[skill-setup-writing-style]] | Codex |
+| [[skill-skill-forge]] | Codex |
+| [[skill-systematic-debugging]] | Codex |
+| [[skill-verification-before-completion]] | Codex |
+| [[skill-wiki-page-writer]] | Codex |

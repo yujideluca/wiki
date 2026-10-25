@@ -1,7 +1,7 @@
 ---
 id: skills
 lang: pt-BR
-source_hash: 01f6ed4fe161
+source_hash: 9c6d93a525ca
 title: Skills
 ---
 
@@ -43,3 +43,35 @@ O [[claude-code]], o [[remote-assistant]] e, por suas cópias, o [[claude-app]].
 - [[skill-reparo-kubuntu]]
 
 As 20 skills mantidas localmente têm cópias instaladas separadas do Claude e do Codex, em `~/.claude/skills` e `~/.agents/skills`. Suas páginas agora mantêm os dois arquivos `SKILL.md` originais completos em Notes, junto das explicações traduzidas. Isso inclui toda a descrição do cabeçalho e as instruções, em vez de apenas um resumo dos gatilhos. Arquivos auxiliares citados não ficam embutidos. A regra de fontes completas e suas verificações são descritas em [[wiki-content]] e [[wiki-skill-source]].
+
+
+As adaptações próprias do Codex ficam em [[codex-skills]] e são instaladas por [[codex-skillsctl]]. As skills de documentos dos fornecedores continuam sob a manutenção deles. A lista abaixo reúne cada adaptação com sua fonte completa.
+
+| Skill | Version |
+|---|---|
+| [[skill-adb-android-control]] | Codex |
+| [[skill-alemao-goethe-fsp]] | Codex |
+| [[skill-analise-artigo-cientifico]] | Codex |
+| [[skill-bias-risk-triage]] | Codex |
+| [[skill-brainstorming]] | Codex |
+| [[skill-browser-automacao-segura]] | Codex |
+| [[skill-candidatura-alemanha]] | Codex |
+| [[skill-click-protocol]] | Codex |
+| [[skill-consulta-clinica]] | Codex |
+| [[skill-deutsch-gespraech-memory]] | Codex |
+| [[skill-gerar-teste-automatizado]] | Codex |
+| [[skill-google-workspace]] | Codex |
+| [[skill-gui-code-protocol]] | Codex |
+| [[skill-import-memory]] | Codex |
+| [[skill-ligamagic-listas]] | Codex |
+| [[skill-ligamagic-replicar-carrinho-nas-lojas]] | Codex |
+| [[skill-minimize-site-approvals]] | Codex |
+| [[skill-morning]] | Codex |
+| [[skill-regras-magic]] | Codex |
+| [[skill-reparo-kubuntu]] | Codex |
+| [[skill-revisao-manutencao]] | Codex |
+| [[skill-setup-writing-style]] | Codex |
+| [[skill-skill-forge]] | Codex |
+| [[skill-systematic-debugging]] | Codex |
+| [[skill-verification-before-completion]] | Codex |
+| [[skill-wiki-page-writer]] | Codex |

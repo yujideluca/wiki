@@ -1,7 +1,7 @@
 ---
 id: skill-verification-before-completion
 lang: de
-source_hash: 59d636710c18
+source_hash: ac2db376af7d
 title: Skill: verification-before-completion
 ---
 
@@ -33,6 +33,8 @@ Was als Beleg zählt: „Tests bestehen“ braucht die Ausgabe des Testbefehls m
 Warnzeichen, die Stopp bedeuten: Wörter wie „sollte“, „wahrscheinlich“, „scheint“; Zufriedenheit äußern („Super!“, „Fertig!“) vor der Prüfung; kurz davor sein, ohne Prüfung zu committen, zu pushen oder einen Pull Request zu öffnen; dem Erfolgsbericht eines Hilfsassistenten vertrauen; sich auf eine Teilprüfung stützen; „nur dieses eine Mal“; müde sein. Ausreden ändern die Regel nicht: Zuversicht ist kein Beleg, ein Linter ist kein Compiler, und andere Wortwahl entkommt der Regel nicht. Sie gilt vor jeder Erfolgsbehauptung, jeder Äußerung von Zufriedenheit, dem Committen, Pull Requests, dem Übergang zur nächsten Aufgabe und dem Delegieren.
 
 ## Notes
+
+Codex verwendet jetzt die getrennt gepflegte Version in [[codex-skills]]. Der vollständige Quelltext unten enthält die Ausführungsregeln für Codex; das oben beschriebene Claude-Verfahren bleibt die Claude-Version. Browser-, Speicher- und Verbindungsfunktionen können sich unterscheiden.
 
 ### Vollständige Skill-Quellen
 
@@ -172,7 +174,7 @@ Skip any step = lying, not verifying
 
 #### Codex: `home:.agents/skills/verification-before-completion/SKILL.md`
 
-````skill-source home:.agents/skills/verification-before-completion/SKILL.md b32d0130264cd2d225a7832c22c35780a33b8b575f4cdaa794d6c7da9b1f9b27
+````skill-source home:.agents/skills/verification-before-completion/SKILL.md f2e64936cb0291708538d88c7bdfe6aa5140a8fc8a7413ac36b5844c31353532
 ---
 name: verification-before-completion
 description: "Use in Codex before saying work is done, fixed, passing or complete, and before committing: run the verification commands and read their output first; evidence before assertions. Feeds the `Verified by:` line that every done report ends with."
@@ -180,9 +182,9 @@ description: "Use in Codex before saying work is done, fixed, passing or complet
 
 # Verification Before Completion
 
-Lineage: origin=code; base=none
+Lineage: origin=claude; base=sha256:e634cc29dba539d72868c7ff66d7e61d77ae7368defd016e34fc080c99ac9ae1; adaptation=codex
 
-Interop: role = process; owns = proof before any success claim; defers to = the project's AGENTS.md (its build/test/device steps, e.g. QuizApp: adb install, launch, logcat), the global AGENTS.md (closing steps: mem use, wiki publish); honors = reply-language rule, debug-after-coding.
+Interop: role = process; owns = proof before any success claim; defers to = the project's AGENTS.md (or CLAUDE.md when it is the existing project guide) (its build/test/device steps, e.g. QuizApp: adb install, launch, logcat), the global CLAUDE.md (closing steps: mem use, wiki publish); honors = reply-language rule, debug-after-coding.
 
 Adapted from obra/superpowers 7.0.0 (commit bb92a77, MIT, LICENSE in this folder), without its always-on startup hook.
 
@@ -299,4 +301,9 @@ Skip any step = lying, not verifying
 - Paraphrases and synonyms
 - Implications of success
 - ANY communication suggesting completion/correctness
+
+
+## Codex execution
+
+Use the actual tools exposed in this session and read their schemas before calling them. Discover deferred capabilities through the tool catalog; missing tools are a reported limitation, never an invented call. Current user instructions and host tool documentation take precedence. Domain skills own the answer format; cross-cutting skills set minimum verification and interaction requirements. Claude permissions, subscriptions and scheduled jobs do not transfer.
 ````

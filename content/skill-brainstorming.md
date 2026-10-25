@@ -9,7 +9,7 @@ location: home:.claude/skills/brainstorming
 fed_by: []
 feeds: [new-project]
 sources: [home:.claude/skills/brainstorming/SKILL.md, home:.agents/skills/brainstorming/SKILL.md]
-reviewed: 2026-10-25T14:46Z
+reviewed: 2026-10-25T20:41Z
 ---
 
 ## What it is
@@ -42,6 +42,8 @@ Giovanni (the questions and the design document) and the build that follows.
 12. **Red flags.** Offering options to "save effort" steers instead of listening; unspoken defaults cannot be rejected, so say them out loud; "sounds good" approves only what was shown; keeping a spike is a new request.
 
 ## Notes
+
+Codex now uses the independently maintained version in [[codex-skills]]. Its complete source below includes the Codex-specific execution rules; the Claude procedure above remains the Claude version. Browser, memory and connector behavior can differ between versions.
 
 ### Complete skill sources
 
@@ -291,17 +293,17 @@ starting the server.
 
 #### Codex: `home:.agents/skills/brainstorming/SKILL.md`
 
-```skill-source home:.agents/skills/brainstorming/SKILL.md ffd72e9b301559d8eb0efd112e09a17ab76917de228ed4e8dc1c7f65ed339452
+````skill-source home:.agents/skills/brainstorming/SKILL.md d281dc30e0962bb22d9365d57c5d88e2f53e726b0cc84559337b4df179ddd41e
 ---
 name: brainstorming
-description: "Use in Codex before building something new in software or in the Codex-workflow pipeline (an app feature, a tool, a multi-step change): ask the clarifying questions, size the work and get Giovanni's go before writing code. Not for writing tasks (CV, letters, German exercises), clinical questions, or creating skills (skill-forge)."
+description: "Use in Codex before building something new in software or in the Codex workflow pipeline (an app feature, a tool, a multi-step change): ask the clarifying questions, size the work and get Giovanni's go before writing code. Not for writing tasks (CV, letters, German exercises), clinical questions, or creating skills (skill-forge)."
 ---
 
 # Brainstorming
 
-Lineage: origin=code; base=none
+Lineage: origin=claude; base=sha256:b5dd965f2ad0d20bb9c0bb057f7f79ede0412be6dda32421efffe878f4e3b5d2; adaptation=codex
 
-Interop: role = process; owns = requirements and size check before a build (the size-and-fit rule); defers to = skill-forge (new or rebuilt skills), revisao-manutencao (maintenance reviews are not brainstorms), the project's AGENTS.md; honors = reply-language rule, plain-language explanations (define every term on first use).
+Interop: role = process; owns = requirements and size check before a build (the size-and-fit rule); defers to = skill-forge (new or rebuilt skills), revisao-manutencao (maintenance reviews are not brainstorms), the project's AGENTS.md (or CLAUDE.md when it is the existing project guide); honors = reply-language rule, plain-language explanations (define every term on first use).
 
 Adapted from obra/superpowers 7.0.0 (commit bb92a77, MIT, LICENSE in this folder), without its always-on startup hook.
 
@@ -528,4 +530,9 @@ question about a UI topic isn't automatically a visual question.
 
 If they accept, read `visual-companion.md` in this directory before
 starting the server.
-```
+
+
+## Codex execution
+
+Use the actual tools exposed in this session and read their schemas before calling them. Discover deferred capabilities through the tool catalog; missing tools are a reported limitation, never an invented call. Current user instructions and host tool documentation take precedence. Domain skills own the answer format; cross-cutting skills set minimum verification and interaction requirements. Claude permissions, subscriptions and scheduled jobs do not transfer.
+````

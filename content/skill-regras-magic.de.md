@@ -1,7 +1,7 @@
 ---
 id: skill-regras-magic
 lang: de
-source_hash: 1e1375599ec3
+source_hash: 2624709e46b2
 title: Skill: regras-magic (Magic-Regeln)
 ---
 
@@ -25,6 +25,8 @@ Giovanni.
 2. **Kommentiertes Beispiel.** Frage: „Kona, Rescue Beastie legt mit ihrem Trigger einen Brontodon auf das Schlachtfeld. Kann ich ihn mit Remove Soul kontern?“ Ruling: nein, es gibt keinen Zauber zu kontern. Karten: Remove Soul kontert einen Kreaturenzauber; Kona legt die Kreatur auf das Schlachtfeld (aus dem Gedächtnis, auf Scryfall prüfen). Zeitablauf: Konas Trigger löst sich auf → der Brontodon wird direkt auf das Schlachtfeld gelegt, ohne gewirkt zu werden → er war nie ein Zauber auf dem Stapel. Regeln: 601.2a (Wirken beginnt damit, die Karte auf den Stapel zu legen; das Legen auf das Schlachtfeld überspringt das). Sicherheit: hoch.
 
 ## Notes
+
+Codex verwendet jetzt die getrennt gepflegte Version in [[codex-skills]]. Der vollständige Quelltext unten enthält die Ausführungsregeln für Codex; das oben beschriebene Claude-Verfahren bleibt die Claude-Version. Browser-, Speicher- und Verbindungsfunktionen können sich unterscheiden.
 
 ### Vollständige Skill-Quellen
 
@@ -63,7 +65,7 @@ P: "Kona, Rescue Beastie coloca um Brontodon no campo pelo gatilho dela. Posso a
 
 #### Codex: `home:.agents/skills/regras-magic/SKILL.md`
 
-```skill-source home:.agents/skills/regras-magic/SKILL.md eae8b79d04abe6950def6f44fe6ecd80d65beb4178fa40ab7a85b2fba524fb01
+````skill-source home:.agents/skills/regras-magic/SKILL.md ebf1b923e4d07329f3567c7372c686b0b786475b6bdc3f4953b04677467f4909
 ---
 name: "regras-magic"
 description: "Responde dúvidas de regras de Magic: The Gathering do Giovanni — interações entre cartas, pilha, gatilhos, camadas, cópias, tokens, comandante; não para listas/compras da LigaMagic."
@@ -71,7 +73,7 @@ description: "Responde dúvidas de regras de Magic: The Gathering do Giovanni �
 
 # Regras de Magic
 
-Lineage: origin=gui; base=bba4d064687fa0cf1f4d04312cd7433c5e7785aa
+Lineage: origin=claude; base=sha256:6f9e35e63c5952ed7580647740f39782e2001fdd9e7fdec4efee2e58fe823415; adaptation=codex
 
 Interop: role = domain; owns = formato de rulings de Magic; defers to = ligamagic-listas (compras), browser-automacao-segura (se usar navegador); honors = idioma da mensagem, flags !! *** ...
 
@@ -89,4 +91,8 @@ P: "Kona, Rescue Beastie coloca um Brontodon no campo pelo gatilho dela. Posso a
 **Linha do tempo:** o gatilho da Kona resolve → o Brontodon é colocado direto no campo, sem ser lançado → nunca existiu como mágica na pilha.
 **Regras:** 601.2a (lançar começa movendo a carta para a pilha; colocar no campo pula isso).
 **Confiança:** alta.
-```
+
+## Codex execution
+
+Use the actual tools exposed in this session and read their schemas before calling them. Discover deferred capabilities through the tool catalog; missing tools are a reported limitation, never an invented call. Current user instructions and host tool documentation take precedence. Domain skills own the answer format; cross-cutting skills set minimum verification and interaction requirements. Claude permissions, subscriptions and scheduled jobs do not transfer.
+````

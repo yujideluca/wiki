@@ -9,7 +9,7 @@ location: home:.claude/skills/bias-risk-triage
 fed_by: []
 feeds: []
 sources: [home:.claude/skills/bias-risk-triage/SKILL.md, home:.agents/skills/bias-risk-triage/SKILL.md]
-reviewed: 2026-10-25T14:46Z
+reviewed: 2026-10-25T20:41Z
 ---
 
 ## What it is
@@ -36,6 +36,8 @@ The answer that follows (its depth).
 6. **Flags and tags.** `!!` makes the answer short at any tier, but T2–T3 keep one warning line and the key source. `***` with tier T2 or higher gives the full T3 structure. `...` (article mode) uses the article structure of [[skill-analise-artigo-cientifico]], not the T3 structure. Tag only at T2–T3 (for example "(contested definition)"). "show triage" prints the step and the row that fired.
 
 ## Notes
+
+Codex now uses the independently maintained version in [[codex-skills]]. Its complete source below includes the Codex-specific execution rules; the Claude procedure above remains the Claude version. Browser, memory and connector behavior can differ between versions.
 
 ### Complete skill sources
 
@@ -93,7 +95,7 @@ Tag only at T2-T3 (e.g. "(contested definition)"). "show triage" -> print step +
 
 #### Codex: `home:.agents/skills/bias-risk-triage/SKILL.md`
 
-```skill-source home:.agents/skills/bias-risk-triage/SKILL.md 49abcacd42f44ce99af49f4bf731922ffc0929c5baab66221b11719e3447a028
+````skill-source home:.agents/skills/bias-risk-triage/SKILL.md 7e4d6797df0e0fa9efe75ca70d4a86c094fbdca5d4b10aa0b9aae9e6af742d2a
 ---
 name: "bias-risk-triage"
 description: "Before answering any short factual question, run a compiled check (guard, lookup, decision table) for bias, myth, conspiracy, staleness or stakes and set verification depth T0-T3."
@@ -101,7 +103,7 @@ description: "Before answering any short factual question, run a compiled check 
 
 # Bias-Risk Triage v3.3 (compiled; validated on TruthfulQA + WebQuestions)
 
-Lineage: origin=gui; base=c3fb4e1397b48a0389f58e4e1fc14249a452a826
+Lineage: origin=claude; base=sha256:5e166459e4ebd81382d8a42911662b359fc75c186aae824b730546127ad3f565; adaptation=codex
 
 Silent pre-answer check. Output = tier T0-T3; it sets answer depth only.
 
@@ -138,4 +140,8 @@ Failing the guard does NOT raise the tier; it only means: continue to steps 2-3,
 
 Flags: `!!` short at any tier, but T2-T3 keep 1 warning line + key source. `***` with T>=2 -> full T3 structure. `...` (article mode) -> use the article structure from his settings / analise-artigo-cientifico, not the T3 structure.
 Tag only at T2-T3 (e.g. "(contested definition)"). "show triage" -> print step + row that fired.
-```
+
+## Codex execution
+
+Use the actual tools exposed in this session and read their schemas before calling them. Discover deferred capabilities through the tool catalog; missing tools are a reported limitation, never an invented call. Current user instructions and host tool documentation take precedence. Domain skills own the answer format; cross-cutting skills set minimum verification and interaction requirements. Claude permissions, subscriptions and scheduled jobs do not transfer.
+````
