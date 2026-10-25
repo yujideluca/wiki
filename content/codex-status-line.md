@@ -28,3 +28,5 @@ Giovanni reads the display.
 
 ## Notes
 A terminal test on 2026-10-25 with Codex 0.164.0 displayed `5h 44% left · weekly 76% left · 10.5K used · 475K window`. A second fresh terminal verified the saved configuration without command-line overrides. Existing terminal processes have not been verified to reload the configuration.
+
+With `tui.fullscreen_transcript = false`, conversation history uses terminal scrollback. A terminal test confirmed that this removes the persistent duplicate low-budget warning above the input while retaining both budget fields in the status line. The startup warning remains in history.
