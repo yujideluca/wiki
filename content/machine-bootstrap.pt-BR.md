@@ -1,7 +1,7 @@
 ---
 id: machine-bootstrap
 lang: pt-BR
-source_hash: 73119bb3d3c1
+source_hash: 56ea5a8902e5
 title: machine-bootstrap (reconstruir a configuração do notebook)
 ---
 
@@ -23,6 +23,6 @@ Registra o [[laptop-setup]] e o reconstrói após reinstalar. Os requisitos `MB-
 O Giovanni e o assistente que ajuda a restaurar o computador. A ordem documentada é: obter a ferramenta, restaurar chaves, restaurar programas e configurações e copiar os arquivos pessoais de volta.
 
 ## Notes
-Perfis de navegador, instalações de jogos e as configurações próprias do celular ficam fora da restauração. A configuração atual de captura inclui `.codex/skills`, mas omite `.agents/skills`; portanto, a restauração dos links dos skills gerenciados do Codex não está estabelecida. Essa lacuna está documentada na auditoria de fluxo do [[codex-skills]]. Receitas de download dependem de endereços externos, então uma restauração anterior bem-sucedida não comprova que uma futura terá sucesso. Esta revisão não criou um arquivo real de segredos nem testou uma restauração em computador novo.
+Perfis de navegador, instalações de jogos e as configurações próprias do celular ficam fora da restauração. A configuração atual de captura inclui `.codex/skills`, mas omite `.agents/skills`; portanto, a restauração dos links dos skills gerenciados do Codex não está estabelecida. Essa lacuna está documentada na auditoria de fluxo do [[codex-skills]]. Receitas de download dependem de endereços externos, então uma restauração anterior bem-sucedida não comprova que uma futura terá sucesso. Há no disco um arquivo de segredos de 2026-10-26; uma restauração com ele em computador novo não foi testada. O `DESIGN.md` registra que o ramo principal (main) do repositório público exige a verificação `gate` do GitHub Actions, vale também para administradores e proíbe push forçado e exclusão do ramo.
 
 Execute `python3 -m mb` em `~/dev/machine-bootstrap`. Configurações permitidas incluem `.bashrc` e arquivos de configuração da área de trabalho. Receitas iniciais preparam lojas de aplicativos antes dos aplicativos; receitas posteriores instalam ferramentas após clonar os repositórios. O identificador do disco fica em `[data].ssd_uuid` e o destino na nuvem em `[secrets].gdrive_path`, no `mb.toml`. Arquivos criptografados ficam em `machine-bootstrap/secrets/` no disco e arquivos pessoais em `machine-bootstrap/home/`. Uma etapa que falha aparece como `[FAIL]`; a restauração continua, salvo com `--stop-on-error`. Corrija a causa e execute novamente: etapas concluídas são puladas. Links de skills são referências do sistema de arquivos pelas quais o Codex encontra as pastas de instruções gerenciadas por [[codex-skillsctl]].
