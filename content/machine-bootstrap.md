@@ -8,8 +8,8 @@ status: active
 location: machine-bootstrap:
 fed_by: [acer-nitro]
 feeds: []
-sources: [machine-bootstrap:pipeline-check.toml, machine-bootstrap:README.md, machine-bootstrap:DESIGN.md, machine-bootstrap:docs/RESTORE.md, machine-bootstrap:docs/MANUAL.md, machine-bootstrap:docs/REQUIREMENTS.md, machine-bootstrap:mb.toml, machine-bootstrap:mb/cli.py, machine-bootstrap:mb/plan.py, machine-bootstrap:mb/capture.py, machine-bootstrap:mb/secrets_backup.py, machine-bootstrap:mb/databackup.py, machine-bootstrap:bootstrap.sh, machine-bootstrap:tools/vm-test.sh]
-reviewed: 2026-10-26T12:10Z
+sources: [machine-bootstrap:docs/PRIVACY.md, machine-bootstrap:pipeline-check.toml, machine-bootstrap:README.md, machine-bootstrap:DESIGN.md, machine-bootstrap:docs/RESTORE.md, machine-bootstrap:docs/MANUAL.md, machine-bootstrap:docs/REQUIREMENTS.md, machine-bootstrap:mb.toml, machine-bootstrap:mb/cli.py, machine-bootstrap:mb/plan.py, machine-bootstrap:mb/capture.py, machine-bootstrap:mb/secrets_backup.py, machine-bootstrap:mb/databackup.py, machine-bootstrap:bootstrap.sh, machine-bootstrap:tools/vm-test.sh]
+reviewed: 2026-10-26T12:36Z
 ---
 
 ## What it is
@@ -35,3 +35,5 @@ Browser profiles, game installations and the phone's own settings are outside th
 Run `python3 -m mb` from `~/dev/machine-bootstrap`. Allowed settings include `.bashrc` and the desktop's configuration files. Early recipes prepare app stores before apps are installed; later recipes install tools after repositories are cloned. The drive identifier is `[data].ssd_uuid` and the cloud destination is `[secrets].gdrive_path` in `mb.toml`. Archives go under `machine-bootstrap/secrets/` on the drive and personal files under `machine-bootstrap/home/`. A failed restore step is reported as `[FAIL]`; restore continues unless `--stop-on-error` is set. Correct the cause and rerun: completed steps are skipped. Skill links are filesystem references that let Codex find the instruction folders managed by [[codex-skillsctl]].
 
 The local `pipeline-check.toml` now names `yujideluca/machine-bootstrap`, its `main` branch and required check `gate`. In local mode, the checker verifies both the latest GitHub test result and the live branch-protection settings; the 2026-10-26 report shows both as `ok` (passed).
+
+A dedicated Google authorization application is registered in project `rclone-personal-backup-512812`. Its desktop client identifies the local rclone installation when it requests Google access. The Google user-data policy was accepted and the full Drive permission was configured with Giovanni’s approval. The public privacy notice is `docs/PRIVACY.md` in the bootstrap repository. The existing rclone connection has not been switched: the first generated client secret needs replacement after an accidental disclosure during setup. A private copy is stored under `~/.config/rclone/migration-20261026/`, outside git. The existing backup file still has the same identifier, path, size and checksum as the saved baseline.

@@ -1,7 +1,7 @@
 ---
 id: machine-bootstrap
 lang: pt-BR
-source_hash: 5605d84f14f5
+source_hash: 1c0d860e4315
 title: machine-bootstrap (reconstruir a configuração do notebook)
 ---
 
@@ -28,3 +28,5 @@ Perfis de navegador, instalações de jogos e as configurações próprias do ce
 Execute `python3 -m mb` em `~/dev/machine-bootstrap`. Configurações permitidas incluem `.bashrc` e arquivos de configuração da área de trabalho. Receitas iniciais preparam lojas de aplicativos antes dos aplicativos; receitas posteriores instalam ferramentas após clonar os repositórios. O identificador do disco fica em `[data].ssd_uuid` e o destino na nuvem em `[secrets].gdrive_path`, no `mb.toml`. Arquivos criptografados ficam em `machine-bootstrap/secrets/` no disco e arquivos pessoais em `machine-bootstrap/home/`. Uma etapa que falha aparece como `[FAIL]`; a restauração continua, salvo com `--stop-on-error`. Corrija a causa e execute novamente: etapas concluídas são puladas. Links de skills são referências do sistema de arquivos pelas quais o Codex encontra as pastas de instruções gerenciadas por [[codex-skillsctl]].
 
 O arquivo local `pipeline-check.toml` agora identifica `yujideluca/machine-bootstrap`, seu branch `main` e a verificação obrigatória `gate`. No modo local, a ferramenta verifica tanto o resultado mais recente dos testes no GitHub quanto a proteção ativa do branch; o relatório de 2026-10-26 mostra ambos como `ok` (aprovados).
+
+Um aplicativo próprio de autorização do Google está registrado no projeto `rclone-personal-backup-512812`. Seu cliente para computador identifica a instalação local do rclone ao solicitar acesso ao Google. A política de dados do usuário do Google foi aceita e a permissão de acesso completo ao Drive foi configurada com autorização do Giovanni. O aviso público de privacidade está em `docs/PRIVACY.md` no repositório do bootstrap. A conexão atual do rclone ainda não foi trocada: o primeiro segredo de cliente gerado precisa ser substituído após exposição acidental durante a configuração. Uma cópia privada fica em `~/.config/rclone/migration-20261026/`, fora do git. O backup existente continua com o mesmo identificador, caminho, tamanho e soma de verificação do registro inicial salvo.

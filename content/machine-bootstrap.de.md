@@ -1,7 +1,7 @@
 ---
 id: machine-bootstrap
 lang: de
-source_hash: 5605d84f14f5
+source_hash: 1c0d860e4315
 title: machine-bootstrap (die Einrichtung des Laptops wiederherstellen)
 ---
 
@@ -28,3 +28,5 @@ Browserprofile, Spielinstallationen und die eigenen Einstellungen des Handys sin
 `python3 -m mb` wird in `~/dev/machine-bootstrap` ausgeführt. Erlaubte Einstellungen sind etwa `.bashrc` und Konfigurationsdateien der Desktopoberfläche. Frühe Rezepte richten App-Stores vor den Apps ein; spätere Rezepte installieren Werkzeuge nach dem Klonen der Repositories. Die Laufwerkskennung steht als `[data].ssd_uuid` und das Cloudziel als `[secrets].gdrive_path` in `mb.toml`. Archive liegen unter `machine-bootstrap/secrets/` auf dem Laufwerk, persönliche Dateien unter `machine-bootstrap/home/`. Ein fehlgeschlagener Schritt erscheint als `[FAIL]`; ohne `--stop-on-error` läuft die Wiederherstellung weiter. Ursache beheben und erneut starten: erledigte Schritte werden übersprungen. Skill-Verknüpfungen sind Dateisystemverweise, über die Codex die von [[codex-skillsctl]] verwalteten Anleitungsordner findet.
 
 Die lokale Datei `pipeline-check.toml` nennt nun `yujideluca/machine-bootstrap`, den Zweig `main` und die erforderliche Prüfung `gate`. Im lokalen Modus prüft das Werkzeug sowohl das jüngste GitHub-Testergebnis als auch den aktiven Zweigschutz; der Bericht vom 2026-10-26 zeigt beides als `ok` (bestanden).
+
+Eine eigene Google-Autorisierungsanwendung ist im Projekt `rclone-personal-backup-512812` registriert. Ihr Desktop-Client kennzeichnet die lokale rclone-Installation bei Google-Zugriffsanfragen. Die Google-Nutzerdatenrichtlinie wurde angenommen und der vollständige Drive-Zugriff mit Giovannis Zustimmung konfiguriert. Der öffentliche Datenschutzhinweis liegt als `docs/PRIVACY.md` im Bootstrap-Repository. Die bestehende rclone-Verbindung wurde noch nicht umgestellt: Das erste erzeugte Client-Geheimnis muss nach einer versehentlichen Offenlegung während der Einrichtung ersetzt werden. Eine private Kopie liegt unter `~/.config/rclone/migration-20261026/`, außerhalb von git. Die vorhandene Sicherungsdatei hat weiterhin dieselbe Kennung, denselben Pfad, dieselbe Größe und dieselbe Prüfsumme wie die gespeicherte Ausgangsaufnahme.
