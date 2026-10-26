@@ -23,6 +23,7 @@ Source: G = stated by Giovanni, D = derived by Claude Code and accepted (design 
 | CO-8 | A page of kind skill has a non-empty Steps section: the skill's own definition (rules or steps), so the page is enough to understand the skill | G |
 | CO-9 | The first use of every acronym listed in content/_acronyms.tsv is next to its full name (the name appears before it or within 100 characters after it), outside code quotes | G |
 | CO-10 | Every skill page carries the complete source SKILL.md, including its description and all instructions, without shortening it. The writer locates and reads that source before writing; the Stop reminder repeats this rule. Each translation retains the same original source beside its translated explanation. Local validation compares the copy with the source, and all validation checks its fingerprint and presence; code fences keep source headings and examples separate from wiki structure | G |
+| AR-1 | On skill pages, Steps appears only in the styled interactive box, with no duplicate plain-text list underneath, on desktop and phone in all three languages | G |
 | ST-1 | `wiki stale` lists a page when any of its sources changed after the page's reviewed time; commits that touch only the page file never clear it | G |
 | ST-2 | A source outside git (home:) counts as changed at the newest modification time of its file or folder | G |
 | ST-3 | `wiki stale` prints for each page the source and both times, and exits 1 when it lists a page and 0 when it lists none | D |
@@ -48,7 +49,7 @@ Source: G = stated by Giovanni, D = derived by Claude Code and accepted (design 
 | MB-3 | On a phone the balloon's neighbours are buttons that select that node, and the search selects the node it finds | D |
 | MB-4 | On a phone an article shows its title, lead and infobox first, and every other section starts closed and opens when its heading is tapped | G |
 | MB-5 | The lit step of a process page is drawn whole: its circle, glow and growth are not cut off by the box around the steps | G |
-| LN-1 | On a desktop window the map is seen through a lens: dots in the middle of the area are bigger and further apart, dots near the border smaller and closer, and no dot leaves the window because of it; on a phone the lens is off | G |
+| LN-1 | The map is seen through a globe-shaped lens (the cloud of dots wrapped onto a sphere seen from the front): dots in the middle are bigger and further apart, dots near the rim smaller, closer (about 3 times tighter at most) and flattened along the turn, and no dot leaves the window because of it | G |
 | LN-2 | Detail follows the lens: dots in the middle get their labels, dots near the border have none, and the dashed "mentions" lines are left out there unless lit | G |
 | LN-3 | A pointer position maps back through the lens to the dot under it, so dragging and clicking work where the dots are drawn | D |
 | DY-1 | The dots have an elastic layer on top of the layout: at rest every displacement is zero (the layout, MP-6, is unchanged) and when everything has settled no animation frames are requested | G |
@@ -59,7 +60,7 @@ Source: G = stated by Giovanni, D = derived by Claude Code and accepted (design 
 | MB-7 | The page declares itself not translatable, so the browser's own translation offer neither covers the search bar nor rewrites the app's text | D |
 | MB-8 | On a phone, choosing a search result closes the keyboard, and a change of the window's height alone (keyboard, address bar) keeps the map's zoom and place | D |
 | DY-5 | A dot answers the pointer at its resting place, not where the elastic movement has drawn it, so motion never slides a dot under or out from under a still pointer: the highlighted dot does not change while the pointer is still | G |
-| LN-4 | On a phone the lens has a rectangular focus: each axis is bent on its own, so the middle band is magnified while every side and corner of the area stays in place; while a dot is selected the focus moves to the part of the screen the balloon leaves free and the selected dot lands in its middle | G |
+| LN-5 | On both desktop and phone the lens is a round ball (a circle) that starts fitting the free area exactly; the first part of the zoom grows the ball with it until the edges cut off 30 % of its area, and from there only the dots spread and the layout is reshaped to be about as tall as wide and zoomed so that its farthest dot sits just inside the rim; a dot beyond the rim is on the far side and is not drawn | G |
 | DY-6 | The phone's elastic movement is slightly less elastic than the desktop's (stiffer spring, less following of neighbours, more friction), and tapping a dot draws its neighbours in a little, as hovering does on a desktop | G |
 | LY-1 | The force layout is computed a few steps per animation frame instead of in one block, so the page keeps answering while it settles (on the phone the single block froze the page for about 3 seconds); run in slices it gives exactly the layout of a single run | G |
 | TC-1 | On the map one finger pans (the map point under the finger stays under it, through the lens) and two fingers pinch around their midpoint | G |

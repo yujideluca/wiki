@@ -76,6 +76,8 @@ button, select, input { font: inherit; }
 svg.map { display: block; cursor: grab; max-width: 100%; }
 html, body { overflow-x: hidden; }
 svg.map:active { cursor: grabbing; }
+.globe-body { stroke: rgba(120,150,200,.18); stroke-width: 1; }
+.graticule { fill: none; stroke: rgba(120,150,200,.10); stroke-width: 1; }
 .edge { stroke: #2f343c; transition: stroke .07s, opacity .07s; }
 .edge.mentions { stroke-dasharray: 3 4; }
 .edge.feeds { marker-end: url(#arrow); }

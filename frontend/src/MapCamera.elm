@@ -1,4 +1,4 @@
-module MapCamera exposing (centreOn, fit, hoverPulls, lensFor, pinOf, reflow, resized)
+module MapCamera exposing (centreOn, growth, maxGrowth, fit, globeFit, hoverPulls, lensFor, pinOf, reflow, resized)
 
 {-| Where the map's dots go on the screen: sizing the map for the window, fitting the layout into it, centring on a dot,
 the lens, the springs' starting displacements and the pulls and pin that move the dots. They are plain functions of the
@@ -23,25 +23,41 @@ resized w h model =
     { model | width = w, height = sz.map, boxHeight = sz.box }
 
 
-{-| Fit the whole map into the visible area: the layout is reshaped to the area's shape (clear of the floating controls
-at the top and the legend at the bottom), then zoomed and centred to fill it. -}
+{-| Fit the whole map into the globe: the layout is reshaped to be about as tall as it is wide, so that the cloud of dots is
+round like the ball it is wrapped on (LN-5), then zoomed and centred so that the farthest dot sits just inside the rim of a
+ball that fits the free area exactly. The zoom scale that does this is remembered (`fitScale`): the ball grows with the zoom
+from there (see `growth`). -}
 fit : Model -> Model
 fit model =
     let
-        ( top, bottom ) =
-            MapSize.insets model.width
+        lens =
+            lensAt 1 model
 
-        areaHeight =
-            max 100 (model.height - top - bottom)
+        ( shaped, k, ( tx, ty ) ) =
+            globeFit lens model.layout
+    in
+    { model
+        | positions = shaped
+        , fitScale = k
+        , zoom =
+            Zoom.init { width = model.width, height = model.height }
+                |> Zoom.scaleExtent 0.1 6
+                |> Zoom.setTransform Zoom.instantly { scale = k, translate = { x = tx, y = ty } }
+    }
 
-        shaped =
-            Layout.matchAspect (model.width / areaHeight) model.layout
+
+{-| The layout made round, the zoom scale and the translation that put its farthest dot just inside the rim of [lens]. -}
+globeFit : Lens -> Layout.Positions -> ( Layout.Positions, Float, ( Float, Float ) )
+globeFit lens layout =
+    let
+        squared =
+            Layout.matchAspect 1 layout
 
         xs =
-            Dict.values shaped |> List.map Tuple.first
+            Dict.values squared |> List.map Tuple.first
 
         ys =
-            Dict.values shaped |> List.map Tuple.second
+            Dict.values squared |> List.map Tuple.second
 
         ( minX, maxX ) =
             ( List.minimum xs |> Maybe.withDefault -100, List.maximum xs |> Maybe.withDefault 100 )
@@ -49,19 +65,41 @@ fit model =
         ( minY, maxY ) =
             ( List.minimum ys |> Maybe.withDefault -100, List.maximum ys |> Maybe.withDefault 100 )
 
+        ( mx, my ) =
+            ( (minX + maxX) / 2, (minY + maxY) / 2 )
+
+        ( hx, hy ) =
+            ( max 1 ((maxX - minX) / 2), max 1 ((maxY - minY) / 2) )
+
+        half =
+            max hx hy
+
+        -- the square of the layout becomes a disc, so that the dots fill the ball and the rim is as populated as the middle:
+        -- a point keeps its direction and its distance, measured as a share of the square it lies on, becomes a share of the disc
+        round_ ( x, y ) =
+            let
+                ( u, v ) =
+                    ( (x - mx) / hx, (y - my) / hy )
+
+                len =
+                    sqrt (u * u + v * v)
+
+                f =
+                    if len < 0.0001 then
+                        1
+
+                    else
+                        max (abs u) (abs v) / len
+            in
+            ( u * f * half, v * f * half )
+
+        shaped =
+            Dict.map (\_ p -> round_ p) squared
+
         k =
-            clamp 0.15 1.6 (min (model.width / (maxX - minX + 140)) (areaHeight / (maxY - minY + 90)))
+            clamp 0.15 1.6 (0.94 * min lens.hw lens.hh / (half + 12))
     in
-    { model
-        | positions = shaped
-        , zoom =
-            Zoom.init { width = model.width, height = model.height }
-                |> Zoom.scaleExtent 0.1 6
-                |> Zoom.setTransform Zoom.instantly
-                    { scale = k
-                    , translate = { x = model.width / 2 - k * (minX + maxX) / 2, y = top + areaHeight / 2 - k * (minY + maxY) / 2 }
-                    }
-    }
+    ( shaped, k, ( lens.cx, lens.cy ) )
 
 
 centreOn : String -> Model -> Model
@@ -87,11 +125,17 @@ centreOn id model =
             model
 
 
-{-| The lens of the map area (LN-1, LN-4). On a desktop an ellipse centred in what the floating controls leave free. On a
-phone a rectangle, a little weaker; while a dot is selected the balloon covers the lower part of the screen, so the focus
-moves up to the part that stays visible and the selected dot lands in the middle of it. -}
+{-| The lens of the map area (LN-1, LN-5): a circle centred in what the floating controls leave free, whose size follows the
+zoom (see `growth`). On a phone, while a dot is selected the balloon covers the lower part of the screen, so the circle
+shrinks into the part that stays visible and the selected dot lands in the middle of it. -}
 lensFor : Model -> Lens
 lensFor model =
+    lensAt (growth ((Zoom.asRecord model.zoom).scale / model.fitScale)) model
+
+
+{-| The lens with the ball [g] times the size of the one that fits the free area exactly. -}
+lensAt : Float -> Model -> Lens
+lensAt g model =
     let
         ( top, bottom ) =
             MapSize.insets model.width
@@ -109,24 +153,32 @@ lensFor model =
 
         areaHeight =
             max 100 (lower - top)
+
+        radius =
+            g * min model.width areaHeight / 2
     in
-    { shape =
-        if phone then
-            Lens.Rectangle
-
-        else
-            Lens.Ellipse
-    , cx = model.width / 2
+    { cx = model.width / 2
     , cy = top + areaHeight / 2
-    , hw = model.width / 2
-    , hh = areaHeight / 2
-    , strength =
-        if phone then
-            0.8
-
-        else
-            1.2
+    , hw = radius
+    , hh = radius
+    , strength = 1.2
     }
+
+
+{-| How much bigger than the exact fit the ball is, when the map is zoomed to [ratio] times the zoom of the exact fit
+(LN-5). The screen starts with the ball fitting exactly. The first part of the zoom grows the ball with it, until the edges
+cut off 30 % of its area; after that the ball stays and zooming only spreads the dots further apart (the nodes grow).
+Zooming out below the fit leaves the ball as it is. -}
+growth : Float -> Float
+growth ratio =
+    clamp 1 maxGrowth ratio
+
+
+{-| The ball at which the two edges cut off 30 % of its area (15 % each side): a cap of angle t has the share
+(t - sin t cos t) / pi of the area, which is 0.15 at t = 0.945, and the strip left is 2 R cos t wide, so R = side / (2 cos t). -}
+maxGrowth : Float
+maxGrowth =
+    1 / cos 0.945
 
 
 {-| After the layout or the window changed, the dots start where they were on screen and spring to their new places

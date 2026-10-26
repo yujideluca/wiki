@@ -61,6 +61,7 @@ init flags url key =
             , sim = Nothing
             , positions = Dict.empty
             , zoom = Zoom.init { width = 800, height = 500 }
+            , fitScale = 1
             , width = 800
             , height = 500
             , boxHeight = Nothing

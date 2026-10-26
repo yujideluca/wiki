@@ -74,8 +74,11 @@ map lang graph positions rest zoom lens width height project month active =
                 Nothing ->
                     Set.empty
 
+        -- a dot beyond the rim is on the far side of the ball: it is not drawn
         place =
-            Dict.filter (\id _ -> Set.member id visibleIds) >> Dict.map (\_ xy -> Lens.apply lens (Lens.project zoom xy))
+            Dict.filter (\id _ -> Set.member id visibleIds)
+                >> Dict.map (\_ xy -> Lens.apply lens (Lens.project zoom xy))
+                >> Dict.filter (\_ spot -> spot.r <= 1.03)
 
         spots =
             place positions
@@ -94,7 +97,7 @@ map lang graph positions rest zoom lens width height project month active =
 
                         -- far from the middle the dashed "mentions" lines are left out: less detail at the border
                         coarse =
-                            e.edgeType /= Feeds && min a.scale b.scale < 0.78
+                            e.edgeType /= Feeds && min a.scale b.scale < 0.86
                     in
                     if coarse && not lit then
                         []
@@ -154,6 +157,8 @@ map lang graph positions rest zoom lens width height project month active =
                         , label = isActive || n.kind == "project" || Set.member n.id near || l.labelled
                         , radiusScale = l.radiusScale
                         , labelSize = l.labelSize
+                        , squash = spot.squash
+                        , tilt = spot.tilt
                         }
                         n
                     ]
@@ -176,11 +181,54 @@ map lang graph positions rest zoom lens width height project month active =
             ++ touchEvents
         )
         [ Svg.defs []
-            [ Svg.marker [ S.id "arrow", S.viewBox "0 0 10 10", S.refX "22", S.refY "5", S.markerWidth "5", S.markerHeight "5", S.orient "auto" ]
+            [ Svg.radialGradient [ S.id "globe-shade", S.cx "46%", S.cy "38%", S.r "72%" ]
+                [ Svg.stop [ S.offset "0%", S.stopColor "#5d84c2", S.stopOpacity "0.20" ] []
+                , Svg.stop [ S.offset "65%", S.stopColor "#2a3f66", S.stopOpacity "0.08" ] []
+                , Svg.stop [ S.offset "100%", S.stopColor "#000000", S.stopOpacity "0.30" ] []
+                ]
+            , Svg.marker [ S.id "arrow", S.viewBox "0 0 10 10", S.refX "22", S.refY "5", S.markerWidth "5", S.markerHeight "5", S.orient "auto" ]
                 [ Svg.path [ S.d "M0,0 L10,5 L0,10 z", S.class "arrowhead" ] [] ]
             ]
+        , globe lens
         , Svg.g [] (List.concatMap edgeView graph.edges ++ List.concatMap nodeView graph.nodes)
         ]
+
+
+{-| The body of the globe: a soft sphere shading and a few lines of latitude and longitude drawn through the lens, so the
+eye reads the curve. They stay in place while the map is panned: they belong to the glass, not the map. -}
+globe : Lens -> Svg Msg
+globe lens =
+    let
+        steps =
+            List.range 0 32 |> List.map (\i -> -1 + toFloat i * 2 / 32)
+
+        line toPoint =
+            steps
+                |> List.map (toPoint >> Lens.apply lens)
+                |> List.filter (\sp -> sp.r <= 1.001)
+                |> List.map (\sp -> String.fromFloat sp.x ++ "," ++ String.fromFloat sp.y)
+                |> String.join " "
+                |> (\points -> Svg.polyline [ S.points points, S.class "graticule" ] [])
+
+        at c t =
+            ( lens.cx + c * lens.hw, lens.cy + t * lens.hh )
+
+        offsets =
+            [ -0.8, -0.55, -0.3, 0, 0.3, 0.55, 0.8 ]
+    in
+    Svg.g [ S.pointerEvents "none" ]
+        (Svg.ellipse
+            [ S.cx (String.fromFloat lens.cx)
+            , S.cy (String.fromFloat lens.cy)
+            , S.rx (String.fromFloat lens.hw)
+            , S.ry (String.fromFloat lens.hh)
+            , S.fill "url(#globe-shade)"
+            , S.class "globe-body"
+            ]
+            []
+            :: List.map (\c -> line (at c)) offsets
+            ++ List.map (\c -> line (\t -> at t c)) offsets
+        )
 
 
 {-| The fingers on the map (TC-1..TC-3): see `Touch`. No double-tap or double-click zoom. -}
@@ -203,9 +251,9 @@ touchEvents =
 the border smaller and without a label. -}
 lookAt : Float -> Lens.Spot -> { radiusScale : Float, labelSize : Float, labelled : Bool }
 lookAt k spot =
-    { radiusScale = clamp 0.5 1.6 (spot.scale ^ 0.8) * clamp 0.7 2.2 (k ^ 0.6)
+    { radiusScale = clamp 0.4 1.6 (spot.scale ^ 1.6) * clamp 0.7 2.2 (k ^ 0.6)
     , labelSize = 11 * clamp 0.85 1.25 spot.scale * clamp 1 1.6 (sqrt k)
-    , labelled = k * spot.scale >= 0.95
+    , labelled = k * spot.scale ^ 2 >= 0.7
     }
 
 
@@ -217,6 +265,8 @@ type alias Look =
     , label : Bool
     , radiusScale : Float
     , labelSize : Float
+    , squash : Float -- short axis over long axis of the dot where the globe turns away (1 facing us)
+    , tilt : Float -- direction of the long axis, in degrees
     }
 
 
@@ -237,6 +287,10 @@ node lang graph ( x, y ) look n =
 
         r =
             base * look.radiusScale
+
+        -- where the globe turns away the round dot is seen at a slant: an ellipse whose short axis points to the middle
+        flatten =
+            "rotate(" ++ String.fromFloat look.tilt ++ ") scale(1," ++ String.fromFloat look.squash ++ ")"
     in
     Svg.g
         [ S.class
@@ -266,11 +320,11 @@ node lang graph ( x, y ) look n =
         ]
         [ Svg.g [ S.pointerEvents "none", S.transform ("translate(" ++ String.fromFloat (Tuple.first look.offset) ++ "," ++ String.fromFloat (Tuple.second look.offset) ++ ")") ]
             [ if look.active then
-                Svg.circle [ S.r (String.fromFloat (r + 7)), S.class "halo" ] []
+                Svg.circle [ S.r (String.fromFloat (r + 7)), S.class "halo", S.transform flatten ] []
 
               else
                 Svg.text ""
-            , Svg.circle [ S.r (String.fromFloat r), S.fill (Data.kindColour graph n.kind), S.class "dot" ] []
+            , Svg.circle [ S.r (String.fromFloat r), S.fill (Data.kindColour graph n.kind), S.class "dot", S.transform flatten ] []
             , if look.label then
                 Svg.text_
                     [ S.y (String.fromFloat (r + look.labelSize + 2))

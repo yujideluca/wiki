@@ -30,6 +30,7 @@ type alias Model =
     , sim : Maybe Layout.Sim -- the force simulation while it is still running (a few steps per frame)
     , positions : Positions -- the layout reshaped to the map area (see Layout.matchAspect)
     , zoom : Zoom
+    , fitScale : Float -- the zoom scale at which the ball fits the free area exactly (see MapCamera.growth)
     , width : Float
     , height : Float
     , boxHeight : Maybe Float -- height of the info boxes under the map; Nothing where they size themselves

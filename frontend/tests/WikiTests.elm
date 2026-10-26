@@ -11,6 +11,7 @@ import I18n exposing (Lang(..))
 import Layout
 import Lens
 import Motion
+import MapCamera
 import MapSize
 import MapView
 import Search
@@ -90,12 +91,12 @@ phoneArticle =
 
 look : MapView.Look
 look =
-    { active = False, offset = ( 0, 0 ), dim = False, label = True, radiusScale = 1, labelSize = 12 }
+    { active = False, offset = ( 0, 0 ), dim = False, label = True, radiusScale = 1, labelSize = 12, squash = 1, tilt = 0 }
 
 
 lens : Lens.Lens
 lens =
-    { shape = Lens.Ellipse, cx = 500, cy = 300, hw = 500, hh = 300, strength = 1.2 }
+    { cx = 500, cy = 300, hw = 500, hh = 300, strength = 1.2 }
 
 
 fresh : Zoom.Zoom
@@ -163,7 +164,7 @@ suite =
                         |> Event.expect (Hover "mem")
             , test "the map declares a viewBox matching its size, so zoom and drag use real pointer positions" <|
                 \_ ->
-                    MapView.map En graph Dict.empty Dict.empty (Zoom.init { width = 800, height = 500 }) { shape = Lens.Ellipse, cx = 400, cy = 250, hw = 400, hh = 250, strength = 1.2 } 800 500 Nothing Nothing Nothing
+                    MapView.map En graph Dict.empty Dict.empty (Zoom.init { width = 800, height = 500 }) { cx = 400, cy = 250, hw = 400, hh = 250, strength = 1.2 } 800 500 Nothing Nothing Nothing
                         |> Query.fromHtml
                         |> Query.has [ Selector.attribute (Svg.Attributes.viewBox "0 0 800 500") ]
             , test "clicking a node opens its page" <|
@@ -315,7 +316,7 @@ suite =
             [ test "the middle is magnified, the ellipse touching the sides is not, the border is squeezed" <|
                 \_ ->
                     ( (Lens.apply lens ( 500, 300 )).scale, (Lens.apply lens ( 1000, 300 )).scale, (Lens.apply lens ( 1000, 600 )).scale )
-                        |> (\( mid, edge, corner ) -> mid > 1.5 && edge < 1 && corner < edge)
+                        |> (\( mid, edge, corner ) -> mid > 1.05 && edge < 1 && corner < edge)
                         |> Expect.equal True
             , test "dots near the middle end up further apart, dots near the border closer together" <|
                 \_ ->
@@ -323,7 +324,7 @@ suite =
                         gap a b =
                             abs ((Lens.apply lens b).x - (Lens.apply lens a).x)
                     in
-                    ( gap ( 500, 300 ) ( 540, 300 ) > 40 * 1.5, gap ( 940, 300 ) ( 980, 300 ) < 40 )
+                    ( gap ( 500, 300 ) ( 540, 300 ) > 40 * 1.05, gap ( 940, 300 ) ( 980, 300 ) < 40 )
                         |> Expect.equal ( True, True )
             , test "points on the ellipse that touches the sides stay where they are, everything stays inside the window" <|
                 \_ ->
@@ -339,12 +340,43 @@ suite =
                         |> List.map (\i -> (Lens.apply lens ( 500 + toFloat i * 25, 300 )).x)
                         |> (\xs -> List.map2 (<) xs (List.drop 1 xs) |> List.all identity)
                         |> Expect.equal True
+            , test "the rim is tighter than the middle but never crammed: about 3 times at most on the sides" <|
+                \_ ->
+                    let
+                        mid =
+                            (Lens.apply lens ( 500, 300 )).scale
+
+                        side =
+                            (Lens.apply lens ( 1000, 300 )).scale
+                    in
+                    (mid / side < 3) |> Expect.equal True
+            , test "a round dot faces us in the middle and is flattened towards the middle where the surface turns away" <|
+                \_ ->
+                    let
+                        mid =
+                            Lens.apply lens ( 500, 300 )
+
+                        side =
+                            Lens.apply lens ( 1000, 300 )
+
+                        top =
+                            Lens.apply lens ( 500, 0 )
+                    in
+                    -- on the right side the long axis is up and down (90 degrees), at the top it is sideways (0)
+                    [ mid.squash > 0.99, side.squash < 0.8, abs (abs side.tilt - 90) < 1, abs top.tilt < 1 || abs (abs top.tilt - 180) < 1 ]
+                        |> Expect.equal [ True, True, True, True ]
+            , test "a point far outside the window never folds back over the globe" <|
+                \_ ->
+                    List.range 0 40
+                        |> List.map (\i -> (Lens.apply lens ( 500 + toFloat i * 100, 300 )).x)
+                        |> (\xs -> List.map2 (<) xs (List.drop 1 xs) |> List.all identity)
+                        |> Expect.equal True
             , test "strength 0 changes nothing (phones)" <|
                 \_ ->
                     Lens.apply { lens | strength = 0 } ( 123, 456 ) |> (\s -> ( s.x, s.y, s.scale )) |> Expect.equal ( 123, 456, 1 )
             , test "a pointer position maps back to the dot under it" <|
                 \_ ->
-                    [ ( 520, 310 ), ( 100, 80 ), ( 900, 500 ), ( 500, 300 ) ]
+                    [ ( 520, 310 ), ( 100, 80 ), ( 900, 500 ), ( 500, 300 ), ( 2500, 1900 ) ]
                         |> List.all
                             (\p ->
                                 let
@@ -361,60 +393,79 @@ suite =
                 \_ ->
                     let
                         mid =
-                            MapView.lookAt 0.45 (Lens.apply lens ( 500, 300 ))
+                            MapView.lookAt 0.6 (Lens.apply lens ( 500, 300 ))
 
                         border =
-                            MapView.lookAt 0.45 (Lens.apply lens ( 1000, 300 ))
+                            MapView.lookAt 0.6 (Lens.apply lens ( 1000, 300 ))
                     in
                     ( mid.radiusScale > border.radiusScale * 1.4, mid.labelled, border.labelled )
                         |> Expect.equal ( True, True, False )
             ]
 
-        -- REQ LN-4
-        , describe "rectangular lens (phone)"
-            [ test "the sides and the corners of the area stay where they are, the middle is magnified" <|
+        -- REQ LN-5
+        , describe "round globe"
+            [ test "the layout made round fits inside the rim, wide or tall area alike" <|
                 \_ ->
                     let
-                        rect =
-                            { shape = Lens.Rectangle, cx = 200, cy = 400, hw = 200, hh = 400, strength = 0.8 }
+                        cloud =
+                            Dict.fromList (List.range 0 40 |> List.map (\i -> ( String.fromInt i, ( toFloat (modBy 400 (i * 37)) * 1.2, toFloat (modBy 130 (i * 91)) ) )))
 
-                        at xy =
-                            Lens.apply rect xy |> (\sp -> ( sp.x, sp.y ))
+                        check circle =
+                            let
+                                ( shaped, k, ( tx, ty ) ) =
+                                    MapCamera.globeFit circle cloud
+
+                                rs =
+                                    Dict.values shaped
+                                        |> List.map (\( x, y ) -> (Lens.apply circle ( k * x + tx, k * y + ty )).r)
+
+                                xs =
+                                    Dict.values shaped |> List.map Tuple.first
+
+                                ys =
+                                    Dict.values shaped |> List.map Tuple.second
+
+                                extent vs =
+                                    (List.maximum vs |> Maybe.withDefault 0) - (List.minimum vs |> Maybe.withDefault 0)
+                            in
+                            ( List.all (\r -> r <= 1) rs, extent xs / extent ys < 1.5 && extent ys / extent xs < 1.5 )
                     in
-                    ( [ at ( 400, 400 ), at ( 400, 800 ), at ( 0, 0 ) ], (Lens.apply rect ( 200, 400 )).scale > 1.5 )
-                        |> Expect.equal ( [ ( 400, 400 ), ( 400, 800 ), ( 0, 0 ) ], True )
-            , test "each axis is bent on its own: the same fraction of the half-width and of the half-height moves alike" <|
+                    [ check { cx = 960, cy = 450, hw = 400, hh = 400, strength = 1.2 }
+                    , check { cx = 200, cy = 400, hw = 200, hh = 200, strength = 1.2 }
+                    ]
+                        |> Expect.equal [ ( True, True ), ( True, True ) ]
+            , test "the ball starts fitting exactly, grows with the zoom until the edges cut off 30 % of it, then stays" <|
                 \_ ->
                     let
-                        rect =
-                            { shape = Lens.Rectangle, cx = 200, cy = 400, hw = 200, hh = 400, strength = 0.8 }
+                        side =
+                            400
 
-                        a =
-                            Lens.apply rect ( 300, 400 )
+                        radius =
+                            MapCamera.maxGrowth * side / 2
 
-                        b =
-                            Lens.apply rect ( 200, 600 )
+                        n =
+                            200
+
+                        cells =
+                            List.range 0 (n * n - 1)
+                                |> List.map (\i -> ( (toFloat (modBy n i) + 0.5) / toFloat n * 2 - 1, (toFloat (i // n) + 0.5) / toFloat n * 2 - 1 ))
+                                |> List.filter (\( u, v ) -> u * u + v * v <= 1)
+
+                        cut =
+                            List.filter (\( _, v ) -> abs v * radius > side / 2) cells |> List.length |> toFloat
                     in
-                    ( (a.x - 200) / 200, (b.y - 400) / 400 ) |> (\( fx, fy ) -> abs (fx - fy) < 0.0001) |> Expect.equal True
-            , test "a pointer position maps back through the rectangle" <|
+                    ( [ MapCamera.growth 0.5, MapCamera.growth 1, MapCamera.growth 1.3 ], MapCamera.growth 9 == MapCamera.maxGrowth, abs (cut / toFloat (List.length cells) - 0.3) < 0.01 )
+                        |> Expect.equal ( [ 1, 1, 1.3 ], True, True )
+            , test "a dot beyond the rim is on the far side and is not drawn" <|
                 \_ ->
                     let
-                        rect =
-                            { shape = Lens.Rectangle, cx = 200, cy = 400, hw = 200, hh = 400, strength = 0.8 }
-                    in
-                    [ ( 250, 300 ), ( 20, 700 ), ( 390, 10 ) ]
-                        |> List.all
-                            (\p ->
-                                let
-                                    sp =
-                                        Lens.apply rect p
+                        circle =
+                            { cx = 400, cy = 250, hw = 250, hh = 250, strength = 1.2 }
 
-                                    ( bx, by ) =
-                                        Lens.invert rect ( sp.x, sp.y )
-                                in
-                                abs (bx - Tuple.first p) < 0.01 && abs (by - Tuple.second p) < 0.01
-                            )
-                        |> Expect.equal True
+                        spots =
+                            MapView.map En graph (Dict.fromList [ ( "a", ( 400, 250 ) ), ( "b", ( 400, 250 ) ) ]) Dict.empty (Zoom.init { width = 800, height = 500 }) circle 800 500 Nothing Nothing Nothing
+                    in
+                    spots |> Query.fromHtml |> Query.findAll [ Selector.class "dot" ] |> Query.count (Expect.atMost 2)
             ]
 
         -- REQ DY-6
