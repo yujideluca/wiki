@@ -9,7 +9,7 @@ location: home:dev/env.sh
 fed_by: []
 feeds: [quizapp-quality-gate, skill-adb-android-control]
 sources: [home:dev/env.sh]
-reviewed: 2026-10-22T16:33Z
+reviewed: 2026-10-26T11:35Z
 ---
 
 ## What it is
@@ -26,3 +26,6 @@ Underneath every QuizApp build and every adb command.
 
 ## Who receives its output
 The [[quizapp-quality-gate]], Gradle builds, and the skill [[skill-adb-android-control]].
+
+## Notes
+The file is a sourced Bash fragment, marked with `# shellcheck shell=bash`. It assigns values before exporting them so `export` does not hide a failed command. Home paths are quoted. The same file is captured by [[machine-bootstrap]] for restoration. Shell analysis and a test with spaces in the home path passed on 2026-10-26.

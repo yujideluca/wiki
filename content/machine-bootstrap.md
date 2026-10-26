@@ -9,11 +9,11 @@ location: machine-bootstrap:
 fed_by: [acer-nitro]
 feeds: []
 sources: [machine-bootstrap:README.md, machine-bootstrap:DESIGN.md, machine-bootstrap:docs/RESTORE.md, machine-bootstrap:docs/MANUAL.md, machine-bootstrap:docs/REQUIREMENTS.md, machine-bootstrap:mb.toml, machine-bootstrap:mb/cli.py, machine-bootstrap:mb/plan.py, machine-bootstrap:mb/capture.py, machine-bootstrap:mb/secrets_backup.py, machine-bootstrap:mb/databackup.py, machine-bootstrap:bootstrap.sh, machine-bootstrap:tools/vm-test.sh]
-reviewed: 2026-10-26T02:47Z
+reviewed: 2026-10-26T11:34Z
 ---
 
 ## What it is
-`machine-bootstrap` records the setup of Giovanni's laptop ([[acer-nitro]]) so it can be rebuilt after reinstalling the operating system or moving to another computer. It uses Python's standard library and a Bash starter script. Its local repository is `~/dev/machine-bootstrap`; it currently has no commits or remote repository. Start with `docs/RESTORE.md`; `docs/MANUAL.md` contains the longer instructions and failure cases.
+`machine-bootstrap` records the setup of Giovanni's laptop ([[acer-nitro]]) so it can be rebuilt after reinstalling the operating system or moving to another computer. It uses Python's standard library and a Bash starter script. Its local repository is `~/dev/machine-bootstrap`; the public source repository is [yujideluca/machine-bootstrap](https://github.com/yujideluca/machine-bootstrap). Captured settings and package lists are public; encrypted archives and credentials are excluded. Start with `docs/RESTORE.md`; `docs/MANUAL.md` contains the longer instructions and failure cases.
 
 ## What it does
 The command `python3 -m mb` has eight subcommands. `capture` records packages, repositories and allowed settings in `state/`. `status` reports changes since that record. `install-timer` enables a weekly background check. `restore` prints a plan and applies it only with `--apply`. `secrets-backup` encrypts keys and logins; `secrets-restore` restores an archive. `data-backup` copies personal folders. `scan` checks the recorded settings for secrets.

@@ -1,7 +1,7 @@
 ---
 id: codex-pbar
 lang: de
-source_hash: e495afd2b555
+source_hash: 34b605f449b3
 title: Codex-Aufgabenfortschritt im Terminal
 ---
 
@@ -44,3 +44,5 @@ Blockierte Benutzeraufträge pausieren den Countdown und zeigen `Blocked`; die �
 `task-progress` ist ein Eintrag in `tui.status_line` in `~/.codex/config.toml`; [[codex-status-line]] beschreibt die anderen nativen Felder. Neue Unterhaltungen bekommen unterschiedliche Kennungen. `codex resume <Unterhaltungs-UUID>` verwendet die Kennung dieser Unterhaltung; zwei mit derselben Kennung fortgesetzte Ansichten teilen den Zähler. Zum Pausieren die unvollständige Aufgabe mit einer Beschriftung beginnend mit `Blocked:` aktualisieren, etwa `codex-task-progress set --done 2 --total 5 --eta 300 --label 'Blocked: waiting for access'`.
 
 Die globale Anweisungsdatei [[global-codex-agents]] beschreibt, wie der Assistent den Aufgabenfortschritt pflegt. Bei dieser Prüfung ist `codex-pbar.service`, der ältere Desktopfenster-Dienst, maskiert und inaktiv: Seine Dienstdatei verweist auf `/dev/null`, wodurch er nicht gestartet werden kann. Die aktive Terminalzeile verwendet stattdessen den Starter.
+
+Das Terminal lässt sich ohne zweites Codex-Frontend prüfen: Ein nur lesender Client verbindet sich über `tmux -L codex-status attach-session -r -f ignore-size -t SESSION` mit der bestehenden tmux-Sitzung. `SESSION` bezeichnet die Sitzung, deren Fußzeilenbefehl die aktuelle `CODEX_PBAR_SESSION` enthält. Der Client sendet keine Eingaben; `ignore-size` verhindert, dass seine Größenänderung das Arbeitsterminal verändert. Am 2026-10-26 zeigte diese Prüfung die feste Fußzeile bei 116×53 und 70×35, im Leerlauf und nach Neuzeichnen. Die breite Ansicht zeigte außerdem die nativen Restbudgets für fünf Stunden und die Woche sowie belegten Kontext und Kontextkapazität. Das ältere `tools/terminal_smoke.py` startet ein zweites Codex-Frontend und endet derzeit an der Sitzungssperre; das beweist nicht, dass die Fußzeile im bestehenden Terminal fehlt.

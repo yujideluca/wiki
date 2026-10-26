@@ -1,7 +1,7 @@
 ---
 id: android-toolchain
 lang: de
-source_hash: ea3982d57f8e
+source_hash: c441b11b4ad2
 title: Android-Werkzeugkette (env.sh)
 ---
 
@@ -19,3 +19,6 @@ Unter jedem QuizApp-Build und jedem adb-Befehl.
 
 ## Who receives its output
 Das [[quizapp-quality-gate]], Gradle-Builds und die Skill [[skill-adb-android-control]].
+
+## Notes
+Die Datei ist ein einzulesendes Bash-Fragment mit `# shellcheck shell=bash`. Werte werden vor dem Export zugewiesen, damit `export` einen fehlgeschlagenen Befehl nicht verdeckt. Heimatverzeichnispfade stehen in Anführungszeichen. [[machine-bootstrap]] erfasst dieselbe Datei für die Wiederherstellung. Die Shell-Prüfung und ein Test mit Leerzeichen im Heimatverzeichnispfad bestanden am 2026-10-26.

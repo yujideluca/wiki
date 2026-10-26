@@ -1,7 +1,7 @@
 ---
 id: android-toolchain
 lang: pt-BR
-source_hash: ea3982d57f8e
+source_hash: c441b11b4ad2
 title: Ferramentas Android (env.sh)
 ---
 
@@ -19,3 +19,6 @@ Por baixo de todo build do QuizApp e de todo comando adb.
 
 ## Who receives its output
 O [[quizapp-quality-gate]], os builds do Gradle e a skill [[skill-adb-android-control]].
+
+## Notes
+O arquivo é um trecho carregado pelo Bash, identificado por `# shellcheck shell=bash`. Os valores são atribuídos antes de exportar para que `export` não esconda uma falha de comando. Caminhos da pasta pessoal ficam entre aspas. O [[machine-bootstrap]] captura o mesmo arquivo para restauração. A análise do shell e um teste com espaços no caminho pessoal passaram em 2026-10-26.

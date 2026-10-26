@@ -1,12 +1,12 @@
 ---
 id: machine-bootstrap
 lang: de
-source_hash: 14fbba7251ed
+source_hash: 73119bb3d3c1
 title: machine-bootstrap (die Einrichtung des Laptops wiederherstellen)
 ---
 
 ## What it is
-`machine-bootstrap` zeichnet die Einrichtung von Giovannis Laptop ([[acer-nitro]]) auf, um sie nach einer Neuinstallation des Betriebssystems oder auf einem anderen Computer wiederherzustellen. Es nutzt Pythons Standardbibliothek und ein Bash-Startskript. Das lokale Repository liegt in `~/dev/machine-bootstrap`; es hat derzeit weder Commits noch ein entferntes Repository. Einstieg ist `docs/RESTORE.md`; `docs/MANUAL.md` enthält die ausführliche Anleitung und Fehlerfälle.
+`machine-bootstrap` zeichnet die Einrichtung von Giovannis Laptop ([[acer-nitro]]) auf, um sie nach einer Neuinstallation des Betriebssystems oder auf einem anderen Computer wiederherzustellen. Es nutzt Pythons Standardbibliothek und ein Bash-Startskript. Das lokale Repository liegt in `~/dev/machine-bootstrap`; der öffentliche Quellcode liegt in [yujideluca/machine-bootstrap](https://github.com/yujideluca/machine-bootstrap). Erfasste Einstellungen und Paketlisten sind öffentlich; verschlüsselte Archive und Zugangsdaten sind ausgeschlossen. Einstieg ist `docs/RESTORE.md`; `docs/MANUAL.md` enthält die ausführliche Anleitung und Fehlerfälle.
 
 ## What it does
 `python3 -m mb` hat acht Unterbefehle. `capture` zeichnet Pakete, Repositories und erlaubte Einstellungen in `state/` auf. `status` meldet Änderungen seit dieser Aufzeichnung. `install-timer` aktiviert eine wöchentliche Hintergrundprüfung. `restore` zeigt einen Plan und führt ihn erst mit `--apply` aus. `secrets-backup` verschlüsselt Schlüssel und Zugänge; `secrets-restore` stellt ein Archiv wieder her. `data-backup` kopiert persönliche Ordner. `scan` prüft die aufgezeichneten Einstellungen auf Geheimnisse.

@@ -1,7 +1,7 @@
 ---
 id: codex-pbar
 lang: pt-BR
-source_hash: e495afd2b555
+source_hash: 34b605f449b3
 title: Progresso de tarefas no terminal do Codex
 ---
 
@@ -44,3 +44,5 @@ Tarefas do usuário bloqueadas pausam a contagem de tempo e mostram `Blocked`; o
 `task-progress` é uma entrada de `tui.status_line` em `~/.codex/config.toml`; [[codex-status-line]] descreve os outros campos nativos. Conversas novas recebem identificadores distintos. `codex resume <UUID da conversa>` usa o identificador daquela conversa; duas interfaces retomadas pelo mesmo identificador dividem o contador. Para pausar a estimativa, atualize a tarefa incompleta com um rótulo iniciado por `Blocked:`, por exemplo `codex-task-progress set --done 2 --total 5 --eta 300 --label 'Blocked: waiting for access'`.
 
 O arquivo global de instruções [[global-codex-agents]] descreve como o assistente mantém o progresso da tarefa. Nesta revisão, `codex-pbar.service`, o serviço antigo da janela, está mascarado e inativo: seu arquivo de serviço aponta para `/dev/null`, impedindo sua inicialização. O rodapé ativo do terminal usa o iniciador.
+
+O terminal pode ser verificado sem abrir outra interface do Codex: conecte um cliente somente de leitura à sessão tmux existente com `tmux -L codex-status attach-session -r -f ignore-size -t SESSION`. Substitua `SESSION` pela sessão cujo comando do rodapé contém a `CODEX_PBAR_SESSION` atual. Esse cliente não envia entradas, e `ignore-size` impede que seu redimensionamento altere o terminal de trabalho. Em 2026-10-26, esse método confirmou o rodapé em 116×53 e 70×35, durante inatividade e após redesenho. A visão larga também mostrou os percentuais restantes dos orçamentos de cinco horas e semanal, o contexto usado e sua capacidade. O antigo `tools/terminal_smoke.py` abre outra interface do Codex e atualmente para no bloqueio de propriedade da conversa; essa falha não demonstra ausência do rodapé no terminal existente.
