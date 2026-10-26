@@ -39,6 +39,7 @@ Tailscale Funnel, behind Google sign-in for yujideluca@gmail.com only. Design: `
   (decoy logged out, map, hover, click, languages, phone width).
 - Keep `DESIGN.md` current in the same commit as any design change; structural changes get an ADR.
 - Never force-push. Ask Giovanni before anything outward-facing or destructive.
+- One branch: `main` (memory key `work.single-branch`). A branch exists only for the minutes CI needs on a commit: push it, wait for the green `gate` on that exact commit, push the same commit to `main`, then delete the branch (local and remote) and its worktree. Never push to `main` before the gate has run on the commit. Deploy from `main`: `tools/install.sh` builds `site/` there.
 
 ## Complete skill pages (CO-10)
 
