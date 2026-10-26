@@ -1,7 +1,7 @@
 ---
 id: end-of-task
 lang: pt-BR
-source_hash: 883c3c32604a
+source_hash: 72209cc47fd9
 title: Fim de uma tarefa (cadeia de atualização do wiki)
 ---
 
@@ -24,7 +24,7 @@ O conteúdo do wiki ([[wiki-content]]), o [[github]] (onde o wiki é guardado) e
 1. O trabalho da tarefa está feito e comprovado por verificações executadas ([[skill-verification-before-completion]]).
 2. O Claude atualiza ou cria as páginas em inglês em `~/dev/wiki/content` para o que mudou, depois as versões em alemão e português do Brasil ([[wiki-content]]). Uma página que foi comparada com suas fontes e achada certa recebe o `reviewed` com o horário UTC atual, que é o que a tira da lista do [[wiki-stale]].
 3. Tudo o que passou do limite de tamanho de página ganha página própria (a regra de promoção, aplicada por [[wiki-check]]).
-4. `wiki publish -m "…"` verifica o conteúdo, constrói o site, faz commit só da pasta `content/` e a envia ([[wiki-cli]]).
+4. `wiki publish -m "…"` verifica o conteúdo, constrói o site, faz commit só da pasta `content/` e a envia ([[wiki-cli]]). A sessão acrescenta `--co-author "Name <email>"` com a própria linha de atribuição, ou o omite.
 5. O site no ar serve os novos dados na hora ([[wiki-site]], [[wiki-router]]).
 6. `mem use REF… --note "how"` informa as entradas de memória usadas ([[mem-use]]).
 7. Quando a rodada termina, [[wiki-hook-stop]] confirma que nada foi esquecido e [[hook-stop]] envia os eventos de memória.
