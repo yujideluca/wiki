@@ -28,3 +28,5 @@ Below all other projects: [[quizapp]] is built with its toolchain, the wiki runs
 [[claude-code]], the [[remote-assistant]] and every project in `~/dev`.
 
 The Codex companion [[codex-pbar]] adapts this display for Codex sessions.
+
+The terminal uses [[codex-status-line]] for Codex usage allowances and context size. [[machine-bootstrap]] records the laptop setup and can rebuild it after a reinstall.

@@ -9,7 +9,7 @@ location: home:.local/bin
 fed_by: []
 feeds: [claude-assistant]
 sources: [home:.local/bin]
-reviewed: 2026-10-25T02:07Z
+reviewed: 2026-10-25T21:20Z
 ---
 
 ## What it is
@@ -26,3 +26,5 @@ Under the work of every project.
 
 ## Who receives its output
 [[claude-code]], [[claude-assistant]] and the wiki build ([[wiki-build]]).
+
+The installed `codex` launcher and `codex-task-progress` command provide the separate fixed task footer ([[codex-pbar]]). Codex's usage display is configured separately ([[codex-status-line]]).

@@ -1,7 +1,7 @@
 ---
 id: glossary
 lang: pt-BR
-source_hash: 8435e59d7cf8
+source_hash: a31fdfea6dac
 title: Glossário
 ---
 
@@ -118,3 +118,6 @@ Todo leitor do wiki, sobretudo o [[giovanni]] e quem é novo no sistema.
 - **ViewModel**: a parte de um app Android que prepara dados para as telas e sobrevive a rotações de tela ([documentação](https://developer.android.com/topic/libraries/architecture/viewmodel)); veja [[study-view-model]].
 - **VPN** (virtual private network, rede privada virtual): um link criptografado que faz dispositivos distantes se comportarem como se estivessem em uma só rede local ([VPN](https://en.wikipedia.org/wiki/Virtual_private_network)).
 - **Gêmeo web (web twin)**: a versão web que espelha o app Android; veja [[quizweb]].
+
+- **Reconstrução da máquina**: registrar a configuração de um computador para reconstruí-la após reinstalar; veja [[machine-bootstrap]].
+- **Progresso de tarefas do Codex**: linha fixa do terminal com etapas concluídas e tempo restante estimado; veja [[codex-pbar]].

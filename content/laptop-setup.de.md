@@ -1,7 +1,7 @@
 ---
 id: laptop-setup
 lang: de
-source_hash: d9bab7b06b6d
+source_hash: b7433f29aaae
 title: Laptop-Einrichtung
 ---
 
@@ -21,3 +21,5 @@ Unter allen anderen Projekten: [[quizapp]] wird mit seiner Werkzeugkette gebaut,
 [[claude-code]], der [[remote-assistant]] und jedes Projekt in `~/dev`.
 
 Die Codex-Begleitanzeige [[codex-pbar]] passt diese Anzeige an Codex-Sitzungen an.
+
+Das Terminal nutzt [[codex-status-line]] für Codex-Nutzungskontingente und Kontextgröße. [[machine-bootstrap]] zeichnet die Einrichtung des Laptops auf und kann sie nach einer Neuinstallation wiederherstellen.

@@ -1,7 +1,7 @@
 ---
 id: user-space-tools
 lang: pt-BR
-source_hash: bb9c42943d4c
+source_hash: 03106cc61294
 title: Ferramentas em espaço de usuário (~/.local)
 ---
 
@@ -19,3 +19,5 @@ Por baixo do trabalho de todos os projetos.
 
 ## Who receives its output
 O [[claude-code]], o [[claude-assistant]] e o build do wiki ([[wiki-build]]).
+
+O iniciador instalado `codex` e o comando `codex-task-progress` fornecem a linha fixa de progresso separada ([[codex-pbar]]). A exibição de uso do Codex tem configuração própria ([[codex-status-line]]).

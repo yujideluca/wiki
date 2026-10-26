@@ -123,3 +123,6 @@ Every reader of the wiki, above all [[giovanni]] and anyone new to the system.
 - **ViewModel**: the part of an Android app that prepares data for the screens and survives screen rotations ([documentation](https://developer.android.com/topic/libraries/architecture/viewmodel)); see [[study-view-model]].
 - **VPN** (virtual private network): an encrypted link that makes distant devices behave as if they were on one local network ([VPN](https://en.wikipedia.org/wiki/Virtual_private_network)).
 - **Web twin**: the web version that mirrors the Android app; see [[quizweb]].
+
+- **Machine bootstrap**: recording a computer's setup so it can be rebuilt after reinstalling; see [[machine-bootstrap]].
+- **Codex task progress**: a fixed terminal row showing completed steps and estimated time remaining; see [[codex-pbar]].

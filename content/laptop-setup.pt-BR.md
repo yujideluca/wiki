@@ -1,7 +1,7 @@
 ---
 id: laptop-setup
 lang: pt-BR
-source_hash: d9bab7b06b6d
+source_hash: b7433f29aaae
 title: Configuração do notebook
 ---
 
@@ -21,3 +21,5 @@ Abaixo de todos os outros projetos: o [[quizapp]] é construído com suas ferram
 O [[claude-code]], o [[remote-assistant]] e todos os projetos em `~/dev`.
 
 O painel do Codex [[codex-pbar]] adapta essa exibição para sessões do Codex.
+
+O terminal usa [[codex-status-line]] para as cotas de uso e o tamanho de contexto do Codex. [[machine-bootstrap]] registra a configuração do notebook e pode reconstruí-la após uma reinstalação.

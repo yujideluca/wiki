@@ -1,23 +1,44 @@
 ---
 id: codex-pbar
 lang: pt-BR
-source_hash: bcee08701c85
-title: Janela de status do Codex
+source_hash: 12db00c0f981
+title: Progresso de tarefas no terminal do Codex
 ---
 
 ## What it is
-Codex Status é uma pequena janela que ajuda Giovanni a acompanhar o que o Codex faz e quanta capacidade de conversa e cota da conta ainda estão disponíveis. O código fica em `~/dev/codex-pbar`, com um [repositório no GitHub](https://github.com/yujideluca/codex-pbar). Ele adapta as funções de desenho da barra do Claude [[pbar]]. A instalação e os comandos estão no `README.md` do repositório.
+Uma linha fixa no rodapé do terminal do Codex mostra o progresso da tarefa e o tempo restante estimado. O código Python fica em `~/dev/codex-pbar`. Comece pelo `README.md` do repositório. Esta exibição é separada da barra do terminal do Claude [[pbar]].
 
 ## What it does
-Mostra pasta do projeto, ramo do controle de versão (uma linha de desenvolvimento separada), modelo, chamadas de ferramentas ativas, ocupação aproximada do contexto (as informações da conversa enviadas na última solicitação ao modelo), períodos de uso da conta (os intervalos em que uma cota é medida) e horários de renovação. Mantém as sessões separadas. A barra de tempo usa pelo menos três chamadas anteriores bem-sucedidas com o mesmo projeto e argumentos transformados em hash; hash é uma impressão digital que evita guardar os argumentos originais. Estima a duração de uma chamada, não a conclusão da tarefa inteira. Valores desconhecidos continuam desconhecidos. Quinze minutos sem eventos tornam a sessão desatualizada.
+A linha permanece visível enquanto o Codex trabalha ou espera. Usa o estilo compacto do Claude: rótulo Progress verde sobre o fundo normal do terminal, separadores por ponto central, porcentagem, tarefas concluídas e tempo restante estimado. Não desenha uma barra de blocos. Duas etapas concluídas de cinco aparecem como `Progress: [ 40%] 2/5 tasks`. O tempo passar não aumenta a porcentagem. Quando a estimativa vence, aparece `over by` e o tempo excedido. Sem um plano de tarefa, a linha mostra `No active task`. Uma conclusão explícita continua visível até começar a próxima tarefa.
 
 ## How it does it
-Python lê os arquivos locais das sessões do Codex, um registro completo por vez. O formato depende da versão do Codex; o leitor foi testado com a versão 0.164.0. Ignora registros desconhecidos e conta registros inválidos ou grandes demais. Não abre credenciais nem faz solicitações ao modelo ou à rede. Arquivos locais privados em `~/.local/share/codex-pbar` guardam o estado da exibição e históricos de duração com hash, sem mensagens, argumentos originais ou saídas de ferramentas.
+O iniciador instalado `codex` abre sessões interativas no tmux, programa que mantém os programas do terminal ativos depois de uma desconexão (veja [[glossary]]). Um servidor próprio, `codex-status`, reserva a última linha fora da área desenhada pelo Codex. A configuração nativa `task-progress` continua selecionada, mas a linha fixa não depende da ferramenta de planejamento do modelo. Cada sessão do terminal possui uma identificação própria, para tarefas simultâneas não dividirem o contador.
 
-PySide6, uma biblioteca Python para janelas, desenha a exibição. Um serviço do usuário, um programa de fundo controlado pelo gerenciador de serviços Linux systemd, inicia com a sessão gráfica e reinicia após uma falha. A janela aparece quando um processo de fundo do Codex (o programa que executa a conversa) inicia ou começa uma nova rodada de conversa. Fechar apenas esconde; a entrada **Codex Status** do menu ou `codex-pbar --show` reabre. `codex-pbar --json` imprime dados locais de diagnóstico sem janela. O instalador preserva as configurações e regras de aprovação do Codex. O controle de qualidade, a verificação automática que decide se uma mudança passa, executa testes, cobertura, nove falhas inseridas de propósito (erros que os testes devem detectar), uma renderização da janela e a ligação entre requisitos e testes pelo [[pipeline-check]]. Não deduz espera por aprovação; um processo de comandos pode continuar depois da chamada da ferramenta que o iniciou.
+O agente atualiza o comando local `codex-task-progress set --done 2 --total 5 --eta 300 --label 'Testing'`. `--eta` informa os segundos restantes; `--new` inicia uma nova tarefa. Instruções nos dois arquivos locais `AGENTS.md` atribuem a manutenção ao agente. O estado é salvo substituindo um arquivo privado completo em `~/.local/share/codex-pbar/tasks/`; uma escrita incompleta não substitui um estado válido. Os rótulos são descrições curtas da tarefa. Não há novas chamadas ao modelo nem serviço de rede.
+
+O instalador guarda o caminho do executável original e substitui o atalho `~/.local/bin/codex` por um iniciador. Comandos não interativos, como `codex exec` e `codex --version`, mantêm os argumentos e o código de saída. O programa original, os hooks e as configurações de aprovação permanecem intactos. Execute o instalador novamente se uma instalação do Codex substituir o iniciador. `CODEX_PBAR_DISABLE=1 codex` pula a barra. Um terminal que já estava aberto não é envolvido retroativamente; uma nova interface com a barra pode retomar a mesma conversa sem iniciar uma nova tarefa.
 
 ## Where it sits in the pipeline
-Roda ao lado do Codex no notebook como parte de [[laptop-setup]]. `systemctl --user status codex-pbar` verifica o serviço; `systemctl --user disable --now codex-pbar` encerra e desativa o início automático. Mantenha o clone no local instalado ou execute `tools/install.py` novamente após movê-lo.
+A barra funciona no terminal do notebook. O quality gate, conjunto de verificações automáticas exigidas antes da conclusão, executa testes e falhas introduzidas de propósito pelo [[pipeline-check]]. A verificação ao vivo abre uma conversa existente sem enviar mensagem, rejeita um diálogo de escolha de pasta como falso sucesso, verifica duas larguras e um período de espera e salva a captura do terminal em `build/`.
 
 ## Who receives its output
-Giovanni acompanha a janela. O Codex pode ler o comando local de diagnóstico ao investigar um problema. Dados das sessões não são enviados ao GitHub.
+Giovanni lê a barra. O agente pode consultar `codex-task-progress show`. O programa de janela preservado não é ativado por esta instalação do terminal.
+
+## Notes
+Instale a partir de `~/dev/codex-pbar` com `PYTHONPATH=src .venv/bin/python -m codex_pbar.terminal install`. Desconecte com `Ctrl-b d` e reconecte com `tmux -L codex-status attach`. O tempo é uma previsão do agente, não uma garantia medida. A mudança não acrescenta campos de tokens, contexto ou cotas.
+
+
+Limites em falhas: a linha fixa precisa do iniciador instalado e do tmux. Um arquivo de estado ausente ou corrompido mostra valores desconhecidos. Se o tmux estiver ausente, o programa informa um erro. Só informar explicitamente todas as etapas como concluídas define 100%. Novos terminais recebem identificadores separados; duas interfaces da mesma conversa retomada compartilham intencionalmente o contador da tarefa. O código da janela permanece no repositório, mas este instalador não o inicia.
+
+
+Arquivos do projeto: `AGENTS.md` encaminha colaboradores ao `CLAUDE.md`, que descreve a arquitetura Python, os limites de privacidade e as verificações exigidas. `DESIGN.md` registra o desenho atual do terminal e as decisões. `docs/2026-10-25-codex-pbar-design.md` preserva o desenho original da janela; a decisão mais recente do terminal fica em `docs/adr/0004-persistent-terminal-footer.md`. `docs/REQUIREMENTS.md` lista PB-1 a PB-10, cobrindo a janela preservada e as promessas do terminal. `docs/MAINTENANCE.md` descreve revisões mensais e tratamento de dívida técnica. `.github/workflows/quality-gate.yml` executa a verificação compartilhada nos envios e pedidos de revisão e guarda o relatório por quatorze dias. `.gitignore` exclui ambientes virtuais, caches Python, arquivos de cobertura e saídas de compilação, incluindo capturas privadas do terminal, do controle de versão.
+
+
+Arquivos de validação: `docs/TESTES-AUTOMATIZADOS.md` descreve a estratégia de testes, as lacunas conhecidas e as verificações do terminal. `docs/TRACEABILITY.md` é gerado e liga PB-1 a PB-10 aos testes. `pipeline-check.toml` seleciona a verificação obrigatória, proíbe importações de bibliotecas de rede no diretório de código, define o limite de 1200 segundos e identifica a verificação do GitHub. `pipeline-check.version` fixa o verificador compartilhado em `v0.5.0`; `tools/pipeline-check.sh` usa essa versão em vez de copiar a implementação. `pyproject.toml` declara Python e as dependências fixadas de exibição e testes.
+
+Arquivos de decisão: `docs/adr/README.md` explica os registros de decisão de arquitetura, arquivos curtos com os motivos de escolhas estruturais; `0000-template.md` fornece o formato. `0001-record-decisions.md` exige esses registros; `0002-python-transcript-companion.md` registra a arquitetura original da janela; `0003-program-measures-skill-judges.md` separa medição automática de julgamento de manutenção. A decisão do terminal fica em `0004-persistent-terminal-footer.md`. Os módulos em `src/codex_pbar/` preservam o leitor, estado e janela junto da entrada do terminal; `tests/` e `tools/` contêm verificações e instaladores. `upstream/` guarda o código Claude arquivado, que não é executado.
+
+
+Tarefas do usuário bloqueadas pausam a contagem de tempo e mostram `Blocked`; o atraso não continua aumentando. `codex-task-progress clear` remove um contador antigo da sessão vinculada. Uma saudação não exige plano de tarefa. Hooks automáticos de documentação preservam o contador da tarefa principal em vez de substituí-lo por trabalho de documentação.
+
+`task-progress` é uma entrada de `tui.status_line` em `~/.codex/config.toml`; [[codex-status-line]] descreve os outros campos nativos. Conversas novas recebem identificadores distintos. `codex resume <UUID da conversa>` usa o identificador daquela conversa; duas interfaces retomadas pelo mesmo identificador dividem o contador. Para pausar a estimativa, atualize a tarefa incompleta com um rótulo iniciado por `Blocked:`, por exemplo `codex-task-progress set --done 2 --total 5 --eta 300 --label 'Blocked: waiting for access'`.

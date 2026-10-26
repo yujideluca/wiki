@@ -1,7 +1,7 @@
 ---
 id: glossary
 lang: de
-source_hash: 8435e59d7cf8
+source_hash: a31fdfea6dac
 title: Glossar
 ---
 
@@ -118,3 +118,6 @@ Jeder Leser des Wikis, vor allem [[giovanni]] und alle, die neu im System sind.
 - **ViewModel**: der Teil einer Android-App, der Daten für die Bildschirme aufbereitet und Bildschirmdrehungen übersteht ([Dokumentation](https://developer.android.com/topic/libraries/architecture/viewmodel)); siehe [[study-view-model]].
 - **VPN** (Virtual Private Network, virtuelles privates Netzwerk): eine verschlüsselte Verbindung, durch die entfernte Geräte sich verhalten, als wären sie in einem lokalen Netz ([VPN](https://en.wikipedia.org/wiki/Virtual_private_network)).
 - **Web-Zwilling**: die Webversion, die die Android-App spiegelt; siehe [[quizweb]].
+
+- **Maschineneinrichtung wiederherstellen**: die Einrichtung eines Computers aufzeichnen, um sie nach einer Neuinstallation wieder aufzubauen; siehe [[machine-bootstrap]].
+- **Codex-Aufgabenfortschritt**: feste Terminalzeile mit erledigten Schritten und geschätzter Restzeit; siehe [[codex-pbar]].
