@@ -10,13 +10,37 @@ defmodule Wiki.CLI do
                              comes only from --co-author or $WIKI_CO_AUTHOR (the committing session
                              supplies it), never a fixed name
       wiki hook-stop         Claude Code Stop hook (reads the hook JSON on stdin)
+      wiki help | --help     print this text and do nothing else
   """
   alias Wiki.Content.{Store, Check, Build, Stale}
 
-  def main(args) do
-    {opts, rest, _} = OptionParser.parse(args, strict: [local: :boolean, message: :string, co_author: :string], aliases: [m: :message])
-    code = run(rest, opts)
-    System.halt(code)
+  def main(args), do: System.halt(exec(args))
+
+  @doc """
+  Parses the command line and runs it; returns the exit code. `--help`, `-h` and `help` print the usage and
+  run nothing (0). An unknown option or a malformed one (for example a typo such as `--co-autor`) prints
+  the usage and runs nothing (2); the parser would otherwise drop it silently and run the command anyway.
+  """
+  def exec(args) do
+    {opts, rest, invalid} =
+      OptionParser.parse(args,
+        strict: [local: :boolean, message: :string, co_author: :string, help: :boolean],
+        aliases: [m: :message, h: :help]
+      )
+
+    cond do
+      opts[:help] || rest == ["help"] ->
+        IO.puts(@moduledoc)
+        0
+
+      invalid != [] ->
+        IO.puts(:stderr, "unknown or malformed option: " <> Enum.map_join(invalid, ", ", &elem(&1, 0)))
+        IO.puts(:stderr, @moduledoc)
+        2
+
+      true ->
+        run(rest, opts)
+    end
   end
 
   def root, do: System.get_env("WIKI_ROOT") || Path.expand("~/dev/wiki")

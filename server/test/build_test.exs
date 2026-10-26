@@ -203,4 +203,29 @@ defmodule Wiki.Content.BuildTest do
     System.delete_env("WIKI_ROOT")
     System.delete_env("WIKI_STATE_DIR")
   end
+
+  # REQ UP-5
+  test "--help and unknown options print the usage and never run the command", %{dir: dir, content: c} do
+    root = Path.join(dir, "wiki")
+    init_repo(root)
+    valid_wiki(c)
+    System.put_env("WIKI_ROOT", root)
+    System.put_env("WIKI_STATE_DIR", Path.join(dir, "state"))
+
+    out = ExUnit.CaptureIO.capture_io(fn -> assert Wiki.CLI.exec(["publish", "--help"]) == 0 end)
+    assert out =~ "wiki publish -m MSG"
+    ExUnit.CaptureIO.capture_io(fn -> assert Wiki.CLI.exec(["-h"]) == 0 end)
+    ExUnit.CaptureIO.capture_io(fn -> assert Wiki.CLI.exec(["help"]) == 0 end)
+
+    ExUnit.CaptureIO.capture_io(:stderr, fn ->
+      assert Wiki.CLI.exec(["publish", "-m", "t", "--co-autor", "A <a@b.c>"]) == 2
+      assert Wiki.CLI.exec(["publish", "--bogus"]) == 2
+    end)
+
+    # none of those committed anything
+    assert Wiki.Content.Git.cmd(root, ["log", "--oneline"]) in [nil, ""]
+  after
+    System.delete_env("WIKI_ROOT")
+    System.delete_env("WIKI_STATE_DIR")
+  end
 end
