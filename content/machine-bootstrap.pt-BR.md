@@ -1,7 +1,7 @@
 ---
 id: machine-bootstrap
 lang: pt-BR
-source_hash: 9e48a8deee5a
+source_hash: 62350c80d15c
 title: machine-bootstrap (reconstruir a configuração do notebook)
 ---
 
@@ -29,4 +29,4 @@ Execute `python3 -m mb` em `~/dev/machine-bootstrap`. Configurações permitidas
 
 O arquivo local `pipeline-check.toml` agora identifica `yujideluca/machine-bootstrap`, seu branch `main` e a verificação obrigatória `gate`. No modo local, a ferramenta verifica tanto o resultado mais recente dos testes no GitHub quanto a proteção ativa do branch; o relatório de 2026-10-26 mostra ambos como `ok` (aprovados).
 
-Um aplicativo próprio de autorização do Google está registrado no projeto `rclone-personal-backup-512812`. O aplicativo está publicado no modo de produção. Seu cliente para computador identifica a instalação local do rclone ao solicitar acesso ao Google. A política de dados do usuário do Google foi aceita e a permissão de acesso completo ao Drive foi configurada com autorização do Giovanni. O aviso público de privacidade está em `docs/PRIVACY.md` no repositório do bootstrap. A conexão atual do rclone ainda não foi trocada: o primeiro segredo de cliente gerado precisa ser substituído após exposição acidental durante a configuração. Uma cópia privada fica em `~/.config/rclone/migration-20261026/`, fora do git. O backup existente continua com o mesmo identificador, caminho, tamanho e soma de verificação do registro inicial salvo.
+Um aplicativo próprio de autorização do Google está registrado no projeto `rclone-personal-backup-512812`. O aplicativo está publicado no modo de produção. Seu cliente para computador identifica a instalação local do rclone ao solicitar acesso ao Google. A política de dados do usuário do Google foi aceita e a permissão de acesso completo ao Drive foi configurada com autorização do Giovanni. O aviso público de privacidade está em `docs/PRIVACY.md` no repositório do bootstrap. A conexão do rclone agora usa esse cliente para computador e um segredo substituto baixado em 2026-10-26. O Google aceitou o substituto em uma nova autenticação. A configuração privada fica em `~/.config/rclone/rclone.conf`, legível somente pelo proprietário. A permissão ativa é `drive.file`, que limita o acesso aos arquivos usados com este aplicativo. A listagem direta da raiz funcionou, mas não retornou arquivos com o novo cliente; o acesso ao backup anterior permanece sem verificação. O acesso completo ao Drive aguarda confirmação. A revogação do segredo original não foi confirmada.

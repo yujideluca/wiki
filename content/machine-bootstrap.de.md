@@ -1,7 +1,7 @@
 ---
 id: machine-bootstrap
 lang: de
-source_hash: 9e48a8deee5a
+source_hash: 62350c80d15c
 title: machine-bootstrap (die Einrichtung des Laptops wiederherstellen)
 ---
 
@@ -29,4 +29,4 @@ Browserprofile, Spielinstallationen und die eigenen Einstellungen des Handys sin
 
 Die lokale Datei `pipeline-check.toml` nennt nun `yujideluca/machine-bootstrap`, den Zweig `main` und die erforderliche Prüfung `gate`. Im lokalen Modus prüft das Werkzeug sowohl das jüngste GitHub-Testergebnis als auch den aktiven Zweigschutz; der Bericht vom 2026-10-26 zeigt beides als `ok` (bestanden).
 
-Eine eigene Google-Autorisierungsanwendung ist im Projekt `rclone-personal-backup-512812` registriert. Die Anwendung ist im Produktionsmodus veröffentlicht. Ihr Desktop-Client kennzeichnet die lokale rclone-Installation bei Google-Zugriffsanfragen. Die Google-Nutzerdatenrichtlinie wurde angenommen und der vollständige Drive-Zugriff mit Giovannis Zustimmung konfiguriert. Der öffentliche Datenschutzhinweis liegt als `docs/PRIVACY.md` im Bootstrap-Repository. Die bestehende rclone-Verbindung wurde noch nicht umgestellt: Das erste erzeugte Client-Geheimnis muss nach einer versehentlichen Offenlegung während der Einrichtung ersetzt werden. Eine private Kopie liegt unter `~/.config/rclone/migration-20261026/`, außerhalb von git. Die vorhandene Sicherungsdatei hat weiterhin dieselbe Kennung, denselben Pfad, dieselbe Größe und dieselbe Prüfsumme wie die gespeicherte Ausgangsaufnahme.
+Eine eigene Google-Autorisierungsanwendung ist im Projekt `rclone-personal-backup-512812` registriert. Die Anwendung ist im Produktionsmodus veröffentlicht. Ihr Desktop-Client kennzeichnet die lokale rclone-Installation bei Google-Zugriffsanfragen. Die Google-Nutzerdatenrichtlinie wurde angenommen und der vollständige Drive-Zugriff mit Giovannis Zustimmung konfiguriert. Der öffentliche Datenschutzhinweis liegt als `docs/PRIVACY.md` im Bootstrap-Repository. Die rclone-Verbindung verwendet jetzt diesen Desktop-Client und ein am 2026-10-26 heruntergeladenes Ersatzgeheimnis. Google hat den Ersatz bei einer erneuten Anmeldung angenommen. Die private Konfiguration liegt in `~/.config/rclone/rclone.conf` und ist nur für ihren Besitzer lesbar. Die aktive Berechtigung `drive.file` beschränkt den Zugriff auf mit dieser Anwendung verwendete Dateien. Die direkte Auflistung des Stammordners war erfolgreich, lieferte mit dem neuen Client aber keine Dateien; der Zugriff auf die frühere Sicherung bleibt daher ungeprüft. Vollständiger Drive-Zugriff wartet auf Bestätigung. Der Widerruf des ursprünglichen Geheimnisses wurde nicht bestätigt.
