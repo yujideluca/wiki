@@ -1,7 +1,7 @@
 ---
 id: codex-pbar
 lang: de
-source_hash: e495afd2b555
+source_hash: 95cabaa318bb
 title: Codex-Aufgabenfortschritt im Terminal
 ---
 
@@ -44,3 +44,5 @@ Blockierte Benutzeraufträge pausieren den Countdown und zeigen `Blocked`; die �
 `task-progress` ist ein Eintrag in `tui.status_line` in `~/.codex/config.toml`; [[codex-status-line]] beschreibt die anderen nativen Felder. Neue Unterhaltungen bekommen unterschiedliche Kennungen. `codex resume <Unterhaltungs-UUID>` verwendet die Kennung dieser Unterhaltung; zwei mit derselben Kennung fortgesetzte Ansichten teilen den Zähler. Zum Pausieren die unvollständige Aufgabe mit einer Beschriftung beginnend mit `Blocked:` aktualisieren, etwa `codex-task-progress set --done 2 --total 5 --eta 300 --label 'Blocked: waiting for access'`.
 
 Die globale Anweisungsdatei [[global-codex-agents]] beschreibt, wie der Assistent den Aufgabenfortschritt pflegt. Bei dieser Prüfung ist `codex-pbar.service`, der ältere Desktopfenster-Dienst, maskiert und inaktiv: Seine Dienstdatei verweist auf `/dev/null`, wodurch er nicht gestartet werden kann. Die aktive Terminalzeile verwendet stattdessen den Starter.
+
+Jedes neue interaktive Terminal aktiviert vor dem Verbinden ausdrücklich die Mausweiterleitung von tmux. Dadurch erreicht das Scrollen mit zwei Fingern Codex auch nach einer neuen Anmeldung oder einem Neustart. Giovanni bestätigte das Scrollen mit dem physischen Touchpad; zwei neue Starts meldeten `mouse on` und behielten die Fortschrittszeile. Für die Textauswahl von Konsole beim Ziehen die Umschalttaste gedrückt halten. Um die Weiterleitung für eine Sitzung auszuschalten, `tmux -L codex-status set-option -t SESSION mouse off` ausführen und `SESSION` durch den Namen aus `tmux -L codex-status list-sessions` ersetzen. Der Regressionstest des Starters und ein gezielt eingebrachter Fehler, der die Weiterleitung abschaltet, sichern Anforderung PB-9 ab. Ein physischer Neustart wurde nicht getestet.

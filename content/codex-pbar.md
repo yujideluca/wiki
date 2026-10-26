@@ -9,7 +9,7 @@ location: codex-pbar:src/codex_pbar/terminal.py
 fed_by: [global-codex-agents]
 feeds: []
 sources: [codex-pbar:docs, codex-pbar:src/codex_pbar, codex-pbar:tests, codex-pbar:tools, codex-pbar:upstream, codex-pbar:pipeline-check.toml, codex-pbar:pipeline-check.version, codex-pbar:pyproject.toml, codex-pbar:.github/workflows/quality-gate.yml, codex-pbar:.gitignore, codex-pbar:AGENTS.md, codex-pbar:CLAUDE.md, codex-pbar:DESIGN.md, codex-pbar:docs/2026-10-25-codex-pbar-design.md, codex-pbar:docs/MAINTENANCE.md, codex-pbar:docs/REQUIREMENTS.md, codex-pbar:src/codex_pbar/terminal.py, codex-pbar:tests/test_terminal.py, codex-pbar:tools/terminal_smoke.py, codex-pbar:docs/adr/0004-persistent-terminal-footer.md, codex-pbar:README.md, home:AGENTS.md, home:.codex/AGENTS.md, home:.config/systemd/user/codex-pbar.service]
-reviewed: 2026-10-26T06:19Z
+reviewed: 2026-10-26T11:35Z
 ---
 
 ## What it is
@@ -51,3 +51,5 @@ Blocked user tasks pause the countdown and show `Blocked`; they do not keep accu
 `task-progress` is an entry in `tui.status_line` in `~/.codex/config.toml`; [[codex-status-line]] describes the other native fields. New conversations get distinct identifiers. An explicit `codex resume <conversation UUID>` uses that conversation identifier, so two views resumed by the same identifier share the counter. To pause the estimate, update the unfinished counter with a label beginning `Blocked:`, for example `codex-task-progress set --done 2 --total 5 --eta 300 --label 'Blocked: waiting for access'`.
 
 The global instruction file [[global-codex-agents]] describes how the assistant maintains task progress. At this review, `codex-pbar.service`, the older desktop-window service, is masked and inactive: its service file is linked to `/dev/null`, which prevents it from starting. The active terminal footer uses the launcher instead.
+
+Each new interactive terminal explicitly enables tmux mouse forwarding before attachment. This makes two-finger touchpad scrolling reach Codex, including after a new login or reboot. Giovanni confirmed physical touchpad scrolling with this setting, and two fresh launches reported `mouse on` while retaining the footer. Hold Shift while dragging to use Konsole's own text selection. To disable forwarding in one session, run `tmux -L codex-status set-option -t SESSION mouse off`, replacing `SESSION` with its name from `tmux -L codex-status list-sessions`. The launcher regression test and a controlled fault that disables forwarding protect requirement PB-9. A physical reboot was not tested.

@@ -1,7 +1,7 @@
 ---
 id: codex-pbar
 lang: pt-BR
-source_hash: e495afd2b555
+source_hash: 95cabaa318bb
 title: Progresso de tarefas no terminal do Codex
 ---
 
@@ -44,3 +44,5 @@ Tarefas do usuário bloqueadas pausam a contagem de tempo e mostram `Blocked`; o
 `task-progress` é uma entrada de `tui.status_line` em `~/.codex/config.toml`; [[codex-status-line]] descreve os outros campos nativos. Conversas novas recebem identificadores distintos. `codex resume <UUID da conversa>` usa o identificador daquela conversa; duas interfaces retomadas pelo mesmo identificador dividem o contador. Para pausar a estimativa, atualize a tarefa incompleta com um rótulo iniciado por `Blocked:`, por exemplo `codex-task-progress set --done 2 --total 5 --eta 300 --label 'Blocked: waiting for access'`.
 
 O arquivo global de instruções [[global-codex-agents]] descreve como o assistente mantém o progresso da tarefa. Nesta revisão, `codex-pbar.service`, o serviço antigo da janela, está mascarado e inativo: seu arquivo de serviço aponta para `/dev/null`, impedindo sua inicialização. O rodapé ativo do terminal usa o iniciador.
+
+Cada terminal interativo novo ativa explicitamente o encaminhamento do mouse pelo tmux antes da conexão. Assim, a rolagem com dois dedos chega ao Codex, inclusive após entrar novamente na sessão ou reiniciar. Giovanni confirmou a rolagem com o touchpad físico; duas novas inicializações mostraram `mouse on` e mantiveram o rodapé. Mantenha Shift pressionado ao arrastar para usar a seleção de texto do próprio Konsole. Para desligar o encaminhamento em uma sessão, execute `tmux -L codex-status set-option -t SESSION mouse off`, substituindo `SESSION` pelo nome mostrado em `tmux -L codex-status list-sessions`. O teste de regressão do iniciador e uma falha introduzida de propósito que desliga o encaminhamento protegem o requisito PB-9. Não foi testada uma reinicialização física.
