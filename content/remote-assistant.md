@@ -7,7 +7,8 @@ project: none
 status: active
 fed_by: [claude-assistant, giovanni, global-claude-md, session-brief]
 feeds: [mem]
-reviewed: 2026-10-22
+sources: [home:.local/bin/claude-assistant, home:.config/systemd/user/claude-assistant.service, home:assistant/CLAUDE.md, home:.local/bin/codex-remote-tmux, home:.config/systemd/user/codex-remote-tmux.service, home:Documents/Codex/2026-10-25/i-w/outputs/install-codex-remote.sh]
+reviewed: 2026-10-26T18:04Z
 ---
 
 ## What it is
@@ -24,3 +25,14 @@ It is a second entrance to the same laptop and the same project repositories as 
 
 ## Who receives its output
 The same recipients as [[claude-code]]: the project repositories and the memory log [[events-log]] (entries are tagged with `MEM_INSTANCE=assistant`).
+
+## Notes
+
+### Codex remote control
+Codex is another programming assistant on this laptop. Its separate `codex-remote-tmux.service` uses systemd, the Linux program that manages background services, to start `~/.local/bin/codex-remote-tmux start`. The script keeps a terminal running without a visible window through tmux. It uses the dedicated tmux socket `codex-remote` and session `remote`, starting in the home folder.
+
+The `run` action repeatedly calls `codex remote-control --no-daemon`. When that command exits, even with an error, the script waits 15 seconds before trying again. The service declares `Restart=always` and `RestartSec=15`. These are separate retry layers: the script retries the command, and systemd restarts the service. `start` leaves an existing session alone; `attach` opens its terminal; `stop` ends that session. With no argument the script attaches.
+
+The installer at `~/Documents/Codex/2026-10-25/i-w/outputs/install-codex-remote.sh` backs up existing script and service files, writes them, checks their syntax, reloads systemd and enables and starts the service for the user's default target. The source command for pairing is `codex remote-control pair`; the terminal can be opened with `codex-remote-tmux attach`.
+
+On this review, the installed script and service matched the installer. Live service state and phone connectivity were not verified: the sandbox denied access to the user-service bus and tmux socket. The service was not restarted or changed. The Codex script does not set Claude's `MEM_INSTANCE=assistant` marker.

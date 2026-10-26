@@ -1,7 +1,7 @@
 ---
 id: global-codex-agents
 lang: pt-BR
-source_hash: 0fb7eefa815c
+source_hash: 509ce5e8da10
 title: AGENTS.md global do Codex
 ---
 
@@ -22,6 +22,8 @@ A seção `Terminal task progress` descreve o rodapé fixo do [[codex-pbar]]: o 
 
 ## Where it sits in the pipeline
 As instruções orientam tanto o trabalho quanto o relatório. As instruções iniciais do wiki exigem páginas em inglês e suas versões em alemão e português do Brasil antes de `wiki publish`. O assistente atualiza o horário de revisão de uma página depois de compará-la com suas fontes. O Stop hook, um comando executado automaticamente quando uma sessão termina, lembra o assistente da documentação pendente ([[wiki-hook-stop]]).
+
+Uma passagem de trabalho causada por limites da sandbox ainda inclui o encerramento do wiki e da memória antes da mensagem final. Se a própria documentação não puder ser publicada, o Codex prepara as alterações em uma cópia isolada e registra e informa esse limite.
 
 ## Who receives its output
 O Codex lê o arquivo; Giovanni recebe o trabalho, as evidências e as decisões que dependem de sua participação. Esta página explica os grupos da fonte em vez de duplicar suas regras numeradas. O arquivo instalado continua sendo a fonte das instruções exatas.

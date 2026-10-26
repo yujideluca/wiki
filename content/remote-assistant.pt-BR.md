@@ -1,7 +1,7 @@
 ---
 id: remote-assistant
 lang: pt-BR
-source_hash: 41f62f766233
+source_hash: 2a75b28e07de
 title: Assistente remoto
 ---
 
@@ -19,3 +19,14 @@ O serviço [[claude-assistant]] o mantém vivo: uma sessão tmux (um terminal qu
 
 ## Who receives its output
 Os mesmos destinatários do [[claude-code]]: os repositórios dos projetos e o registro de memória [[events-log]] (as entradas levam a marca `MEM_INSTANCE=assistant`).
+
+## Notes
+
+### Controle remoto do Codex
+O Codex é outro assistente de programação neste notebook. Seu serviço separado `codex-remote-tmux.service` usa o systemd, o programa do Linux que administra serviços em segundo plano, para executar `~/.local/bin/codex-remote-tmux start`. O script mantém um terminal funcionando sem janela visível por meio do tmux. Usa o socket próprio do tmux `codex-remote` e a sessão `remote`, iniciando na pasta pessoal.
+
+A ação `run` executa repetidamente `codex remote-control --no-daemon`. Quando esse comando termina, mesmo com erro, o script espera 15 segundos antes de tentar novamente. O serviço declara `Restart=always` e `RestartSec=15`. São duas camadas separadas: o script repete o comando e o systemd reinicia o serviço. `start` preserva uma sessão existente; `attach` abre seu terminal; `stop` encerra essa sessão. Sem argumento, o script conecta ao terminal.
+
+O instalador em `~/Documents/Codex/2026-10-25/i-w/outputs/install-codex-remote.sh` faz cópias de segurança dos arquivos existentes, grava o script e o serviço, verifica sua sintaxe, recarrega o systemd e habilita e inicia o serviço no alvo padrão do usuário. O comando de pareamento indicado no instalador é `codex remote-control pair`; o terminal pode ser aberto com `codex-remote-tmux attach`.
+
+Nesta revisão, o script e o serviço instalados correspondiam ao instalador. O estado real do serviço e a conexão pelo celular não foram verificados: a sandbox negou acesso ao barramento de serviços do usuário e ao socket do tmux. O serviço não foi reiniciado nem alterado. O script do Codex não define o marcador `MEM_INSTANCE=assistant` do Claude.
