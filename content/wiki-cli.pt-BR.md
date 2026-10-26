@@ -1,7 +1,7 @@
 ---
 id: wiki-cli
 lang: pt-BR
-source_hash: 440c0a4cf986
+source_hash: 3442b3572101
 title: wiki (comando)
 ---
 
@@ -26,3 +26,4 @@ O [[github]] (o commit) e o site no ar (pelo [[wiki-site]]).
 - `wiki stale` ([[wiki-stale]]): páginas com uma fonte que mudou depois do `reviewed` delas; sai com 1 quando lista alguma
 - `wiki publish -m "msg" [--co-author "Name <email>"]`: check --local, build, commit só de content/ (com a linha de coautor só se informada), push
 - `wiki hook-stop`: o hook Stop do Claude Code
+- `wiki help`, `wiki --help`, `wiki -h`: imprimem o uso e não fazem mais nada. Uma opção que o comando não conhece (por exemplo o erro de digitação `--co-autor`) também imprime o uso e não executa nada, com código de saída 2; antes de 2026-10-26 essa opção era ignorada, então `wiki publish --help` executava uma publicação de verdade.

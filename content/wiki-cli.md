@@ -9,7 +9,7 @@ location: wiki:server/lib/wiki/cli.ex
 fed_by: [wiki-build, wiki-check, wiki-stale]
 feeds: [github]
 sources: [wiki:server/lib/wiki/cli.ex]
-reviewed: 2026-10-26T18:30Z
+reviewed: 2026-10-26T18:38Z
 ---
 
 ## What it is
@@ -33,3 +33,4 @@ Called at [[end-of-task]], before `mem use`.
 - `wiki stale` ([[wiki-stale]]): pages with a source changed after their reviewed time; exits 1 when it lists any
 - `wiki publish -m "msg" [--co-author "Name <email>"]`: check --local, build, commit only content/ (with the co-author line only if given), push
 - `wiki hook-stop`: the Claude Code Stop hook
+- `wiki help`, `wiki --help`, `wiki -h`: print the usage and do nothing else. An option the command does not know (for example the typo `--co-autor`) also prints the usage and runs nothing, with exit code 2; before 2026-10-26 such an option was ignored, so `wiki publish --help` ran a real publish.

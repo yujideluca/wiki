@@ -1,7 +1,7 @@
 ---
 id: wiki-cli
 lang: de
-source_hash: 440c0a4cf986
+source_hash: 3442b3572101
 title: wiki (Befehl)
 ---
 
@@ -26,3 +26,4 @@ Aufgerufen bei [[end-of-task]], vor `mem use`.
 - `wiki stale` ([[wiki-stale]]): Seiten mit einer Quelle, die sich nach ihrem `reviewed`-Zeitpunkt geändert hat; endet mit 1, wenn es welche auflistet
 - `wiki publish -m "msg" [--co-author "Name <email>"]`: check --local, build, nur content/ committen (die Co-Autor-Zeile nur, wenn angegeben), pushen
 - `wiki hook-stop`: der Stop-Hook von Claude Code
+- `wiki help`, `wiki --help`, `wiki -h`: geben die Verwendung aus und tun sonst nichts. Eine Option, die der Befehl nicht kennt (zum Beispiel der Tippfehler `--co-autor`), gibt ebenfalls die Verwendung aus und führt nichts aus, mit Exit-Code 2; vor dem 2026-10-26 wurde so eine Option ignoriert, sodass `wiki publish --help` ein echtes Publish ausführte.
