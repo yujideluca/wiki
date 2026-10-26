@@ -1,7 +1,7 @@
 ---
 id: laptop-setup
 lang: de
-source_hash: b7433f29aaae
+source_hash: 226376c49473
 title: Laptop-Einrichtung
 ---
 
@@ -23,3 +23,5 @@ Unter allen anderen Projekten: [[quizapp]] wird mit seiner Werkzeugkette gebaut,
 Die Codex-Begleitanzeige [[codex-pbar]] passt diese Anzeige an Codex-Sitzungen an.
 
 Das Terminal nutzt [[codex-status-line]] für Codex-Nutzungskontingente und Kontextgröße. [[machine-bootstrap]] zeichnet die Einrichtung des Laptops auf und kann sie nach einer Neuinstallation wiederherstellen.
+
+Codex’ globale Anweisungsdatei [[global-codex-agents]] beschreibt Aufgabenfortschritt, Nachweise, Berichte und Abschlussarbeiten bei Änderungen am echten System.

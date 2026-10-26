@@ -30,3 +30,5 @@ Below all other projects: [[quizapp]] is built with its toolchain, the wiki runs
 The Codex companion [[codex-pbar]] adapts this display for Codex sessions.
 
 The terminal uses [[codex-status-line]] for Codex usage allowances and context size. [[machine-bootstrap]] records the laptop setup and can rebuild it after a reinstall.
+
+Codex’s global instruction file [[global-codex-agents]] describes task progress, verification, reporting and the closing steps for real-system changes.

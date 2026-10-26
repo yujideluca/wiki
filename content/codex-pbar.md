@@ -8,7 +8,7 @@ status: active
 location: codex-pbar:src/codex_pbar/terminal.py
 fed_by: []
 feeds: []
-sources: [codex-pbar:docs, codex-pbar:src/codex_pbar, codex-pbar:tests, codex-pbar:tools, codex-pbar:upstream, codex-pbar:pipeline-check.toml, codex-pbar:pipeline-check.version, codex-pbar:pyproject.toml, codex-pbar:.github/workflows/quality-gate.yml, codex-pbar:.gitignore, codex-pbar:AGENTS.md, codex-pbar:CLAUDE.md, codex-pbar:DESIGN.md, codex-pbar:docs/2026-10-25-codex-pbar-design.md, codex-pbar:docs/MAINTENANCE.md, codex-pbar:docs/REQUIREMENTS.md, codex-pbar:src/codex_pbar/terminal.py, codex-pbar:tests/test_terminal.py, codex-pbar:tools/terminal_smoke.py, codex-pbar:docs/adr/0004-persistent-terminal-footer.md, codex-pbar:README.md, home:AGENTS.md, home:.codex/AGENTS.md]
+sources: [codex-pbar:docs, codex-pbar:src/codex_pbar, codex-pbar:tests, codex-pbar:tools, codex-pbar:upstream, codex-pbar:pipeline-check.toml, codex-pbar:pipeline-check.version, codex-pbar:pyproject.toml, codex-pbar:.github/workflows/quality-gate.yml, codex-pbar:.gitignore, codex-pbar:AGENTS.md, codex-pbar:CLAUDE.md, codex-pbar:DESIGN.md, codex-pbar:docs/2026-10-25-codex-pbar-design.md, codex-pbar:docs/MAINTENANCE.md, codex-pbar:docs/REQUIREMENTS.md, codex-pbar:src/codex_pbar/terminal.py, codex-pbar:tests/test_terminal.py, codex-pbar:tools/terminal_smoke.py, codex-pbar:docs/adr/0004-persistent-terminal-footer.md, codex-pbar:README.md, home:AGENTS.md, home:.codex/AGENTS.md, home:.config/systemd/user/codex-pbar.service]
 reviewed: 2026-10-26T02:47Z
 ---
 
@@ -49,3 +49,5 @@ Decision files: `docs/adr/README.md` explains architecture decision records, sho
 Blocked user tasks pause the countdown and show `Blocked`; they do not keep accumulating overdue time. `codex-task-progress clear` removes a stale counter for the bound session. An idle greeting needs no task plan. Automatic documentation hooks retain the primary task counter rather than replacing it with documentation work.
 
 `task-progress` is an entry in `tui.status_line` in `~/.codex/config.toml`; [[codex-status-line]] describes the other native fields. New conversations get distinct identifiers. An explicit `codex resume <conversation UUID>` uses that conversation identifier, so two views resumed by the same identifier share the counter. To pause the estimate, update the unfinished counter with a label beginning `Blocked:`, for example `codex-task-progress set --done 2 --total 5 --eta 300 --label 'Blocked: waiting for access'`.
+
+The global instruction file [[global-codex-agents]] describes how the assistant maintains task progress. At this review, `codex-pbar.service`, the older desktop-window service, is masked and inactive: its service file is linked to `/dev/null`, which prevents it from starting. The active terminal footer uses the launcher instead.

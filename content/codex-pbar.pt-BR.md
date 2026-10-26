@@ -1,7 +1,7 @@
 ---
 id: codex-pbar
 lang: pt-BR
-source_hash: 12db00c0f981
+source_hash: e495afd2b555
 title: Progresso de tarefas no terminal do Codex
 ---
 
@@ -42,3 +42,5 @@ Arquivos de decisão: `docs/adr/README.md` explica os registros de decisão de a
 Tarefas do usuário bloqueadas pausam a contagem de tempo e mostram `Blocked`; o atraso não continua aumentando. `codex-task-progress clear` remove um contador antigo da sessão vinculada. Uma saudação não exige plano de tarefa. Hooks automáticos de documentação preservam o contador da tarefa principal em vez de substituí-lo por trabalho de documentação.
 
 `task-progress` é uma entrada de `tui.status_line` em `~/.codex/config.toml`; [[codex-status-line]] descreve os outros campos nativos. Conversas novas recebem identificadores distintos. `codex resume <UUID da conversa>` usa o identificador daquela conversa; duas interfaces retomadas pelo mesmo identificador dividem o contador. Para pausar a estimativa, atualize a tarefa incompleta com um rótulo iniciado por `Blocked:`, por exemplo `codex-task-progress set --done 2 --total 5 --eta 300 --label 'Blocked: waiting for access'`.
+
+O arquivo global de instruções [[global-codex-agents]] descreve como o assistente mantém o progresso da tarefa. Nesta revisão, `codex-pbar.service`, o serviço antigo da janela, está mascarado e inativo: seu arquivo de serviço aponta para `/dev/null`, impedindo sua inicialização. O rodapé ativo do terminal usa o iniciador.

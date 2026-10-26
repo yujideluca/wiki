@@ -1,7 +1,7 @@
 ---
 id: codex-pbar
 lang: de
-source_hash: 12db00c0f981
+source_hash: e495afd2b555
 title: Codex-Aufgabenfortschritt im Terminal
 ---
 
@@ -42,3 +42,5 @@ Entscheidungsdateien: `docs/adr/README.md` erklärt Architekturentscheidungsprot
 Blockierte Benutzeraufträge pausieren den Countdown und zeigen `Blocked`; die überschrittene Zeit läuft nicht weiter. `codex-task-progress clear` entfernt einen veralteten Zähler der zugeordneten Sitzung. Eine Begrüßung benötigt keinen Aufgabenplan. Automatische Dokumentations-Hooks behalten den primären Aufgabenzähler statt ihn durch Dokumentationsarbeit zu ersetzen.
 
 `task-progress` ist ein Eintrag in `tui.status_line` in `~/.codex/config.toml`; [[codex-status-line]] beschreibt die anderen nativen Felder. Neue Unterhaltungen bekommen unterschiedliche Kennungen. `codex resume <Unterhaltungs-UUID>` verwendet die Kennung dieser Unterhaltung; zwei mit derselben Kennung fortgesetzte Ansichten teilen den Zähler. Zum Pausieren die unvollständige Aufgabe mit einer Beschriftung beginnend mit `Blocked:` aktualisieren, etwa `codex-task-progress set --done 2 --total 5 --eta 300 --label 'Blocked: waiting for access'`.
+
+Die globale Anweisungsdatei [[global-codex-agents]] beschreibt, wie der Assistent den Aufgabenfortschritt pflegt. Bei dieser Prüfung ist `codex-pbar.service`, der ältere Desktopfenster-Dienst, maskiert und inaktiv: Seine Dienstdatei verweist auf `/dev/null`, wodurch er nicht gestartet werden kann. Die aktive Terminalzeile verwendet stattdessen den Starter.
