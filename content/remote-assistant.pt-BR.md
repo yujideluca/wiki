@@ -1,7 +1,7 @@
 ---
 id: remote-assistant
 lang: pt-BR
-source_hash: 2a75b28e07de
+source_hash: c65b5d957be4
 title: Assistente remoto
 ---
 
@@ -29,4 +29,4 @@ A ação `run` executa repetidamente `codex remote-control --no-daemon`. Quando 
 
 O instalador em `~/Documents/Codex/2026-10-25/i-w/outputs/install-codex-remote.sh` faz cópias de segurança dos arquivos existentes, grava o script e o serviço, verifica sua sintaxe, recarrega o systemd e habilita e inicia o serviço no alvo padrão do usuário. O comando de pareamento indicado no instalador é `codex remote-control pair`; o terminal pode ser aberto com `codex-remote-tmux attach`.
 
-Nesta revisão, o script e o serviço instalados correspondiam ao instalador. O estado real do serviço e a conexão pelo celular não foram verificados: a sandbox negou acesso ao barramento de serviços do usuário e ao socket do tmux. O serviço não foi reiniciado nem alterado. O script do Codex não define o marcador `MEM_INSTANCE=assistant` do Claude.
+A verificação real em 2026-10-26 encontrou o serviço habilitado e ativo, com a sessão tmux `remote`, mas o comando falhava a cada 15 segundos: `socket parent must be owned by the user or root and prevent other users from replacing socket entries`. O Codex criava seu diretório temporário de socket com permissão de escrita para o grupo (modo `0775`). O lançador e o instalador agora definem `umask 077`, uma máscara de criação que restringe novos arquivos e diretórios ao proprietário. Depois de reiniciar apenas esse serviço, o terminal tmux informou `This machine is available for remote control as yuji-nitro.` e o processo `codex remote-control --no-daemon` continuou rodando. O serviço permanece habilitado. A conexão pelo celular não foi testada. O script do Codex não define o marcador `MEM_INSTANCE=assistant` do Claude.

@@ -8,7 +8,7 @@ status: active
 fed_by: [claude-assistant, giovanni, global-claude-md, session-brief]
 feeds: [mem]
 sources: [home:.local/bin/claude-assistant, home:.config/systemd/user/claude-assistant.service, home:assistant/CLAUDE.md, home:.local/bin/codex-remote-tmux, home:.config/systemd/user/codex-remote-tmux.service, home:Documents/Codex/2026-10-25/i-w/outputs/install-codex-remote.sh]
-reviewed: 2026-10-26T18:04Z
+reviewed: 2026-10-26T18:16Z
 ---
 
 ## What it is
@@ -35,4 +35,4 @@ The `run` action repeatedly calls `codex remote-control --no-daemon`. When that 
 
 The installer at `~/Documents/Codex/2026-10-25/i-w/outputs/install-codex-remote.sh` backs up existing script and service files, writes them, checks their syntax, reloads systemd and enables and starts the service for the user's default target. The source command for pairing is `codex remote-control pair`; the terminal can be opened with `codex-remote-tmux attach`.
 
-On this review, the installed script and service matched the installer. Live service state and phone connectivity were not verified: the sandbox denied access to the user-service bus and tmux socket. The service was not restarted or changed. The Codex script does not set Claude's `MEM_INSTANCE=assistant` marker.
+Live verification on 2026-10-26 found the service enabled and active, with tmux session `remote`, but the command was failing every 15 seconds: `socket parent must be owned by the user or root and prevent other users from replacing socket entries`. Codex created its temporary socket directory with group-write permission (mode `0775`). The launcher and installer now set `umask 077`, a creation mask that keeps new files and directories private to their owner. After restarting only this service, the tmux terminal reported `This machine is available for remote control as yuji-nitro.` and the `codex remote-control --no-daemon` process stayed running. The service remains enabled. Phone connectivity was not tested. The Codex script does not set Claude's `MEM_INSTANCE=assistant` marker.
