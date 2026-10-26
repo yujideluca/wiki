@@ -9,7 +9,7 @@ location: home:.codex/AGENTS.md
 fed_by: []
 feeds: [codex-pbar]
 sources: [home:.codex/AGENTS.md]
-reviewed: 2026-10-26T02:58Z
+reviewed: 2026-10-26T06:20Z
 ---
 
 ## What it is
@@ -25,7 +25,7 @@ The `Terminal task progress` section describes the fixed footer in [[codex-pbar]
 
 - `Mistakes you have made (do not repeat)` groups lessons from previous failures. Its evidence rules distinguish an actual result from a setting or isolated test, require the production command and environment, and cover behavior over time, such as reloads and concurrent writes. Its diagnosis rules address recurring blockers at their cause rather than recording the same obstacle again. A genuine access or decision blocker receives a concrete action, a verification command and an open task. Its safety rules protect shared state, other sessions' edits, credential sources declared in the project's documentation and the user's file layout. Its decision rules retain required skill approvals, disclose reduced scope and data changes, prefer a small reversible adjustment when authorized, and require a current check before claiming a tool or file exists. A skill is a saved set of instructions for a particular task; its required approval still applies when no user is present.
 - `Reporting` makes results assessable. The result comes first, followed by `Found along the way:` for unexpected findings, then `Verified by:` for relevant checks and their limits. Data tasks account for inputs, outputs and every changed, skipped or retained record. A harmless tool hiccup gets at most a short trailing note.
-- `Closing a task and asking questions` distinguishes disposable test environments from changes to the real system. Real changes include memory-use reporting, wiki work in an isolated checkout and [[pipeline-check]], the program that runs the project's automated checks. Branch protection, repository rules that prevent updates before required checks pass, is not bypassed. Questions provide context, options and a recommendation, in that order.
+- `Closing a task and asking questions` keeps every repository on a single branch, `main`, with a branch living only while continuous integration (CI, the automatic checks GitHub runs) tests a commit; it also distinguishes disposable test environments from changes to the real system. Real changes include memory-use reporting, wiki work in an isolated checkout and [[pipeline-check]], the program that runs the project's automated checks. Branch protection, repository rules that prevent updates before required checks pass, is not bypassed. Questions provide context, options and a recommendation, in that order.
 
 ## Where it sits in the pipeline
 The instructions guide both the work and its report. The opening wiki instructions require English pages and their German and Brazilian Portuguese versions before `wiki publish`. The assistant updates a page’s review time after comparing it with its sources. The Stop hook, a command run automatically when a session ends, reminds the assistant about documentation still needed ([[wiki-hook-stop]]).

@@ -1,7 +1,7 @@
 ---
 id: global-codex-agents
 lang: pt-BR
-source_hash: e68e6b5ff1ae
+source_hash: 0fb7eefa815c
 title: AGENTS.md global do Codex
 ---
 
@@ -18,7 +18,7 @@ A seção `Terminal task progress` descreve o rodapé fixo do [[codex-pbar]]: o 
 
 - `Mistakes you have made (do not repeat)` agrupa lições de falhas anteriores. As regras de evidência distinguem resultado real de configuração ou teste isolado, exigem o comando e ambiente de produção e cobrem o comportamento ao longo do tempo, como recarregamentos e escritas simultâneas. As regras de diagnóstico tratam bloqueios recorrentes pela causa em vez de registrar repetidamente o mesmo obstáculo. Um bloqueio real de acesso ou decisão recebe uma ação concreta, um comando de verificação e uma tarefa aberta. As regras de proteção preservam estado compartilhado, alterações de outras sessões, fontes de credenciais declaradas na documentação do projeto e a organização dos arquivos do usuário. As regras de decisão mantêm aprovações exigidas pelos skills, informam redução de escopo e alterações de dados, preferem um pequeno ajuste reversível quando autorizado e exigem uma verificação atual antes de afirmar que uma ferramenta ou arquivo existe. Um skill é um conjunto de instruções salvo para determinada tarefa; sua aprovação obrigatória continua valendo sem usuário presente.
 - `Reporting` torna os resultados avaliáveis. O resultado vem primeiro, seguido de `Found along the way:` para achados inesperados e `Verified by:` para verificações relevantes e seus limites. Tarefas com dados prestam contas das entradas, saídas e de cada registro alterado, pulado ou mantido. Um problema inofensivo de ferramenta recebe, no máximo, uma nota curta no final.
-- `Closing a task and asking questions` distingue ambientes descartáveis de teste de alterações no sistema real. Mudanças reais incluem relato do uso da memória, trabalho no wiki em uma cópia de trabalho isolada e [[pipeline-check]], o programa que executa as verificações automáticas do projeto. A proteção de branches, regras do repositório que impedem alterações antes da aprovação das verificações obrigatórias, não é contornada. Perguntas apresentam contexto, opções e recomendação, nessa ordem.
+- `Closing a task and asking questions` mantém cada repositório em um único ramo, `main`; um ramo só existe enquanto a integração contínua (CI, as verificações automáticas do GitHub) verifica um commit. Também distingue ambientes descartáveis de teste de alterações no sistema real. Mudanças reais incluem relato do uso da memória, trabalho no wiki em uma cópia de trabalho isolada e [[pipeline-check]], o programa que executa as verificações automáticas do projeto. A proteção de branches, regras do repositório que impedem alterações antes da aprovação das verificações obrigatórias, não é contornada. Perguntas apresentam contexto, opções e recomendação, nessa ordem.
 
 ## Where it sits in the pipeline
 As instruções orientam tanto o trabalho quanto o relatório. As instruções iniciais do wiki exigem páginas em inglês e suas versões em alemão e português do Brasil antes de `wiki publish`. O assistente atualiza o horário de revisão de uma página depois de compará-la com suas fontes. O Stop hook, um comando executado automaticamente quando uma sessão termina, lembra o assistente da documentação pendente ([[wiki-hook-stop]]).
