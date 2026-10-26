@@ -38,6 +38,7 @@ Tailscale Funnel, behind Google sign-in for yujideluca@gmail.com only. Design: `
 - After coding anything, do a first-line debug pass: gate, `tools/install.sh`, then the real flow in Chrome
   (decoy logged out, map, hover, click, languages, phone width).
 - Keep `DESIGN.md` current in the same commit as any design change; structural changes get an ADR.
+- Publishing: `wiki publish -m "..."`. The commit's `Co-Authored-By` line is never fixed by the tool: pass `--co-author "Name <email>"` (or set `WIKI_CO_AUTHOR`) with the exact attribution line your own session was given (Claude Code: the one in its system reminder; Codex: its own, if any), and leave it out when you have none (UP-4).
 - Never force-push. Ask Giovanni before anything outward-facing or destructive.
 - One branch: `main` (memory key `work.single-branch`). A branch exists only for the minutes CI needs on a commit: push it, wait for the green `gate` on that exact commit, push the same commit to `main`, then delete the branch (local and remote) and its worktree. Never push to `main` before the gate has run on the commit. Deploy from `main`: `tools/install.sh` builds `site/` there.
 

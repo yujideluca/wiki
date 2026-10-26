@@ -173,4 +173,34 @@ defmodule Wiki.Content.BuildTest do
     System.delete_env("WIKI_ROOT")
     System.delete_env("WIKI_STATE_DIR")
   end
+
+  # REQ UP-4
+  test "the Co-Authored-By line comes only from the publishing session, never a fixed name", %{dir: dir, content: c} do
+    root = Path.join(dir, "wiki")
+    init_repo(root)
+    valid_wiki(c)
+    System.put_env("WIKI_ROOT", root)
+    System.put_env("WIKI_STATE_DIR", Path.join(dir, "state"))
+
+    ExUnit.CaptureIO.capture_io(fn -> Wiki.CLI.commit_only_content(root, "first") end)
+    refute Wiki.Content.Git.cmd(root, ["log", "-1", "--format=%B"]) =~ "Co-Authored-By"
+
+    File.write!(Path.join(c, "extra.txt"), "x")
+    ExUnit.CaptureIO.capture_io(fn -> Wiki.CLI.commit_only_content(root, "second", "Some Model <m@example.com>") end)
+    body = Wiki.Content.Git.cmd(root, ["log", "-1", "--format=%B"])
+    assert body =~ "Co-Authored-By: Some Model <m@example.com>"
+    refute body =~ "Opus"
+
+    assert Wiki.CLI.check_co_author(nil) == :ok
+    assert Wiki.CLI.check_co_author("") == :ok
+    assert Wiki.CLI.check_co_author("A B <a@b.c>") == :ok
+
+    ExUnit.CaptureIO.capture_io(fn ->
+      assert Wiki.CLI.check_co_author("no email") == 1
+      assert Wiki.CLI.check_co_author("A <a@b.c>\nSigned-off-by: x <y@z.w>") == 1
+    end)
+  after
+    System.delete_env("WIKI_ROOT")
+    System.delete_env("WIKI_STATE_DIR")
+  end
 end

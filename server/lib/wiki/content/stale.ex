@@ -165,7 +165,8 @@ defmodule Wiki.Content.Stale do
     insufficient. Follow AGENTS.md and wiki-page-writer, and run wiki check --local to compare with the sources.
     A page you compared with its
     sources and found right still needs `reviewed: <UTC time>` (date -u +%Y-%m-%dT%H:%MZ): that edit is the review.
-    Then run `wiki publish -m "..."`, then `mem use`. Use `wiki publish -m "review: no page change"` only when what
+    Then run `wiki publish -m "..."` (add --co-author "Name <email>" with the attribution line your own session was
+    given, if it has one; otherwise leave it out), then `mem use`. Use `wiki publish -m "review: no page change"` only when what
     changed is described by no page (for example a data file).
     """
   end

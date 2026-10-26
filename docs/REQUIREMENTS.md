@@ -35,6 +35,7 @@ Source: G = stated by Giovanni, D = derived by Claude Code and accepted (design 
 | UP-1 | The Stop hook blocks only for code changes the wiki covers (or new files) since the last publish, at most once per session per change set, never when a stop hook is already active | G |
 | UP-2 | wiki publish refuses when the local check fails, and commits only content/ | G |
 | UP-3 | The Stop hook message tells Claude to record a page it checked and found right by setting its reviewed time, and keeps "review: no page change" for changes no page describes | G |
+| UP-4 | wiki publish adds a Co-Authored-By line only when the publishing session gives one (--co-author or WIKI_CO_AUTHOR, format "Name <email>"); no fixed name, and a malformed value is refused | G |
 | MP-1 | Search suggests matching pages (title and aliases) while typing, best match first | G |
 | MP-2 | Hovering a node fills the four info boxes; clicking a node opens its article | G |
 | MP-3 | Links written [[id]] in an article lead to that article | G |
