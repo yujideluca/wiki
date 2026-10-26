@@ -9,7 +9,7 @@ location: wiki:content
 fed_by: [claude-code, skill-wiki-page-writer]
 feeds: [wiki-build, wiki-check]
 sources: [wiki:content/_kinds.json, wiki:content/_ignore.txt, wiki:AGENTS.md, wiki:CLAUDE.md]
-reviewed: 2026-10-26T06:20Z
+reviewed: 2026-10-26T18:31Z
 ---
 
 ## What it is
@@ -24,7 +24,7 @@ The writing rules are these: every page must be understandable by someone who kn
 Links between pages are written `[[id]]`. The headers `fed_by` and `feeds` are the pipeline edges (what feeds what) and must agree in both directions. `sources` are written `repo:path`, so that a source changed after the page's `reviewed` time marks the page as stale ([[wiki-stale]]). A translation stores a hash (a short fingerprint) of the English text it was made from, so an outdated translation is detected. Pages say what exists; rules and preferences live in memory and are linked by their `#code`.
 
 ## Where it sits in the pipeline
-Written by [[claude-code]] at the end of every task ([[end-of-task]]); checked by [[wiki-check]]; turned into data by [[wiki-build]].
+Written by [[claude-code]] at the end of every task ([[end-of-task]]); checked by [[wiki-check]]; turned into data by [[wiki-build]]. It is published with `wiki publish`; the session passes its own `--co-author "Name <email>"` line, or none ([[wiki-cli]]).
 
 ## Who receives its output
 [[wiki-check]] and [[wiki-build]].

@@ -1,7 +1,7 @@
 ---
 id: wiki-hook-stop
 lang: de
-source_hash: 8ed83beaba2b
+source_hash: 20472e3f5733
 title: Wiki-Stop-Hook (Sicherheitsnetz)
 ---
 
@@ -12,7 +12,7 @@ Ein „Stop-Hook“ ist ein kleines Programm, das [[claude-code]] automatisch au
 Wenn Claude einen Durchgang beendet, schaut er in die Repositories unter `~/dev`, die eine Wiki-Seite als Quelle nennt. Gibt es seit dem letzten `wiki publish` Commits, die Quellen einer Seite berührten, oder neue Dateien, die keine Seite abdeckt, blockiert er das Beenden (Exit-Code 2) und sagt Claude, welche Seiten zu aktualisieren sind. Er blockiert nie vor der ersten Veröffentlichung, nie für Repositories, die das Wiki nicht abdeckt, nie zweimal in einer Sitzung für dieselben Änderungen und nie, wenn schon ein Stop-Hook aktiv ist, sodass er nicht in eine Schleife geraten kann. Ein Chat ohne Änderungen an erfasstem Code erzeugt selbst keinen neuen Auslöser; frühere unveröffentlichte Änderungen können die Erinnerung dennoch auslösen.
 
 ## How it does it
-Er nutzt nur lesendes Git und hält seinen Zustand in `~/.local/state/wiki/` (Zeitpunkt der letzten Veröffentlichung und bereits blockierte Sitzungen). Datenordner, die sich ständig ändern (die Gedächtnisereignisse und -ansichten, Quiz-Sicherungen, der Release-Feed), stehen in `content/_ignore.txt` und werden nicht Datei für Datei überwacht. Die Meldung, die er ausgibt, sagt Claude, dass es eine Seite, die es geprüft und für richtig befunden hat, durch das Setzen ihres `reviewed`-Zeitpunkts festhalten soll (die Änderung ist die Prüfung, siehe [[wiki-stale]]), und `wiki publish -m "review: no page change"` nur auszuführen, wenn das Geänderte von keiner Seite beschrieben wird, zum Beispiel eine Datendatei.
+Er nutzt nur lesendes Git und hält seinen Zustand in `~/.local/state/wiki/` (Zeitpunkt der letzten Veröffentlichung und bereits blockierte Sitzungen). Datenordner, die sich ständig ändern (die Gedächtnisereignisse und -ansichten, Quiz-Sicherungen, der Release-Feed), stehen in `content/_ignore.txt` und werden nicht Datei für Datei überwacht. Die Meldung, die er ausgibt, sagt Claude, dass es eine Seite, die es geprüft und für richtig befunden hat, durch das Setzen ihres `reviewed`-Zeitpunkts festhalten soll (die Änderung ist die Prüfung, siehe [[wiki-stale]]), und `wiki publish -m "review: no page change"` nur auszuführen, wenn das Geänderte von keiner Seite beschrieben wird, zum Beispiel eine Datendatei. Außerdem sagt sie der Sitzung, `wiki publish` um `--co-author "Name <email>"` mit der Zuschreibungszeile zu ergänzen, die diese Sitzung erhalten hat, und sie wegzulassen, wenn es keine gibt ([[wiki-cli]]).
 
 ## Where it sits in the pipeline
 Er läuft am Ende jedes Durchgangs, neben dem [[hook-stop]] des Gedächtnisses.

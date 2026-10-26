@@ -1,7 +1,7 @@
 ---
 id: wiki-content
 lang: pt-BR
-source_hash: a946348bf82d
+source_hash: 1a821c508079
 title: Conteúdo do wiki (páginas Markdown)
 ---
 
@@ -17,7 +17,7 @@ As regras de escrita são estas: toda página deve ser compreensível para quem 
 Os links entre páginas são escritos `[[id]]`. Os cabeçalhos `fed_by` e `feeds` são as arestas do pipeline (o que alimenta o quê) e devem concordar nos dois sentidos. `sources` são escritos `repo:path`, para que uma fonte que mudou depois do `reviewed` da página marque a página como desatualizada ([[wiki-stale]]). Uma tradução guarda um hash (uma impressão digital curta) do texto em inglês de que foi feita, então uma tradução desatualizada é detectada. As páginas dizem o que existe; regras e preferências ficam na memória e são ligadas pelo `#code`.
 
 ## Where it sits in the pipeline
-Escrito pelo [[claude-code]] no fim de cada tarefa ([[end-of-task]]); verificado pelo [[wiki-check]]; transformado em dados pelo [[wiki-build]].
+Escrito pelo [[claude-code]] no fim de cada tarefa ([[end-of-task]]); verificado pelo [[wiki-check]]; transformado em dados pelo [[wiki-build]]. É publicado com `wiki publish`; a sessão informa a própria linha `--co-author "Name <email>"`, ou nenhuma ([[wiki-cli]]).
 
 ## Who receives its output
 O [[wiki-check]] e o [[wiki-build]].

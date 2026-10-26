@@ -1,7 +1,7 @@
 ---
 id: wiki-content
 lang: de
-source_hash: a946348bf82d
+source_hash: 1a821c508079
 title: Wiki-Inhalt (Markdown-Seiten)
 ---
 
@@ -17,7 +17,7 @@ Die Schreibregeln sind: Jede Seite muss für jemanden verständlich sein, der ni
 Links zwischen Seiten werden `[[id]]` geschrieben. Die Kopfzeilen `fed_by` und `feeds` sind die Pipeline-Kanten (was was speist) und müssen in beide Richtungen übereinstimmen. `sources` werden `repo:path` geschrieben, damit eine Quelle, die sich nach dem `reviewed`-Zeitpunkt der Seite geändert hat, die Seite als veraltet markiert ([[wiki-stale]]). Eine Übersetzung speichert einen Hash (einen kurzen Fingerabdruck) des englischen Textes, aus dem sie entstand, sodass eine veraltete Übersetzung erkannt wird. Seiten sagen, was es gibt; Regeln und Vorlieben liegen im Gedächtnis und werden über ihren `#code` verlinkt.
 
 ## Where it sits in the pipeline
-Von [[claude-code]] am Ende jeder Aufgabe geschrieben ([[end-of-task]]); von [[wiki-check]] geprüft; von [[wiki-build]] in Daten verwandelt.
+Von [[claude-code]] am Ende jeder Aufgabe geschrieben ([[end-of-task]]); von [[wiki-check]] geprüft; von [[wiki-build]] in Daten verwandelt. Veröffentlicht wird mit `wiki publish`; die Sitzung übergibt ihre eigene Zeile `--co-author "Name <email>"` oder keine ([[wiki-cli]]).
 
 ## Who receives its output
 [[wiki-check]] und [[wiki-build]].
