@@ -1,7 +1,7 @@
 ---
 id: quizweb-service-worker
 lang: pt-BR
-source_hash: 465d4862436d
+source_hash: 71ac5447bf14
 title: Service worker do QuizWeb (cache offline)
 ---
 
@@ -12,7 +12,7 @@ title: Service worker do QuizWeb (cache offline)
 Guarda em cache todos os arquivos do app. Tenta a rede primeiro e usa o cache só como reserva offline, então uma publicação aparece na próxima abertura; depois de 4 segundos sem resposta usa a cópia guardada, para que o app abra rápido mesmo com conexão ruim. A página recarrega uma vez quando um novo worker assume.
 
 ## How it does it
-Quando qualquer arquivo em cache muda, a constante `VERSION` do arquivo precisa ser aumentada, para as cópias instaladas perceberem a mudança e se atualizarem. (É só uma chave de cache; o QuizWeb não tem versão própria.)
+Quando qualquer arquivo em cache muda, a constante `VERSION` do arquivo precisa ser aumentada, para as cópias instaladas perceberem a mudança e se atualizarem. (É uma chave de cache offline; a publicação de manutenção de 2026-10-26 usa `v12`.)
 
 ## Where it sits in the pipeline
 Entre o [[github-pages]] e o navegador.

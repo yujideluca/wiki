@@ -8,8 +8,8 @@ status: active
 location: QuizWeb:
 fed_by: [claude-code, quizapp]
 feeds: [check-web-sync, github-pages]
-sources: [QuizWeb:README.md, QuizWeb:src]
-reviewed: 2026-10-25T02:04Z
+sources: [QuizWeb:README.md, QuizWeb:src, QuizWeb:sw.js, QuizWeb:tests/bughunt.test.js, QuizWeb:pipeline-check.toml, QuizWeb:.github/workflows/test.yml]
+reviewed: 2026-10-26T12:10Z
 ---
 
 ## What it is
@@ -22,7 +22,11 @@ It has the same five modes, scheduler, daily goal and streak calendar as [[quiza
 It is plain JavaScript in ES modules (the standard way to split JavaScript into files), with no build step and no dependencies. The parts are: [[quizweb-domain]] (pure logic), [[quizweb-content]], [[quizweb-controller]], [[quizweb-store]] and [[quizweb-app]] (the last two are the only modules that touch the browser), plus the offline cache [[quizweb-service-worker]]. The test `tests/architecture.test.js` holds who may import whom, and [[quizweb-ci]] runs `npm test` and the limits of [[pipeline-check]] on every push.
 
 ## Where it sits in the pipeline
-It is the twin of [[quizapp]] (decision ADR-0006 there; an ADR is an architecture decision record, a short note that keeps the reasons for a decision): it reads the same vocabulary files and the same conformance vectors, and [[check-web-sync]] in QuizApp compares them. QuizWeb follows the released version of the app only: a port of an app version that is still in beta waits on a branch `web-<version>` and is merged to `main` when the app is promoted.
+It is the twin of [[quizapp]] (decision ADR-0006 there; an ADR is an architecture decision record, a short note that keeps the reasons for a decision): it reads the same vocabulary files and the same conformance vectors, and [[check-web-sync]] in QuizApp compares them. A port of Android features that are still in beta waits on a branch `web-<version>` and is merged to `main` when the app is promoted.
 
 ## Who receives its output
 Giovanni's iPhone, or any browser, through [[github-pages]].
+
+## Notes
+
+The standalone maintenance deployment of 2026-10-26 includes sharp-s search, the zero-goal progress calculation and backup-import checks. Its offline cache key is `v12`. Maintenance fixes can ship independently of another Android release; ports of unreleased Android features still wait on their app release. GitHub protects `main` by requiring the `test` check, including for administrators, and forbids force pushes and branch deletion. The maintenance commit passed all 81 tests and the GitHub Pages deployment.

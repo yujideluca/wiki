@@ -1,7 +1,7 @@
 ---
 id: quizweb-controller
 lang: pt-BR
-source_hash: f2504d98f561
+source_hash: 66b186fb081d
 title: controller.js do QuizWeb
 ---
 
@@ -19,3 +19,7 @@ Entre o [[quizweb-app]] (as telas) e o [[quizweb-domain]].
 
 ## Who receives its output
 O [[quizweb-app]].
+
+## Notes
+
+`importData` recusa backups cujo progresso ou histórico seja nulo ou uma lista e recusa uma versão numérica de formato maior que 1. Mantém entradas de progresso apenas quando o identificador da carta corresponde à chave da entrada e contagens de histórico apenas quando são inteiros positivos. Entradas individuais inválidas são ignoradas; isso é uma filtragem, não uma validação completa de todos os campos de progresso.

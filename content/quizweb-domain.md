@@ -9,7 +9,7 @@ location: QuizWeb:src/domain.js
 fed_by: []
 feeds: [quizweb-controller]
 sources: [QuizWeb:src/domain.js]
-reviewed: 2026-10-22T16:33Z
+reviewed: 2026-10-26T12:10Z
 ---
 
 ## What it is
@@ -26,3 +26,7 @@ The inner layer of the web twin; only the [[quizweb-controller]] calls it.
 
 ## Who receives its output
 The [[quizweb-controller]].
+
+## Notes
+
+`foldForSearch` converts `ß` to `ss`, so `strasse` can match `Straße`. For a zero daily goal, `dailyProgress` returns fraction 0 without answers and 1 after any answer, avoiding division by zero. The release regression tests cover both cases.

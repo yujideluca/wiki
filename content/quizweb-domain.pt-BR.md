@@ -1,7 +1,7 @@
 ---
 id: quizweb-domain
 lang: pt-BR
-source_hash: cb1f4a58db7e
+source_hash: a77bf1dd1df3
 title: domain.js do QuizWeb
 ---
 
@@ -19,3 +19,7 @@ A camada interna do gêmeo web; só o [[quizweb-controller]] a chama.
 
 ## Who receives its output
 O [[quizweb-controller]].
+
+## Notes
+
+`foldForSearch` converte `ß` em `ss`, permitindo que `strasse` encontre `Straße`. Para meta diária zero, `dailyProgress` retorna fração 0 sem respostas e 1 após qualquer resposta, evitando divisão por zero. Os testes de regressão da publicação cobrem ambos os casos.

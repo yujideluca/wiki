@@ -1,7 +1,7 @@
 ---
 id: quizweb-domain
 lang: de
-source_hash: cb1f4a58db7e
+source_hash: a77bf1dd1df3
 title: QuizWeb domain.js
 ---
 
@@ -19,3 +19,7 @@ Die innere Schicht des Web-Zwillings; nur der [[quizweb-controller]] ruft sie au
 
 ## Who receives its output
 Der [[quizweb-controller]].
+
+## Notes
+
+`foldForSearch` wandelt `ß` in `ss` um, sodass `strasse` zu `Straße` passt. Bei Tagesziel null liefert `dailyProgress` den Anteil 0 ohne Antworten und 1 nach einer Antwort und vermeidet damit eine Division durch null. Regressionstests der Veröffentlichung decken beide Fälle ab.

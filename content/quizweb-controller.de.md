@@ -1,7 +1,7 @@
 ---
 id: quizweb-controller
 lang: de
-source_hash: f2504d98f561
+source_hash: 66b186fb081d
 title: QuizWeb controller.js
 ---
 
@@ -19,3 +19,7 @@ Zwischen [[quizweb-app]] (den Bildschirmen) und [[quizweb-domain]].
 
 ## Who receives its output
 [[quizweb-app]].
+
+## Notes
+
+`importData` lehnt Sicherungen ab, deren Fortschritt oder Verlauf null oder ein Array ist, und lehnt eine numerische Formatversion größer als 1 ab. Fortschrittseinträge bleiben nur erhalten, wenn ihre Kartenkennung zum Eintragsschlüssel passt; Verlaufswerte nur als positive ganze Zahlen. Ungültige einzelne Einträge werden übersprungen; dies ist eine Filterung und keine vollständige Prüfung aller Fortschrittsfelder.

@@ -1,7 +1,7 @@
 ---
 id: machine-bootstrap
 lang: de
-source_hash: 56ea5a8902e5
+source_hash: 5605d84f14f5
 title: machine-bootstrap (die Einrichtung des Laptops wiederherstellen)
 ---
 
@@ -26,3 +26,5 @@ Giovanni und der Assistent bei der Wiederherstellung. Die dokumentierte Reihenfo
 Browserprofile, Spielinstallationen und die eigenen Einstellungen des Handys sind nicht enthalten. Die aktuelle Aufzeichnungskonfiguration enthält `.codex/skills`, lässt aber `.agents/skills` aus; die Wiederherstellung der verwalteten Codex-Skill-Verknüpfungen ist damit nicht nachgewiesen. Diese Lücke steht im Ablauf-Audit von [[codex-skills]]. Downloadrezepte hängen von externen Adressen ab; eine frühere erfolgreiche Wiederherstellung beweist daher keinen künftigen Erfolg. Auf dem Laufwerk liegt ein Geheimnisarchiv vom 2026-10-26; eine Wiederherstellung damit auf einem neuen Computer wurde nicht getestet. `DESIGN.md` hält fest, dass der Hauptzweig (main) des öffentlichen Repositorys die GitHub-Actions-Prüfung `gate` verlangt, dies auch für Administratoren gilt und Force-Pushes sowie das Löschen des Zweigs verboten sind.
 
 `python3 -m mb` wird in `~/dev/machine-bootstrap` ausgeführt. Erlaubte Einstellungen sind etwa `.bashrc` und Konfigurationsdateien der Desktopoberfläche. Frühe Rezepte richten App-Stores vor den Apps ein; spätere Rezepte installieren Werkzeuge nach dem Klonen der Repositories. Die Laufwerkskennung steht als `[data].ssd_uuid` und das Cloudziel als `[secrets].gdrive_path` in `mb.toml`. Archive liegen unter `machine-bootstrap/secrets/` auf dem Laufwerk, persönliche Dateien unter `machine-bootstrap/home/`. Ein fehlgeschlagener Schritt erscheint als `[FAIL]`; ohne `--stop-on-error` läuft die Wiederherstellung weiter. Ursache beheben und erneut starten: erledigte Schritte werden übersprungen. Skill-Verknüpfungen sind Dateisystemverweise, über die Codex die von [[codex-skillsctl]] verwalteten Anleitungsordner findet.
+
+Die lokale Datei `pipeline-check.toml` nennt nun `yujideluca/machine-bootstrap`, den Zweig `main` und die erforderliche Prüfung `gate`. Im lokalen Modus prüft das Werkzeug sowohl das jüngste GitHub-Testergebnis als auch den aktiven Zweigschutz; der Bericht vom 2026-10-26 zeigt beides als `ok` (bestanden).

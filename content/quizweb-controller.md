@@ -9,7 +9,7 @@ location: QuizWeb:src/controller.js
 fed_by: [quizweb-domain, quizweb-store]
 feeds: [quizweb-app]
 sources: [QuizWeb:src/controller.js]
-reviewed: 2026-10-22T16:33Z
+reviewed: 2026-10-26T12:10Z
 ---
 
 ## What it is
@@ -26,3 +26,7 @@ Between [[quizweb-app]] (the screens) and [[quizweb-domain]].
 
 ## Who receives its output
 [[quizweb-app]].
+
+## Notes
+
+`importData` refuses backups whose progress or history is null or an array, and refuses a numeric format version newer than 1. It keeps progress entries only when their card identifier matches the entry key, and history counts only when they are positive integers. Invalid individual entries are skipped; this is filtering rather than a complete validation of every progress field.
