@@ -1,7 +1,7 @@
 ---
 id: codex-pbar
 lang: de
-source_hash: 34b605f449b3
+source_hash: 88bbb54ef0c4
 title: Codex-Aufgabenfortschritt im Terminal
 ---
 
@@ -46,3 +46,5 @@ Blockierte Benutzeraufträge pausieren den Countdown und zeigen `Blocked`; die �
 Die globale Anweisungsdatei [[global-codex-agents]] beschreibt, wie der Assistent den Aufgabenfortschritt pflegt. Bei dieser Prüfung ist `codex-pbar.service`, der ältere Desktopfenster-Dienst, maskiert und inaktiv: Seine Dienstdatei verweist auf `/dev/null`, wodurch er nicht gestartet werden kann. Die aktive Terminalzeile verwendet stattdessen den Starter.
 
 Das Terminal lässt sich ohne zweites Codex-Frontend prüfen: Ein nur lesender Client verbindet sich über `tmux -L codex-status attach-session -r -f ignore-size -t SESSION` mit der bestehenden tmux-Sitzung. `SESSION` bezeichnet die Sitzung, deren Fußzeilenbefehl die aktuelle `CODEX_PBAR_SESSION` enthält. Der Client sendet keine Eingaben; `ignore-size` verhindert, dass seine Größenänderung das Arbeitsterminal verändert. Am 2026-10-26 zeigte diese Prüfung die feste Fußzeile bei 116×53 und 70×35, im Leerlauf und nach Neuzeichnen. Die breite Ansicht zeigte außerdem die nativen Restbudgets für fünf Stunden und die Woche sowie belegten Kontext und Kontextkapazität. Das ältere `tools/terminal_smoke.py` startet ein zweites Codex-Frontend und endet derzeit an der Sitzungssperre; das beweist nicht, dass die Fußzeile im bestehenden Terminal fehlt.
+
+Jedes neue interaktive Terminal aktiviert vor dem Verbinden ausdrücklich die Mausweiterleitung von tmux. Dadurch erreicht das Scrollen mit zwei Fingern Codex auch nach einer neuen Anmeldung oder einem Neustart. Giovanni bestätigte das Scrollen mit dem physischen Touchpad; zwei neue Starts meldeten `mouse on` und behielten die Fortschrittszeile. Für die Textauswahl von Konsole beim Ziehen die Umschalttaste gedrückt halten. Um die Weiterleitung für eine Sitzung auszuschalten, `tmux -L codex-status set-option -t SESSION mouse off` ausführen und `SESSION` durch den Namen aus `tmux -L codex-status list-sessions` ersetzen. Der Regressionstest des Starters und ein gezielt eingebrachter Fehler, der die Weiterleitung abschaltet, sichern Anforderung PB-9 ab. Ein physischer Neustart wurde nicht getestet.
