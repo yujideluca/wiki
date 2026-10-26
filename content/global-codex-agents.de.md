@@ -1,7 +1,7 @@
 ---
 id: global-codex-agents
 lang: de
-source_hash: 509ce5e8da10
+source_hash: 2685c7b625be
 title: Globale Codex-AGENTS.md
 ---
 
@@ -23,7 +23,7 @@ Der Abschnitt `Terminal task progress` beschreibt die feste Fortschrittszeile in
 ## Where it sits in the pipeline
 Die Anweisungen begleiten die Arbeit und den Bericht. Die einleitenden Wiki-Anweisungen verlangen englische Seiten sowie deutsche und brasilianisch-portugiesische Fassungen vor `wiki publish`. Der Assistent aktualisiert den Prüfzeitpunkt einer Seite, nachdem er sie mit ihren Quellen verglichen hat. Der Stop-Hook, ein beim Sitzungsende automatisch ausgeführter Befehl, erinnert an ausstehende Dokumentation ([[wiki-hook-stop]]).
 
-Auch eine Übergabe wegen Sandbox-Grenzen umfasst die Wiki- und Gedächtnis-Abschlussarbeit vor der Schlussnachricht. Kann die Dokumentation selbst nicht veröffentlicht werden, bereitet Codex die Änderungen in einem getrennten Arbeitsverzeichnis vor und erfasst und meldet diese Grenze.
+Codex erledigt den Wiki- und Gedächtnisabschluss selbst. Die installierten Anweisungen verbieten eine Einschränkung der eigenen Berechtigungen mit `request_permissions` für einzelne Dateien und behandeln Sandbox-Fehler als innerhalb vorhandener Berechtigungen zu untersuchende und zu behebende Fehler statt als Übergabegrund. Ein echtes verbleibendes Hindernis muss mit genauer Fehlermeldung und versuchten Abhilfen gemeldet werden.
 
 ## Who receives its output
 Codex liest die Datei; Giovanni erhält Arbeit, Nachweise und notwendige Entscheidungsfragen. Diese Seite erklärt die Gruppen der Quelle, statt deren nummerierte Regeln zu wiederholen. Die installierte Datei bleibt die Quelle der genauen Anweisungen.

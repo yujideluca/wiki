@@ -9,8 +9,8 @@ location: home:.codex/AGENTS.md
 fed_by: []
 feeds: [codex-pbar]
 sources: [home:.codex/AGENTS.md]
-memory: [b51cb7]
-reviewed: 2026-10-26T18:04Z
+memory: [3f1e29]
+reviewed: 2026-10-26T18:16Z
 ---
 
 ## What it is
@@ -31,7 +31,7 @@ The `Terminal task progress` section describes the fixed footer in [[codex-pbar]
 ## Where it sits in the pipeline
 The instructions guide both the work and its report. The opening wiki instructions require English pages and their German and Brazilian Portuguese versions before `wiki publish`. The assistant updates a page’s review time after comparing it with its sources. The Stop hook, a command run automatically when a session ends, reminds the assistant about documentation still needed ([[wiki-hook-stop]]).
 
-A handoff caused by sandbox limits still includes the wiki and memory closing work before the final message. If documentation itself cannot be published, Codex prepares the changes in an isolated checkout and records and reports that limit.
+Codex completes its own wiki and memory closing work. The installed instructions forbid narrowing its permissions with `request_permissions` for single files and treat sandbox errors as faults to diagnose and fix within existing permissions, rather than reasons to hand work off. A genuine remaining block must include the exact error and attempted remedies.
 
 ## Who receives its output
 Codex reads the file; Giovanni receives the work, evidence and decisions requiring Giovanni’s input. This page explains the source's groups rather than duplicating its numbered rules. The installed file remains the source for the exact instructions.
