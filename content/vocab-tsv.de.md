@@ -1,12 +1,12 @@
 ---
 id: vocab-tsv
 lang: de
-source_hash: b74a285eb51e
+source_hash: d5f9d6b96a70
 title: Vokabel-Quelldateien (TSV)
 ---
 
 ## What it is
-Das sind die von Menschen bearbeitbaren Quelldateien des gesamten Quiz-Inhalts im Format TSV (tab-separated values, durch Tabulatoren getrennte Werte: eine Klartext-Tabelle, deren Spalten durch ein Tabulatorzeichen getrennt sind, siehe [TSV](https://en.wikipedia.org/wiki/Tab-separated_values)). Es sind `nouns.tsv` (484 Nomen), `prepositions.tsv` (309 Einträge), `verbs.tsv` (253 Verben) und `errors.tsv` (121 Sätze für den Modus „Fehler finden“).
+Das sind die von Menschen bearbeitbaren Quelldateien des gesamten Quiz-Inhalts als Klartexttabellen. Trotz der Dateiendung `.tsv` werden ihre Spalten durch einen senkrechten Strich (`|`) getrennt. Es sind `nouns.tsv` (484 Nomen), `prepositions.tsv` (309 Einträge), `verbs.tsv` (253 Verben) und `errors.tsv` (144 Sätze für den Modus „Fehler finden“).
 
 ## What it does
 Sie enthalten jedes Wort mit Geschlecht, Plural, Präposition und Hinweis sowie jeden Fehlersatz mit seiner Korrektur, der dahinterstehenden Regel und dem Ausdruck, den er übt. Alles, was die App fragt, stammt von hier.

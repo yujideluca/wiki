@@ -9,7 +9,7 @@ location: german-quiz-releases:
 fed_by: [publish-apk, publish-content]
 feeds: [question-pool-updater, update-client]
 sources: [german-quiz-releases:latest.json]
-reviewed: 2026-10-25T02:02Z
+reviewed: 2026-10-25T21:20Z
 ---
 
 ## What it is

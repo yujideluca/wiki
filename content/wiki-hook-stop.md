@@ -9,14 +9,14 @@ location: wiki:server/lib/wiki/content/stale.ex
 fed_by: [claude-code-settings]
 feeds: [claude-code]
 sources: [wiki:server/lib/wiki/content/stale.ex]
-reviewed: 2026-10-25T14:46Z
+reviewed: 2026-10-25T21:20Z
 ---
 
 ## What it is
 A "Stop hook" is a small program that [[claude-code]] runs automatically whenever it finishes a reply ([hooks explained](https://docs.claude.com/en/docs/claude-code/hooks-guide)). This one, `wiki hook-stop`, is the safety net of the wiki update chain: it catches a forgotten wiki update in the same session, while Claude still remembers what it did.
 
 ## What it does
-When Claude finishes a turn, it looks at the repositories under `~/dev` that some wiki page names as a source. If since the last `wiki publish` there are commits that touched a page's sources, or added files that no page covers, it blocks the stop (exit code 2) and tells Claude which pages to update. It never blocks before the first publish, for repositories the wiki does not cover, twice in one session for the same changes, or when a stop hook is already active, so it cannot loop. It never fires for German, clinical or other non-code chats.
+When Claude finishes a turn, it looks at the repositories under `~/dev` that some wiki page names as a source. If since the last `wiki publish` there are commits that touched a page's sources, or added files that no page covers, it blocks the stop (exit code 2) and tells Claude which pages to update. It never blocks before the first publish, for repositories the wiki does not cover, twice in one session for the same changes, or when a stop hook is already active, so it cannot loop. A chat that changes no covered code creates no new trigger of its own; earlier unpublished changes can still trigger the reminder.
 
 ## How it does it
 It uses read-only git, and keeps its state in `~/.local/state/wiki/` (the time of the last publish and the sessions already blocked). Data folders that change all the time (the memory events and views, quiz backups, the release feed) are listed in `content/_ignore.txt` and are not watched file by file. The message it prints tells Claude to record a page it checked and found right by setting that page's `reviewed` time (the edit is the review, see [[wiki-stale]]), and to run `wiki publish -m "review: no page change"` only when what changed is described by no page, for example a data file.

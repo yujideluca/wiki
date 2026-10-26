@@ -8,8 +8,8 @@ status: active
 location: QuizApp:core/src/main/java/dev/yuji/quiz/content/ContentPack.kt
 fed_by: [content-manifest]
 feeds: [question-pool-updater]
-sources: [QuizApp:core/src/main/java/dev/yuji/quiz/content/ContentPack.kt, QuizApp:app/src/main/assets/content.json, QuizApp:docs/adr/0012-downloadable-question-pool.md]
-reviewed: 2026-10-22T17:29Z
+sources: [QuizApp:core/src/main/java/dev/yuji/quiz/content/ContentPack.kt, QuizApp:app/src/main/assets/content.json, QuizApp:docs/adr/0012-downloadable-question-pool.md, QuizApp:tools/mutation_check.py, QuizApp:core/src/test/java/dev/yuji/quiz/content/ContentPackTest.kt]
+reviewed: 2026-10-25T21:20Z
 ---
 
 ## What it is
@@ -19,7 +19,7 @@ The question pack (code name `ContentPack`) is the question pool of [[quizapp]] 
 The manifest says the file format (`schema`, currently 1, equal to `CONTENT_SCHEMA`), the pool version (`contentVersion`, which rises by one whenever any file changes) and the SHA-256 of every file (SHA-256, Secure Hash Algorithm 256, a fingerprint of the file's content). The function `validateContentPack` accepts a pack only when every file is listed, matches its fingerprint and can be parsed, and every mode still has at least one question. `shouldDownloadContent` decides whether a pack found on the feed is worth downloading.
 
 ## How it does it
-It is pure Kotlin in [[quizapp-core]], tested by `ContentPackTest` and by five mutants in the [[mutation-check]] (requirements QP-1 to QP-4). The pack built into the app is `assets/content.json`, maintained by [[content-manifest]]. A new mode or a new field in the files is not a pool change: it needs an app release and a higher schema, which older apps ignore.
+It is pure Kotlin in [[quizapp-core]], tested by `ContentPackTest` and by four mutants in the [[mutation-check]] (requirements QP-1 to QP-4). The pack built into the app is `assets/content.json`, maintained by [[content-manifest]]. A new mode or a new field in the files is not a pool change: it needs an app release and a higher schema, which older apps ignore.
 
 ## Where it sits in the pipeline
 Between the content build ([[build-vocab]], [[content-manifest]]) and the app's [[question-pool-updater]].

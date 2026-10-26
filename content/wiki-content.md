@@ -9,7 +9,7 @@ location: wiki:content
 fed_by: [claude-code, skill-wiki-page-writer]
 feeds: [wiki-build, wiki-check]
 sources: [wiki:content/_kinds.json, wiki:content/_ignore.txt, wiki:AGENTS.md, wiki:CLAUDE.md]
-reviewed: 2026-10-25T14:46Z
+reviewed: 2026-10-25T21:20Z
 ---
 
 ## What it is

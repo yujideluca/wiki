@@ -1,7 +1,7 @@
 ---
 id: wiki-article-view
 lang: pt-BR
-source_hash: d646d9738ac7
+source_hash: 44e710d67918
 title: Vista do artigo
 ---
 
@@ -23,3 +23,7 @@ Dentro do [[wiki-frontend]], em `/p/<id>`.
 
 ## Who receives its output
 O [[wiki-frontend]].
+
+## Notes
+
+Nas páginas de skills, a seção Steps exibe apenas a caixa estilizada de passos interativos. A lista de texto repetida abaixo dela é omitida. Anterior e Próximo continuam mostrando cada passo numerado, e os arquivos originais completos das skills permanecem em Notes. Isso vale no desktop e nas seções abertas no celular, nos três idiomas. Outros tipos de página mantêm a apresentação existente.

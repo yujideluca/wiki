@@ -10,7 +10,7 @@ fed_by: []
 feeds: []
 sources: [wiki:server/lib/wiki/content/skill_source.ex, wiki:server/lib/wiki/content/page.ex, wiki:server/test/skill_source_test.exs]
 memory: [#12386c]
-reviewed: 2026-10-25T14:46Z
+reviewed: 2026-10-25T21:20Z
 ---
 
 ## What it is

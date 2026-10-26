@@ -1,7 +1,7 @@
 ---
 id: vocab-assets
 lang: de
-source_hash: 5bc0bf4d7909
+source_hash: 3a56ab2eb487
 title: Mitgeliefertes Vokabel-JSON (Assets)
 ---
 
