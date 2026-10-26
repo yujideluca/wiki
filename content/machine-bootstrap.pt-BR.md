@@ -1,7 +1,7 @@
 ---
 id: machine-bootstrap
 lang: pt-BR
-source_hash: 5605d84f14f5
+source_hash: 2f1613585790
 title: machine-bootstrap (reconstruir a configuração do notebook)
 ---
 
@@ -23,7 +23,7 @@ Registra o [[laptop-setup]] e o reconstrói após reinstalar. Os requisitos `MB-
 O Giovanni e o assistente que ajuda a restaurar o computador. A ordem documentada é: obter a ferramenta, restaurar chaves, restaurar programas e configurações e copiar os arquivos pessoais de volta.
 
 ## Notes
-Perfis de navegador, instalações de jogos e as configurações próprias do celular ficam fora da restauração. A configuração atual de captura inclui `.codex/skills`, mas omite `.agents/skills`; portanto, a restauração dos links dos skills gerenciados do Codex não está estabelecida. Essa lacuna está documentada na auditoria de fluxo do [[codex-skills]]. Receitas de download dependem de endereços externos, então uma restauração anterior bem-sucedida não comprova que uma futura terá sucesso. Há no disco um arquivo de segredos de 2026-10-26; uma restauração com ele em computador novo não foi testada. O `DESIGN.md` registra que o ramo principal (main) do repositório público exige a verificação `gate` do GitHub Actions, vale também para administradores e proíbe push forçado e exclusão do ramo.
+Perfis de navegador, instalações de jogos e as configurações próprias do celular ficam fora da restauração. A configuração atual de captura inclui `.codex/skills`, mas omite `.agents/skills`; portanto, a restauração dos links dos skills gerenciados do Codex não está estabelecida. Essa lacuna está documentada na auditoria de fluxo do [[codex-skills]]. Receitas de download dependem de endereços externos, então uma restauração anterior bem-sucedida não comprova que uma futura terá sucesso. Há no disco um arquivo de segredos de 2026-10-26; uma restauração com ele em computador novo não foi testada. O `DESIGN.md` registra que o ramo principal (main) do repositório público exige a verificação `gate` do GitHub Actions, vale também para administradores e proíbe push forçado e exclusão do ramo. O repositório também contém `docs/PRIVACY.md`, o aviso de privacidade de um aplicativo OAuth (Open Authorization, padrão para conceder acesso sem compartilhar a senha) do Google pessoal (a identidade que o [rclone](https://rclone.org/) usa para acessar o Google Drive) que substitui a compartilhada do rclone; ele informa que o aplicativo pode ver e gerenciar todos os arquivos da conta do Drive que o autoriza, que o fluxo envia arquivos criptografados e não apaga backups existentes no Drive, e que credenciais e tokens ficam na configuração privada do rclone. Um envio com ele não foi testado.
 
 Execute `python3 -m mb` em `~/dev/machine-bootstrap`. Configurações permitidas incluem `.bashrc` e arquivos de configuração da área de trabalho. Receitas iniciais preparam lojas de aplicativos antes dos aplicativos; receitas posteriores instalam ferramentas após clonar os repositórios. O identificador do disco fica em `[data].ssd_uuid` e o destino na nuvem em `[secrets].gdrive_path`, no `mb.toml`. Arquivos criptografados ficam em `machine-bootstrap/secrets/` no disco e arquivos pessoais em `machine-bootstrap/home/`. Uma etapa que falha aparece como `[FAIL]`; a restauração continua, salvo com `--stop-on-error`. Corrija a causa e execute novamente: etapas concluídas são puladas. Links de skills são referências do sistema de arquivos pelas quais o Codex encontra as pastas de instruções gerenciadas por [[codex-skillsctl]].
 
