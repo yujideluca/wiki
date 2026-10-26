@@ -9,7 +9,7 @@ location: codex-pbar:src/codex_pbar/terminal.py
 fed_by: [global-codex-agents]
 feeds: []
 sources: [home:fixes/codex-touchpad-scroll.sh, home:fixes/LEIAME.md, codex-pbar:docs, codex-pbar:src/codex_pbar, codex-pbar:tests, codex-pbar:tools, codex-pbar:upstream, codex-pbar:pipeline-check.toml, codex-pbar:pipeline-check.version, codex-pbar:pyproject.toml, codex-pbar:.github/workflows/quality-gate.yml, codex-pbar:.gitignore, codex-pbar:AGENTS.md, codex-pbar:CLAUDE.md, codex-pbar:DESIGN.md, codex-pbar:docs/2026-10-25-codex-pbar-design.md, codex-pbar:docs/MAINTENANCE.md, codex-pbar:docs/REQUIREMENTS.md, codex-pbar:src/codex_pbar/terminal.py, codex-pbar:tests/test_terminal.py, codex-pbar:tests/test_terminal_mouse.py, codex-pbar:tools/terminal_smoke.py, codex-pbar:docs/adr/0004-persistent-terminal-footer.md, codex-pbar:README.md, home:AGENTS.md, home:.codex/AGENTS.md, home:.config/systemd/user/codex-pbar.service]
-reviewed: 2026-10-26T22:30Z
+reviewed: 2026-10-26T22:32Z
 ---
 
 ## What it is
@@ -57,3 +57,5 @@ The terminal can be checked without opening a second Codex frontend: attach a re
 Each new interactive terminal enables tmux mouse forwarding and installs wheel bindings before attachment. When a fullscreen application does not request mouse capture, wheel-up and wheel-down become Page Up and Page Down. Applications requesting mouse capture and tmux copy mode keep their native mouse events. The earlier mouse-on-only fix remained installed but failed in fullscreen Codex without mouse capture; its test checked configuration rather than transcript movement. A live terminal probe reproduced no movement before the fallback and scrolling into the earlier answer after it. Real-terminal regression fixtures check both event paths at two sizes on fresh isolated servers, with two controlled faults replacing page keys with arrows. A physical reboot was not tested. Hold Shift while dragging to use Konsole's own text selection. The launcher reapplies the bindings on every new session; the current dedicated server was also repaired without restarting Codex.
 
 The repair helper `~/fixes/codex-touchpad-scroll.sh` reapplies the maintained wheel bindings to the running dedicated server. Its `--undo` option restores the previous wheel bindings for that server; future launcher starts still install the correction. `~/fixes/LEIAME.md` records the cause, checks and rollback limits.
+
+Giovanni confirmed physical two-finger scrolling after this correction. A fresh session through the installed launcher also delivered both page keys from injected wheel events without making a model request. The continuous integration workflow installs tmux, and the regression fails rather than skips when tmux is missing.

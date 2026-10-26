@@ -1,7 +1,7 @@
 ---
 id: codex-pbar
 lang: de
-source_hash: 4ba131ea7565
+source_hash: 5f0c4ed72db0
 title: Codex-Aufgabenfortschritt im Terminal
 ---
 
@@ -50,3 +50,5 @@ Das Terminal lässt sich ohne zweites Codex-Frontend prüfen: Ein nur lesender C
 Jedes neue interaktive Terminal aktiviert vor dem Verbinden die Mausweiterleitung von tmux und richtet Mausradbindungen ein. Fordert eine Vollbildanwendung keine Mausereignisse an, werden Aufwärts- und Abwärtsscrollen zu Bild auf und Bild ab. Anwendungen mit eigener Mausverarbeitung und der Kopiermodus von tmux behalten ihre normalen Mausereignisse. Die frühere Korrektur mit eingeschalteter Mausweiterleitung war weiterhin installiert, reichte aber für Codex im Vollbildmodus ohne Mausverarbeitung nicht aus; ihr Test prüfte nur die Einstellung statt der Bewegung des Verlaufs. Eine Prüfung im laufenden Terminal zeigte vor der Ergänzung keine Bewegung und danach das Zurückscrollen in die frühere Antwort. Regressionstests mit echten Terminalereignissen prüfen beide Wege bei zwei Größen auf jeweils neuen, isolierten Servern. Zwei gezielte Fehler ersetzen die Bildtasten durch Pfeiltasten und müssen erkannt werden. Ein physischer Neustart wurde nicht getestet. Für die Textauswahl von Konsole beim Ziehen die Umschalttaste gedrückt halten. Der Starter richtet die Bindungen bei jeder neuen Sitzung ein; auch der laufende dedizierte Server wurde ohne Codex-Neustart korrigiert.
 
 Das Reparaturskript `~/fixes/codex-touchpad-scroll.sh` richtet die gepflegten Mausradbindungen auf dem laufenden dedizierten Server erneut ein. Die Option `--undo` stellt dort die früheren Bindungen wieder her; spätere Starts richten die Korrektur weiterhin ein. `~/fixes/LEIAME.md` hält Ursache, Prüfungen und Grenzen des Rückgängigmachens fest.
+
+Giovanni bestätigte nach dieser Korrektur das Scrollen mit zwei Fingern auf dem physischen Touchpad. Auch eine neue Sitzung über den installierten Starter leitete eingespeiste Mausradereignisse als beide Bildtasten weiter, ohne eine Modellanfrage zu senden. Der Ablauf zur kontinuierlichen Integration installiert tmux; fehlt es, schlägt der Regressionstest fehl, statt übersprungen zu werden.
