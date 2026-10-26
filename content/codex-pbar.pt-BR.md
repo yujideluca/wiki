@@ -1,7 +1,7 @@
 ---
 id: codex-pbar
 lang: pt-BR
-source_hash: b0ea5e03eb1e
+source_hash: 4ba131ea7565
 title: Progresso de tarefas no terminal do Codex
 ---
 
@@ -48,3 +48,5 @@ O arquivo global de instruções [[global-codex-agents]] descreve como o assiste
 O terminal pode ser verificado sem abrir outra interface do Codex: conecte um cliente somente de leitura à sessão tmux existente com `tmux -L codex-status attach-session -r -f ignore-size -t SESSION`. Substitua `SESSION` pela sessão cujo comando do rodapé contém a `CODEX_PBAR_SESSION` atual. Esse cliente não envia entradas, e `ignore-size` impede que seu redimensionamento altere o terminal de trabalho. Em 2026-10-26, esse método confirmou o rodapé em 116×53 e 70×35, durante inatividade e após redesenho. A visão larga também mostrou os percentuais restantes dos orçamentos de cinco horas e semanal, o contexto usado e sua capacidade. O antigo `tools/terminal_smoke.py` abre outra interface do Codex e atualmente para no bloqueio de propriedade da conversa; essa falha não demonstra ausência do rodapé no terminal existente.
 
 Cada terminal interativo novo ativa o encaminhamento do mouse pelo tmux e configura as ações da roda antes da conexão. Quando um aplicativo em tela cheia não solicita captura do mouse, rolar para cima ou para baixo equivale a Page Up ou Page Down. Aplicativos que solicitam captura e o modo de cópia do tmux mantêm os eventos normais do mouse. A correção anterior continuava instalada, mas apenas ativar o encaminhamento não bastava para o Codex em tela cheia sem captura; o teste verificava a configuração, sem conferir o movimento do histórico. Um teste no terminal em uso reproduziu a ausência de movimento antes da correção e a rolagem até a resposta anterior depois dela. Testes de regressão com eventos reais de terminal verificam os dois caminhos em dois tamanhos, em servidores novos e isolados. Duas falhas introduzidas de propósito trocam as teclas de página por setas e precisam ser detectadas. Não foi testada uma reinicialização física. Mantenha Shift pressionado ao arrastar para usar a seleção de texto do Konsole. O iniciador reaplica as ações em cada sessão nova; o servidor dedicado em uso também foi corrigido sem reiniciar o Codex.
+
+O auxiliar `~/fixes/codex-touchpad-scroll.sh` reaplica as ações de roda mantidas pelo projeto ao servidor dedicado em uso. A opção `--undo` restaura as ações anteriores nesse servidor; novas inicializações continuam aplicando a correção. `~/fixes/LEIAME.md` registra a causa, os testes e os limites da reversão.

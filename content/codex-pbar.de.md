@@ -1,7 +1,7 @@
 ---
 id: codex-pbar
 lang: de
-source_hash: b0ea5e03eb1e
+source_hash: 4ba131ea7565
 title: Codex-Aufgabenfortschritt im Terminal
 ---
 
@@ -48,3 +48,5 @@ Die globale Anweisungsdatei [[global-codex-agents]] beschreibt, wie der Assisten
 Das Terminal lässt sich ohne zweites Codex-Frontend prüfen: Ein nur lesender Client verbindet sich über `tmux -L codex-status attach-session -r -f ignore-size -t SESSION` mit der bestehenden tmux-Sitzung. `SESSION` bezeichnet die Sitzung, deren Fußzeilenbefehl die aktuelle `CODEX_PBAR_SESSION` enthält. Der Client sendet keine Eingaben; `ignore-size` verhindert, dass seine Größenänderung das Arbeitsterminal verändert. Am 2026-10-26 zeigte diese Prüfung die feste Fußzeile bei 116×53 und 70×35, im Leerlauf und nach Neuzeichnen. Die breite Ansicht zeigte außerdem die nativen Restbudgets für fünf Stunden und die Woche sowie belegten Kontext und Kontextkapazität. Das ältere `tools/terminal_smoke.py` startet ein zweites Codex-Frontend und endet derzeit an der Sitzungssperre; das beweist nicht, dass die Fußzeile im bestehenden Terminal fehlt.
 
 Jedes neue interaktive Terminal aktiviert vor dem Verbinden die Mausweiterleitung von tmux und richtet Mausradbindungen ein. Fordert eine Vollbildanwendung keine Mausereignisse an, werden Aufwärts- und Abwärtsscrollen zu Bild auf und Bild ab. Anwendungen mit eigener Mausverarbeitung und der Kopiermodus von tmux behalten ihre normalen Mausereignisse. Die frühere Korrektur mit eingeschalteter Mausweiterleitung war weiterhin installiert, reichte aber für Codex im Vollbildmodus ohne Mausverarbeitung nicht aus; ihr Test prüfte nur die Einstellung statt der Bewegung des Verlaufs. Eine Prüfung im laufenden Terminal zeigte vor der Ergänzung keine Bewegung und danach das Zurückscrollen in die frühere Antwort. Regressionstests mit echten Terminalereignissen prüfen beide Wege bei zwei Größen auf jeweils neuen, isolierten Servern. Zwei gezielte Fehler ersetzen die Bildtasten durch Pfeiltasten und müssen erkannt werden. Ein physischer Neustart wurde nicht getestet. Für die Textauswahl von Konsole beim Ziehen die Umschalttaste gedrückt halten. Der Starter richtet die Bindungen bei jeder neuen Sitzung ein; auch der laufende dedizierte Server wurde ohne Codex-Neustart korrigiert.
+
+Das Reparaturskript `~/fixes/codex-touchpad-scroll.sh` richtet die gepflegten Mausradbindungen auf dem laufenden dedizierten Server erneut ein. Die Option `--undo` stellt dort die früheren Bindungen wieder her; spätere Starts richten die Korrektur weiterhin ein. `~/fixes/LEIAME.md` hält Ursache, Prüfungen und Grenzen des Rückgängigmachens fest.
