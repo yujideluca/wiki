@@ -1,7 +1,7 @@
 module ArticleView exposing (view)
 
 {-| The article page, Wikipedia-style: text on the left, infobox on the right with the pipeline strip
-(what feeds it → it → who receives its output) and the small map of connected pages. Process pages get a
+(what feeds it → it → who receives its output) and the list of connected pages. Process pages get a
 step-through diagram.
 -}
 
@@ -14,9 +14,6 @@ import Html.Attributes as A
 import Html.Events as E
 import I18n exposing (Lang)
 import Set exposing (Set)
-import Svg
-import Svg.Attributes as S
-import Svg.Events as SE
 import Types exposing (Msg(..))
 import WikiText
 
@@ -190,7 +187,7 @@ infobox lang graph art =
         , div [ A.class "ib-head" ] [ text s.pipeline ]
         , pipelineStrip lang graph art
         , div [ A.class "ib-head" ] [ text s.neighbours ]
-        , localGraph lang graph art.id
+        , connectedPages lang graph art.id
         ]
 
 
@@ -220,62 +217,27 @@ pipelineStrip lang graph art =
         ]
 
 
-{-| The page in the middle, its direct neighbours on a circle (Obsidian's local graph).
+{-| Full page names remain readable even when a page has many neighbours.
 -}
-localGraph : Lang -> Graph -> String -> Html Msg
-localGraph lang graph id =
+connectedPages : Lang -> Graph -> String -> Html Msg
+connectedPages lang graph id =
     let
-        ns =
-            Filter.neighbours graph.edges id |> Set.toList |> List.filterMap (Data.nodeById graph)
+        neighbours =
+            Filter.neighbours graph.edges id
+                |> Set.toList
+                |> List.filterMap (Data.nodeById graph)
+                |> List.sortBy (Data.title lang >> String.toLower)
 
-        count =
-            max 1 (List.length ns)
-
-        radius =
-            92
-
-        place i =
-            ( 130 + radius * cos (2 * pi * toFloat i / toFloat count - pi / 2)
-            , 120 + radius * sin (2 * pi * toFloat i / toFloat count - pi / 2)
-            )
-
-        me =
-            Data.nodeById graph id
+        item node =
+            li []
+                [ a [ A.href ("/p/" ++ node.id), A.style "--c" (Data.kindColour graph node.kind) ]
+                    [ span [ A.class "connected-dot", A.attribute "aria-hidden" "true" ] []
+                    , span [ A.class "connected-title" ] [ text (Data.title lang node) ]
+                    , span [ A.class "connected-kind" ] [ text node.kind ]
+                    ]
+                ]
     in
-    Svg.svg [ S.viewBox "0 0 260 250", S.class "local-graph" ]
-        (List.indexedMap
-            (\i n ->
-                let
-                    ( x, y ) =
-                        place i
-                in
-                Svg.line [ S.x1 "130", S.y1 "120", S.x2 (String.fromFloat x), S.y2 (String.fromFloat y), S.class "lg-edge" ] []
-            )
-            ns
-            ++ List.indexedMap
-                (\i n ->
-                    let
-                        ( x, y ) =
-                            place i
-                    in
-                    Svg.g [ SE.onClick (OpenNode n.id), S.class "lg-node" ]
-                        [ Svg.circle [ S.cx (String.fromFloat x), S.cy (String.fromFloat y), S.r "6", S.fill (Data.kindColour graph n.kind) ] []
-                        , Svg.text_ [ S.x (String.fromFloat x), S.y (String.fromFloat (y + 17)), S.textAnchor "middle", S.class "lg-label" ]
-                            [ Svg.text (shorten (Data.title lang n)) ]
-                        ]
-                )
-                ns
-            ++ [ Svg.circle [ S.cx "130", S.cy "120", S.r "10", S.class "lg-me", S.fill (me |> Maybe.map (.kind >> Data.kindColour graph) |> Maybe.withDefault "#c9a14a") ] [] ]
-        )
-
-
-shorten : String -> String
-shorten t =
-    if String.length t > 16 then
-        String.left 15 t ++ "…"
-
-    else
-        t
+    ul [ A.class "connected-pages" ] (List.map item neighbours)
 
 
 {-| Step-through diagram for process pages: the steps as a chain, the current one lit, with its text and

@@ -2,6 +2,8 @@ module ArticleStepsTests exposing (tests)
 
 import ArticleView
 import Data
+import Dict
+import Html.Attributes
 import Expect
 import I18n exposing (Lang(..))
 import Set
@@ -38,10 +40,33 @@ graph =
 
 
 -- REQ AR-1
+-- REQ AR-2
 tests : Test
 tests =
     describe "REQ AR-1: skill steps appear only in the styled box"
-        [ test "desktop and expanded phone sections have one stepper and no repeated list in every language" <|
+        [ test "REQ AR-2: connected pages use full linked titles rather than a crowded graph" <|
+            \_ ->
+                let
+                    node =
+                        { id = "long-page", kind = "module", project = "none", status = "active", since = "2026-10-25", until = Nothing, fedBy = [], feeds = [], functions = [], process = False, text = Dict.fromList [ ( "en", { title = "A connected page with a very long readable title", aliases = [], what = "", does = "" } ) ] }
+
+                    connected =
+                        { graph | nodes = [ node ], edges = [ { from = article.id, to = node.id, edgeType = Data.Mentions }, { from = node.id, to = article.id, edgeType = Data.Feeds } ] }
+                in
+                [ ( En, False ), ( De, False ), ( PtBr, False ), ( En, True ), ( De, True ), ( PtBr, True ) ]
+                    |> List.map
+                        (\( lang, phone ) ->
+                            \_ ->
+                                ArticleView.view lang connected 0 phone Set.empty article
+                                    |> Query.fromHtml
+                                    |> Query.find [ Selector.class "connected-pages" ]
+                                    |> Expect.all
+                                        [ Query.findAll [ Selector.tag "li" ] >> Query.count (Expect.equal 1)
+                                        , Query.find [ Selector.tag "a", Selector.attribute (Html.Attributes.href "/p/long-page") ] >> Query.has [ Selector.text "A connected page with a very long readable title" ]
+                                        ]
+                        )
+                    |> (\checks -> Expect.all checks ())
+        , test "desktop and expanded phone sections have one stepper and no repeated list in every language" <|
             \_ ->
                 [ ( En, False ), ( En, True ), ( De, False ), ( De, True ), ( PtBr, False ), ( PtBr, True ) ]
                     |> List.map

@@ -39,3 +39,8 @@ The scan is a list of patterns: unknown token formats and names written in prose
 1. Make one privacy-pattern list that both projects use (or test the two against the same fixture of samples).
 2. Add `mix test --cover` to the gate to see untested modules.
 3. Next review: the stale-page detector and the publish step (git operations).
+
+
+### Connected pages (AR-2), 2026-10-27
+
+`frontend/tests/ArticleStepsTests.elm` checks a full long title and real page link, with duplicate edges producing one row, on desktop and phone in all three languages. The new check failed against the previous circular graph (no connected-pages list), then passed with the list. Visual checks cover wrapping and dense real pages.

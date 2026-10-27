@@ -157,12 +157,14 @@ svg.map:active { cursor: grabbing; }
 .pl-box.me { background: var(--gold); border-color: #a8832f; color: #111 !important; font-weight: 600; }
 .pl-arrow { color: #a8832f; font-weight: 700; }
 .pl-none { text-align: center; color: #aaa; }
-.local-graph { width: 100%; height: auto; display: block; }
-.lg-edge { stroke: var(--pl-line); stroke-width: 1.2; }
-.lg-label { font-size: 10px; fill: var(--ink); }
-.lg-node { cursor: pointer; }
-.lg-node:hover .lg-label { fill: var(--link); }
-.lg-me { stroke: #111; stroke-width: 2; }
+.connected-pages { list-style: none; margin: 0; padding: 8px; }
+.connected-pages li + li { margin-top: 4px; }
+.connected-pages a { display: grid; grid-template-columns: 8px minmax(0, 1fr); column-gap: 9px; padding: 10px; border-radius: 6px; border: 1px solid var(--pl-line); text-decoration: none; }
+.connected-pages a:hover, .connected-pages a:focus-visible { background: var(--pl-line); outline: 2px solid var(--link); outline-offset: 1px; }
+.connected-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--c); margin-top: 6px; }
+.connected-title { line-height: 1.45; overflow-wrap: anywhere; }
+.connected-kind { grid-column: 2; font-size: 11px; opacity: .7; margin-top: 3px; }
+
 
 /* Process step-through */
 .stepper { font-family: var(--ui); background: #0f1318; color: var(--text); border-radius: 10px; padding: 16px; margin: 8px 0 16px; }
