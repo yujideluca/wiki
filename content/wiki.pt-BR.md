@@ -1,7 +1,7 @@
 ---
 id: wiki
 lang: pt-BR
-source_hash: 9ccec706bb6b
+source_hash: cd94dada8617
 title: Wiki (este site)
 ---
 
@@ -92,7 +92,7 @@ Como este projeto segue o caminho dourado do [[project-template]].
 O arquivo de projeto `DESIGN.md` guarda os diagramas C4 e um registro de decisões, a mais nova primeiro, cada linha com seu tipo de manutenção. Registros de decisão de arquitetura (notas curtas que guardam os motivos de uma decisão) em `docs/adr/`: 0002 front end em Elm e back end em Elixir; 0003 um portão de login com página falsa para todos os outros; 0004 páginas em Markdown com cabeçalho, verificadas antes de publicar; 0005 um programa mede e uma skill julga; 0006 o horário da revisão fica na página; 0007 a seção de fluxograma. Veja também a [[monthly-architecture-review]].
 
 ### Requisitos
-69 requisitos em `docs/REQUIREMENTS.md`, agrupados por um prefixo de duas letras (login AU, página falsa DC, conteúdo CO, fluxogramas FL, páginas de projeto PJ, mapa MP, layout de celular MB e outros). Cada um tem um teste marcado `REQ <ID>`, e a verificação de rastreabilidade ([[check-traceability]]) falha quando algum não tem.
+71 requisitos em `docs/REQUIREMENTS.md`, agrupados por um prefixo de duas letras (login AU, página falsa DC, conteúdo CO, fluxogramas FL, páginas de projeto PJ, mapa MP, layout de celular MB e outros). Cada um tem um teste marcado `REQ <ID>`, e a verificação de rastreabilidade ([[check-traceability]]) falha quando algum não tem.
 
 ### Portão de qualidade
 O [[wiki-quality-gate]] é um script com cinco passos: os testes de Elixir; os testes de Elm e o build otimizado; a rastreabilidade dos requisitos; as regras de conteúdo (`wiki check`); as funções de aptidão (maior arquivo, tempo do portão, tamanho do pacote).

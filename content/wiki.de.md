@@ -1,7 +1,7 @@
 ---
 id: wiki
 lang: de
-source_hash: 9ccec706bb6b
+source_hash: cd94dada8617
 title: Wiki (diese Seite)
 ---
 
@@ -92,7 +92,7 @@ Wie dieses Projekt dem Goldenen Weg von [[project-template]] folgt.
 Die Entwurfsdatei `DESIGN.md` enthält die C4-Diagramme und ein Entscheidungsprotokoll, neueste zuerst, jede Zeile mit ihrer Wartungsart. Architekturentscheidungsprotokolle (kurze Notizen, die die Gründe einer Entscheidung bewahren) in `docs/adr/`: 0002 Elm-Frontend und Elixir-Backend; 0003 ein Anmeldetor mit Tarnseite für alle anderen; 0004 Seiten als Markdown mit Kopfzeile, vor dem Veröffentlichen geprüft; 0005 ein Programm misst und ein Skill urteilt; 0006 die Prüfzeit steht in der Seite; 0007 der Flussdiagramm-Abschnitt. Siehe auch die [[monthly-architecture-review]].
 
 ### Anforderungen
-69 Anforderungen in `docs/REQUIREMENTS.md`, gruppiert durch ein Zwei-Buchstaben-Präfix (Anmeldung AU, Tarnseite DC, Inhalt CO, Flussdiagramme FL, Projektseiten PJ, Karte MP, Handy-Layout MB und weitere). Jede hat einen Test mit dem Tag `REQ <ID>`, und die Rückverfolgbarkeitsprüfung ([[check-traceability]]) schlägt fehl, wenn eine keinen hat.
+71 Anforderungen in `docs/REQUIREMENTS.md`, gruppiert durch ein Zwei-Buchstaben-Präfix (Anmeldung AU, Tarnseite DC, Inhalt CO, Flussdiagramme FL, Projektseiten PJ, Karte MP, Handy-Layout MB und weitere). Jede hat einen Test mit dem Tag `REQ <ID>`, und die Rückverfolgbarkeitsprüfung ([[check-traceability]]) schlägt fehl, wenn eine keinen hat.
 
 ### Quality Gate
 [[wiki-quality-gate]] ist ein Skript mit fünf Schritten: die Elixir-Tests; die Elm-Tests und der optimierte Build; die Rückverfolgbarkeit der Anforderungen; die Inhaltsregeln (`wiki check`); die Fitnessfunktionen (größte Datei, Gate-Dauer, Bundle-Größe).
