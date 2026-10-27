@@ -41,6 +41,14 @@ defmodule Wiki.Content.ArchitectureTest do
     assert errors(c) == []
   end
 
+  # REQ PJ-4
+  test "a program needs the Architecture section but not the practices", %{content: c} do
+    valid_wiki(c)
+    assert errors(c) == []
+    write_page(c, "a", base_header("a", feeds: ["b"]), %{}, architecture: false)
+    assert Enum.any?(errors(c), &(&1 =~ "a.md: section ## Architecture is missing: a program page"))
+  end
+
   # REQ PJ-1
   test "a translated architecture keeps boxes, links and arrows and may change the words", %{content: c} do
     valid_wiki(c)

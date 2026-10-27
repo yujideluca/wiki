@@ -66,6 +66,12 @@ defmodule Wiki.ContentCase do
 
   @doc "Writes an English page and, unless `translate: false`, matching de and pt-BR versions."
   def write_page(content, id, header, sections \\ %{}, opts \\ []) do
+    # a program page always shows its C4 diagrams (PJ-4); `architecture: false` leaves them out
+    sections =
+      if header[:kind] in [nil, "program"] and Keyword.get(opts, :architecture, true),
+        do: Map.put_new(sections, "architecture", architecture()),
+        else: sections
+
     text = page_text(header, sections)
     File.write!(Path.join(content, "#{id}.md"), text)
 

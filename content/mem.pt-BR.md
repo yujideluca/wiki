@@ -1,12 +1,49 @@
 ---
 id: mem
 lang: pt-BR
-source_hash: cc93e389c143
+source_hash: 1b470cac0e2a
 title: mem (comando da memória)
 ---
 
 ## What it is
 `mem` é a ferramenta de linha de comando do [[workflow-memory]] (uma ferramenta de linha de comando é um programa que se executa digitando seu nome e opções em um terminal). É por ela que o [[claude-code]] e o [[remote-assistant]] leem e escrevem a memória compartilhada. É escrita em Python 3 e não precisa de nada além da biblioteca padrão do Python.
+
+## Architecture
+### Contexto
+person g: Giovanni — roda à mão de vez em quando | [[giovanni]]
+person c: Claude Code — escreve eventos e lê o resumo | [[claude-code]]
+person x: Codex — o mesmo, com escopo próprio | [[codex]]
+person r: Assistente remoto — o mesmo, pelo celular | [[remote-assistant]]
+system m: mem — o comando da memória
+external e: Registro de eventos — os arquivos que ele lê e escreve | [[events-log]]
+external h: GitHub — onde a memória é mantida em sincronia | [[github]]
+
+g -executa o-> m
+c -executa o-> m
+x -executa o-> m
+r -executa o-> m
+m -lê e acrescenta ao-> e
+m -sincroniza com o-> h
+
+### Contêineres
+person u: Giovanni ou um assistente
+container cl: cli.py — lê a linha de comando e chama os módulos
+container ev: Eventos — escrever e ler arquivos de evento
+container fo: Dobra — transforma o registro nas entradas atuais | [[memory-fold]]
+container ck: Verificações — validador, coletor e pendências | [[mem-validator]], [[mem-harvester]]
+container se: Busca — acha entradas por palavras | [[mem-search]]
+container sy: Sincronia e instalador — pull e push do GitHub, hooks do Claude Code | [[mem-sync]]
+store lg: Registro de eventos — um arquivo por evento | [[events-log]]
+store vw: Visões — os arquivos legíveis que ele gera | [[memory-views]]
+
+u -executa o-> cl
+cl -chama os-> ev
+cl -chama a-> fo
+cl -chama as-> ck
+cl -chama a-> se
+cl -chama a-> sy
+ev -escreve e lê o-> lg
+fo -gera as-> vw
 
 ## What it does
 Escreve um novo arquivo de evento a cada mudança ([[mem-add]], [[mem-use]], [[mem-task]], e também feedback, esquecer, concluir, reivindicar e semelhantes), imprime o brief, pesquisa a memória ([[mem-search]]), verifica problemas nos arquivos, gera os arquivos legíveis em [[memory-views]], sincroniza com o GitHub e instala seus próprios hooks do Claude Code.

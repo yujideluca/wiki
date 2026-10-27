@@ -9,11 +9,40 @@ location: codex-skills:tools/skillsctl.py
 fed_by: []
 feeds: []
 sources: [codex-skills:tools/skillsctl.py, codex-skills:manifest.json, codex-skills:DESIGN.md]
-reviewed: 2026-10-25T21:08Z
+reviewed: 2026-10-27T01:45Z
 ---
 
 ## What it is
 A Python command for checking, installing and restoring the skill files in [[codex-skills]]. It manages files and links; it does not execute the skills.
+
+## Architecture
+### Context
+person g: Giovanni — runs the checks and installs | [[giovanni]]
+system s: skillsctl — checks, installs and restores skill files
+external r: codex-skills repository — the adapted skills | [[codex-skills]]
+external c: Claude skills — the originals, read only | [[skills]]
+external x: Codex — discovers the installed links | [[codex]]
+
+g -runs-> s
+s -manages the skills in-> r
+s -compares with-> c
+s -installs links for-> x
+
+### Containers
+person g: Giovanni | [[giovanni]]
+container cm: Commands — check, report drift, install, roll back
+store sr: Source baselines — exact copies of the Claude skills
+store mf: Manifest — fingerprints of the files
+store sk: Adapted skills — the 26 that Codex owns
+store bk: Backups — made before each install
+external lv: Skill links Codex can discover | [[codex]]
+
+g -runs-> cm
+cm -compares with-> sr
+cm -records fingerprints in-> mf
+cm -validates-> sk
+cm -saves-> bk
+cm -installs links in-> lv
 
 ## What it does
 Keeps 26 adaptations, complete source baselines and content fingerprints. A fingerprint is a calculated value that detects changed files. Reports source changes without overwriting adaptations. Vendor document skills remain under their existing owners.

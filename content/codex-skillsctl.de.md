@@ -2,11 +2,40 @@
 id: codex-skillsctl
 title: Codex skills manager
 lang: de
-source_hash: ed885cc31452
+source_hash: dd1e7dce10e9
 ---
 
 ## What it is
 Ein Python-Befehl zum Prüfen, Installieren und Wiederherstellen der Skill-Dateien in [[codex-skills]]. Er verwaltet Dateien und Verknüpfungen; er führt die Skills nicht aus.
+
+## Architecture
+### Kontext
+person g: Giovanni — führt Prüfungen und Installationen aus | [[giovanni]]
+system s: skillsctl — prüft, installiert und stellt Skill-Dateien wieder her
+external r: codex-skills-Repository — die angepassten Skills | [[codex-skills]]
+external c: Claude-Skills — die Originale, nur lesbar | [[skills]]
+external x: Codex — findet die installierten Links | [[codex]]
+
+g -führt aus-> s
+s -verwaltet die Skills in-> r
+s -vergleicht mit-> c
+s -installiert Links für-> x
+
+### Container
+person g: Giovanni | [[giovanni]]
+container cm: Befehle — prüfen, Abweichungen melden, installieren, zurücknehmen
+store sr: Quell-Basislinien — genaue Kopien der Claude-Skills
+store mf: Manifest — Fingerabdrücke der Dateien
+store sk: Angepasste Skills — die 26, die Codex gehören
+store bk: Sicherungen — vor jeder Installation angelegt
+external lv: Skill-Links, die Codex finden kann | [[codex]]
+
+g -führt aus-> cm
+cm -vergleicht mit-> sr
+cm -speichert Fingerabdrücke im-> mf
+cm -prüft-> sk
+cm -legt an-> bk
+cm -installiert Links in-> lv
 
 ## What it does
 Enthält 26 Anpassungen, vollständige Ausgangsquellen und Fingerabdrücke der Dateien. Ein Fingerabdruck ist ein berechneter Wert, der Änderungen erkennt. Änderungen an der Quelle werden gemeldet, ohne die Anpassungen zu überschreiben. Anbieter-Skills für Dokumente bleiben bei ihrem bisherigen Eigentümer.

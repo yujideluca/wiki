@@ -1,12 +1,45 @@
 ---
 id: pipeline-check
 lang: de
-source_hash: 46fe897f0496
+source_hash: aa3ccb960760
 title: pipeline-check
 ---
 
 ## What it is
 pipeline-check ist ein Programm, in [Rust](https://www.rust-lang.org/) geschrieben (die Sprache war Giovannis Wahl), das ein Softwareprojekt vermisst und dafür sorgt, dass eine Maschine, nicht Claudes gute Gewohnheit, einen schlechten Merge verweigert (Entscheidung ADR-0013 in QuizApp; ein ADR ist ein Architecture Decision Record, eine kurze Notiz, die die Gründe einer Entscheidung festhält). Es ersetzte das ältere Python-Skript `fitness_check.py`.
+
+## Architecture
+### Kontext
+person g: Giovanni — der Einzige, der die Grenzen ändert | [[giovanni]]
+system p: pipeline-check — misst ein Projekt und blockiert eine schlechte Änderung
+external a: Ein Projekt, das es nutzt — sein Gate, seine Grenzen und sein Quellcode
+external c: Automatische Prüfungen auf GitHub — führen es bei jedem Push aus | [[quizapp-ci]]
+external h: GitHub — nur lesende Fragen zu Schutz und Läufen | [[github]]
+external s: Review-Skill — liest den Bericht und urteilt | [[skill-revisao-manutencao]]
+
+g -ändert die Grenzen von-> a
+c -führen aus-> p
+p -misst-> a
+p -fragt-> h
+p -schreibt einen Bericht für-> s
+
+### Container
+person g: Giovanni oder ein Build-Job
+container cl: Befehlszeile — Optionen wie --measure-only und --traceability
+container ru: Läufer — führt die Prüfungen der Reihe nach aus und baut den Bericht
+container ga: Projektprüfungen — das eigene Gate des Projekts einmal, und jede Anforderung hat einen getaggten Test
+container co: Code-Prüfungen — verbotene Importe, Größengrenzen, die bei 80 % warnen und bei 100 % scheitern, Shell-Skript-Prüfung
+container gh: GitHub- und Lieferprüfungen — Branch-Schutz, Läufe, wie oft Änderungen ausgeliefert werden
+store cf: pipeline-check.toml — die Grenzen, in jedem Projekt
+store rp: report.json — jede Prüfung mit Status, Wert und Grenze
+
+g -führt aus-> cl
+cl -startet-> ru
+ru -liest die Grenzen in-> cf
+ru -führt aus-> ga
+ru -führt aus-> co
+ru -führt aus-> gh
+ru -schreibt-> rp
 
 ## What it does
 Es schreibt `build/pipeline-check/report.json`: Projekt, Datum, Modus (`local` oder `ci`), eine Liste von Prüfungen mit jeweils einem Status (`ok`, `aviso` = Warnung, `falha` = Fehlschlag, `pulado` = übersprungen), einem Wert und einer Grenze, dazu einen `dora`-Block mit Lieferkennzahlen (DORA: DevOps Research and Assessment). Es endet mit Code 1, wenn eine Prüfung `falha` ist; eine Warnung lässt nie fehlschlagen. Die Prüfungen sind:

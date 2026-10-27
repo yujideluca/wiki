@@ -32,3 +32,9 @@ order. `wiki check` requires both and checks their form; the front end draws the
 - The practices text can drift from the repositories; each page lists the repository files as sources, so the wiki's
   stale-page check flags it when they change.
 - Projects that are only a folder of the laptop (`location: home:...`) are exempt.
+
+## Amendment, 2026-10-27
+
+Giovanni asked for the same diagrams on the programs and for the rule to cover every category where they were applied. Pages of
+kind `program` now need `## Architecture` as well (PJ-4). `## Engineering practices` stays for projects only: the six parts
+describe a repository that follows project-template, and a program is a part of a project or a script.

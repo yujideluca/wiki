@@ -1,12 +1,45 @@
 ---
 id: pipeline-check
 lang: pt-BR
-source_hash: 46fe897f0496
+source_hash: aa3ccb960760
 title: pipeline-check
 ---
 
 ## What it is
 O pipeline-check é um programa escrito em [Rust](https://www.rust-lang.org/) (a linguagem foi escolha do Giovanni) que mede um projeto de software e faz uma máquina, e não o bom hábito do Claude, recusar um merge ruim (decisão ADR-0013 no QuizApp; uma ADR é um architecture decision record, uma nota curta que guarda os motivos de uma decisão). Substituiu o script Python mais antigo `fitness_check.py`.
+
+## Architecture
+### Contexto
+person g: Giovanni — o único que muda os limites | [[giovanni]]
+system p: pipeline-check — mede um projeto e bloqueia uma mudança ruim
+external a: Um projeto que o usa — seu portão, seus limites e seu código
+external c: Verificações automáticas no GitHub — rodam a cada push | [[quizapp-ci]]
+external h: GitHub — perguntas só de leitura sobre proteção e execuções | [[github]]
+external s: Skill de revisão — lê o relatório e julga | [[skill-revisao-manutencao]]
+
+g -muda os limites do-> a
+c -rodam o-> p
+p -mede o-> a
+p -pergunta ao-> h
+p -escreve um relatório para a-> s
+
+### Contêineres
+person g: Giovanni ou um job de build
+container cl: Linha de comando — opções como --measure-only e --traceability
+container ru: Executor — roda as verificações em ordem e monta o relatório
+container ga: Verificações do projeto — o portão do próprio projeto uma vez, e todo requisito tem um teste marcado
+container co: Verificações do código — importações proibidas, limites de tamanho que avisam em 80 % e falham em 100 %, lint de scripts de shell
+container gh: Verificações do GitHub e da entrega — proteção de branch, execuções, com que frequência as mudanças saem
+store cf: pipeline-check.toml — os limites, em cada projeto
+store rp: report.json — cada verificação com status, valor e limite
+
+g -executa a-> cl
+cl -inicia o-> ru
+ru -lê os limites em-> cf
+ru -roda a-> ga
+ru -roda as-> co
+ru -roda as-> gh
+ru -escreve o-> rp
 
 ## What it does
 Escreve `build/pipeline-check/report.json`: o projeto, a data, o modo (`local` ou `ci`), uma lista de verificações, cada uma com um status (`ok`, `aviso` = alerta, `falha` = falha, `pulado` = ignorado), um valor e um limite, mais um bloco `dora` de métricas de entrega (DORA: DevOps Research and Assessment). Sai com código 1 se qualquer verificação for `falha`; um aviso nunca reprova. As verificações são:

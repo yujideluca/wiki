@@ -9,11 +9,49 @@ location: wiki:server
 fed_by: [tailscale-funnel, wiki-service]
 feeds: [wiki-router]
 sources: [wiki:server/mix.exs, wiki:server/lib/wiki/application.ex, wiki:server/rel/env.sh.eex, wiki:server/mix.lock]
-reviewed: 2026-10-26T22:50Z
+reviewed: 2026-10-27T01:45Z
 ---
 
 ## What it is
 The server is the back end of the wiki: the program that runs on the laptop, answers the browser's requests and decides who may see what. It is written in [Elixir](https://elixir-lang.org/) (Giovanni's choice) and is one Mix project (Mix is Elixir's build tool) that is both the web server and the `wiki` command.
+
+## Architecture
+### Context
+person g: Giovanni — signs in with Google | [[giovanni]]
+external f: Tailscale Funnel — the public address | [[tailscale-funnel]]
+system s: Wiki server — login gate, decoy page and content tools
+external o: Google sign-in — proves who is asking | [[google-oauth-client]]
+external w: Built site — the files it serves | [[wiki-site]]
+
+g -opens the wiki through-> f
+f -passes requests to-> s
+s -asks-> o
+s -serves-> w
+
+### Containers
+external f: Tailscale Funnel | [[tailscale-funnel]]
+container ht: HTTP server — Bandit, listening only on 127.0.0.1 port 4180
+container ro: Router — default deny and Google sign-in | [[wiki-router]]
+container de: Decoy page — what everyone else sees | [[decoy-page]]
+container cl: The wiki command — runs the content tools | [[wiki-cli]]
+container ch: Check — the rules a page must follow | [[wiki-check]]
+container bu: Build — turns pages into data files | [[wiki-build]]
+container hk: Stop hook — reminds to update the wiki | [[wiki-hook-stop]]
+store pg: Pages — Markdown files | [[wiki-content]]
+store st: Built site — the files it serves | [[wiki-site]]
+store se: Secret files — readable only by the owner, never in git
+
+f -passes requests to-> ht
+ht -hands them to-> ro
+ro -shows others-> de
+ro -serves-> st
+ro -reads keys from-> se
+cl -runs-> ch
+cl -runs-> bu
+cl -runs-> hk
+ch -reads-> pg
+bu -reads-> pg
+bu -writes-> st
 
 ## What it does
 It serves the site behind Google sign-in ([[wiki-router]]) and holds the content tools ([[wiki-check]], [[wiki-build]], [[wiki-hook-stop]], [[wiki-cli]]).

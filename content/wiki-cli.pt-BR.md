@@ -1,12 +1,47 @@
 ---
 id: wiki-cli
 lang: pt-BR
-source_hash: 3442b3572101
+source_hash: 5685e2df3650
 title: wiki (comando)
 ---
 
 ## What it is
 `wiki` é o comando que o Claude usa para manter o wiki em dia: um escript Elixir (um programa empacotado em um único arquivo executável) instalado como `~/.local/bin/wiki`.
+
+## Architecture
+### Contexto
+person c: Claude Code — roda no fim de uma tarefa | [[claude-code]]
+system w: Comando wiki — verificar, gerar, publicar
+external r: O repositório do wiki — páginas e site gerado
+external h: GitHub — recebe as páginas publicadas | [[github]]
+
+c -roda o-> w
+w -lê e comita as páginas em-> r
+w -envia ao-> h
+
+### Contêineres
+person c: Claude Code | [[claude-code]]
+container pa: Leitor de comandos — publish, check, build, hook-stop
+container ch: Verificação — roda primeiro em modo local | [[wiki-check]]
+container bu: Geração — transforma páginas em arquivos de dados | [[wiki-build]]
+container gi: Auxiliar de git — comita só content/, nunca força o push
+container hk: Hook de parada — diz se uma atualização é devida | [[wiki-hook-stop]]
+container sl: Verificação de defasagem — acha páginas mais velhas que suas fontes | [[wiki-stale]]
+store pg: Páginas — a pasta content | [[wiki-content]]
+store st: Site gerado | [[wiki-site]]
+external h: GitHub | [[github]]
+
+c -roda-> pa
+pa -roda a-> ch
+pa -roda a-> bu
+pa -comita com o-> gi
+pa -roda o-> hk
+hk -pergunta à-> sl
+ch -lê as-> pg
+bu -lê as-> pg
+bu -gera o-> st
+gi -comita as-> pg
+gi -envia ao-> h
 
 ## What it does
 `wiki publish` é o passo do fim da tarefa. Executa o [[wiki-check]] em modo local, depois o [[wiki-build]], faz commit apenas da pasta `content/` (para que trabalho não relacionado no repositório nunca seja arrastado) e a envia ao repositório público no [[github]], e por fim registra o momento da publicação para o [[wiki-hook-stop]]. Recusa diante de qualquer falha. Todo comando `git` que ele executa antes remove `GIT_DIR`, `GIT_WORK_TREE` e `GIT_INDEX_FILE` (variáveis que o próprio git define em hooks como o pre-push), de modo que o comando sempre age no repositório indicado e nunca naquele que iniciou o hook.

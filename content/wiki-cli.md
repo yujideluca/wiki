@@ -9,11 +9,46 @@ location: wiki:server/lib/wiki/cli.ex
 fed_by: [wiki-build, wiki-check, wiki-stale]
 feeds: [github]
 sources: [wiki:server/lib/wiki/cli.ex]
-reviewed: 2026-10-26T18:38Z
+reviewed: 2026-10-27T01:45Z
 ---
 
 ## What it is
 `wiki` is the command that Claude uses to keep the wiki current: an Elixir escript (a program packed into a single runnable file) installed as `~/.local/bin/wiki`.
+
+## Architecture
+### Context
+person c: Claude Code — runs it at the end of a task | [[claude-code]]
+system w: wiki command — check, build, publish
+external r: The wiki repository — pages and built site
+external h: GitHub — receives the published pages | [[github]]
+
+c -runs-> w
+w -reads and commits the pages in-> r
+w -pushes to-> h
+
+### Containers
+person c: Claude Code | [[claude-code]]
+container pa: Command parser — publish, check, build, hook-stop
+container ch: Check — runs in local mode first | [[wiki-check]]
+container bu: Build — turns pages into data files | [[wiki-build]]
+container gi: Git helper — commits only content/, never force-pushes
+container hk: Stop hook — says whether an update is due | [[wiki-hook-stop]]
+container sl: Stale check — finds pages older than their sources | [[wiki-stale]]
+store pg: Pages — the content folder | [[wiki-content]]
+store st: Built site | [[wiki-site]]
+external h: GitHub | [[github]]
+
+c -runs-> pa
+pa -runs-> ch
+pa -runs-> bu
+pa -commits with-> gi
+pa -runs-> hk
+hk -asks-> sl
+ch -reads-> pg
+bu -reads-> pg
+bu -writes-> st
+gi -commits-> pg
+gi -pushes to-> h
 
 ## What it does
 `wiki publish` is the end-of-task step. It runs [[wiki-check]] in local mode, then [[wiki-build]], then commits only the `content/` folder (so unrelated work in the repository is never swept in) and pushes it to the public repository on [[github]], and finally records the time of the publish for the [[wiki-hook-stop]]. It refuses on any failure. Every `git` command it runs first unsets `GIT_DIR`, `GIT_WORK_TREE` and `GIT_INDEX_FILE` (variables that git itself sets inside hooks such as pre-push), so the command always acts on the repository it was given and never on the one that started the hook.

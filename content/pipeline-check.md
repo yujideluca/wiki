@@ -9,11 +9,44 @@ location: pipeline-check:src
 fed_by: [fitness-check]
 feeds: [quizapp-ci, skill-revisao-manutencao]
 sources: [pipeline-check:LICENSE, pipeline-check:src/lib.rs, pipeline-check:src/shellcheck.rs, pipeline-check:src/traceability.rs, pipeline-check:docs/adr/0003-one-repository-consumed-by-version.md, QuizApp:pipeline-check.toml, QuizApp:tools/pipeline-check.sh, QuizApp:docs/adr/0013-program-measures-skill-judges.md]
-reviewed: 2026-10-25T07:34Z
+reviewed: 2026-10-27T01:45Z
 ---
 
 ## What it is
 pipeline-check is a program, written in [Rust](https://www.rust-lang.org/) (the language was Giovanni's choice), that measures a software project and makes a machine, not Claude's good habits, refuse a bad merge (decision ADR-0013 in QuizApp; an ADR is an architecture decision record, a short note that keeps the reasons for a decision). It replaced the older Python script `fitness_check.py`.
+
+## Architecture
+### Context
+person g: Giovanni — the only one who changes the limits | [[giovanni]]
+system p: pipeline-check — measures a project and blocks a bad change
+external a: A project that uses it — its gate, limits and source
+external c: Automatic checks on GitHub — run it on every push | [[quizapp-ci]]
+external h: GitHub — read-only questions about protection and runs | [[github]]
+external s: Review skill — reads the report and judges | [[skill-revisao-manutencao]]
+
+g -changes the limits of-> a
+c -runs-> p
+p -measures-> a
+p -asks-> h
+p -writes a report for-> s
+
+### Containers
+person g: Giovanni or a build job
+container cl: Command line — options such as --measure-only and --traceability
+container ru: Runner — runs the checks in order and builds the report
+container ga: Project checks — the project's own gate once, and every requirement has a tagged test
+container co: Code checks — forbidden imports, size limits that warn at 80 % and fail at 100 %, shell-script lint
+container gh: GitHub and delivery checks — branch protection, runs, how often changes ship
+store cf: pipeline-check.toml — the limits, in each project
+store rp: report.json — every check with status, value and limit
+
+g -runs-> cl
+cl -starts-> ru
+ru -reads the limits in-> cf
+ru -runs-> ga
+ru -runs-> co
+ru -runs-> gh
+ru -writes-> rp
 
 ## What it does
 It writes `build/pipeline-check/report.json`: the project, the date, the mode (`local` or `ci`), a list of checks each with a status (`ok`, `aviso` = warning, `falha` = failure, `pulado` = skipped), a value and a limit, plus a `dora` block of delivery metrics (DORA: DevOps Research and Assessment). It exits with code 1 if any check is a `falha`; a warning never fails. The checks are:

@@ -1,12 +1,47 @@
 ---
 id: wiki-cli
 lang: de
-source_hash: 3442b3572101
+source_hash: 5685e2df3650
 title: wiki (Befehl)
 ---
 
 ## What it is
 `wiki` ist der Befehl, mit dem Claude das Wiki aktuell hält: ein Elixir-Escript (ein Programm, das in eine einzige ausführbare Datei gepackt ist), installiert als `~/.local/bin/wiki`.
+
+## Architecture
+### Kontext
+person c: Claude Code — führt es am Ende einer Aufgabe aus | [[claude-code]]
+system w: Befehl wiki — prüfen, bauen, veröffentlichen
+external r: Das Wiki-Repository — Seiten und gebaute Seite
+external h: GitHub — erhält die veröffentlichten Seiten | [[github]]
+
+c -führt aus-> w
+w -liest und committet die Seiten in-> r
+w -pusht nach-> h
+
+### Container
+person c: Claude Code | [[claude-code]]
+container pa: Befehlsleser — publish, check, build, hook-stop
+container ch: Prüfung — läuft zuerst im lokalen Modus | [[wiki-check]]
+container bu: Bau — macht aus Seiten Datendateien | [[wiki-build]]
+container gi: Git-Helfer — committet nur content/, pusht nie erzwungen
+container hk: Stop-Hook — sagt, ob eine Aktualisierung fällig ist | [[wiki-hook-stop]]
+container sl: Veraltet-Prüfung — findet Seiten, die älter als ihre Quellen sind | [[wiki-stale]]
+store pg: Seiten — der Ordner content | [[wiki-content]]
+store st: Gebaute Seite | [[wiki-site]]
+external h: GitHub | [[github]]
+
+c -führt aus-> pa
+pa -führt aus-> ch
+pa -führt aus-> bu
+pa -committet mit-> gi
+pa -führt aus-> hk
+hk -fragt-> sl
+ch -liest-> pg
+bu -liest-> pg
+bu -schreibt-> st
+gi -committet-> pg
+gi -pusht nach-> h
 
 ## What it does
 `wiki publish` ist der Schritt am Ende einer Aufgabe. Er führt [[wiki-check]] im lokalen Modus aus, dann [[wiki-build]], committet nur den Ordner `content/` (sodass unabhängige Arbeit im Repository nie mitgenommen wird) und pusht ihn ins öffentliche Repository auf [[github]], und hält schließlich den Zeitpunkt der Veröffentlichung für den [[wiki-hook-stop]] fest. Bei jedem Fehler verweigert er sich. Jeder `git`-Befehl, den er ausführt, löscht zuvor `GIT_DIR`, `GIT_WORK_TREE` und `GIT_INDEX_FILE` (Variablen, die git selbst in Hooks wie pre-push setzt), sodass der Befehl immer auf dem übergebenen Repository arbeitet und nie auf dem, das den Hook gestartet hat.

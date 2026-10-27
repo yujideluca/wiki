@@ -2,11 +2,40 @@
 id: codex-skillsctl
 title: Codex skills manager
 lang: pt-BR
-source_hash: ed885cc31452
+source_hash: dd1e7dce10e9
 ---
 
 ## What it is
 Um comando Python para verificar, instalar e restaurar os arquivos de skills de [[codex-skills]]. Gerencia arquivos e vínculos; não executa as skills.
+
+## Architecture
+### Contexto
+person g: Giovanni — roda as verificações e instalações | [[giovanni]]
+system s: skillsctl — verifica, instala e restaura arquivos de skill
+external r: Repositório codex-skills — as skills adaptadas | [[codex-skills]]
+external c: Skills do Claude — os originais, somente leitura | [[skills]]
+external x: Codex — descobre os links instalados | [[codex]]
+
+g -roda o-> s
+s -gerencia as skills do-> r
+s -compara com as-> c
+s -instala links para o-> x
+
+### Contêineres
+person g: Giovanni | [[giovanni]]
+container cm: Comandos — verificar, apontar divergências, instalar, desfazer
+store sr: Linhas de base — cópias exatas das skills do Claude
+store mf: Manifesto — impressões digitais dos arquivos
+store sk: Skills adaptadas — as 26 que pertencem ao Codex
+store bk: Backups — feitos antes de cada instalação
+external lv: Links de skills que o Codex consegue descobrir | [[codex]]
+
+g -roda os-> cm
+cm -compara com as-> sr
+cm -grava impressões digitais no-> mf
+cm -valida as-> sk
+cm -guarda os-> bk
+cm -instala links em-> lv
 
 ## What it does
 Mantém 26 adaptações, fontes originais completas e impressões digitais dos arquivos. Uma impressão digital é um valor calculado para detectar mudanças. Informa mudanças nas fontes sem sobrescrever as adaptações. Skills de documentos de fornecedores continuam sob os responsáveis anteriores.

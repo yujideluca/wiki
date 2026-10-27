@@ -19,7 +19,7 @@ defmodule Wiki.Content.BuildTest do
     for id <- ~w(a b proj), lang <- ~w(en de pt-BR) do
       art = out |> Path.join("data/pages/#{id}.#{lang}.json") |> File.read!() |> JSON.decode!()
       assert art["lang"] == lang
-      expected = if id == "proj", do: ~w(what flow architecture does how where receives practices), else: ~w(what does how where receives)
+      expected = if id == "proj", do: ~w(what flow architecture does how where receives practices), else: ~w(what architecture does how where receives)
       assert Enum.map(art["sections"], & &1["key"]) == expected
     end
   end

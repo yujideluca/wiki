@@ -83,15 +83,17 @@ defmodule Wiki.Content.Check do
     end
   end
 
-  # PJ-1, PJ-2: a project that lives in a repository shows its C4 diagrams and how it follows the golden path of
-  # project-template. A project that is a folder of the laptop (`location: home:...`) has neither.
+  # PJ-1, PJ-2, PJ-4: a project that lives in a repository shows its C4 diagrams and how it follows the golden path of
+  # project-template; a program shows its C4 diagrams. A project that is a folder of the laptop (`location: home:...`)
+  # has neither.
   defp project_sections(p) do
     repo? = p.header["kind"] == "project" and not String.starts_with?(p.header["location"] || "", "home:")
+    program? = p.header["kind"] == "program"
     arch = Page.section(p, "architecture")
     prac = Page.section(p, "practices")
 
     cond do
-      repo? and arch == "" -> ["section ## Architecture is missing: a project in a repository shows its C4 diagrams"]
+      (repo? or program?) and arch == "" -> ["section ## Architecture is missing: a #{p.header["kind"]} page shows its C4 diagrams"]
       repo? and prac == "" -> ["section ## Engineering practices is missing: a project in a repository shows how it follows project-template"]
       true -> (if arch == "", do: [], else: Architecture.problems(arch)) ++ (if prac == "", do: [], else: Practices.problems(prac))
     end
