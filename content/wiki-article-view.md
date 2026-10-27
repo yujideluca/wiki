@@ -8,15 +8,15 @@ status: active
 location: wiki:frontend/src/ArticleView.elm
 fed_by: []
 feeds: [wiki-frontend]
-sources: [wiki:frontend/src/ArticleView.elm, wiki:frontend/src/WikiText.elm, wiki:frontend/tests/ArticleStepsTests.elm]
-reviewed: 2026-10-27T01:03Z
+sources: [wiki:frontend/src/ArticleView.elm, wiki:frontend/src/WikiText.elm, wiki:frontend/tests/ArticleStepsTests.elm, wiki:frontend/static/style.css]
+reviewed: 2026-10-27T02:25Z
 ---
 
 ## What it is
 The article view is the full page of one concept, laid out like Wikipedia (option A of the design mockups).
 
 ## What it does
-It shows the title and kind, the lead paragraph, an infobox (kind, project, status, location, since and until dates, sources, memory entries) with the pipeline strip (what feeds it → it → who receives its output) and a small map of the connected pages, then the sections with translated headings, and the history of the page from git. A process page (one with a Steps section, such as a skill or a procedure) also gets a step-through diagram: numbered dots, the current step lit, its text and the pages it involves, with Previous and Next buttons. The ring around the lit step (its glow and its slight growth) is kept whole by padding around the row of dots.
+It shows the title and kind, the lead paragraph, an infobox (kind, project, status, location, since and until dates, sources, memory entries) with the pipeline strip (what feeds it → it → who receives its output) and an alphabetical list of connected pages with full linked titles, colored kind markers and kind labels. Long titles wrap onto the next line, then the sections with translated headings, and the history of the page from git. A process page (one with a Steps section, such as a skill or a procedure) also gets a step-through diagram: numbered dots, the current step lit, its text and the pages it involves, with Previous and Next buttons. The ring around the lit step (its glow and its slight growth) is kept whole by padding around the row of dots.
 
 On a phone (a window 760 pixels wide or less) the page follows the layout of Wikipedia's mobile site: a bar at the top with a back arrow to the map, the menu button and the search field; then the title, the lead paragraph and the infobox in one column; every other section starts closed and opens when its heading is tapped (`ArticleView` hides the text of a closed section). A page with a Flow section shows it as a flowchart under the lead paragraph: a pill for what starts the chain, boxes for steps, a diamond for a question and a double box for an end product, coloured by the kind of the page they link to, with a legend underneath ([[wiki-flow-view]]).
 

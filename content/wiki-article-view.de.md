@@ -1,7 +1,7 @@
 ---
 id: wiki-article-view
 lang: de
-source_hash: fc23cc39a8cf
+source_hash: 5264a59f305e
 title: Artikelansicht
 ---
 
@@ -9,7 +9,7 @@ title: Artikelansicht
 Die Artikelansicht ist die vollständige Seite eines Konzepts, gestaltet wie Wikipedia (Option A der Entwurfsskizzen).
 
 ## What it does
-Sie zeigt Titel und Art, den Einleitungsabsatz, eine Infobox (Art, Projekt, Status, Ort, Daten seit und bis, Quellen, Gedächtniseinträge) mit dem Pipeline-Streifen (was es speist → es → wer seine Ausgabe erhält) und eine kleine Karte der verbundenen Seiten, dann die Abschnitte mit übersetzten Überschriften und den Verlauf der Seite aus Git. Eine Ablaufseite (eine mit Abschnitt Steps, etwa eine Skill oder ein Verfahren) bekommt außerdem ein Schritt-für-Schritt-Diagramm: nummerierte Punkte, der aktuelle Schritt leuchtet, sein Text und die beteiligten Seiten, mit den Knöpfen Zurück und Weiter.
+Sie zeigt Titel und Art, den Einleitungsabsatz, eine Infobox (Art, Projekt, Status, Ort, Daten seit und bis, Quellen, Gedächtniseinträge) mit dem Pipeline-Streifen (was es speist → es → wer seine Ausgabe erhält) und eine alphabetische Liste verbundener Seiten mit vollständigen verlinkten Titeln, farbigen Artmarkierungen und Artbezeichnungen. Lange Titel werden umgebrochen, dann die Abschnitte mit übersetzten Überschriften und den Verlauf der Seite aus Git. Eine Ablaufseite (eine mit Abschnitt Steps, etwa eine Skill oder ein Verfahren) bekommt außerdem ein Schritt-für-Schritt-Diagramm: nummerierte Punkte, der aktuelle Schritt leuchtet, sein Text und die beteiligten Seiten, mit den Knöpfen Zurück und Weiter.
 
 Der Ring um den hervorgehobenen Schritt (sein Leuchten und sein leichtes Wachsen) bleibt durch Abstand um die Punktereihe vollständig sichtbar.
 
