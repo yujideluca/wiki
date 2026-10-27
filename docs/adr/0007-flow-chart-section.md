@@ -23,7 +23,7 @@ a custom Elm app with its own Markdown rendering, so a diagram needs a decision 
 - **Drawing:** `FlowView.elm` draws SVG from the Elm view, top to bottom: a pill for what starts the chain, a
   diamond for a question, a double box for an end product, boxes coloured by the kind of their first linked page,
   arrows drawn with elm-visualization's `Shape.bumpYCurve`, a legend underneath (FL-3).
-- **Layout:** `Flow.elm` places the boxes itself: longest-path rows, a stopover for every arrow that skips a row, the
+- **Layout:** `FlowLayout.elm` places the boxes itself: longest-path rows, a stopover for every arrow that skips a row, the
   barycenter method for the order inside a row, and an isotonic regression (pool adjacent violators) for the columns
   (FL-4). No layout package is used.
 - **Page shape:** a loop is not allowed in a flow (it is written in the text); at most 18 boxes, labels up to 120
@@ -49,6 +49,6 @@ a custom Elm app with its own Markdown rendering, so a diagram needs a decision 
 Easier: the chain of a concept is one list of lines in the page, checked by `wiki check` for structure and links, and drawn
 the same way everywhere, in the three languages. Harder: a flow must be kept true when the chain changes, and no
 program can tell whether its words are right (the writing rule in CLAUDE.md asks for it). Our own layout is code to
-maintain; it is small (about 400 lines), pure and tested. A chart wider than a phone screen scrolls inside its box.
+maintain; it is small (about 500 lines), pure and tested. A chart wider than a phone screen scrolls inside its box.
 
 Kept true by: REQ FL-1, FL-2 (`server/test/flow_test.exs`), FL-3, FL-4 (`frontend/tests/FlowTests.elm`).

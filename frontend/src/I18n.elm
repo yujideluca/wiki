@@ -142,7 +142,7 @@ strings lang =
             , flowStep = "A step"
             , flowQuestion = "A question"
             , flowEnd = "End product"
-            , flowHint = "Click a page name to open it."
+            , flowHint = "Click a page name to open it. A wide chart scrolls sideways."
             }
 
         De ->
@@ -186,7 +186,7 @@ strings lang =
             , flowStep = "Ein Schritt"
             , flowQuestion = "Eine Frage"
             , flowEnd = "Endprodukt"
-            , flowHint = "Auf einen Seitennamen klicken, um ihn zu öffnen."
+            , flowHint = "Auf einen Seitennamen klicken, um ihn zu öffnen. Ein breites Diagramm lässt sich seitlich scrollen."
             }
 
         PtBr ->
@@ -230,7 +230,7 @@ strings lang =
             , flowStep = "Um passo"
             , flowQuestion = "Uma pergunta"
             , flowEnd = "Produto final"
-            , flowHint = "Clique no nome de uma página para abri-la."
+            , flowHint = "Clique no nome de uma página para abri-la. Um diagrama largo rola para os lados."
             }
 
 

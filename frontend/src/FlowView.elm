@@ -3,11 +3,12 @@ module FlowView exposing (view)
 {-| The flowchart of a page (requirement FL-3): what starts the chain at the top, the steps and questions in between,
 the end products at the bottom. Boxes take the colour of the kind of the first page they link to, so a box says what
 sort of thing it is before it is read; the page names inside a box open those pages. The arrows use elm-visualization's
-`Shape.bumpYCurve`; the placing is in `Flow`.
+`Shape.bumpYCurve`; the placing is in `FlowLayout`.
 -}
 
 import Data exposing (Graph)
-import Flow exposing (Placed, Role(..), Route)
+import Flow exposing (Role(..))
+import FlowLayout exposing (Placed, Route)
 import Html exposing (Html, div, span, text)
 import Html.Attributes as A
 import I18n exposing (Lang)
@@ -26,7 +27,7 @@ view lang graph markdown =
             Flow.parse markdown
 
         laid =
-            Flow.layout chart
+            FlowLayout.layout chart
 
         s =
             I18n.strings lang
@@ -99,7 +100,13 @@ routeLabel r =
             [ S.x (String.fromFloat (Tuple.first r.labelAt))
             , S.y (String.fromFloat (Tuple.second r.labelAt))
             , S.class "fl-elabel"
-            , S.textAnchor "middle"
+            , S.textAnchor
+                (if r.labelRight then
+                    "start"
+
+                 else
+                    "end"
+                )
             ]
             [ Svg.text r.arrow.label ]
 

@@ -5,6 +5,7 @@ import Data
 import Dict
 import Expect
 import Flow exposing (Role(..))
+import FlowLayout
 import I18n exposing (Lang(..))
 import Set
 import Test exposing (Test, describe, test)
@@ -71,12 +72,12 @@ article markdown =
     }
 
 
-rowOf : Flow.Layout -> String -> Float
+rowOf : FlowLayout.Layout -> String -> Float
 rowOf layout id =
     layout.boxes |> List.filter (\p -> p.box.id == id) |> List.head |> Maybe.map .y |> Maybe.withDefault -1
 
 
-xOf : Flow.Layout -> String -> Float
+xOf : FlowLayout.Layout -> String -> Float
 xOf layout id =
     layout.boxes |> List.filter (\p -> p.box.id == id) |> List.head |> Maybe.map .x |> Maybe.withDefault -1
 
@@ -112,7 +113,7 @@ layouts =
                         Flow.parse sample
 
                     laid =
-                        Flow.layout chart
+                        FlowLayout.layout chart
 
                     lower =
                         chart.arrows |> List.all (\a -> rowOf laid a.to > rowOf laid a.from)
@@ -132,14 +133,14 @@ layouts =
             \_ ->
                 let
                     laid =
-                        Flow.layout (Flow.parse "trigger a: A\nstep b: B\nstep c: C\nproduct d: D\na -> b\nb -> c\nc -> d")
+                        FlowLayout.layout (Flow.parse "trigger a: A\nstep b: B\nstep c: C\nproduct d: D\na -> b\nb -> c\nc -> d")
                 in
                 [ "a", "b", "c", "d" ] |> List.map (xOf laid) |> List.map (\x -> round x) |> Set.fromList |> Set.size |> Expect.equal 1
         , test "an answer of a question sits on each side below it" <|
             \_ ->
                 let
                     laid =
-                        Flow.layout (Flow.parse sample)
+                        FlowLayout.layout (Flow.parse sample)
                 in
                 Expect.all
                     [ \_ -> Expect.lessThan (xOf laid "d") (xOf laid "p")
@@ -150,17 +151,31 @@ layouts =
             \_ ->
                 let
                     laid =
-                        Flow.layout (Flow.parse long)
+                        FlowLayout.layout (Flow.parse long)
 
                     skipping =
                         laid.routes |> List.filter (\r -> r.arrow.from == "t" && r.arrow.to == "p") |> List.head
                 in
                 skipping |> Maybe.map (.points >> List.length) |> Expect.equal (Just 4)
+        , test "an answer's label sits beside its own curve, on the side the arrow leans to" <|
+            \_ ->
+                let
+                    laid =
+                        FlowLayout.layout (Flow.parse sample)
+
+                    side answer =
+                        laid.routes |> List.filter (\r -> r.arrow.label == answer) |> List.map .labelRight
+                in
+                Expect.all
+                    [ \_ -> Expect.equal [ False ] (side "yes")
+                    , \_ -> Expect.equal [ True ] (side "no")
+                    ]
+                    ()
         , test "the same text always gives the same picture" <|
-            \_ -> Expect.equal (Flow.layout (Flow.parse sample)) (Flow.layout (Flow.parse sample))
+            \_ -> Expect.equal (FlowLayout.layout (Flow.parse sample)) (FlowLayout.layout (Flow.parse sample))
         , test "an arrow back to an earlier box does not hang the layout" <|
             \_ ->
-                Flow.layout (Flow.parse "trigger a: A\nstep b: B\nproduct c: C\na -> b\nb -> a\nb -> c")
+                FlowLayout.layout (Flow.parse "trigger a: A\nstep b: B\nproduct c: C\na -> b\nb -> a\nb -> c")
                     |> .boxes
                     |> List.length
                     |> Expect.equal 3
