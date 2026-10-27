@@ -5,11 +5,11 @@ aliases: [report matcher, radiology matcher]
 kind: project
 project: none
 status: active
-location: home:dev/radiology-crawler
+location: radiology-crawler:
 fed_by: []
 feeds: []
-sources: [radiology-crawler:site_src/build.py, radiology-crawler:run_all.sh]
-reviewed: 2026-10-27T19:35Z
+sources: [radiology-crawler:DESIGN.md, radiology-crawler:CLAUDE.md, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/adr/0002-technology-and-languages.md, radiology-crawler:tools/quality_gate.sh, radiology-crawler:.github/workflows/quality-gate.yml, radiology-crawler:site_src/build.py, radiology-crawler:run_all.sh]
+reviewed: 2026-10-27T20:13Z
 ---
 
 ## What it is
@@ -74,6 +74,32 @@ tr -finds textbook passages in-> ix
 tr -asks for translations from-> c
 ps -reads live counts from-> db
 
+## Engineering practices
+How this project follows the golden path of [[project-template]].
+
+### Principles
+1. **Requirement, then test, then code**: a promise becomes a row in `docs/REQUIREMENTS.md`, then a test tagged `REQ <ID>`, then code.
+2. **Languages decided by Giovanni (2026-10-27)**: small tools in Python; web back end in Elixir; front end in Elm; the statistical math and the matching of a report against the pages in high-speed numerical Python (Cython, NumPy, C libraries), never plain-Python loops, which are too slow. The engine's first commit adds a speed-budget requirement so a test enforces it.
+3. **The gate decides**: `tools/quality_gate.sh` is the one definition of passing.
+4. **Polite and lawful collection**: the crawler obeys `robots.txt`; downloaded pages, databases and textbooks never enter git.
+5. **Codex use is bounded**: fresh sessions under 250,000 tokens, the cheaper model for translations.
+6. **Decisions are written where the code is**: a decision log in `DESIGN.md` and an architecture decision record (ADR) for structural ones.
+
+### Decisions
+Four architecture decision records (ADRs, short notes that keep the reasons for a decision) in `docs/adr/`: record decisions (0001), the stack and the rule for the math (0002), the maintenance program measures and the review skill judges (0003), plus the blank template (0000).
+
+### Requirements
+Eleven requirements in `docs/REQUIREMENTS.md`: five for the crawler (prefix CW), five for the translator (TL) and one for the plan site (WS). Each has a test tagged `REQ <ID>`; the traceability step fails when one has none.
+
+### Quality gate
+`tools/quality_gate.sh` has three steps: compile the code and run the 11 tests; requirement traceability; the fitness functions of `pipeline-check` (the maintenance program, see [[pipeline-check]]): architecture rule, shell-script lint, a limit of 800 lines per Python file, and gate time.
+
+### Continuous integration
+Continuous integration (CI) means automatic checks on every push. The workflow `quality-gate.yml` runs the gate on GitHub; a local pre-push check runs it before `main` is pushed. On 2026-10-27 the first run failed because a fresh copy of the repository has no `data/` folder and the crawler's log function assumed one; the fix passed.
+
+### Maintenance
+Technical debt is tracked as GitHub issues labelled `debt` with priorities P1 to P3 under the [[maintenance-policy]]; the labels exist. A monthly review is planned.
+
 ## What it does
 Today it collects and prepares text. The planned website will turn a typed report into observations (a finding, where it is, its size, and whether it is present, absent, uncertain or old), compare them with the collected articles using BM25 (a standard formula that ranks a text by how many rare, informative words it shares with the query), and show the evidence. Decisions already taken: the first version covers one narrow area (thyroid ultrasound with TI-RADS); no patient data is stored; the computer has no graphics card and must serve several people at once; Claude and Codex write the code and Giovanni reviews and tests it.
 
@@ -82,7 +108,7 @@ Source of the content: Radiopaedia, a free radiology reference site. Its pages a
 
 The method was chosen from a research report written by [[codex]] on 2026-10-27: BM25 plus a term lexicon, negation rules and a fixed score table, with learned reranking and embeddings (numbers that represent the meaning of a text) only if a test shows they help. The report itself said that no published study proves any method meets this exact goal, so a test set of physician-written reports is required.
 
-The folder `~/dev/radiology-crawler` is not yet a git repository (git is the tool that saves every change as a commit) and has no automated quality gate or continuous integration; adding them is planned before the website is built.
+The code lives in the private repository `yujideluca/radiology-report-matcher` (folder `~/dev/radiology-crawler`, kept under that name because long jobs run from it). The plan site is also published openly, with no login, through Tailscale Funnel on port 8443 (the wiki keeps the main port behind its sign-in); a small static server, `radiology-plan-site.service`, serves the folder `~/Documents/Radiology Report Matcher/` from this laptop, so it is online while the laptop is on. Languages decided by Giovanni on 2026-10-27: Python tools, Elixir back end, Elm front end, and the matching math in high-speed numerical Python (Cython, NumPy, C libraries), never plain-Python loops.
 
 ## Where it sits in the pipeline
 It starts the chain: [[radiopaedia-crawler]] → [[report-translator]] → (planned) index builder → (planned) website.

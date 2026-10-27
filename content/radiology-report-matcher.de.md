@@ -1,7 +1,7 @@
 ---
 id: radiology-report-matcher
 lang: de
-source_hash: beb2b2ad70dc
+source_hash: 8ae7b3bc3078
 title: Radiology Report Matcher (geplante Website)
 ---
 
@@ -67,6 +67,32 @@ tr -findet Lehrbuchpassagen in-> ix
 tr -bittet um Übersetzungen von-> c
 ps -liest aktuelle Zahlen aus-> db
 
+## Engineering practices
+Wie dieses Projekt dem Goldenen Weg von [[project-template]] folgt.
+
+### Principles
+1. **Anforderung, dann Test, dann Code**: Ein Versprechen wird zu einer Zeile in `docs/REQUIREMENTS.md`, dann zu einem Test mit dem Tag `REQ <ID>`, dann zu Code.
+2. **Sprachen von Giovanni entschieden (2026-10-27)**: kleine Werkzeuge in Python; Web-Back-End in Elixir; Front End in Elm; die statistische Mathematik und der Abgleich eines Befunds mit den Seiten in schnellem numerischem Python (Cython, NumPy, C-Bibliotheken), niemals Schleifen in reinem Python, die zu langsam sind. Der erste Commit der Engine fügt eine Geschwindigkeitsanforderung hinzu, damit ein Test dies erzwingt.
+3. **Das Tor entscheidet**: `tools/quality_gate.sh` ist die einzige Definition von „bestanden“.
+4. **Höfliche und rechtmäßige Sammlung**: Der Crawler befolgt `robots.txt`; heruntergeladene Seiten, Datenbanken und Lehrbücher gelangen nie in Git.
+5. **Codex-Nutzung ist begrenzt**: neue Sitzungen unter 250.000 Tokens, das günstigere Modell für Übersetzungen.
+6. **Entscheidungen stehen dort, wo der Code ist**: ein Entscheidungsprotokoll in `DESIGN.md` und ein Architecture Decision Record (ADR) für strukturelle Entscheidungen.
+
+### Decisions
+Vier Architecture Decision Records (ADRs, kurze Notizen, die die Gründe einer Entscheidung festhalten) in `docs/adr/`: Entscheidungen festhalten (0001), der Stack und die Regel für die Mathematik (0002), das Wartungsprogramm misst und der Review-Skill urteilt (0003), dazu die leere Vorlage (0000).
+
+### Requirements
+Elf Anforderungen in `docs/REQUIREMENTS.md`: fünf für den Crawler (Präfix CW), fünf für den Übersetzer (TL) und eine für die Planwebsite (WS). Jede hat einen Test mit dem Tag `REQ <ID>`; der Rückverfolgbarkeitsschritt schlägt fehl, wenn eine keinen hat.
+
+### Quality gate
+`tools/quality_gate.sh` hat drei Schritte: den Code kompilieren und die 11 Tests ausführen; Rückverfolgbarkeit der Anforderungen; die Fitnessfunktionen von `pipeline-check` (dem Wartungsprogramm, siehe [[pipeline-check]]): Architekturregel, Lint der Shell-Skripte, eine Grenze von 800 Zeilen pro Python-Datei und die Dauer des Tors.
+
+### Continuous integration
+Continuous Integration (CI) bedeutet automatische Prüfungen bei jedem Push. Der Workflow `quality-gate.yml` führt das Tor auf GitHub aus; eine lokale Prüfung vor dem Push führt es aus, bevor `main` hochgeladen wird. Am 2026-10-27 scheiterte der erste Lauf, weil eine frische Kopie des Repositorys keinen Ordner `data/` hat und die Log-Funktion des Crawlers einen voraussetzte; die Korrektur bestand.
+
+### Maintenance
+Technische Schulden werden als GitHub-Issues mit dem Label `debt` und den Prioritäten P1 bis P3 nach der [[maintenance-policy]] geführt; die Labels existieren. Ein monatlicher Review ist geplant.
+
 ## What it does
 Heute sammelt und bereitet es Text auf. Die geplante Website verwandelt einen eingegebenen Befund in Beobachtungen (ein Befund, wo er liegt, seine Größe und ob er vorhanden, nicht vorhanden, unsicher oder alt ist), vergleicht sie mit den gesammelten Artikeln mit BM25 (eine Standardformel, die einen Text danach reiht, wie viele seltene, aussagekräftige Wörter er mit der Anfrage teilt) und zeigt die Belege. Bereits getroffene Entscheidungen: Die erste Version deckt ein enges Gebiet ab (Schilddrüsen-Ultraschall mit TI-RADS); es werden keine Patientendaten gespeichert; der Computer hat keine Grafikkarte und muss mehrere Personen gleichzeitig bedienen; Claude und Codex schreiben den Code, Giovanni prüft und testet ihn.
 
@@ -75,7 +101,7 @@ Quelle der Inhalte: Radiopaedia, eine freie radiologische Referenzseite. Ihre Se
 
 Die Methode wurde aus einem Forschungsbericht gewählt, den [[codex]] am 2026-10-27 geschrieben hat: BM25 plus ein Begriffslexikon, Verneinungsregeln und eine feste Score-Tabelle, mit gelerntem Neuranking und Embeddings (Zahlen, die die Bedeutung eines Textes darstellen) nur, wenn ein Test zeigt, dass sie helfen. Der Bericht selbst sagte, dass keine veröffentlichte Studie belegt, dass eine Methode genau dieses Ziel erfüllt; deshalb ist ein Testsatz aus von Ärzten geschriebenen Befunden nötig.
 
-Der Ordner `~/dev/radiology-crawler` ist noch kein Git-Repository (Git ist das Werkzeug, das jede Änderung als Commit speichert) und hat kein automatisches Qualitätstor und keine kontinuierliche Integration; beides ist geplant, bevor die Website gebaut wird.
+Der Code liegt im privaten Repository `yujideluca/radiology-report-matcher` (Ordner `~/dev/radiology-crawler`, unter diesem Namen belassen, weil lange Jobs darin laufen). Die Planwebsite ist außerdem offen, ohne Anmeldung, über Tailscale Funnel auf Port 8443 veröffentlicht (das Wiki behält den Hauptport hinter seiner Anmeldung); ein kleiner statischer Server, `radiology-plan-site.service`, liefert den Ordner `~/Documents/Radiology Report Matcher/` von diesem Laptop aus, sie ist also online, solange der Laptop läuft. Von Giovanni am 2026-10-27 entschiedene Sprachen: Werkzeuge in Python, Back End in Elixir, Front End in Elm und die Matching-Mathematik in schnellem numerischem Python (Cython, NumPy, C-Bibliotheken), niemals Schleifen in reinem Python.
 
 ## Where it sits in the pipeline
 Es steht am Anfang der Kette: [[radiopaedia-crawler]] → [[report-translator]] → (geplant) Index-Erstellung → (geplant) Website.

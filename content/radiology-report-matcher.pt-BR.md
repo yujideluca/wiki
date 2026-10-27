@@ -1,7 +1,7 @@
 ---
 id: radiology-report-matcher
 lang: pt-BR
-source_hash: beb2b2ad70dc
+source_hash: 8ae7b3bc3078
 title: Radiology Report Matcher (site planejado)
 ---
 
@@ -67,6 +67,32 @@ tr -encontra trechos dos livros em-> ix
 tr -pede traduções a-> c
 ps -lê contagens atuais de-> db
 
+## Engineering practices
+Como este projeto segue o caminho dourado do [[project-template]].
+
+### Principles
+1. **Requisito, depois teste, depois código**: uma promessa vira uma linha em `docs/REQUIREMENTS.md`, depois um teste com a marca `REQ <ID>`, depois código.
+2. **Linguagens decididas por Giovanni (2026-10-27)**: ferramentas pequenas em Python; back end da web em Elixir; front end em Elm; a matemática estatística e a comparação de um laudo com as páginas em Python numérico de alta velocidade (Cython, NumPy, bibliotecas em C), nunca laços em Python puro, que são lentos demais. O primeiro commit do motor acrescenta um requisito de velocidade para que um teste imponha isso.
+3. **O portão decide**: `tools/quality_gate.sh` é a única definição de "aprovado".
+4. **Coleta educada e legal**: o rastreador obedece ao `robots.txt`; páginas baixadas, bancos de dados e livros-texto nunca entram no git.
+5. **O uso do Codex é limitado**: sessões novas abaixo de 250.000 tokens, o modelo mais barato nas traduções.
+6. **As decisões ficam onde está o código**: um registro de decisões em `DESIGN.md` e um registro de decisão de arquitetura (ADR) para as estruturais.
+
+### Decisions
+Quatro registros de decisão de arquitetura (ADRs, notas curtas que guardam os motivos de uma decisão) em `docs/adr/`: registrar decisões (0001), a stack e a regra para a matemática (0002), o programa de manutenção mede e a skill de revisão julga (0003), além do modelo em branco (0000).
+
+### Requirements
+Onze requisitos em `docs/REQUIREMENTS.md`: cinco para o rastreador (prefixo CW), cinco para o tradutor (TL) e um para o site de plano (WS). Cada um tem um teste com a marca `REQ <ID>`; a etapa de rastreabilidade falha quando algum não tem.
+
+### Quality gate
+`tools/quality_gate.sh` tem três etapas: compilar o código e rodar os 11 testes; rastreabilidade dos requisitos; as funções de aptidão do `pipeline-check` (o programa de manutenção, veja [[pipeline-check]]): regra de arquitetura, lint dos scripts de shell, limite de 800 linhas por arquivo Python e tempo do portão.
+
+### Continuous integration
+Integração contínua (CI) significa verificações automáticas a cada push. O workflow `quality-gate.yml` roda o portão no GitHub; uma verificação local antes do push o roda antes de `main` ser enviada. Em 2026-10-27 a primeira execução falhou porque uma cópia nova do repositório não tem a pasta `data/` e a função de log do rastreador supunha que existia; a correção passou.
+
+### Maintenance
+A dívida técnica é registrada como issues do GitHub com o rótulo `debt` e prioridades P1 a P3, conforme a [[maintenance-policy]]; os rótulos existem. Uma revisão mensal está planejada.
+
 ## What it does
 Hoje ele coleta e prepara texto. O site planejado transformará um laudo digitado em observações (um achado, onde está, seu tamanho e se está presente, ausente, incerto ou antigo), vai compará-las com os artigos coletados usando BM25 (uma fórmula padrão que ordena um texto pelo número de palavras raras e informativas que ele compartilha com a consulta) e mostrará as evidências. Decisões já tomadas: a primeira versão cobre uma área estreita (ultrassonografia de tireoide com TI-RADS); nenhum dado de paciente é guardado; o computador não tem placa de vídeo e deve atender várias pessoas ao mesmo tempo; Claude e Codex escrevem o código e Giovanni revisa e testa.
 
@@ -75,7 +101,7 @@ Fonte do conteúdo: Radiopaedia, um site de referência de radiologia gratuito. 
 
 O método foi escolhido a partir de um relatório de pesquisa escrito pelo [[codex]] em 2026-10-27: BM25 mais um léxico de termos, regras de negação e uma tabela fixa de escores, com reordenação aprendida e embeddings (números que representam o significado de um texto) só se um teste mostrar que ajudam. O próprio relatório disse que nenhum estudo publicado prova que algum método atenda exatamente a esse objetivo; por isso é preciso um conjunto de teste com laudos escritos por médicos.
 
-A pasta `~/dev/radiology-crawler` ainda não é um repositório git (git é a ferramenta que guarda cada alteração como um commit) e não tem portão de qualidade automático nem integração contínua; ambos estão planejados antes de o site ser construído.
+O código está no repositório privado `yujideluca/radiology-report-matcher` (pasta `~/dev/radiology-crawler`, mantida com esse nome porque tarefas longas rodam nela). O site de plano também está publicado abertamente, sem login, pelo Tailscale Funnel na porta 8443 (o wiki mantém a porta principal atrás do seu login); um pequeno servidor estático, `radiology-plan-site.service`, serve a pasta `~/Documents/Radiology Report Matcher/` a partir deste notebook, então fica no ar enquanto o notebook estiver ligado. Linguagens decididas por Giovanni em 2026-10-27: ferramentas em Python, back end em Elixir, front end em Elm e a matemática de comparação em Python numérico de alta velocidade (Cython, NumPy, bibliotecas em C), nunca laços em Python puro.
 
 ## Where it sits in the pipeline
 Ele inicia a cadeia: [[radiopaedia-crawler]] → [[report-translator]] → (planejado) construtor de índice → (planejado) site.
