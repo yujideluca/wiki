@@ -1,7 +1,7 @@
 ---
 id: remote-terminal
 lang: de
-source_hash: d10748d382cd
+source_hash: c5f05afb3703
 title: remote-terminal-Einrichtung (SSH + Tailscale)
 ---
 
@@ -19,3 +19,8 @@ Es ist die Grundlage des gesamten Fernzugriffs auf den [[acer-nitro]].
 
 ## Who receives its output
 [[tailscale]] und der SSH-Dienst.
+
+## Notes
+Am 2026-10-27 verband sich Termux (die Android-Terminal-App) auf dem Motorola edge 50 fusion über dasselbe WLAN mit dem Laptop. Termux hatte zunächst keinen eigenen Anmeldeschlüssel; die Anmeldung scheiterte mit `Permission denied (publickey)`. Auf diesem Handy wurde ein neues Ed25519-Schlüsselpaar erstellt. Nur der öffentliche Teil wurde der Datei `~/.ssh/authorized_keys` des Laptops hinzugefügt, der Liste der zur Anmeldung zugelassenen Schlüssel. Der private Teil bleibt auf dem Handy. Der ältere zugelassene Schlüssel blieb erhalten.
+
+Nach der Anmeldung öffnete `tmux -L codex-status attach-session -t codex-f650038b2a0e` das laufende [[codex]]-Gespräch auf dem Handy. Der Handybildschirm und zwei verbundene Terminal-Clients bestätigten die Verbindung. Der Sitzungsname gilt nur für dieses Gespräch. Diese Prüfung bestätigt den lokalen WLAN-Zugang auf diesem Handy; der Zugang aus einem anderen Netzwerk und die separate Codex-Kopplung wurden nicht verifiziert.

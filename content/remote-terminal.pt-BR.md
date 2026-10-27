@@ -1,7 +1,7 @@
 ---
 id: remote-terminal
 lang: pt-BR
-source_hash: d10748d382cd
+source_hash: c5f05afb3703
 title: Configuração do remote-terminal (SSH + Tailscale)
 ---
 
@@ -19,3 +19,8 @@ Instala três coisas de fontes oficiais: um servidor OpenSSH (o programa que ace
 
 ## Who receives its output
 O [[tailscale]] e o serviço SSH.
+
+## Notes
+Em 2026-10-27, o Termux (o aplicativo de terminal para Android) no Motorola edge 50 fusion conectou-se ao notebook pela mesma rede sem fio. Inicialmente o Termux não tinha chave de cliente e o login falhou com `Permission denied (publickey)`. Um novo par de chaves Ed25519 foi criado nesse celular; somente a parte pública foi adicionada ao `~/.ssh/authorized_keys` do notebook, a lista de chaves autorizadas a entrar. A parte privada permanece no celular. A chave autorizada anterior foi preservada.
+
+Depois do login, `tmux -L codex-status attach-session -t codex-f650038b2a0e` abriu a conversa em execução do [[codex]] no celular. A tela do celular e dois terminais conectados confirmaram a conexão. O nome da sessão é específico dessa conversa. Esta verificação cobre o acesso pela rede sem fio local nesse celular; o acesso de outra rede e o recurso separado de pareamento do Codex não foram verificados.

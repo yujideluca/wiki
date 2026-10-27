@@ -9,7 +9,7 @@ location: remote-terminal:setup-sudo.sh
 fed_by: []
 feeds: [tailscale]
 sources: [remote-terminal:setup-sudo.sh]
-reviewed: 2026-10-25T02:05Z
+reviewed: 2026-10-27T16:43Z
 ---
 
 ## What it is
@@ -26,3 +26,8 @@ It is the base of all remote access to the [[acer-nitro]].
 
 ## Who receives its output
 [[tailscale]] and the SSH service.
+
+## Notes
+On 2026-10-27, Termux (the Android terminal app) on the Motorola edge 50 fusion connected to the laptop over the same wireless network. Termux initially had no client key and login failed with `Permission denied (publickey)`. A new Ed25519 key pair was created on that phone; only its public part was added to the laptop's `~/.ssh/authorized_keys`, the list of keys allowed to log in. The private part stays on the phone. The older authorised key was preserved.
+
+After login, `tmux -L codex-status attach-session -t codex-f650038b2a0e` opened the running [[codex]] conversation on the phone. The phone screen and two attached terminal clients confirmed the connection. The session name is specific to that conversation. This check covers local wireless access on that phone; access from another network and the separate Codex pairing feature were not verified.
