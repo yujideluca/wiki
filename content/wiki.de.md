@@ -1,7 +1,7 @@
 ---
 id: wiki
 lang: de
-source_hash: 396431135113
+source_hash: e26a9ade6c4e
 title: Wiki (diese Seite)
 ---
 
@@ -33,7 +33,7 @@ s5 -> s6
 s6 -> p2
 
 ## What it does
-Es lässt Giovanni eine Architekturfrage nach einer Suche und höchstens zwei Klicks beantworten: Suche mit Vorschlägen beim Tippen, über einen Punkt der Karte fahren, um in vier Kästen zu sehen, was er ist, auf den Punkt klicken für die vollständige Seite ([[wiki-frontend]]). Auf einem Handy füllt die Karte den Bildschirm mit einer Suchleiste oben, und das Antippen eines Punkts öffnet eine Sprechblase mit seiner Beschreibung; auf einem Desktop wird die Karte durch eine Linse gesehen, und ihre Punkte dehnen sich elastisch, wenn man sie zieht ([[wiki-map-view]]). Es wird am Ende jeder Aufgabe automatisch aktuell gehalten ([[end-of-task]]).
+Es lässt Giovanni eine Architekturfrage nach einer Suche und höchstens zwei Klicks beantworten: Suche mit Vorschlägen beim Tippen, über einen Punkt der Karte fahren, um in vier Kästen zu sehen, was er ist, auf den Punkt klicken für die vollständige Seite ([[wiki-frontend]]). Auf einem Handy füllt die Karte den Bildschirm mit einer Suchleiste oben, und das Antippen eines Punkts öffnet eine Sprechblase mit seiner Beschreibung; auf einem Desktop wird die Karte durch eine Linse gesehen, und ihre Punkte dehnen sich elastisch, wenn man sie zieht ([[wiki-map-view]]). Es wird am Ende jeder Aufgabe automatisch aktuell gehalten ([[end-of-task]]). Für das ganze System auf einer Seite beginnt man mit [[system-overview]].
 
 ## How it does it
 Der Inhalt besteht aus Markdown-Textdateien, jede mit einem kleinen Kopf ([[wiki-content]]); sie werden von [[wiki-check]] geprüft und von [[wiki-build]] in JSON-Daten (JavaScript Object Notation) verwandelt. Der sichtbare Teil ist in Elm geschrieben ([[wiki-frontend]]); der Server ist in Elixir geschrieben ([[wiki-server]]) und lässt nur ein Google-Konto hinein, allen anderen zeigt er einen Köder ([[wiki-router]], [[decoy-page]]). Im Internet ist es über [[tailscale-funnel]] erreichbar. Die Sprachen sind Englisch, Deutsch und brasilianisches Portugiesisch.

@@ -116,7 +116,7 @@ svg.map:active { cursor: grabbing; }
 /* Article (light, Wikipedia-like) */
 .on-article { background: var(--paper); min-height: 100vh; color-scheme: light dark; }
 .article-page { background: var(--paper); color: var(--ink); }
-.article { max-width: 1040px; margin: 0 auto; padding: 24px 16px 64px; font-family: var(--serif); font-size: 17px; line-height: 1.6; }
+.article { max-width: min(1500px, 96vw); margin: 0 auto; padding: 24px 16px 64px; font-family: var(--serif); font-size: 17px; line-height: 1.6; }
 .article h1 { font-weight: 400; font-size: 34px; margin: 0; border-bottom: 1px solid var(--rule); padding-bottom: 4px; }
 .article .subtitle { margin: 4px 0 16px; color: var(--ink-muted); font-family: var(--ui); font-size: 13px; }
 .article h2 { font-weight: 400; font-size: 24px; border-bottom: 1px solid var(--rule); margin: 28px 0 8px; padding-bottom: 2px; }
@@ -132,6 +132,7 @@ svg.map:active { cursor: grabbing; }
 .history ul { font-family: var(--ui); font-size: 14px; padding-left: 18px; }
 .history .date { color: var(--ink-muted); font-variant-numeric: tabular-nums; }
 
+.article p, .article li { max-width: 125ch; }
 .infobox {
   float: right; width: 300px; margin: 0 0 16px 24px; background: var(--box); color: var(--ink); border: 1px solid var(--rule);
   font-family: var(--ui); font-size: 13px; line-height: 1.45; padding: 10px;

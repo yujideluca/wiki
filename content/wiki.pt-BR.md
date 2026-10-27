@@ -1,7 +1,7 @@
 ---
 id: wiki
 lang: pt-BR
-source_hash: 396431135113
+source_hash: e26a9ade6c4e
 title: Wiki (este site)
 ---
 
@@ -33,7 +33,7 @@ s5 -> s6
 s6 -> p2
 
 ## What it does
-Permite ao Giovanni responder uma pergunta de arquitetura com uma busca e no máximo dois cliques: busca com sugestões enquanto digita, passar o mouse sobre um ponto do mapa para ver o que é em quatro caixas, clicar no ponto para a página completa ([[wiki-frontend]]). No celular o mapa ocupa a tela com uma barra de busca no alto e tocar em um ponto abre um balão com sua descrição; no desktop o mapa é visto por uma lente e seus pontos se esticam elasticamente quando arrastados ([[wiki-map-view]]). É mantido em dia automaticamente no fim de cada tarefa ([[end-of-task]]).
+Permite ao Giovanni responder uma pergunta de arquitetura com uma busca e no máximo dois cliques: busca com sugestões enquanto digita, passar o mouse sobre um ponto do mapa para ver o que é em quatro caixas, clicar no ponto para a página completa ([[wiki-frontend]]). No celular o mapa ocupa a tela com uma barra de busca no alto e tocar em um ponto abre um balão com sua descrição; no desktop o mapa é visto por uma lente e seus pontos se esticam elasticamente quando arrastados ([[wiki-map-view]]). É mantido em dia automaticamente no fim de cada tarefa ([[end-of-task]]). Para o sistema inteiro numa página, comece por [[system-overview]].
 
 ## How it does it
 O conteúdo são arquivos de texto Markdown, cada um com um pequeno cabeçalho ([[wiki-content]]); são verificados pelo [[wiki-check]] e transformados em dados JSON (JavaScript Object Notation) pelo [[wiki-build]]. A parte que se vê é escrita em Elm ([[wiki-frontend]]); o servidor é escrito em Elixir ([[wiki-server]]) e deixa entrar só uma conta Google, mostrando uma isca a todos os outros ([[wiki-router]], [[decoy-page]]). Na internet é alcançado pelo [[tailscale-funnel]]. Os idiomas são inglês, alemão e português do Brasil.

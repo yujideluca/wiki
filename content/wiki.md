@@ -10,7 +10,7 @@ fed_by: [claude-code, project-template]
 feeds: []
 sources: [wiki:docs/2026-10-22-wiki-design.md, wiki:DESIGN.md]
 memory: [#f1e117]
-reviewed: 2026-10-26T18:38Z
+reviewed: 2026-10-27T01:13Z
 ---
 
 ## What it is
@@ -41,7 +41,7 @@ s5 -> s6
 s6 -> p2
 
 ## What it does
-It lets Giovanni answer an architecture question after one search and at most two clicks: search with suggestions while typing, hover over a dot on the map to see what it is in four boxes, click the dot for the full page ([[wiki-frontend]]). On a phone the map fills the screen with a search bar on top and tapping a dot opens a balloon with its description; on a desktop the map is seen through a lens and its dots stretch elastically when dragged ([[wiki-map-view]]). It is kept up to date automatically at the end of every task ([[end-of-task]]).
+It lets Giovanni answer an architecture question after one search and at most two clicks: search with suggestions while typing, hover over a dot on the map to see what it is in four boxes, click the dot for the full page ([[wiki-frontend]]). On a phone the map fills the screen with a search bar on top and tapping a dot opens a balloon with its description; on a desktop the map is seen through a lens and its dots stretch elastically when dragged ([[wiki-map-view]]). It is kept up to date automatically at the end of every task ([[end-of-task]]). For the whole system on one page, start with [[system-overview]].
 
 ## How it does it
 The content is Markdown text files, each with a small header ([[wiki-content]]); they are checked by [[wiki-check]] and turned into JSON (JavaScript Object Notation) data by [[wiki-build]]. The part you see is written in Elm ([[wiki-frontend]]); the server is written in Elixir ([[wiki-server]]) and lets in only one Google account, showing everyone else a decoy ([[wiki-router]], [[decoy-page]]). It is reachable on the internet through [[tailscale-funnel]]. The languages are English, German and Brazilian Portuguese.
