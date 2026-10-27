@@ -1,7 +1,7 @@
 ---
 id: claude-code-settings
 lang: de
-source_hash: 9dc79892bd67
+source_hash: e61c7e9785ca
 title: Claude Code settings.json
 ---
 
@@ -12,7 +12,7 @@ title: Claude Code settings.json
 Sie registriert die Hooks, das sind kleine Programme, die Claude Code zu bestimmten Zeitpunkten automatisch ausführt ([Hooks erklärt](https://docs.claude.com/en/docs/claude-code/hooks-guide)): zu Beginn eines Chats ([[hook-session-start]]), wenn Giovanni eine Nachricht sendet ([[hook-prompt]]) und wenn Claude eine Antwort beendet ([[hook-stop]] und [[wiki-hook-stop]]). Außerdem legt sie die Statuszeile ([[pbar]]), zwei Umgebungsvariablen (`ANDROID_HOME` und `MOBILEMCP_DISABLE_TELEMETRY`, auf 1 gesetzt), die aktivierten Plugins ([[claude-plugins]]) mit einer zusätzlichen Plugin-Quelle (dem GitHub-Repository `panicgit/android-test-pilot`), das Modell (`sonnet`), das Farbschema (`dark`), den Schalter `agentPushNotifEnabled` für Push-Benachrichtigungen und einen Eintrag `autoMode` fest, der die Arbeitsumgebung in Text beschreibt.
 
 ## How it does it
-Claude Code liest die Datei beim Start. Die Gedächtnis-Hooks wurden durch den Befehl `mem install-hooks` eingetragen, der Wiki-Hook durch seine eigene Einrichtung. Die Datei wird nur absichtlich geändert; für diese Aufgabe gibt es die Skill update-config.
+Claude Code liest die Datei beim Start. Die Gedächtnis-Hooks wurden durch den Befehl `mem install-hooks` eingetragen, der Wiki-Hook durch seine eigene Einrichtung. Die Datei wird nur absichtlich geändert; für diese Aufgabe gibt es die Skill update-config. Der Eintrag `skillOverrides` schaltet 13 von claude.ai synchronisierte Skills (als `anthropic-skills:<name>` aufgelistet) ab, die es als Claude-Code-Skills gleichen Namens gibt, weil die Skill-Liste des Modells jeden doppelt ausgab; die Claude-Code-Kopien bleiben aktiv.
 
 ## Where it sits in the pipeline
 Wird zu Beginn jeder Claude-Code-Sitzung gelesen ([[chat-start]]).

@@ -9,7 +9,7 @@ location: workflow-memory:mem/harvest.py
 fed_by: [hook-prompt]
 feeds: [events-log]
 sources: [workflow-memory:mem/harvest.py]
-reviewed: 2026-10-22T16:33Z
+reviewed: 2026-10-27T00:21Z
 ---
 
 ## What it is
@@ -19,7 +19,7 @@ The harvester ("harvest" means to gather) picks up preferences from Giovanni's o
 Only the user's own message text counts (never tool output or Claude's text), in English and Portuguese, and only sentences that state a rule and name an action. By default a harvested preference applies to the current project only; a habit seen in two projects, or one phrased "in all my projects", becomes global (this step is called `promote`).
 
 ## How it does it
-Event ids are deterministic (the same input always produces the same id), so a hook call that is repeated writes the same file instead of a duplicate. A harvested entry never overwrites one with `owner: user` (Giovanni's own recorded words); instead it becomes a proposal listed in the review file for Giovanni to decide.
+Event ids are deterministic (the same input always produces the same id), so a hook call that is repeated writes the same file instead of a duplicate. A harvested entry never overwrites one with `owner: user` (Giovanni's own recorded words); instead it becomes a proposal listed in the review file for Giovanni to decide. Text is ignored when the whole message is longer than 1500 characters (a pasted document or a prompt written by a program, not a quick preference) and when a sentence starts like a heading or a numbered list item. This was added after Codex's generated suggestion prompts had been recorded as 17 false preferences.
 
 ## Where it sits in the pipeline
 Called by [[hook-prompt]] on every message Giovanni sends to Claude Code.
