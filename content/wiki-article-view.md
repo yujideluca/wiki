@@ -9,7 +9,7 @@ location: wiki:frontend/src/ArticleView.elm
 fed_by: []
 feeds: [wiki-frontend]
 sources: [wiki:frontend/src/ArticleView.elm, wiki:frontend/src/WikiText.elm, wiki:frontend/tests/ArticleStepsTests.elm, wiki:frontend/static/style.css]
-reviewed: 2026-10-27T02:25Z
+reviewed: 2026-10-27T02:29Z
 ---
 
 ## What it is

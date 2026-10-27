@@ -1,7 +1,7 @@
 ---
 id: wiki-frontend
 lang: de
-source_hash: 7a219002130c
+source_hash: 99292891e9d1
 title: Wiki-Front-End (Elm)
 ---
 
@@ -50,3 +50,6 @@ Die Spitze des Wikis, nach der Anmeldung vom [[wiki-router]] ausgeliefert.
 
 ## Who receives its output
 [[giovanni]], auf dem Laptop oder dem Handy.
+
+
+Verbundene Seiten in der Artikel-Infobox erscheinen als alphabetische Liste mit vollständigen Titeln, farbigen Artmarkierungen und Seitenlinks. Titel werden umgebrochen, damit Seiten mit vielen Verbindungen lesbar bleiben.

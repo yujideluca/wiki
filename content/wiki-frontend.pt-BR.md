@@ -1,7 +1,7 @@
 ---
 id: wiki-frontend
 lang: pt-BR
-source_hash: 7a219002130c
+source_hash: 99292891e9d1
 title: Front end do wiki (Elm)
 ---
 
@@ -50,3 +50,6 @@ O topo do wiki, servido pelo [[wiki-router]] depois do login.
 
 ## Who receives its output
 O [[giovanni]], no notebook ou no celular.
+
+
+As páginas ligadas na caixa do artigo aparecem em uma lista alfabética com títulos completos, marcadores coloridos de tipo e links. Os títulos quebram em mais de uma linha para manter legíveis as páginas com muitas ligações.

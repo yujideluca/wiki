@@ -9,7 +9,7 @@ location: wiki:frontend
 fed_by: [wiki-article-view, wiki-flow-view, wiki-map-view, wiki-router, wiki-search]
 feeds: [giovanni]
 sources: [wiki:frontend/src/Main.elm, wiki:frontend/src/TopBar.elm, wiki:frontend/src/Lens.elm, wiki:frontend/src/Motion.elm, wiki:frontend/static/style.css, wiki:frontend/static/index.html]
-reviewed: 2026-10-27T01:45Z
+reviewed: 2026-10-27T02:29Z
 ---
 
 ## What it is
@@ -57,3 +57,6 @@ The top of the wiki, served by the [[wiki-router]] after login.
 
 ## Who receives its output
 [[giovanni]], on the laptop or the phone.
+
+
+Connected pages in the article infobox use an alphabetical list with full titles, colored kind markers and page links. Titles wrap to keep pages with many connections readable.
