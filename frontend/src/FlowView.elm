@@ -99,7 +99,7 @@ chartSvg graph lang chart =
             , S.width (String.fromFloat laid.width)
             , S.height (String.fromFloat laid.height)
             , S.class "flow-svg"
-            , S.style ("min-width:" ++ String.fromFloat (laid.width * 0.8) ++ "px")
+            , S.style ("--nat:" ++ String.fromFloat laid.width ++ "px")
             , A.attribute "role" "img"
             ]
             (Svg.defs []
