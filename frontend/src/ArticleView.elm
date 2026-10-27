@@ -230,8 +230,8 @@ connectedPages lang graph id =
 
         item node =
             li []
-                [ a [ A.href ("/p/" ++ node.id), A.style "--c" (Data.kindColour graph node.kind) ]
-                    [ span [ A.class "connected-dot", A.attribute "aria-hidden" "true" ] []
+                [ a [ A.href ("/p/" ++ node.id) ]
+                    [ span [ A.class "connected-dot", A.style "background-color" (Data.kindColour graph node.kind), A.attribute "aria-hidden" "true" ] []
                     , span [ A.class "connected-title" ] [ text (Data.title lang node) ]
                     , span [ A.class "connected-kind" ] [ text node.kind ]
                     ]

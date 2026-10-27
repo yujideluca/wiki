@@ -61,7 +61,8 @@ tests =
                                     |> Query.fromHtml
                                     |> Query.find [ Selector.class "connected-pages" ]
                                     |> Expect.all
-                                        [ Query.findAll [ Selector.tag "li" ] >> Query.count (Expect.equal 1)
+                                        [ Query.find [ Selector.class "connected-dot" ] >> Query.has [ Selector.attribute (Html.Attributes.style "background-color" (Data.kindColour connected node.kind)) ]
+                                        , Query.findAll [ Selector.tag "li" ] >> Query.count (Expect.equal 1)
                                         , Query.find [ Selector.tag "a", Selector.attribute (Html.Attributes.href "/p/long-page") ] >> Query.has [ Selector.text "A connected page with a very long readable title" ]
                                         ]
                         )
