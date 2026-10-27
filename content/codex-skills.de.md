@@ -2,11 +2,37 @@
 id: codex-skills
 title: Codex skills
 lang: de
-source_hash: e5c42ee95c90
+source_hash: eb3b95269d69
 ---
 
 ## What it is
 Ein privates Repository mit eigenen Codex-Anpassungen von Giovannis Claude-Skills. Ein Skill ist eine gespeicherte Anleitung, die bei einer passenden Anfrage geladen wird. Das Projekt erhält die Claude-Originale und pflegt eigene Codex-Anweisungen.
+
+## Flow
+trigger t1: Ein Claude-Skill ändert sich | [[skills]]
+step s1: codex-skillsctl vergleicht die Quelle mit dem gespeicherten Fingerabdruck | [[codex-skillsctl]]
+decide d1: Hat sich die Quelle geändert?
+step s2: Meldet die Änderung, ohne die Codex-Anpassung zu überschreiben
+step s3: Die Anpassung und ihre Basis werden von Hand aktualisiert
+step s4: Das Quality Gate läuft bei jedem Push zu GitHub
+step s5: codex-skillsctl installiert die Anpassungen, umkehrbar
+trigger t2: Giovanni bittet Codex um eine Aufgabe, die zu einer Skill-Beschreibung passt
+step s6: Codex liest die installierte Anpassung
+product p1: Nichts zu tun: Anpassungen bleiben, wie sie sind
+product p2: Aktuelle Anpassungen mit frischen Fingerabdrücken
+product p3: Das Aufgabenergebnis oder ein Bericht über eine fehlende Fähigkeit
+
+t1 -> s1
+s1 -> d1
+d1 -ja-> s2
+d1 -nein-> p1
+s2 -> s3
+s3 -> s4
+s4 -> s5
+s4 -> p2
+s5 -> s6
+t2 -> s6
+s6 -> p3
 
 ## What it does
 Enthält 26 Anpassungen, vollständige Ausgangsquellen und Fingerabdrücke der Dateien. Ein Fingerabdruck ist ein berechneter Wert, der Änderungen erkennt. Änderungen an der Quelle werden gemeldet, ohne die Anpassungen zu überschreiben. Anbieter-Skills für Dokumente bleiben bei ihrem bisherigen Eigentümer.

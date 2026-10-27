@@ -2,11 +2,29 @@
 id: skill-google-workspace
 title: Skill: google-workspace no Codex
 lang: pt-BR
-source_hash: 175292a4e842
+source_hash: 7cfab359a765
 ---
 
 ## What it is
 Uma skill é um conjunto salvo de instruções para uma tarefa recorrente. O Codex lê a descrição para decidir quando carregar as instruções completas. Esta skill trata de `google-workspace`; os gatilhos e limites exatos estão na fonte completa abaixo.
+
+## Flow
+trigger t1: O Giovanni pede para criar ou mudar um Doc, Sheet ou Slides do Google no Drive | [[giovanni]]
+step s1: Lê a referência primeiro, depois confere quais conectores estão disponíveis
+decide d1: É uma mudança num arquivo existente cujo conector de edição falta?
+step s2: Pede ao Giovanni para ligar esse conector, pois a edição deve cair no mesmo arquivo
+step s3: Muda o mesmo arquivo e mantém o link; nunca recria
+step s4: Usa os scripts auxiliares para posições, intervalos de células e layout de slides, e confere o resultado
+product p1: O arquivo do próprio Giovanni, mudado no lugar, com o mesmo link
+product p2: Uma pergunta curta, com o arquivo intocado
+
+t1 -> s1
+s1 -> d1
+d1 -sim-> s2
+d1 -não-> s3
+s2 -> p2
+s3 -> s4
+s4 -> p1
 
 ## What it does
 Produz o resultado descrito na fonte. Capacidades necessárias: `google-drive, matching-google-editor-for-edits`. Capacidades ausentes são informadas; a skill não fornece novas ferramentas.

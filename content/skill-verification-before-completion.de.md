@@ -1,12 +1,32 @@
 ---
 id: skill-verification-before-completion
 lang: de
-source_hash: ac2db376af7d
+source_hash: 742e0ca89c3e
 title: Skill: verification-before-completion
 ---
 
 ## What it is
 Die Skill „verification-before-completion“ ist die Regel, dass Belege vor jeder Behauptung kommen, Arbeit sei fertig, behoben oder bestanden. Ihre Beschreibung sagt: vor der Aussage verwenden, Arbeit sei fertig, behoben, bestanden oder abgeschlossen, und vor dem Committen: die Prüfbefehle ausführen und ihre Ausgabe zuerst lesen; Belege vor Behauptungen. Sie speist die Zeile `Verified by:`, mit der jeder Bericht an Giovanni endet. Sie wurde aus den Open-Source-Skills „superpowers“ (Version 7.0.0, MIT-Lizenz) angepasst, ohne deren dauerhaften Start-Hook. Ihre Rolle ist „Prozess“; sie verweist für Build-, Test- und Geräteschritte auf die CLAUDE.md des Projekts und für die Abschlussschritte (`mem use`, `wiki publish`) auf die globale [[global-claude-md]].
+
+## Flow
+trigger t1: Kurz davor zu sagen, Arbeit sei fertig, behoben oder bestanden, oder zu committen
+step s1: Bestimmt den Befehl, der die Behauptung beweisen würde
+step s2: Führt ihn jetzt vollständig aus
+step s3: Liest die ganze Ausgabe und den Exit-Code
+decide d1: Bestätigt die Ausgabe die Behauptung?
+step s4: Berichtet mit einer Verified-by-Zeile: was lief und was nicht
+step s5: Nennt den wahren Stand, mit den Belegen
+product p1: Ein Fertig-Bericht mit Belegen und der Commit | [[giovanni]]
+product p2: Ein ehrlicher Stand statt eines falschen Fertig
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> d1
+d1 -ja-> s4
+d1 -nein-> s5
+s4 -> p1
+s5 -> p2
 
 ## What it does
 Bevor es „fertig“ sagt oder committet, muss Claude den Befehl ausführen, der die Behauptung belegt, und seine Ausgabe lesen. Die abschließende Zeile „Verified by:“ sagt dann, was ausgeführt wurde und was nicht geprüft werden konnte.

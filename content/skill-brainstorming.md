@@ -15,6 +15,33 @@ reviewed: 2026-10-25T20:41Z
 ## What it is
 The skill "brainstorming" is the process Claude follows before it builds anything new in software: it finds out what Giovanni actually wants, and why, before any code exists. Its description (the text that decides when it is loaded) says: use it before building something new in software or in the claude-workflow pipeline (an app feature, a tool, a multi-step change): ask the clarifying questions, size the work and get Giovanni's go before writing code. It is not for writing tasks (a CV, letters, German exercises), clinical questions, or creating skills ([[skill-skill-forge]]). It was adapted from the open-source "superpowers" skills (version 7.0.0, MIT licence), without their always-on startup hook.
 
+## Flow
+trigger t1: Before building something new in software: a feature, a tool, a multi-step change | [[giovanni]]
+decide d1: Is everything that matters already in the request?
+step s1: Does it and says what was done
+step s2: First message: he may skip the questions; plus one open question
+step s3: One question at a time, in plain language; plays his answers back
+step s4: Sizes the work: quick task, small change or project
+decide d2: Is it a project?
+step s5: Writes the design document; a fresh reviewer reads it | [[new-project]]
+step s6: Hard gate: nothing is built until Giovanni says go
+product p1: A quick task, done
+product p2: A written design that Giovanni can approve
+product p3: Giovanni's go to build
+
+t1 -> d1
+d1 -yes-> s1
+d1 -no-> s2
+s1 -> p1
+s2 -> s3
+s3 -> s4
+s4 -> d2
+d2 -yes-> s5
+d2 -no-> s6
+s5 -> p2
+s5 -> s6
+s6 -> p3
+
 ## What it does
 Claude asks one open question at a time, plays its understanding back, offers a visual companion (a browser tab with mockups) when seeing helps more than reading, sizes the work (quick task, small change, or project with a written design), has a fresh reviewer read the design, and blocks building until Giovanni approves. Since 2026-10-22 it also asks which programming language to use ([[work-ask-language]]).
 

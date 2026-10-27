@@ -1,12 +1,36 @@
 ---
 id: skill-systematic-debugging
 lang: de
-source_hash: b9f72bf9ed65
+source_hash: 418ca299c311
 title: Skill: systematic-debugging
 ---
 
 ## What it is
 Die Skill „systematic-debugging“ ist die Disziplin, der Claude bei jedem Bug, Testfehler, Absturz oder unerwarteten Verhalten folgt (in Code, Skripten, der Sync-Pipeline oder einer App auf dem Handy), bevor es einen Fix vorschlägt: zuerst die Grundursache finden, jeweils nur eine Sache ändern und nach drei fehlgeschlagenen Fixes anhalten. Ihre Beschreibung sagt, dass sie nicht für die Reparatur des Kubuntu-Desktops gilt ([[skill-reparo-kubuntu]]). Sie wurde aus den Open-Source-Skills „superpowers“ (Version 7.0.0, MIT-Lizenz) angepasst, ohne deren dauerhaften Start-Hook. Ihre Rolle ist „Prozess“; sie verweist für Systemprobleme auf [[skill-reparo-kubuntu]], für das Festhalten einer dauerhaften Korrektur auf [[workflow-memory]] und auf die CLAUDE.md des Projekts.
+
+## Flow
+trigger t1: Ein Fehler, ein fehlgeschlagener Test, ein Absturz oder unerwartetes Verhalten
+step s1: Phase 1: findet die Grundursache, bevor eine Lösung vorgeschlagen wird
+step s2: Phase 2: findet das Muster, funktionierend gegen defekt
+step s3: Phase 3: stellt eine Hypothese auf und testet sie
+step s4: Phase 4: behebt mit einer Änderung nach der anderen
+decide d1: Hat die Korrektur funktioniert?
+step s5: Übergibt die Korrektur an die Verifikation vor Abschluss | [[skill-verification-before-completion]]
+decide d2: Ist das die dritte gescheiterte Korrektur?
+product p1: Eine Korrektur mit erklärter Grundursache
+product p2: Anhalten und den Entwurf gemeinsam mit Giovanni hinterfragen | [[giovanni]]
+product p3: Zurück zu Phase 1 mit den neuen Belegen
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> s4
+s4 -> d1
+d1 -ja-> s5
+d1 -nein-> d2
+s5 -> p1
+d2 -ja-> p2
+d2 -nein-> p3
 
 ## What it does
 Sie verbietet Raten. Ihr Kernprinzip: immer die Grundursache finden, bevor man Fixes versucht; Symptom-Fixes sind ein Scheitern. Unter Zeitdruck, wenn ein Fix „offensichtlich“ scheint, oder nachdem ein erster Fix scheiterte, zählt der Prozess am meisten.

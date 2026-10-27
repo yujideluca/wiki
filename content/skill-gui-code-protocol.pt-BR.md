@@ -2,11 +2,31 @@
 id: skill-gui-code-protocol
 title: Skill: gui-code-protocol no Codex
 lang: pt-BR
-source_hash: 389d3a962327
+source_hash: ef9143fabcc4
 ---
 
 ## What it is
 Uma skill é um conjunto salvo de instruções para uma tarefa recorrente. O Codex lê a descrição para decidir quando carregar as instruções completas. Esta skill trata de `gui-code-protocol`; os gatilhos e limites exatos estão na fonte completa abaixo.
+
+## Flow
+trigger t1: Trabalho que mexe nas skills, preferências ou no repositório claude-workflow-backup do Giovanni | [[skills]]
+step s1: Lê primeiro o texto vivo do protocolo
+step s2: A cada checagem, ajusta a linha de protocolo do cartão do app para a versão atual
+step s3: Aplica quem é dono do quê: o app e o Claude Code adaptam as skills um do outro sem editá-las | [[claude-app]], [[claude-code]]
+decide d1: Precisa do Giovanni?
+step s4: Chama o Giovanni | [[giovanni]]
+step s5: Registra a mudança no diário tipado e numerado
+product p1: Uma entrada no diário que os dois lados podem ler
+product p2: Uma decisão tomada pelo Giovanni
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> d1
+d1 -sim-> s4
+d1 -não-> s5
+s4 -> p2
+s5 -> p1
 
 ## What it does
 Produz o resultado descrito na fonte. Capacidades necessárias: `local-files, git`. Capacidades ausentes são informadas; a skill não fornece novas ferramentas.

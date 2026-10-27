@@ -1,12 +1,35 @@
 ---
 id: chat-start
 lang: de
-source_hash: 13cb6baff016
+source_hash: 6bef9dd2e160
 title: Was beim Start eines Chats passiert
 ---
 
 ## What it is
 Diese Seite beschreibt die Abfolge, die einem neuen [[claude-code]]-Chat sein Gedächtnis gibt, bevor Giovannis erste Nachricht beantwortet wird. Ohne sie würde jeder Chat bei null beginnen.
+
+## Flow
+trigger t1: Giovanni öffnet Claude Code in einem Ordner, oder der Assistent startet neu | [[claude-code]], [[remote-assistant]]
+step s1: Liest seine Einstellungen und führt den SessionStart-Hook aus | [[claude-code-settings]], [[hook-session-start]]
+step s2: Lädt das neueste workflow-memory von GitHub herunter | [[mem-sync]]
+decide d1: Hat der Download geklappt?
+step s2b: Behält die lokale Kopie und warnt, dass das Gedächtnis veraltet sein kann
+step s3: Faltet die gespeicherten Ereignisse zum aktuellen Stand, sortiert nach Platzbudget | [[memory-fold]]
+step s4: Fügt die offenen Punkte dieses Projekts hinzu, vor Erwähnung zu prüfen | [[mem-pendency]]
+step s5: Gibt die Zusammenfassung in den Kontext des Modells aus | [[session-brief]]
+step s6: Fügt die globalen Anweisungen und Claudes eigenen Gedächtnisindex hinzu | [[global-claude-md]], [[claude-auto-memory]]
+product p1: Ein Chat, der mit Giovannis Grundvorlieben und offenen Punkten beginnt
+
+t1 -> s1
+s1 -> s2
+s2 -> d1
+d1 -ja-> s3
+d1 -nein-> s2b
+s2b -> s3
+s3 -> s4
+s4 -> s5
+s5 -> s6
+s6 -> p1
 
 ## What it does
 Sie sorgt dafür, dass jede Sitzung mit denselben dauerhaften Vorlieben und derselben Liste unerledigter Punkte beginnt, egal in welchem Projekt der Chat geöffnet wird.

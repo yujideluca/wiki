@@ -15,6 +15,31 @@ reviewed: 2026-10-25T20:41Z
 ## What it is
 The skill "browser-automacao-segura" ("safe browser automation") holds the safety rules for any action in a web browser (the app's built-in browser or Claude in Chrome), especially batch actions, removals, mass edits and scripts on pages. It is written in Portuguese. Its description says: use it always when executing actions in any browser, especially batch actions, removals, mass edits and JavaScript scripts on pages.
 
+## Flow
+trigger t1: Any action in a browser, especially batch actions, removals, mass edits or page scripts
+trigger t2: An alert dialog is already open
+step s1: Neutralises alerts before a batch and logs them for later reading
+step s2: Runs one loop at a time and waits for the real effect after each action | [[skill-click-protocol]]
+decide d1: Is the action destructive or irreversible?
+step s3: Asks Giovanni before acting | [[giovanni]]
+step s4: Long loops run in the background and are checked for progress
+step s5: Stops the earlier loop and clears the open alert
+step s6: Reloads the page to verify the end state
+product p1: A verified result on the page
+product p2: No frozen session and nothing destructive without a yes
+
+t1 -> s1
+s1 -> s2
+s2 -> d1
+d1 -yes-> s3
+d1 -no-> s4
+s3 -> s4
+s4 -> s6
+t2 -> s5
+s5 -> s6
+s6 -> p1
+s3 -> p2
+
 ## What it does
 It prevents dialogs that freeze the session, overlapping loops and destructive mistakes, and it asks before anything irreversible. For the mechanics of clicking it defers to [[skill-click-protocol]], and for reducing approval clicks to [[skill-minimize-site-approvals]]; where they disagree, the safety rules of this skill win.
 

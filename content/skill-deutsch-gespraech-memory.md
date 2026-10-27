@@ -15,6 +15,27 @@ reviewed: 2026-10-25T20:41Z
 ## What it is
 A skill is a saved set of instructions for a recurring task. Codex reads its description to decide when to load the complete instructions. This skill handles `deutsch-gespraech-memory`; its exact trigger and exclusions appear in the complete source below.
 
+## Flow
+trigger t1: The first message of a chat in the Deutsch-Gespräch project | [[deutsch-gespraech]]
+step s1: Loads the state from the Google Doc deutsch-gespraech-state | [[skill-google-workspace]]
+step s2: The chat goes on in German with that state in mind
+decide d1: What does Giovanni type?
+step s3: Saves the session into the Doc
+step s4: Shows the stored items
+step s5: Deletes the named item
+product p1: An updated state in the Doc
+product p2: The stored items on screen
+
+t1 -> s1
+s1 -> s2
+s2 -> d1
+d1 -Ende-> s3
+d1 -Gedächtnis?-> s4
+d1 -Vergiss …-> s5
+s3 -> p1
+s5 -> p1
+s4 -> p2
+
 ## What it does
 Produces the task-specific result described in its source. Required capabilities: `google-docs-structural-read, guarded-google-docs-write-for-save`. Missing capabilities are reported; the skill does not provide new tools.
 

@@ -15,6 +15,27 @@ reviewed: 2026-10-25T20:41Z
 ## What it is
 The skill "ligamagic-listas" handles Giovanni's work with LigaMagic's shopping list ("Lista de Compras") and the bulk-purchase form ("Compra por Lista"). [LigaMagic](https://www.ligamagic.com.br/) is a Brazilian marketplace for [Magic: The Gathering](https://en.wikipedia.org/wiki/Magic:_The_Gathering) cards. The skill is written in Portuguese. Its description says: use it when working with the shopping list or the purchase-by-list form: extract cards, generate lists with edition, remove or edit items in batch. To rebuild or check the per-store cart on the stores' own websites, use [[skill-ligamagic-replicar-carrinho-nas-lojas]].
 
+## Flow
+trigger t1: Giovanni works with LigaMagic's shopping list or its buy-by-list form | [[giovanni]]
+decide d1: What does he need?
+step s1: Writes one card per line: quantity, English name, tags for edition, condition, language, extras
+step s2: Checks it with Detalhar Características: the Edition column must come back filled
+step s3: Reads or edits the shopping list page
+step s4: Removes items carefully, with the known pitfalls in mind
+product p1: A list ready to paste into the purchase form
+product p2: An edited shopping list on LigaMagic
+product p3: The input for rebuilding the carts on the stores' own sites | [[skill-ligamagic-replicar-carrinho-nas-lojas]]
+
+t1 -> d1
+d1 -make a list-> s1
+d1 -edit the list-> s3
+d1 -remove items-> s4
+s1 -> s2
+s2 -> p1
+s3 -> p2
+s3 -> p3
+s4 -> p2
+
 ## What it does
 It extracts cards, generates lists with their edition, and removes or edits items in batch. Its role is "domain": it owns the format of the purchase-by-list form and the handling of the shopping list; it defers to [[skill-browser-automacao-segura]] (batch actions) and to [[skill-ligamagic-replicar-carrinho-nas-lojas]] (per-store carts and building them on the stores' sites); and it honours the language of the message and the depth flags `!!`, `***` and `...`.
 

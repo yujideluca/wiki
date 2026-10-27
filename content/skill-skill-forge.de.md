@@ -1,12 +1,37 @@
 ---
 id: skill-skill-forge
 lang: de
-source_hash: 760068d70caf
+source_hash: f12dd759b280
 title: Skill: skill-forge
 ---
 
 ## What it is
 Die Skill „skill-forge“ ist die vollständige Pipeline, um für Giovanni eine Skill zu erstellen oder neu zu bauen. Ihre Beschreibung sagt: drei konkurrierende Fassungen, Tests, Verträglichkeitsprüfungen mit seinen anderen Skills, dann Validierung und Verpackung über skill-creator; verwenden, wenn er bittet, eine Skill zu erstellen, neu zu bauen, zu optimieren oder zu „schmieden“, eine Regel oder einen Ablauf in eine neue Skill zu verwandeln, oder getestete oder verglichene Fassungen will; für kleine Änderungen an einer Skill (eine Zeile korrigieren, umbenennen, die Beschreibung ändern, ein Beispiel ergänzen) oder nur das Verpacken einer Skill-Datei genügt skill-creator allein. Ihre Philosophie: Eine Skill ist kodifiziertes Expertenwissen, also die Domäne und den Nutzer tief verstehen, eine explizite Architektur entwerfen und dann das Ergebnis an den Anforderungen messen (bauen → bewerten → verfeinern, wie in der Design-Science-Forschung).
+
+## Flow
+trigger t1: Giovanni will einen Skill erstellen, neu bauen oder optimieren, oder getestete Versionen | [[giovanni]]
+step s1: Wählt zuerst den Modus
+step s2: Analysiert die Anforderungen, entwirft dann die Architektur
+step s3: Baut drei konkurrierende Versionen
+step s4: Führt zwei Bewertungen durch
+decide d1: Ist ein Ergebnis nicht reproduzierbar?
+step s5: Lückenschluss: klärt das Warum und schließt die Lücke
+step s6: Kompatibilitätsschicht: prüft den Sieger gegen seine anderen Skills, Einstellungen und geplanten Aufgaben
+step s7: Synthese, dann Übergabe an skill-creator zum Validieren und Verpacken
+product p1: Ein getesteter Skill im Skills-Ordner | [[skills]]
+product p2: Vorgeschlagene Anpassungen für jeden betroffenen Skill | [[claude-ai-skills]]
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> s4
+s4 -> d1
+d1 -ja-> s5
+d1 -nein-> s6
+s5 -> s6
+s6 -> s7
+s7 -> p1
+s7 -> p2
 
 ## What it does
 Sie erzeugt eine getestete Skill, die nicht mit Giovannis anderen Skills, Einstellungen oder geplanten Aufgaben kollidiert, und schlägt Aktualisierungen für jede Skill vor, die sie berührt.

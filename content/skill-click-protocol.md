@@ -15,6 +15,28 @@ reviewed: 2026-10-25T20:41Z
 ## What it is
 The skill "click-protocol" is a protocol for multi-step clicking in web pages with menus, dialogs, search results or media (YouTube Music, Spotify web): click by element reference, verify each step, avoid accidental playback. Its description says exactly that: use it before multi-step clicking in web user interfaces with menus, dialogs, search results or media. It was born from a YouTube Music playlist build on 2026-10-10, when misclicks started music, a stale notification looked like success and screen coordinates broke between layouts. The version for Claude Code is edited only there; the Claude app keeps its own version ([[claude-ai-skills]]).
 
+## Flow
+trigger t1: Multi-step clicking in a web page with menus, dialogs, search results or media
+step s1: Plans the whole sequence first
+step s2: Clicks by element reference, never by raw coordinates
+step s3: Checks the element before every click, and guards against accidental playback
+step s4: One action, then one check
+decide d1: Does fresh evidence show the step worked?
+step s5: Carries on with the next step; at the end reloads the page and recounts
+step s6: Stops after failures instead of clicking blindly, and asks Giovanni | [[giovanni]]
+product p1: A verified result
+product p2: A question instead of a blind click
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> s4
+s4 -> d1
+d1 -yes-> s5
+d1 -no-> s6
+s5 -> p1
+s6 -> p2
+
 ## What it does
 It makes browser clicking reliable: every click targets a stable reference to an element, and every step is checked with fresh evidence before the next. Its role is "cross-cutting"; it defers to [[skill-browser-automacao-segura]] (alerts, loops, destructive actions), [[skill-minimize-site-approvals]] (domains and approvals) and the domain skills (formats).
 

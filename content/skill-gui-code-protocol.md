@@ -15,6 +15,26 @@ reviewed: 2026-10-25T21:08Z
 ## What it is
 A skill is a saved set of instructions for a recurring task. Codex reads its description to decide when to load the complete instructions. This skill handles `gui-code-protocol`; its exact trigger and exclusions appear in the complete source below.
 
+## Flow
+trigger t1: Work that touches Giovanni's skills, preferences or the claude-workflow-backup repository | [[skills]]
+step s1: Reads the live protocol text first
+step s2: At each check, sets the protocol line of the app's card to the current version
+step s3: Applies who owns what: the app and Claude Code adapt each other's skills without editing them | [[claude-app]], [[claude-code]]
+decide d1: Does it need Giovanni?
+step s4: Involves Giovanni | [[giovanni]]
+step s5: Records the change in the typed, numbered logbook
+product p1: A logbook entry both sides can read
+product p2: A decision made by Giovanni
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> d1
+d1 -yes-> s4
+d1 -no-> s5
+s4 -> p2
+s5 -> p1
+
 ## What it does
 Produces the task-specific result described in its source. Required capabilities: `local-files, git`. Missing capabilities are reported; the skill does not provide new tools.
 

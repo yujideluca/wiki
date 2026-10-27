@@ -1,12 +1,37 @@
 ---
 id: skill-gerar-teste-automatizado
 lang: de
-source_hash: 43a04db3b402
+source_hash: 0bf93f2deb37
 title: Skill: gerar-teste-automatizado
 ---
 
 ## What it is
 Die Skill „gerar-teste-automatizado“ („automatisierten Test erzeugen“) erstellt und aktualisiert später die automatisierte Testsuite, die in einem Softwareprojekt nach echten Fehlern sucht. Ihre Beschreibung sagt: in Claude Code verwenden, um die automatisierte fehlersuchende Testsuite eines Projekts zu erstellen oder zu aktualisieren: vollständige Diagnose des Codes, eine Testmatrix, Tests, die echte Defekte erkennen, Mutations- und Abdeckungsprüfungen. Sie wird von [[skill-revisao-manutencao]] beim ersten Review eines Projekts (create) und bei späteren Reviews (update) aufgerufen und kann auch direkt verlangt werden. Nicht zum Beheben eines einzelnen fehlschlagenden Tests oder Bugs ([[skill-systematic-debugging]]). Sie beruht auf einem Prompt, den Giovanni geschrieben hat.
+
+## Flow
+trigger t1: Die erste Überprüfung eines Projekts, eine spätere oder eine direkte Bitte um eine fehlersuchende Testsuite | [[skill-revisao-manutencao]]
+step s1: Entscheidet zuerst den Modus: erstellen oder aktualisieren
+step s2: Analysiert den ganzen Code, bevor ein Test entsteht
+step s3: Plant die Testmatrix
+step s4: Setzt Tests um, die echte Fehler finden können
+step s5: Prüft, dass die Tests Fehler erkennen, mit Mutations- und Abdeckungsprüfung | [[mutation-check]]
+decide d1: Fangen die Tests die eingebauten Fehler?
+step s6: Stärkt die schwachen Tests
+step s7: Schreibt docs/TESTES-AUTOMATIZADOS.md und berichtet
+product p1: Tests in den Testordnern des Projekts
+product p2: Ein Bericht über gefundene Fehler und Restrisiken für Giovanni | [[giovanni]]
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> s4
+s4 -> s5
+s5 -> d1
+d1 -ja-> s7
+d1 -nein-> s6
+s6 -> s7
+s7 -> p1
+s7 -> p2
 
 ## What it does
 Ziel sind Tests, die echte Fehler, Regressionen, ungültige Eingaben, Grenzfälle und Integrationsfehler finden, nicht Tests, die den leichten Weg bestätigen. Sie ändert nie Produktionscode, damit Tests bestehen, und schlägt jede nötige Korrektur getrennt vor.

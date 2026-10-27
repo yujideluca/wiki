@@ -1,12 +1,39 @@
 ---
 id: skill-brainstorming
 lang: pt-BR
-source_hash: 47545dd79c85
+source_hash: 2a9b73b92e57
 title: Skill: brainstorming
 ---
 
 ## What it is
 A skill "brainstorming" é o processo que o Claude segue antes de construir qualquer coisa nova em software: descobre o que o Giovanni realmente quer, e por quê, antes de existir código. Sua descrição (o texto que decide quando ela é carregada) diz: usar antes de construir algo novo em software ou no pipeline claude-workflow (uma funcionalidade de app, uma ferramenta, uma mudança em várias etapas): fazer as perguntas de esclarecimento, dimensionar o trabalho e obter o "pode ir" do Giovanni antes de escrever código. Não serve para tarefas de escrita (currículo, cartas, exercícios de alemão), perguntas clínicas nem criação de skills ([[skill-skill-forge]]). Foi adaptada das skills de código aberto "superpowers" (versão 7.0.0, licença MIT), sem o hook de inicialização sempre ativo delas.
+
+## Flow
+trigger t1: Antes de construir algo novo em software: funcionalidade, ferramenta, mudança em várias etapas | [[giovanni]]
+decide d1: Tudo o que importa já está no pedido?
+step s1: Faz e diz o que foi feito
+step s2: Primeira mensagem: ele pode pular as perguntas; mais uma pergunta aberta
+step s3: Uma pergunta por vez, em linguagem simples; repete as respostas dele
+step s4: Dimensiona o trabalho: tarefa rápida, pequena mudança ou projeto
+decide d2: É um projeto?
+step s5: Escreve o documento de design; um revisor novo o lê | [[new-project]]
+step s6: Portão rígido: nada é construído até o Giovanni dar o aval
+product p1: Uma tarefa rápida, feita
+product p2: Um design escrito que o Giovanni pode aprovar
+product p3: O aval do Giovanni para construir
+
+t1 -> d1
+d1 -sim-> s1
+d1 -não-> s2
+s1 -> p1
+s2 -> s3
+s3 -> s4
+s4 -> d2
+d2 -sim-> s5
+d2 -não-> s6
+s5 -> p2
+s5 -> s6
+s6 -> p3
 
 ## What it does
 O Claude faz uma pergunta aberta por vez, devolve o que entendeu, oferece um acompanhante visual (uma aba do navegador com esboços) quando ver ajuda mais do que ler, dimensiona o trabalho (tarefa rápida, pequena mudança ou projeto com design escrito), pede a um revisor novo que leia o design e bloqueia a construção até o Giovanni aprovar. Desde 2026-10-22 também pergunta qual linguagem de programação usar ([[work-ask-language]]).

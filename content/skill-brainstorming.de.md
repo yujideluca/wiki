@@ -1,12 +1,39 @@
 ---
 id: skill-brainstorming
 lang: de
-source_hash: 47545dd79c85
+source_hash: 2a9b73b92e57
 title: Skill: brainstorming
 ---
 
 ## What it is
 Die Skill „brainstorming“ ist der Prozess, dem Claude folgt, bevor es etwas Neues in Software baut: Sie findet heraus, was Giovanni wirklich will und warum, bevor Code existiert. Ihre Beschreibung (der Text, der entscheidet, wann sie geladen wird) sagt: vor dem Bauen von etwas Neuem in Software oder in der claude-workflow-Pipeline verwenden (eine App-Funktion, ein Werkzeug, eine mehrstufige Änderung): klärende Fragen stellen, den Umfang einschätzen und Giovannis Freigabe einholen, bevor Code geschrieben wird. Nicht für Schreibaufgaben (Lebenslauf, Briefe, Deutschübungen), klinische Fragen oder das Erstellen von Skills ([[skill-skill-forge]]). Sie wurde aus den Open-Source-Skills „superpowers“ (Version 7.0.0, MIT-Lizenz) angepasst, ohne deren dauerhaften Start-Hook.
+
+## Flow
+trigger t1: Bevor etwas Neues in Software gebaut wird: Funktion, Werkzeug, mehrstufige Änderung | [[giovanni]]
+decide d1: Steht schon alles Wichtige in der Anfrage?
+step s1: Erledigt es und sagt, was getan wurde
+step s2: Erste Nachricht: er darf die Fragen überspringen; dazu eine offene Frage
+step s3: Eine Frage nach der anderen, in einfacher Sprache; spielt seine Antworten zurück
+step s4: Schätzt den Umfang: schnelle Aufgabe, kleine Änderung oder Projekt
+decide d2: Ist es ein Projekt?
+step s5: Schreibt das Entwurfsdokument; ein frischer Prüfer liest es | [[new-project]]
+step s6: Harte Schranke: nichts wird gebaut, bis Giovanni Go sagt
+product p1: Eine schnelle Aufgabe, erledigt
+product p2: Ein schriftlicher Entwurf, den Giovanni genehmigen kann
+product p3: Giovannis Go zum Bauen
+
+t1 -> d1
+d1 -ja-> s1
+d1 -nein-> s2
+s1 -> p1
+s2 -> s3
+s3 -> s4
+s4 -> d2
+d2 -ja-> s5
+d2 -nein-> s6
+s5 -> p2
+s5 -> s6
+s6 -> p3
 
 ## What it does
 Claude stellt jeweils eine offene Frage, spiegelt sein Verständnis zurück, bietet einen visuellen Begleiter an (einen Browser-Tab mit Entwürfen), wenn Sehen mehr hilft als Lesen, schätzt den Umfang ein (schnelle Aufgabe, kleine Änderung oder Projekt mit schriftlichem Entwurf), lässt einen frischen Prüfer den Entwurf lesen und blockiert das Bauen, bis Giovanni zustimmt. Seit 2026-10-22 fragt sie auch, welche Programmiersprache benutzt werden soll ([[work-ask-language]]).

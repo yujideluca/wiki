@@ -1,12 +1,36 @@
 ---
 id: codex-pbar
 lang: de
-source_hash: c947ad3ab3b2
+source_hash: b1d9d2fef442
 title: Codex-Aufgabenfortschritt im Terminal
 ---
 
 ## What it is
 Eine feste Zeile am unteren Rand von Giovannis Codex-Terminal zeigt den Aufgabenfortschritt und die geschätzte Restzeit. Der Python-Quellcode liegt in `~/dev/codex-pbar`. Der Einstieg steht in `README.md`. Diese Anzeige ist von der Claude-Terminalanzeige [[pbar]] getrennt.
+
+## Flow
+trigger t1: Giovanni startet codex in einem Terminal | [[global-codex-agents]]
+step s1: Der codex-Starter hüllt die Sitzung in tmux ein
+step s2: Ein eigener codex-status-Server reserviert die unterste Terminalzeile | [[codex-status-line]]
+step s3: Jedes Terminal erhält eine eigene Kennung, die Fußzeile und Aufgabenstand verbindet
+trigger t2: Codex beginnt eine Aufgabe mit mehreren Schritten
+step s4: Der Agent führt codex-task-progress set aus: erledigt, gesamt, Restsekunden, Beschriftung
+decide d1: Gibt es einen aktiven Aufgabenplan?
+decide d2: Ist die Zeitschätzung abgelaufen?
+product p1: Fußzeile zeigt Prozent, erledigte Aufgaben und Restzeit
+product p2: Fußzeile zeigt over by und die Überzeit
+product p3: Fußzeile meldet No active task
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> d1
+t2 -> s4
+s4 -> d1
+d1 -ja-> d2
+d1 -nein-> p3
+d2 -nein-> p1
+d2 -ja-> p2
 
 ## What it does
 Die Zeile bleibt sichtbar, während Codex arbeitet oder wartet. Sie übernimmt Claudes kompakten Stil: eine grüne Progress-Beschriftung auf normalem Terminalhintergrund, Mittelpunkte als Trenner, Prozentwert, erledigte Aufgaben und geschätzte Restzeit. Ein Blockbalken wird nicht gezeichnet. Zwei erledigte von fünf Schritten erscheinen als `Progress: [ 40%] 2/5 tasks`. Zeitablauf allein erhöht den Fortschritt nicht. Läuft die Schätzung ab, erscheint `over by` mit der überschrittenen Zeit. Ohne Aufgabenplan steht dort `No active task`. Ein ausdrücklich abgeschlossener Auftrag bleibt bis zur nächsten Aufgabe sichtbar.

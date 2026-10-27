@@ -15,6 +15,27 @@ reviewed: 2026-10-25T20:41Z
 ## What it is
 The skill "ligamagic-replicar-carrinho-nas-lojas" rebuilds LigaMagic's per-store cart on each store's own website and reconciles the two before checkout. It is written in Portuguese. Its description says: it redoes the per-store cart of LigaMagic on each store's own site (the same card, edition, language, condition, extras and quantity) and reconciles both before checkout; use it when Giovanni asks to check the LigaMagic carts and build or check them on the stores' sites, without using LigaMagic's links. It comes from a task on 12 October 2026 (5 stores, 90 items) and prevents the errors found then: a foil or promo item skipped when reading, stock read as quantity, a duplicate copy from a repeated click, a similar edition chosen instead of the right one, and a check done only by item count.
 
+## Flow
+trigger t1: Giovanni asks to check the LigaMagic carts and rebuild them on the stores' own sites | [[giovanni]]
+step s1: Reads the LigaMagic cart, read-only: the expected list per store; asks for site access once | [[skill-minimize-site-approvals]]
+step s2: Reads each store's own cart before touching it
+step s3: Adds each item: search, buy button, correct quantity, one item at a time | [[skill-browser-automacao-segura]], [[skill-click-protocol]]
+step s4: Reconciles the store's cart with the expected list
+decide d1: Does the store's cart match?
+step s5: Fixes the difference and reconciles again
+step s6: Reports; it never logs in, pays or presses the cart's checkout button
+product p1: A matching cart in each store, left for Giovanni to pay
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> s4
+s4 -> d1
+d1 -yes-> s6
+d1 -no-> s5
+s5 -> s6
+s6 -> p1
+
 ## What it does
 It copies the same card, edition, language, condition, extras and quantity into each store's cart, without using LigaMagic's links; the purchases themselves need Giovanni's approval. Its role is "domain": it owns the flow from LigaMagic to the store, the scripts that read the per-store cart and the product page, the reconciliation and the final report; it defers to [[skill-ligamagic-listas]], to [[skill-browser-automacao-segura]] (alerts, loops, destructive actions: this one prevails), to [[skill-click-protocol]] (click mechanics) and to [[skill-minimize-site-approvals]] (domains).
 

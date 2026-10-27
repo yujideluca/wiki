@@ -1,12 +1,33 @@
 ---
 id: skill-ligamagic-listas
 lang: de
-source_hash: 4534aa382f44
+source_hash: e5df04e3ee78
 title: Skill: ligamagic-listas
 ---
 
 ## What it is
 Die Skill „ligamagic-listas“ behandelt Giovannis Arbeit mit der Einkaufsliste von LigaMagic („Lista de Compras“) und dem Sammelkauf-Formular („Compra por Lista“). [LigaMagic](https://www.ligamagic.com.br/) ist ein brasilianischer Marktplatz für Karten von [Magic: The Gathering](https://en.wikipedia.org/wiki/Magic:_The_Gathering). Die Skill ist auf Portugiesisch geschrieben. Ihre Beschreibung sagt: verwenden bei der Arbeit mit der Einkaufsliste oder dem Kauf-nach-Liste-Formular: Karten extrahieren, Listen mit Edition erzeugen, Einträge im Stapel entfernen oder bearbeiten. Um den Warenkorb pro Shop auf den eigenen Websites der Shops nachzubauen oder zu prüfen, [[skill-ligamagic-replicar-carrinho-nas-lojas]] verwenden.
+
+## Flow
+trigger t1: Giovanni arbeitet mit der Einkaufsliste von LigaMagic oder deren Kauf-per-Liste-Formular | [[giovanni]]
+decide d1: Was braucht er?
+step s1: Schreibt eine Karte pro Zeile: Menge, englischer Name, Tags für Edition, Zustand, Sprache, Extras
+step s2: Prüft mit Detalhar Características: die Spalte Edition muss gefüllt zurückkommen
+step s3: Liest oder bearbeitet die Einkaufslisten-Seite
+step s4: Entfernt Einträge vorsichtig, mit den bekannten Fallstricken im Kopf
+product p1: Eine Liste, bereit zum Einfügen ins Kaufformular
+product p2: Eine bearbeitete Einkaufsliste bei LigaMagic
+product p3: Die Vorlage, um die Warenkörbe auf den Shop-Seiten nachzubauen | [[skill-ligamagic-replicar-carrinho-nas-lojas]]
+
+t1 -> d1
+d1 -Liste erstellen-> s1
+d1 -Liste bearbeiten-> s3
+d1 -Einträge entfernen-> s4
+s1 -> s2
+s2 -> p1
+s3 -> p2
+s3 -> p3
+s4 -> p2
 
 ## What it does
 Sie extrahiert Karten, erzeugt Listen mit Edition und entfernt oder bearbeitet Einträge im Stapel. Ihre Rolle ist „Domäne“: Sie besitzt das Format des Kauf-nach-Liste-Formulars und den Umgang mit der Einkaufsliste; sie verweist auf [[skill-browser-automacao-segura]] (Stapelaktionen) und [[skill-ligamagic-replicar-carrinho-nas-lojas]] (Warenkörbe pro Shop und ihr Aufbau auf den Shop-Seiten); und sie beachtet die Sprache der Nachricht und die Tiefe-Flags `!!`, `***` und `...`.

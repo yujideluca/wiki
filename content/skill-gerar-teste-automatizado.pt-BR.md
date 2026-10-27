@@ -1,12 +1,37 @@
 ---
 id: skill-gerar-teste-automatizado
 lang: pt-BR
-source_hash: 43a04db3b402
+source_hash: 0bf93f2deb37
 title: Skill: gerar-teste-automatizado
 ---
 
 ## What it is
 A skill "gerar-teste-automatizado" cria e, depois, atualiza a suíte de testes automatizados que caça bugs de verdade em um projeto de software. Sua descrição diz: usar no Claude Code para criar ou atualizar a suíte de testes automatizados caçadora de bugs de um projeto: diagnóstico completo do código, matriz de testes, testes que detectam defeitos reais, verificações de mutação e cobertura. É chamada pela [[skill-revisao-manutencao]] na primeira revisão de um projeto (criar) e nas revisões seguintes (atualizar), e também pode ser pedida diretamente. Não serve para corrigir um único teste que falha ou um bug ([[skill-systematic-debugging]]). Baseia-se em um prompt escrito pelo Giovanni.
+
+## Flow
+trigger t1: A primeira revisão de um projeto, uma revisão posterior, ou um pedido direto de suíte de testes caçadora de bugs | [[skill-revisao-manutencao]]
+step s1: Decide o modo primeiro: criar ou atualizar
+step s2: Analisa todo o código antes de escrever qualquer teste
+step s3: Planeja a matriz de testes
+step s4: Implementa testes capazes de achar defeitos reais
+step s5: Verifica que os testes detectam defeitos, com checagens de mutação e cobertura | [[mutation-check]]
+decide d1: Os testes pegam os defeitos injetados?
+step s6: Reforça os testes fracos
+step s7: Escreve docs/TESTES-AUTOMATIZADOS.md e relata
+product p1: Testes nas pastas de teste do projeto
+product p2: Um relatório de defeitos achados e riscos residuais, para o Giovanni | [[giovanni]]
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> s4
+s4 -> s5
+s5 -> d1
+d1 -sim-> s7
+d1 -não-> s6
+s6 -> s7
+s7 -> p1
+s7 -> p2
 
 ## What it does
 O objetivo são testes que encontrem erros reais, regressões, entradas inválidas, limites e falhas de integração, e não testes que confirmem o caminho fácil. Nunca edita o código de produção para fazer testes passarem e propõe qualquer correção necessária separadamente.

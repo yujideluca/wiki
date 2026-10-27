@@ -1,12 +1,43 @@
 ---
 id: skill-alemao-goethe-fsp
 lang: de
-source_hash: d76cfcb8ef6c
+source_hash: 1d140d707bd3
 title: Skill: alemao-goethe-fsp (Deutsch-Training)
 ---
 
 ## What it is
 Die Skill „alemao-goethe-fsp“ ist Giovannis Deutsch-Training, auf Portugiesisch geschrieben, für die Prüfung Goethe-Zertifikat B2 ([Goethe B2](https://www.goethe.de/en/spr/prf/gzb2.html), die allgemeine Deutschprüfung auf gehobenem Mittelstufenniveau) und danach die FSP (Fachsprachprüfung, die deutsche medizinische Sprachprüfung auf Niveau C1, „C1 Medizin“). Ihre Beschreibung sagt: immer verwenden, wenn Giovanni deutsche Sätze oder Texte zum Korrigieren schickt, Übungen, eine Probeprüfung (Schreiben, Sprechen, Arzt-Patienten-Gespräch, Arztbrief, Arzt-Arzt-Gespräch), medizinisches Vokabular Portugiesisch–Deutsch, Grammatikerklärungen oder Heuristiken für Verben mit Präpositionen, Kasus und Deklination verlangt.
+
+## Flow
+trigger t1: Giovanni schickt Deutsch zum Korrigieren oder bittet um Übungen, Prüfungssimulation, Vokabeln oder Grammatik | [[giovanni]]
+step s1: Antwortet in der Sprache, in der Giovanni schrieb; das Übungsmaterial ist Deutsch
+decide d1: Was möchte er?
+step s2: Korrigiert zuerst jeden Satz für sich
+step s3: Erklärt jeden Fehler: Kategorie, Regel in einer Zeile und eine Heuristik
+step s4: Bietet erst danach Alternativen an, markiert mit B2 oder C1
+step s5: Führt das Prüfungsformat durch: Schreiben, Sprechen, Gespräch mit Patient oder Kollege, Arztbrief
+step s6: Gibt eine Schätzung im Goethe-Stil: Kriterien A bis E, bestanden ab 60 von 100
+step s7: Antwortet mit medizinischem Vokabular PT–DE, Grammatikregeln und Heuristiken
+step s8: Führt ein Register wiederkehrender Fehler und greift es mit Wiederholungsabständen auf
+product p1: Ein korrigierter Text mit Fehlerprofil
+product p2: Eine Bewertung im Prüfungsstil mit Übungen
+product p3: Eine Antwort zu Vokabeln oder Grammatik
+product p4: Anki-Karten auf Wunsch
+
+t1 -> s1
+s1 -> d1
+d1 -Text korrigieren-> s2
+d1 -Prüfung-> s5
+d1 -Vokabeln oder Grammatik-> s7
+s2 -> s3
+s3 -> s4
+s4 -> p1
+s4 -> s8
+s5 -> s6
+s6 -> p2
+s6 -> s8
+s7 -> p3
+s8 -> p4
 
 ## What it does
 Sie korrigiert deutsche Sätze und Texte, gibt Übungen, simuliert Prüfungsteile, liefert medizinisches Vokabular und Grammatikerklärungen und führt ein Register wiederkehrender Fehler, das sie in späteren Sitzungen mit Spaced Repetition wieder aufgreift. Das angenommene Lernerprofil: brasilianischer Arzt, Niveau B1+/B2 im Aufbau, Goethe B2 im November 2026, danach FSP und Kenntnisprüfung (die Wissensprüfung für im Ausland ausgebildete Ärzte); wiederkehrende Schwierigkeiten sind Kasus, Adjektivendungen, n-Deklination, Präpositionen, Pronominaladverbien, Verben mit Präpositionen, zu-Infinitiv, Konjunktiv I/II, Perfekt gegenüber Präteritum und Wortstellung in Nebensätzen. Fehler aus korrigierten Texten speisten auch den Modus „Fehler finden“ von [[quizapp]].

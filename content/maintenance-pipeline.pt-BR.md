@@ -1,12 +1,36 @@
 ---
 id: maintenance-pipeline
 lang: pt-BR
-source_hash: ac809fc2cae6
+source_hash: 66c2e90145c8
 title: Pipeline de manutenção (medir, depois julgar)
 ---
 
 ## What it is
 É a forma como os projetos de software do Giovanni são mantidos sustentáveis: um programa mede e bloqueia, uma skill julga e propõe, e os dois conversam apenas por um arquivo, o `report.json`. A divisão é de propósito (ADR-0013 no QuizApp; uma ADR é um architecture decision record, uma nota curta que guarda os motivos de uma decisão): números devem vir de uma máquina que não se deixa convencer, e o julgamento deve vir do Claude, que pode ponderá-los.
+
+## Flow
+trigger t1: Alguém faz push no repositório de um projeto | [[quizapp-ci]]
+step s1: O job de verificação gate roda o pipeline-check | [[pipeline-check]]
+decide d1: Alguma verificação falha (falha)?
+step s2: A proteção de branch, ou a checagem local pré-push, barra o merge | [[maintenance-policy]]
+step s3: Avisos (aviso) aparecem no report.json, mas nunca reprovam
+trigger t2: A revisão mensal vence | [[monthly-architecture-review]]
+step s4: A skill de revisão transforma avisos e falhas em propostas de dívida priorizadas | [[skill-revisao-manutencao]]
+step s5: O Giovanni decide o que fazer | [[giovanni]]
+product p1: Uma mudança que passou em todas as verificações
+product p2: Um push bloqueado
+product p3: Issues de dívida e uma linha Preventive no registro de decisões
+
+t1 -> s1
+s1 -> d1
+d1 -sim-> s2
+d1 -não-> s3
+s2 -> p2
+s3 -> p1
+s3 -> s4
+t2 -> s4
+s4 -> s5
+s5 -> p3
 
 ## What it does
 Transforma as regras da [[maintenance-policy]] em algo que uma máquina aplica: a tarefa de CI (integração contínua, verificações automáticas a cada push) falha diante de uma `falha`, e a revisão mensal lê os mesmos números em vez de medir à mão.

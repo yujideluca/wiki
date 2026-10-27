@@ -19,7 +19,8 @@ defmodule Wiki.Content.BuildTest do
     for id <- ~w(a b proj), lang <- ~w(en de pt-BR) do
       art = out |> Path.join("data/pages/#{id}.#{lang}.json") |> File.read!() |> JSON.decode!()
       assert art["lang"] == lang
-      assert Enum.map(art["sections"], & &1["key"]) == ~w(what does how where receives)
+      expected = if id == "proj", do: ~w(what flow does how where receives), else: ~w(what does how where receives)
+      assert Enum.map(art["sections"], & &1["key"]) == expected
     end
   end
 
@@ -27,7 +28,7 @@ defmodule Wiki.Content.BuildTest do
   test "a reference page (the glossary) links anywhere without drawing edges on the map", %{content: c, dir: dir} do
     valid_wiki(c)
     write_page(c, "glossary", base_header("glossary", kind: "reference", project: "none"), %{"what" => "Terms: [[a]], [[b]]."})
-    write_page(c, "proj", base_header("proj", kind: "project", project: "none"), %{"what" => "Has [[a]], [[b]] and [[glossary]]."})
+    write_page(c, "proj", base_header("proj", kind: "project", project: "none"), %{"what" => "Has [[a]], [[b]] and [[glossary]].", "flow" => flow()})
     out = Path.join(dir, "site")
     :ok = Build.run(Store.load(c), out, today: ~D[2026-10-22])
     edges = out |> Path.join("data/graph.json") |> File.read!() |> JSON.decode!() |> Map.fetch!("edges")

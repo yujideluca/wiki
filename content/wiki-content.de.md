@@ -1,7 +1,7 @@
 ---
 id: wiki-content
 lang: de
-source_hash: 1a821c508079
+source_hash: bb007afb8bf1
 title: Wiki-Inhalt (Markdown-Seiten)
 ---
 
@@ -11,7 +11,7 @@ Das sind die Seiten selbst: die Quelle der Wahrheit dieses Wikis. Es gibt eine [
 ## What it does
 Jede Seite hat einen Kopf (`id, title, aliases, kind, project, status, location, fed_by, feeds, sources, memory, since, until, reviewed`) und feste Abschnitte: What it is, What it does, How it does it, Where it sits in the pipeline, Who receives its output, dazu optional Steps (für Abläufe und Skills), Functions und Notes. Das Feld `reviewed` ist auf jeder Seite Pflicht: Es sagt, wann die Seite zuletzt mit ihren Quellen verglichen wurde, als Datum und Minute in UTC (koordinierte Weltzeit, überall dieselbe Uhrzeit), zum Beispiel `2026-10-24T18:30Z`, oder als bloßes Datum (der Beginn dieses Tages), und liegt nie in der Zukunft. Nur wer die Seite wirklich mit ihren Quellen verglichen hat, setzt es.
 
-Die Schreibregeln sind: Jede Seite muss für jemanden verständlich sein, der nichts über das System weiß; ein Fachbegriff wird dort definiert, wo er zum ersten Mal vorkommt, und verlinkt, wenn er komplex ist, auf eine Definition (eine externe Quelle oder das [[glossary]]); ein Akronym wird bei der ersten Verwendung auf jeder Seite ausgeschrieben; und eine Skill-Seite trägt die eigene Definition der Skill in ihrem Abschnitt Steps, sodass die Seite genügt, um die Skill zu verstehen.
+Die Schreibregeln sind: Jede Seite muss für jemanden verständlich sein, der nichts über das System weiß; ein Fachbegriff wird dort definiert, wo er zum ersten Mal vorkommt, und verlinkt, wenn er komplex ist, auf eine Definition (eine externe Quelle oder das [[glossary]]); ein Akronym wird bei der ersten Verwendung auf jeder Seite ausgeschrieben; und eine Skill-Seite trägt die eigene Definition der Skill in ihrem Abschnitt Steps, sodass die Seite genügt, um die Skill zu verstehen. Seiten der Arten actor, project, process und skill tragen außerdem direkt nach „What it is“ einen Abschnitt `Flow`: ein Flussdiagramm, geschrieben als eine Zeile je Kasten und je Pfeil, das das Wiki von oben nach unten zeichnet ([[wiki-flow-view]]).
 
 ## How it does it
 Links zwischen Seiten werden `[[id]]` geschrieben. Die Kopfzeilen `fed_by` und `feeds` sind die Pipeline-Kanten (was was speist) und müssen in beide Richtungen übereinstimmen. `sources` werden `repo:path` geschrieben, damit eine Quelle, die sich nach dem `reviewed`-Zeitpunkt der Seite geändert hat, die Seite als veraltet markiert ([[wiki-stale]]). Eine Übersetzung speichert einen Hash (einen kurzen Fingerabdruck) des englischen Textes, aus dem sie entstand, sodass eine veraltete Übersetzung erkannt wird. Seiten sagen, was es gibt; Regeln und Vorlieben liegen im Gedächtnis und werden über ihren `#code` verlinkt.

@@ -24,6 +24,7 @@ defmodule Wiki.Content.SkillSourceTest do
     write_page(c, "skill-demo", base_header("skill-demo", kind: "skill", sources: sources), %{
       "what" => "See [[a]].",
       "steps" => "1. A readable explanation.",
+      "flow" => flow(),
       "notes" => notes
     })
   end

@@ -15,6 +15,27 @@ reviewed: 2026-10-25T20:41Z
 ## What it is
 The skill "regras-magic" answers Giovanni's rules questions about [Magic: The Gathering](https://en.wikipedia.org/wiki/Magic:_The_Gathering), the trading card game. It is written in Portuguese. Its description says: it answers Giovanni's Magic rules questions: card interactions, the stack, triggers, layers, copies, tokens, Commander; not for LigaMagic lists or purchases ([[skill-ligamagic-listas]]).
 
+## Flow
+trigger t1: Giovanni asks a Magic rules question: interactions, the stack, triggers, layers, copies, tokens, Commander | [[giovanni]]
+step s1: Looks up each card's Oracle text, or marks it as from memory
+step s2: States the ruling in one line
+step s3: Walks the timeline: cast, stack, resolution, state-based actions, triggers
+step s4: Cites the numbers of the Comprehensive Rules
+decide d1: Was the card text checked on a source?
+step s5: Confidence: high
+step s6: Confidence: medium, with the card text marked from memory
+product p1: A ruling with cards, timeline, rules and confidence
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> s4
+s4 -> d1
+d1 -yes-> s5
+d1 -no-> s6
+s5 -> p1
+s6 -> p1
+
 ## What it does
 It gives rulings in a fixed template. Its role is "domain": it owns the format of Magic rulings; it defers to [[skill-ligamagic-listas]] (purchases) and to [[skill-browser-automacao-segura]] (if a browser is used); and it honours the language of the message and the depth flags `!!`, `***` and `...`.
 

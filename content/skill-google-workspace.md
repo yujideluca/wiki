@@ -15,6 +15,24 @@ reviewed: 2026-10-25T20:41Z
 ## What it is
 A skill is a saved set of instructions for a recurring task. Codex reads its description to decide when to load the complete instructions. This skill handles `google-workspace`; its exact trigger and exclusions appear in the complete source below.
 
+## Flow
+trigger t1: Giovanni asks to create or change a Google Doc, Sheet or Slides file in Drive | [[giovanni]]
+step s1: Reads the reference first, then checks which connectors are available
+decide d1: Is it a change to an existing file whose editor connector is missing?
+step s2: Asks Giovanni to turn that connector on, because the edit must land in the same file
+step s3: Changes the same file and keeps its link; never recreates it
+step s4: Uses the helper scripts for positions, cell ranges and slide layout, then checks the result
+product p1: Giovanni's own file, changed in place, with the same link
+product p2: A short question, with the file untouched
+
+t1 -> s1
+s1 -> d1
+d1 -yes-> s2
+d1 -no-> s3
+s2 -> p2
+s3 -> s4
+s4 -> p1
+
 ## What it does
 Produces the task-specific result described in its source. Required capabilities: `google-drive, matching-google-editor-for-edits`. Missing capabilities are reported; the skill does not provide new tools.
 

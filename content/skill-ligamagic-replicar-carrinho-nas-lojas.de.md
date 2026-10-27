@@ -1,12 +1,33 @@
 ---
 id: skill-ligamagic-replicar-carrinho-nas-lojas
 lang: de
-source_hash: e4df24589328
+source_hash: 3e244f2e1b5d
 title: Skill: ligamagic-replicar-carrinho-nas-lojas
 ---
 
 ## What it is
 Die Skill „ligamagic-replicar-carrinho-nas-lojas“ baut den Warenkorb pro Shop von LigaMagic auf der eigenen Website jedes Shops nach und gleicht beide vor dem Bezahlen ab. Sie ist auf Portugiesisch geschrieben. Ihre Beschreibung sagt: Sie baut den Warenkorb pro Shop von LigaMagic auf der eigenen Seite jedes Shops nach (dieselbe Karte, Edition, Sprache, Zustand, Extras und Menge) und gleicht beide vor dem Checkout ab; verwenden, wenn Giovanni bittet, die LigaMagic-Warenkörbe zu prüfen und auf den Seiten der Shops aufzubauen oder zu prüfen, ohne die Links von LigaMagic zu benutzen. Sie stammt aus einer Aufgabe vom 12. Oktober 2026 (5 Shops, 90 Positionen) und verhindert die damals gefundenen Fehler: eine beim Lesen übersprungene Foil- oder Promo-Position, Lagerbestand als Menge gelesen, eine doppelte Kopie durch wiederholten Klick, eine ähnliche statt der richtigen Edition und eine Prüfung nur nach der Positionszahl.
+
+## Flow
+trigger t1: Giovanni bittet, die LigaMagic-Warenkörbe zu prüfen und auf den Shop-Seiten nachzubauen | [[giovanni]]
+step s1: Liest den LigaMagic-Warenkorb nur lesend: die erwartete Liste je Shop; fragt einmal nach Zugriff | [[skill-minimize-site-approvals]]
+step s2: Liest den eigenen Warenkorb jedes Shops, bevor es ihn anfasst
+step s3: Legt jeden Artikel hinein: Suche, Kaufknopf, richtige Menge, einzeln | [[skill-browser-automacao-segura]], [[skill-click-protocol]]
+step s4: Gleicht den Shop-Warenkorb mit der erwarteten Liste ab
+decide d1: Stimmt der Shop-Warenkorb?
+step s5: Behebt den Unterschied und gleicht erneut ab
+step s6: Berichtet; es meldet sich nie an, bezahlt nie und drückt nie den Kassenknopf
+product p1: Ein passender Warenkorb in jedem Shop, zum Bezahlen für Giovanni bereit
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> s4
+s4 -> d1
+d1 -ja-> s6
+d1 -nein-> s5
+s5 -> s6
+s6 -> p1
 
 ## What it does
 Sie kopiert dieselbe Karte, Edition, Sprache, Zustand, Extras und Menge in den Warenkorb jedes Shops, ohne die Links von LigaMagic zu benutzen; die Käufe selbst brauchen Giovannis Freigabe. Ihre Rolle ist „Domäne“: Sie besitzt den Ablauf von LigaMagic zum Shop, die Skripte zum Lesen des Warenkorbs pro Shop und der Produktseite, den Abgleich und den Abschlussbericht; sie verweist auf [[skill-ligamagic-listas]], auf [[skill-browser-automacao-segura]] (Warnungen, Schleifen, zerstörerische Aktionen: diese gilt vorrangig), auf [[skill-click-protocol]] (Klickmechanik) und auf [[skill-minimize-site-approvals]] (Domains).

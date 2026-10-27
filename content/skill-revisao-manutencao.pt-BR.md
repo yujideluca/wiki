@@ -1,12 +1,37 @@
 ---
 id: skill-revisao-manutencao
 lang: pt-BR
-source_hash: 6b84917b9efa
+source_hash: 1fabaebb644c
 title: Skill: revisao-manutencao
 ---
 
 ## What it is
 A skill "revisao-manutencao" ("revisão de manutenção") é a metade que julga da [[maintenance-pipeline]]: lê o que o [[pipeline-check]] mediu e propõe o que fazer a respeito. Sua descrição diz: usar no Claude Code para a revisão mensal de arquitetura dos projetos de software do Giovanni (uma pendência na memória) e ao fim de uma tarefa em um projeto de software (revisão mensal, revisão de manutenção, dívida técnica, debt, pipeline-check, report.json); executa o pipeline-check, lê o `report.json` dele, propõe issues de dívida P1–P3 e uma linha Preventiva no registro de decisões; não serve para escrever código, para um único bug nem para trabalho fora de software. Seu princípio: o programa mede, a skill julga (decisão ADR-0013; uma ADR é um architecture decision record, uma nota curta que guarda os motivos de uma decisão). Ela propõe e nunca decide.
+
+## Flow
+trigger t1: A revisão mensal, ou o fim de uma tarefa num projeto de software | [[monthly-architecture-review]]
+step s1: Roda o pipeline-check e lê o report.json | [[pipeline-check]]
+step s2: Escreve uma proposta por aviso ou falha, com prioridade P1 a P3
+step s3: Acrescenta o que a máquina não vê
+decide d1: É a primeira revisão deste projeto?
+step s4: Cria os testes caçadores de bugs | [[skill-gerar-teste-automatizado]]
+step s5: Atualiza os testes caçadores de bugs | [[skill-gerar-teste-automatizado]]
+step s6: Registra uma linha Preventive no registro de decisões do projeto
+step s7: Encerra: relata as propostas ao Giovanni | [[giovanni]]
+product p1: Propostas de dívida para o Giovanni decidir
+product p2: Uma linha Preventive no registro de decisões de cada projeto
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> d1
+d1 -sim-> s4
+d1 -não-> s5
+s4 -> s6
+s5 -> s6
+s6 -> s7
+s7 -> p1
+s6 -> p2
 
 ## What it does
 Executa `tools/pipeline-check.sh`, lê o `report.json` e nunca mede de novo. Para cada aviso ou falha propõe uma issue `debt` com prioridade. Depois verifica o que uma máquina não vê, acrescenta uma linha Preventiva ao registro de decisões de cada projeto revisado, chama a [[skill-gerar-teste-automatizado]] (criar na primeira revisão, atualizar depois) e termina com `mem use`, `wiki publish` e "Verified by:". Nunca fecha issues, muda um limite, promove uma versão nem altera a proteção de branch, e não cria issues sem o ok do Giovanni.

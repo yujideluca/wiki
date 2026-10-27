@@ -1,12 +1,32 @@
 ---
 id: skill-adb-android-control
 lang: de
-source_hash: 2531b2e59904
+source_hash: 5c2b694f25f7
 title: Skill: adb-android-control
 ---
 
 ## What it is
 Die Skill „adb-android-control“ ist die Befehlsreferenz für die Arbeit mit Giovannis Handy (einem Motorola edge 50 fusion) über adb während der App-Entwicklung, etwa bei QuizApp. adb ist die Android Debug Bridge ([Dokumentation](https://developer.android.com/tools/adb)): ein Werkzeug, mit dem ein Computer ein Handy über ein Kabel steuern kann. Ihre Beschreibung sagt: für Android-Arbeit über adb während der App-Entwicklung verwenden: eine APK installieren (Android Package, die installierbare App-Datei), die App starten, tippen, wischen und tippen, um einen Ablauf durchzuspielen, einen Screenshot machen, logcat lesen (das Systemlog von Android, [Dokumentation](https://developer.android.com/tools/logcat)) nach Abstürzen, dumpsys (ein Statusauszug der Systemdienste) und Berechtigungen. Sie ist die Befehlsreferenz für den Debug-Durchgang nach dem Programmieren. Nicht für allgemeine Handyfragen, USB- oder Kubuntu-Probleme ([[skill-reparo-kubuntu]]) oder alles ohne adb. Sie ist aus der Open-Source-Skill hah23255/adb-android-control 2.0.1 (MIT-Lizenz) angepasst: nur die Befehlsreferenz und Abläufe; die Termux-Skripte, der Netzwerk-Portscanner, der Funkscanner und das Python-Paket wurden weggelassen, und ein Netzwerkscan darf aus dieser Skill nie ausgeführt werden.
+
+## Flow
+trigger t1: Android-Arbeit über adb auf Giovannis Handy, zum Beispiel QuizApp testen | [[quizapp]]
+step s1: Verbindet: listet Geräte, Debugging per WLAN, startet adb neu, wenn es hängt
+step s2: Installiert die App-Datei; löscht Daten oder beendet sie bei Bedarf
+step s3: Spielt den Ablauf mit Tippen, Wischen, Texteingabe und Tasten durch
+step s4: Macht Screenshots oder Bildschirmaufnahmen direkt auf den Laptop | [[phone]]
+step s5: Liest Logcat nach Abstürzen, dazu dumpsys und Berechtigungen | [[study-debug-log]]
+decide d1: Ist die App abgestürzt oder verhält sich falsch?
+product p1: Belege vom Handy: ein sauberer Ablauf und seine Screenshots
+product p2: Absturzzeilen, übergeben an die systematische Fehlersuche | [[skill-systematic-debugging]]
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> s4
+s4 -> s5
+s5 -> d1
+d1 -nein-> p1
+d1 -ja-> p2
 
 ## What it does
 Sie lässt Claude eine App auf dem Handy bedienen und lesen, was passiert ist: der Debug-Durchgang der ersten Linie nach dem Programmieren von [[quizapp]]. Ihre Rolle ist „Domäne“; sie verweist auf die CLAUDE.md des Projekts (bei QuizApp legt `source ~/dev/env.sh` adb in den Pfad und beschreibt Build- und Installationsschritte), auf [[skill-verification-before-completion]] (was als Beleg zählt) und auf [[skill-reparo-kubuntu]] (USB- und Host-Probleme).

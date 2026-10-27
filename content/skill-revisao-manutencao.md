@@ -15,6 +15,31 @@ reviewed: 2026-10-25T20:41Z
 ## What it is
 The skill "revisao-manutencao" ("maintenance review") is the judging half of the [[maintenance-pipeline]]: it reads what [[pipeline-check]] measured and proposes what to do about it. Its description says: use it in Claude Code for the monthly architecture review of Giovanni's software projects (an open item in the memory) and at the end of a task in a software project (monthly review, maintenance review, technical debt, debt, pipeline-check, report.json); it runs pipeline-check, reads its `report.json`, proposes debt issues P1–P3 and a Preventive decision-log row; it is not for writing code, not for a single bug, not for non-software work. Its principle: the program measures, the skill judges (decision ADR-0013; an ADR is an architecture decision record, a short note that keeps the reasons for a decision). It proposes and never decides.
 
+## Flow
+trigger t1: The monthly review, or the end of a task in a software project | [[monthly-architecture-review]]
+step s1: Runs pipeline-check and reads its report.json | [[pipeline-check]]
+step s2: Writes one proposal per warning or failure, with a priority P1 to P3
+step s3: Adds what the machine cannot see
+decide d1: Is it the first review of this project?
+step s4: Creates the bug-finding tests | [[skill-gerar-teste-automatizado]]
+step s5: Updates the bug-finding tests | [[skill-gerar-teste-automatizado]]
+step s6: Records a Preventive row in the project's decision log
+step s7: Closes: reports the proposals to Giovanni | [[giovanni]]
+product p1: Debt proposals for Giovanni to decide on
+product p2: A Preventive row in each project's decision log
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> d1
+d1 -yes-> s4
+d1 -no-> s5
+s4 -> s6
+s5 -> s6
+s6 -> s7
+s7 -> p1
+s6 -> p2
+
 ## What it does
 It runs `tools/pipeline-check.sh`, reads `report.json` and never re-measures. For each warning or failure it proposes a `debt` issue with a priority. It then checks what a machine cannot see, adds a Preventive row to each reviewed project's decision log, calls [[skill-gerar-teste-automatizado]] (create on the first review, update afterwards) and closes with `mem use`, `wiki publish` and "Verified by:". It never closes issues, changes a limit, promotes a version or changes branch protection, and it does not create issues without Giovanni's ok.
 

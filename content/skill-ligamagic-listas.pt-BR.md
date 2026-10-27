@@ -1,12 +1,33 @@
 ---
 id: skill-ligamagic-listas
 lang: pt-BR
-source_hash: 4534aa382f44
+source_hash: e5df04e3ee78
 title: Skill: ligamagic-listas
 ---
 
 ## What it is
 A skill "ligamagic-listas" trata do trabalho do Giovanni com a Lista de Compras da LigaMagic e o formulário de compra em massa ("Compra por Lista"). A [LigaMagic](https://www.ligamagic.com.br/) é um marketplace brasileiro de cartas de [Magic: The Gathering](https://en.wikipedia.org/wiki/Magic:_The_Gathering). A skill é escrita em português. Sua descrição diz: usar ao trabalhar com a Lista de Compras ou o Compra por Lista: extrair cartas, gerar listas com edição, remover ou editar itens em lote. Para refazer ou conferir o carrinho por loja nos sites das lojas, usar a [[skill-ligamagic-replicar-carrinho-nas-lojas]].
+
+## Flow
+trigger t1: O Giovanni trabalha com a lista de compras da LigaMagic ou seu formulário de compra por lista | [[giovanni]]
+decide d1: O que ele precisa?
+step s1: Escreve uma carta por linha: quantidade, nome em inglês, tags de edição, qualidade, idioma, extras
+step s2: Confere com Detalhar Características: a coluna Edição precisa voltar preenchida
+step s3: Lê ou edita a página da lista de compras
+step s4: Remove itens com cuidado, ciente das armadilhas conhecidas
+product p1: Uma lista pronta para colar no formulário de compra
+product p2: Uma lista de compras editada na LigaMagic
+product p3: A base para refazer os carrinhos nos sites das lojas | [[skill-ligamagic-replicar-carrinho-nas-lojas]]
+
+t1 -> d1
+d1 -criar lista-> s1
+d1 -editar a lista-> s3
+d1 -remover itens-> s4
+s1 -> s2
+s2 -> p1
+s3 -> p2
+s3 -> p3
+s4 -> p2
 
 ## What it does
 Extrai cartas, gera listas com edição e remove ou edita itens em lote. Seu papel é "domínio": é dona do formato do Compra por Lista e do manuseio da Lista de Compras; remete à [[skill-browser-automacao-segura]] (ações em lote) e à [[skill-ligamagic-replicar-carrinho-nas-lojas]] (carrinho por loja e montagem nos sites das lojas); e respeita o idioma da mensagem e as flags de profundidade `!!`, `***` e `...`.

@@ -1,12 +1,38 @@
 ---
 id: skills
 lang: de
-source_hash: 9c6d93a525ca
+source_hash: f49491d6a071
 title: Skills
 ---
 
 ## What it is
 Eine Skill ist ein gepacktes Set von Anweisungen, das Claude lädt, wenn eine Aufgabe dieser Art ansteht ([Dokumentation zu Skills](https://docs.claude.com/en/docs/claude-code/skills)). Man kann sie sich als Kapitel eines Rezeptbuchs vorstellen, das Claude nur liest, wenn die Anfrage passt: ein Kapitel zum Korrigieren von Deutsch, eines zum Debuggen, eines zur Laptop-Reparatur. Jede Skill ist ein Ordner mit einer Datei `SKILL.md`: zuerst ein Name, dann eine „Beschreibung“, die entscheidet, wann die Skill geladen wird, dann die Anweisungen. Giovannis Skills liegen in `~/.claude/skills`; die Claude-App hat eigene Kopien ([[claude-ai-skills]]).
+
+## Flow
+trigger t1: Giovanni bittet um eine Aufgabe | [[giovanni]]
+step s1: Claude sieht immer die Liste der Skill-Namen und -Beschreibungen | [[claude-code]]
+decide d1: Passt die Anfrage zu einer Beschreibung?
+step s2: Claude arbeitet ohne Skill
+step s3: Claude lädt den vollen Text dieses Skills
+step s4: Claude folgt seinen Anweisungen
+trigger t2: Giovanni möchte einen neuen oder überarbeiteten Skill
+step s5: skill-forge baut und testet ihn | [[skill-skill-forge]]
+step s6: Er wird als Ordner mit einer SKILL.md in ~/.claude/skills gespeichert
+product p1: Eine Aufgabe, so erledigt, wie Giovanni sie will
+product p2: Ein neuer Skill, mit eigener Wiki-Seite
+product p3: Getrennte Kopien für die Claude-App | [[claude-ai-skills]]
+
+t1 -> s1
+s1 -> d1
+d1 -ja-> s3
+d1 -nein-> s2
+s3 -> s4
+s4 -> p1
+s2 -> p1
+t2 -> s5
+s5 -> s6
+s6 -> p2
+s6 -> p3
 
 ## What it does
 Die Skills halten fest, wie Giovanni wiederkehrende Aufgaben erledigt haben will: Deutschtraining, klinische Antworten, Bewertung wissenschaftlicher Artikel, Bewerbungen in Deutschland, Magic: The Gathering, sichere Browser-Automatisierung, Laptop-Reparatur und der Entwicklungsprozess (Brainstorming, Debugging, Verifikation, Wartungs-Reviews, Testerstellung und Skill-Bau). Jede Skill hat eine Seite in diesem Wiki, die ihre eigene Definition enthält, sodass man die Datei `SKILL.md` nie öffnen muss, um sie zu verstehen.

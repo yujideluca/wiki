@@ -1,12 +1,30 @@
 ---
 id: skill-minimize-site-approvals
 lang: pt-BR
-source_hash: 01dc574f6b52
+source_hash: 9d9759257243
 title: Skill: minimize-site-approvals
 ---
 
 ## What it is
 A skill "minimize-site-approvals" é uma etapa de planejamento antes de navegar, para que o Giovanni precise clicar em "aprovar" o menor número possível de vezes. Sua descrição diz: usar antes de qualquer tarefa de navegação para reduzir cliques de aprovação de sites: planejar os domínios com antecedência, pedir acesso ao site inteiro uma vez e preferir ferramentas que não exigem aprovação. A versão do Claude Code só é editada lá; o app Claude mantém a sua ([[claude-ai-skills]]).
+
+## Flow
+trigger t1: Antes de qualquer tarefa de navegação
+step s1: Prefere o caminho mais barato: ferramentas que não pedem aprovação
+decide d1: Existe uma ferramenta que não pede aprovação?
+step s2: Lista todos os domínios de que a tarefa vai precisar
+step s3: Diz ao Giovanni a lista completa numa linha | [[giovanni]]
+step s4: Pede acesso a todo o site uma vez só
+product p1: A tarefa feita sem cliques de aprovação
+product p2: Uma rodada de aprovação em vez de várias
+
+t1 -> s1
+s1 -> d1
+d1 -sim-> p1
+d1 -não-> s2
+s2 -> s3
+s3 -> s4
+s4 -> p2
 
 ## What it does
 Planeja os domínios com antecedência, pede acesso ao site inteiro uma vez e prefere ferramentas que não exigem aprovação. Nunca contorna, desativa nem burla aprovações ou a verificação de segurança do site; apenas reduz quantos avisos são disparados. Funciona junto com a [[skill-browser-automacao-segura]] e a [[skill-click-protocol]].

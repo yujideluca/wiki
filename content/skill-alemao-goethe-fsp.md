@@ -15,6 +15,37 @@ reviewed: 2026-10-25T20:41Z
 ## What it is
 The skill "alemao-goethe-fsp" is Giovanni's German training, written in Portuguese, for the Goethe-Zertifikat B2 exam ([Goethe B2](https://www.goethe.de/en/spr/prf/gzb2.html), the general German exam at upper-intermediate level) and, after it, the FSP (Fachsprachprüfung, the German medical-language exam at level C1, "C1 Medizin"). Its description says: use it whenever Giovanni sends German sentences or texts to correct, asks for exercises, a mock exam (Schreiben = writing, Sprechen = speaking, Arzt-Patienten-Gespräch = doctor–patient conversation, Arztbrief = doctor's letter, Arzt-Arzt-Gespräch = doctor–doctor conversation), medical vocabulary Portuguese–German, grammar explanations, or heuristics for verbs with prepositions, cases and declension.
 
+## Flow
+trigger t1: Giovanni sends German to correct, or asks for exercises, an exam simulation, vocabulary or grammar | [[giovanni]]
+step s1: Answers in the language Giovanni wrote in; the training material is German
+decide d1: What does he want?
+step s2: Corrects each sentence on its own, first
+step s3: Explains each error: category, one-line rule and a heuristic
+step s4: Only then offers alternatives, marked B2 or C1
+step s5: Runs the exam format: Schreiben, Sprechen, patient or colleague talk, Arztbrief
+step s6: Gives a Goethe-style estimate: criteria rated A to E, passing is 60 of 100
+step s7: Answers with medical vocabulary PT–DE, grammar rules and heuristics
+step s8: Keeps a register of recurring errors and revisits it with spaced repetition
+product p1: A corrected text with an error profile
+product p2: An exam-style assessment with exercises
+product p3: An answer on vocabulary or grammar
+product p4: Anki cards, on request
+
+t1 -> s1
+s1 -> d1
+d1 -correct a text-> s2
+d1 -exam-> s5
+d1 -vocabulary or grammar-> s7
+s2 -> s3
+s3 -> s4
+s4 -> p1
+s4 -> s8
+s5 -> s6
+s6 -> p2
+s6 -> s8
+s7 -> p3
+s8 -> p4
+
 ## What it does
 It corrects German sentences and texts, gives exercises, simulates exam parts, provides medical vocabulary and grammar explanations, and keeps a register of recurring errors that it revisits in later sessions with spaced repetition. The student profile it assumes: Brazilian doctor, level B1+/B2 in progress, Goethe B2 in November 2026, then FSP and Kenntnisprüfung (the knowledge exam for foreign-trained doctors); recurring difficulties are cases, adjective endings, n-declension, prepositions, pronominal adverbs, verbs with prepositions, the zu-infinitive, subjunctive I/II, perfect versus simple past, and word order in subordinate clauses. Errors found in corrected texts also fed the "find the error" mode of [[quizapp]].
 

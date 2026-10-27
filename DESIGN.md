@@ -3,7 +3,7 @@
 What the system is, how it is built and why. Living document: updated in the same commit as the change.
 The approved design and build plan of 2026-10-22 are in `docs/2026-10-22-wiki-design.md`.
 
-Last updated: 2026-10-26
+Last updated: 2026-10-27
 
 ## 1. What it is
 
@@ -50,7 +50,7 @@ flowchart TB
     subgraph frontend["frontend/ (Elm)"]
         main[Main: routes, search bar, language]
         mapv[MapView + Layout + MapSize + Filter]
-        art[ArticleView + WikiText]
+        art[ArticleView + WikiText + FlowView + Flow]
         search[Search]
     end
     pages[(content/*.md)]
@@ -71,7 +71,7 @@ folders, and the Elm app makes no request outside `/data`.
 
 ## 3. Testing
 
-`docs/REQUIREMENTS.md` (AU, DC, CO, LG, BU, UP, MP) with tagged tests in `server/test` (ExUnit) and
+`docs/REQUIREMENTS.md` (AU, DC, CO, FL, LG, BU, UP, MP) with tagged tests in `server/test` (ExUnit) and
 `frontend/tests` (elm-test); `tools/quality_gate.sh` also runs `wiki check` on the real content and the fitness
 functions (gzipped bundle size, gate time).
 
@@ -82,6 +82,7 @@ Newest first. **Type** is the ISO/IEC/IEEE 14764 maintenance category: *correcti
 
 | Date | Type | Decision | Why |
 |---|---|---|---|
+| 2026-10-27 | Perfective | **A `## Flow` section drawn as a flowchart** ([ADR-0007](docs/adr/0007-flow-chart-section.md); FL-1..FL-4). Pages of kind actor, project, process and skill now carry a flowchart of how the concept is started, what it engages and what it produces: one line per box (`trigger`, `step`, `decide`, `product`) and one per arrow, parsed by `Wiki.Content.Flow` (checks: a trigger and a product, everything reachable, labelled decisions, no loops, links exist, size limits; translations keep the same boxes and arrows) and by `Flow.elm`, which lays the boxes out top to bottom (longest-path rows, stopovers for arrows that skip rows, barycenter ordering, an isotonic regression for the columns) and `FlowView.elm`, which draws SVG (pill, diamond, double box; colour by the kind of the first linked page; arrows with `Shape.bumpYCurve`). All 50 such pages and a new `codex` page got a flow in three languages. `index.html` also got `darkreader-lock` because the Dark Reader extension inverted the chart's fills | Giovanni: the big concept pages need a top-to-bottom flowchart with decisions of the chain of events that engages them, what they engage and what they produce; use only elm-visualization, because dagre may break later. elm-visualization 2.4.3 has no layered graph layout, so the placing is our own pure module and only the arrow curves come from the library |
 | 2026-10-26 | Corrective | **`wiki --help` and unknown options no longer run the command** (UP-5). `OptionParser` with `strict:` drops an unknown switch silently, so `wiki publish --help` ran a real publish, and a typo such as `--co-autor` would have published without the co-author line. `Wiki.CLI.exec/1` now handles `--help`, `-h` and `help` (usage, exit 0) and any invalid option (usage on stderr, exit 2) before dispatching | Giovanni: fix the --help handling (found while testing UP-4) |
 | 2026-10-26 | Corrective | **`wiki publish` no longer writes a fixed `Co-Authored-By: Claude Opus 5.5` line; the publishing session supplies its own** (UP-4). The tool appended that name to every publish commit since 2026-10-22, so commits made by Codex, Sonnet or Giovanni claimed Opus as co-author. Now `--co-author "Name <email>"` or `WIKI_CO_AUTHOR` gives the line; with neither there is no trailer; a value that is not one `Name <email>` line is refused (no extra trailers can be injected). The tool cannot detect the model itself (Claude Code does not export it), so each session passes the attribution line it was given; this is written in CLAUDE.md and in the Stop-hook message | Giovanni: the trailer must follow the committing session, not name Claude Opus |
 | 2026-10-25 | Perfective | **Ball fits exactly at first, grows with the zoom up to 30 % cut off, then only the dots spread** (LN-5; replaces the fixed 10 % of the previous row). `fit` now sizes the ball to the free area exactly (radius = half the narrower side) and remembers the zoom scale it chose in `Model.fitScale`. `MapCamera.lensFor` multiplies the radius by `growth (scale / fitScale)` = that ratio clamped between 1 and `maxGrowth` = 1/cos 0.945 = 1.71, the size at which two edge caps of 15 % each (cap of angle t has the share (t - sin t cos t)/π) are cut off; so the first part of the zoom enlarges the whole picture (dots stay in the same place on the ball) and beyond it the ball is fixed and the map scale alone grows. Zooming out leaves the ball at the exact fit. Measured in Chrome at 1920 px: ball height 238 → 406 px while the zoom goes 0.27 → 0.46, then constant | Giovanni: make it up to 30 % of the ball area; start with the ball fitting exactly, first part of the zoom up to 30 %, then only increase the nodes |

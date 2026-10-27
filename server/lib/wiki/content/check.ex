@@ -6,10 +6,11 @@ defmodule Wiki.Content.Check do
   `local: true` adds the checks that need the laptop (sources exist, memory refs exist);
   CI runs without them because it cannot see the other private repositories.
   """
-  alias Wiki.Content.{Page, Store, Sources, Privacy, SkillSource}
+  alias Wiki.Content.{Page, Store, Sources, Privacy, SkillSource, Flow}
 
   @statuses ~w(active beta retired planned)
   @no_edges_ok ~w(actor external)
+  @flow_kinds ~w(actor project process skill)
   @date ~r/^\d{4}-\d{2}-\d{2}$/
   @review_days 30
 
@@ -52,6 +53,7 @@ defmodule Wiki.Content.Check do
           Page.section(p, k) == "" && "section ## #{Page.heading(k)} is missing or empty"
         end) ++
         [skill_definition(p)] ++
+        flow(p) ++
         acronyms(p, store.acronyms) ++
         Enum.map(Page.links(p), &(!MapSet.member?(ids, &1) && "link [[#{&1}]] points to no page")) ++
         Enum.map(Page.list(p, "fed_by"), &(!MapSet.member?(ids, &1) && "fed_by #{&1} points to no page")) ++
@@ -67,6 +69,17 @@ defmodule Wiki.Content.Check do
   defp skill_definition(p) do
     p.header["kind"] == "skill" && Page.section(p, "steps") == "" &&
       "a skill page needs a ## Steps section with the skill's own rules or steps"
+  end
+
+  # FL-1: the big concepts (actors, projects, processes, skills) show how they are started, what they engage and what they
+  # produce, as a flowchart in the ## Flow section; its rules are in Wiki.Content.Flow.
+  defp flow(p) do
+    text = Page.section(p, "flow")
+
+    cond do
+      text == "" -> if p.header["kind"] in @flow_kinds, do: ["section ## Flow is missing: a #{p.header["kind"]} page shows its chain as a flowchart"], else: []
+      true -> Flow.problems(text)
+    end
   end
 
   @acronym_gap 100
@@ -185,6 +198,8 @@ defmodule Wiki.Content.Check do
             !t.header["title"] -> "#{t.file}: title missing"
             (miss = Enum.filter(Page.required_sections(), &(Page.section(t, &1) == ""))) != [] ->
               "#{t.file}: sections missing: #{Enum.join(miss, ", ")}"
+            (flow_problem = translated_flow_problem(p, t)) != nil ->
+              "#{t.file}: #{flow_problem}"
             true -> nil
           end
       end
@@ -193,6 +208,21 @@ defmodule Wiki.Content.Check do
     |> Kernel.++(
       for {{id, _}, t} <- store.translations, !store.pages[id], do: "#{t.file}: translation of a page that does not exist"
     )
+  end
+
+  # FL-2: a translated flow keeps the English boxes (ids, kinds, page links) and arrows; only the words change.
+  defp translated_flow_problem(p, t) do
+    en = Page.section(p, "flow")
+    tr = Page.section(t, "flow")
+
+    cond do
+      en == "" and tr == "" -> nil
+      tr == "" -> "section ## Flow is missing (the English page has one)"
+      en == "" -> "section ## Flow has no English original"
+      (problems = Flow.problems(tr)) != [] -> Enum.join(problems, "; ")
+      Flow.skeleton(en) != Flow.skeleton(tr) -> "flow differs from the English one in boxes, links or arrows (only the words may change)"
+      true -> nil
+    end
   end
 
   defp prefix(p, msg), do: "#{p.file}: #{msg}"

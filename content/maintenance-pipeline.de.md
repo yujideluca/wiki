@@ -1,12 +1,36 @@
 ---
 id: maintenance-pipeline
 lang: de
-source_hash: ac809fc2cae6
+source_hash: 66c2e90145c8
 title: Wartungs-Pipeline (erst messen, dann urteilen)
 ---
 
 ## What it is
 So werden Giovannis Softwareprojekte wartbar gehalten: Ein Programm misst und blockiert, eine Skill urteilt und schlägt vor, und beide sprechen nur über eine Datei miteinander, `report.json`. Die Trennung ist gewollt (ADR-0013 in QuizApp; ein ADR ist ein Architecture Decision Record, eine kurze Notiz, die die Gründe einer Entscheidung festhält): Zahlen sollen von einer Maschine kommen, die man nicht überreden kann, und das Urteil von Claude, das sie abwägen kann.
+
+## Flow
+trigger t1: Jemand pusht in das Repository eines Projekts | [[quizapp-ci]]
+step s1: Der Prüf-Job gate führt pipeline-check aus | [[pipeline-check]]
+decide d1: Schlägt eine Prüfung fehl (falha)?
+step s2: Branch-Schutz oder die lokale Pre-Push-Prüfung stoppt den Merge | [[maintenance-policy]]
+step s3: Warnungen (aviso) erscheinen in report.json, lassen aber nie scheitern
+trigger t2: Die monatliche Überprüfung ist fällig | [[monthly-architecture-review]]
+step s4: Der Review-Skill macht aus Warnungen und Fehlern priorisierte Schuldenvorschläge | [[skill-revisao-manutencao]]
+step s5: Giovanni entscheidet, was geschieht | [[giovanni]]
+product p1: Eine Änderung, die alle Prüfungen bestanden hat
+product p2: Ein blockierter Push
+product p3: Schulden-Issues und eine Preventive-Zeile im Entscheidungsprotokoll
+
+t1 -> s1
+s1 -> d1
+d1 -ja-> s2
+d1 -nein-> s3
+s2 -> p2
+s3 -> p1
+s3 -> s4
+t2 -> s4
+s4 -> s5
+s5 -> p3
 
 ## What it does
 Sie macht die Regeln aus [[maintenance-policy]] zu etwas, das eine Maschine durchsetzt: Der CI-Auftrag (Continuous Integration, automatische Prüfungen bei jedem Push) schlägt bei einer `falha` (Fehlschlag) fehl, und der Monats-Review liest dieselben Zahlen, statt von Hand zu messen.

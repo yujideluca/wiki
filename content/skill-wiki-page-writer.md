@@ -16,6 +16,33 @@ reviewed: 2026-10-25T21:08Z
 ## What it is
 The skill "wiki-page-writer" is the method [[claude-code]] follows to write or update the pages of this wiki. A skill is a packaged set of instructions that Claude loads when a request matches its description, so that one kind of task is done the same careful way every time (see [[skills]] and the [[glossary]]). This one covers a single task: turning what exists in Giovanni's systems into true pages that a stranger can understand, in English, German and Brazilian Portuguese.
 
+## Flow
+trigger t1: Work on the wiki's content: writing, updating, translating or retiring a page | [[claude-code]]
+step s1: Guards the tree: checks the git state first, even when it should be clean
+step s2: Learns the current rules | [[wiki-content]]
+step s3: Finds the work, then verifies the facts against the sources before writing
+step s4: Writes for a stranger and gives the page its shape, with a flow chart
+step s5: Checks privacy
+step s6: Translates into German and Portuguese
+step s7: Runs the check | [[wiki-check]]
+decide d1: Does the check pass?
+step s8: Fixes the problems and updates the hashes
+step s9: Publishes | [[wiki-cli]]
+product p1: Pages in three languages on the live wiki | [[wiki]]
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> s4
+s4 -> s5
+s5 -> s6
+s6 -> s7
+s7 -> d1
+d1 -yes-> s9
+d1 -no-> s8
+s8 -> s9
+s9 -> p1
+
 ## What it does
 It is used after any task that changed something in the systems, when the Stop hook (a small program that runs when Claude finishes a turn, see [[wiki-hook-stop]]) says "Wiki update needed", or when Giovanni asks for a wiki page. Its description also names the translation work (the German and Portuguese versions, `source_hash` fixes) as part of the task, and says what it is not for: general encyclopedia articles, code comments, `DESIGN.md`, decision records, memory entries, and debugging or explaining the wiki tool itself. Its role is "process": it owns the content of the pages and the three language versions; it defers to the wiki's own rules in [[wiki-content]] and to the checker [[wiki-check]], which enforces them; and it honours the reply-language rule and the plain-language rule. The skill produces pages in `~/dev/wiki/content`, published with `wiki publish`.
 

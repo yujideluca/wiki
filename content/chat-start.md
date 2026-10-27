@@ -14,6 +14,29 @@ reviewed: 2026-10-27T00:22Z
 ## What it is
 This page describes the sequence of events that gives a new [[claude-code]] chat its memory, before Giovanni's first message is answered. Without it, every chat would start as a blank slate.
 
+## Flow
+trigger t1: Giovanni opens Claude Code in a folder, or the assistant restarts | [[claude-code]], [[remote-assistant]]
+step s1: Reads its settings and runs the SessionStart hook | [[claude-code-settings]], [[hook-session-start]]
+step s2: Downloads the newest workflow-memory from GitHub | [[mem-sync]]
+decide d1: Did the download work?
+step s2b: Keeps the local copy and warns that memory may be stale
+step s3: Folds the stored events into the current state, ranked to fit a size budget | [[memory-fold]]
+step s4: Adds this project's open items, to be verified before mentioning them | [[mem-pendency]]
+step s5: Prints the brief into the model's context | [[session-brief]]
+step s6: Adds the global instructions and Claude's own memory index | [[global-claude-md]], [[claude-auto-memory]]
+product p1: A chat that starts with Giovanni's standing preferences and open items
+
+t1 -> s1
+s1 -> s2
+s2 -> d1
+d1 -yes-> s3
+d1 -no-> s2b
+s2b -> s3
+s3 -> s4
+s4 -> s5
+s5 -> s6
+s6 -> p1
+
 ## What it does
 It makes every session begin with the same standing preferences and the same list of unfinished items, no matter which project the chat is opened in.
 

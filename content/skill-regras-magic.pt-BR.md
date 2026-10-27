@@ -1,12 +1,33 @@
 ---
 id: skill-regras-magic
 lang: pt-BR
-source_hash: 2624709e46b2
+source_hash: 4a54708c415a
 title: Skill: regras-magic (regras de Magic)
 ---
 
 ## What it is
 A skill "regras-magic" responde às dúvidas de regras do Giovanni sobre [Magic: The Gathering](https://en.wikipedia.org/wiki/Magic:_The_Gathering), o jogo de cartas colecionáveis. É escrita em português. Sua descrição diz: responde dúvidas de regras de Magic do Giovanni: interações entre cartas, pilha, gatilhos, camadas, cópias, tokens, comandante; não serve para listas ou compras da LigaMagic ([[skill-ligamagic-listas]]).
+
+## Flow
+trigger t1: O Giovanni faz uma dúvida de regras de Magic: interações, pilha, gatilhos, camadas, cópias, fichas, Commander | [[giovanni]]
+step s1: Consulta o texto Oracle de cada carta, ou marca como de memória
+step s2: Dá a decisão em uma linha
+step s3: Percorre a linha do tempo: conjurar, pilha, resolução, ações de estado, gatilhos
+step s4: Cita os números das Comprehensive Rules
+decide d1: O texto da carta foi conferido numa fonte?
+step s5: Confiança: alta
+step s6: Confiança: média, com o texto da carta marcado como de memória
+product p1: Uma decisão com cartas, linha do tempo, regras e confiança
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> s4
+s4 -> d1
+d1 -sim-> s5
+d1 -não-> s6
+s5 -> p1
+s6 -> p1
 
 ## What it does
 Dá rulings em um modelo fixo. Seu papel é "domínio": é dona do formato dos rulings de Magic; remete à [[skill-ligamagic-listas]] (compras) e à [[skill-browser-automacao-segura]] (se usar navegador); e respeita o idioma da mensagem e as flags de profundidade `!!`, `***` e `...`.

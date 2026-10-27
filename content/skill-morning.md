@@ -15,6 +15,28 @@ reviewed: 2026-10-25T20:41Z
 ## What it is
 A skill is a saved set of instructions for a recurring task. Codex reads its description to decide when to load the complete instructions. This skill handles `morning`; its exact trigger and exclusions appear in the complete source below.
 
+## Flow
+trigger t1: Giovanni asks to run, see or set up the morning brief, or types /morning | [[giovanni]]
+decide d1: Run it now, or set it up for weekdays?
+step s1: Checks the connections and sorts the tools into roles: calendar, e-mail, chat, other
+step s2: Gathers what each role has for today
+step s3: Sorts what is important
+step s4: Writes the page: a visual anchor, the important things, sections, a button
+step s5: Builds one styled page and checks the render once
+step s6: Sets up a recurring weekday task that repeats these steps
+product p1: A styled morning brief page
+product p2: A weekday schedule that makes the brief automatically
+
+t1 -> d1
+d1 -now-> s1
+d1 -weekdays-> s6
+s1 -> s2
+s2 -> s3
+s3 -> s4
+s4 -> s5
+s5 -> p1
+s6 -> p2
+
 ## What it does
 Produces the task-specific result described in its source. Required capabilities: `calendar-email-chat-as-available, local-output, browser-for-render-check`. Missing capabilities are reported; the skill does not provide new tools.
 

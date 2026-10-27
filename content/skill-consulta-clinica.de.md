@@ -1,12 +1,29 @@
 ---
 id: skill-consulta-clinica
 lang: de
-source_hash: a3984072b927
+source_hash: 0744056df86a
 title: Skill: consulta-clinica (klinische Antworten)
 ---
 
 ## What it is
 Die Skill „consulta-clinica“ gibt schnelle klinische Antworten und Dosisberechnungen für Giovannis Arbeit in der Notfall- und präklinischen Medizin. Sie ist auf Portugiesisch geschrieben. Ihre Beschreibung sagt: schnelle klinische Antworten und Dosisberechnungen: Vorgehen, Dosis, Verdünnung, Infusion, Scores, Rechner, Wechselwirkungen und Nahrungsergänzungsmittel; nicht für die Bewertung eines Artikels oder einer Studie ([[skill-analise-artigo-cientifico]]). Sie speichert nie Patientendaten.
+
+## Flow
+trigger t1: Giovanni stellt eine schnelle klinische Frage oder eine Dosisberechnung | [[giovanni]]
+step s1: Antwortet im festen Muster, immer in derselben Reihenfolge
+step s2: Nimmt die Quellen nach Fachgebiet
+decide d1: Fehlt eine Zahl oder ist sie unsicher?
+step s3: Sagt das, statt sie zu erfinden
+step s4: Schreibt Dosen mit Einheiten und zeigt jede Rechnung oder jeden Score Schritt für Schritt
+product p1: Eine kurze klinische Antwort für die Arbeit
+
+t1 -> s1
+s1 -> s2
+s2 -> d1
+d1 -ja-> s3
+d1 -nein-> s4
+s3 -> p1
+s4 -> p1
 
 ## What it does
 Sie antwortet in einer festen Vorlage, damit die Zahl, die Giovanni benutzen wird, immer zuerst steht und immer die Leitlinie mit Jahr genannt wird. Sie ist eine „Domänen“-Skill: Sie besitzt das Format klinischer Antworten und Berechnungen, verweist für Artikel und tiefe Evidenzfragen auf [[skill-analise-artigo-cientifico]] und auf [[skill-bias-risk-triage]] nur für die Mindesttiefe der Prüfung und beachtet die Sprache der Nachricht und die Tiefe-Flags `!!`, `***` und `...`.

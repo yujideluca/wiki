@@ -1,12 +1,34 @@
 ---
 id: remote-assistant
 lang: de
-source_hash: c65b5d957be4
+source_hash: 0cc6544c394b
 title: Remote-Assistent
 ---
 
 ## What it is
 Der Remote-Assistent ist eine Claude-Code-Sitzung, die ständig auf dem Laptop läuft und die [[giovanni]] über die Funktion Remote Control aus der Claude-App auf dem Handy erreichen kann. In der App erscheint sie als `yuji-nitro-assistant`. Man kann sie sich als zweite Tür in denselben Laptop vorstellen: dasselbe Claude, dieselben Repositories, aber von überall erreichbar.
+
+## Flow
+trigger t1: Der Laptop startet, oder die Assistenten-Sitzung endet | [[claude-assistant]]
+step s1: Der Dienst startet eine tmux-Sitzung mit claude remote-control in ~/assistant neu
+step s2: Die Sitzung liest ihre eigene CLAUDE.md und die Gedächtnis-Zusammenfassung | [[session-brief]], [[global-claude-md]]
+trigger t2: Giovanni schickt eine Nachricht aus der Claude-App am Handy | [[giovanni]]
+step s3: Remote Control bringt die Nachricht zur Sitzung yuji-nitro-assistant
+step s4: Erledigt die kurze Aufgabe auf dem Laptop mit denselben Regeln wie Claude Code | [[claude-code]]
+step s5: Antwortet knapp, damit es am Handy gut lesbar ist
+product p1: Eine kurze Antwort auf Giovannis Handy
+product p2: Änderungen in den Projekt-Repositories
+product p3: Gedächtniseinträge mit dem Instanznamen assistant | [[events-log]]
+
+t1 -> s1
+s1 -> s2
+s2 -> s4
+t2 -> s3
+s3 -> s4
+s4 -> s5
+s4 -> p2
+s4 -> p3
+s5 -> p1
 
 ## What it does
 Er erledigt kurze Aufgaben auf dem Laptop, während Giovanni nicht davorsitzt. Er folgt denselben Regeln wie [[claude-code]] und schreibt unter dem Instanznamen `assistant` ins gemeinsame Gedächtnis, damit dieses erkennen kann, wer was geschrieben hat.

@@ -1,12 +1,38 @@
 ---
 id: skills
 lang: pt-BR
-source_hash: 9c6d93a525ca
+source_hash: f49491d6a071
 title: Skills
 ---
 
 ## What it is
 Uma skill é um conjunto empacotado de instruções que o Claude carrega quando surge uma tarefa desse tipo ([documentação de skills](https://docs.claude.com/en/docs/claude-code/skills)). Pense nela como um capítulo de um livro de receitas que o Claude lê só quando o pedido combina: um capítulo sobre corrigir alemão, outro sobre depuração, outro sobre conserto do notebook. Cada skill é uma pasta com um arquivo `SKILL.md`: primeiro um nome, depois uma "descrição" que decide quando a skill é carregada, depois as instruções. As skills do Giovanni ficam em `~/.claude/skills`; o app Claude tem cópias próprias ([[claude-ai-skills]]).
+
+## Flow
+trigger t1: Giovanni pede uma tarefa | [[giovanni]]
+step s1: O Claude sempre vê a lista de nomes e descrições das skills | [[claude-code]]
+decide d1: O pedido combina com alguma descrição?
+step s2: O Claude trabalha sem skill
+step s3: O Claude carrega o texto completo daquela skill
+step s4: O Claude segue suas instruções
+trigger t2: Giovanni quer uma skill nova ou refeita
+step s5: O skill-forge constrói e testa | [[skill-skill-forge]]
+step s6: É salva como pasta com um SKILL.md em ~/.claude/skills
+product p1: Uma tarefa feita do jeito que o Giovanni quer
+product p2: Uma skill nova, com página própria na wiki
+product p3: Cópias separadas para o app Claude | [[claude-ai-skills]]
+
+t1 -> s1
+s1 -> d1
+d1 -sim-> s3
+d1 -não-> s2
+s3 -> s4
+s4 -> p1
+s2 -> p1
+t2 -> s5
+s5 -> s6
+s6 -> p2
+s6 -> p3
 
 ## What it does
 As skills registram como o Giovanni quer que tarefas recorrentes sejam feitas: treino de alemão, respostas clínicas, avaliação de artigos científicos, candidaturas à Alemanha, Magic: The Gathering, automação segura do navegador, conserto do notebook e o processo de desenvolvimento (brainstorming, depuração, verificação, revisões de manutenção, criação de testes e criação de skills). Cada skill tem uma página neste wiki que contém sua própria definição, então nunca é preciso abrir o arquivo `SKILL.md` para entendê-la.

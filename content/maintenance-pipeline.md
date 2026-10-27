@@ -14,6 +14,30 @@ reviewed: 2026-10-24T22:03Z
 ## What it is
 This is the way Giovanni's software projects are kept maintainable: a program measures and blocks, a skill judges and proposes, and the two talk to each other only through one file, `report.json`. The split is deliberate (ADR-0013 in QuizApp; an ADR is an architecture decision record, a short note that keeps the reasons for a decision): numbers should come from a machine that cannot be talked out of them, and judgement should come from Claude, which can weigh them.
 
+## Flow
+trigger t1: Someone pushes to a project's repository | [[quizapp-ci]]
+step s1: The automatic-check job gate runs pipeline-check | [[pipeline-check]]
+decide d1: Does any check fail (falha)?
+step s2: Branch protection, or the local pre-push check, stops the merge | [[maintenance-policy]]
+step s3: Warnings (aviso) show in report.json but never fail
+trigger t2: The monthly review comes due | [[monthly-architecture-review]]
+step s4: The review skill turns warnings and failures into prioritised debt proposals | [[skill-revisao-manutencao]]
+step s5: Giovanni decides what to do | [[giovanni]]
+product p1: A change that passed every check
+product p2: A blocked push
+product p3: Debt issues and a Preventive decision-log row
+
+t1 -> s1
+s1 -> d1
+d1 -yes-> s2
+d1 -no-> s3
+s2 -> p2
+s3 -> p1
+s3 -> s4
+t2 -> s4
+s4 -> s5
+s5 -> p3
+
 ## What it does
 It turns the rules of [[maintenance-policy]] into something a machine enforces: the CI job (continuous integration, automatic checks on every push) fails on a `falha` (failure), and the monthly review reads the same numbers instead of measuring by hand.
 

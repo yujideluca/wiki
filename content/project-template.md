@@ -15,6 +15,27 @@ reviewed: 2026-10-24T22:03Z
 ## What it is
 project-template is the starting point for every new software project of Giovanni's. It is a ready-made folder (`~/dev/project-template`, repository `yujideluca/project-template`) that already contains the good working habits, so that doing it the right way is also the quickest way. It was chosen in the maintenance and evolution review of 2026-10-22, and [[quizapp]] was the reference project it was extracted from.
 
+## Flow
+trigger t1: A new project starts | [[new-project]]
+step s1: The template folder is copied into a new project folder
+step s2: It brings enforced principles, a design file, tagged tests, a gate and a debt policy | [[template-quality-gate]], [[maintenance-policy]]
+step s3: Claude fills in CLAUDE.md, the design file, first requirements and the gate steps
+step s4: The private repository and its labels are created
+step s5: The project pins a pipeline-check version; the program itself is not copied | [[pipeline-check]]
+trigger t2: A running project finds a better practice | [[monthly-architecture-review]]
+step s6: The improvement is moved into the template
+product p1: A new project that starts with the good habits built in | [[wiki]]
+product p2: A better template for the next project
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> s4
+s4 -> s5
+s5 -> p1
+t2 -> s6
+s6 -> p2
+
 ## What it does
 From day one a new project gets: principles that are each enforced by a check; a design file with diagrams (in the [C4 model](https://c4model.com/) style, drawn with [Mermaid](https://mermaid.js.org/)) and a decision log; ADRs (architecture decision records, short notes that keep the reasons for decisions); a list of requirements with tests tagged to them ([[check-traceability]]); a quality gate (one script that defines "passing", [[template-quality-gate]]); CI (continuous integration: automatic checks on every push); and the policy for technical debt and reviews ([[maintenance-policy]]).
 

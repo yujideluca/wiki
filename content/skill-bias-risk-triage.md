@@ -15,6 +15,29 @@ reviewed: 2026-10-25T20:41Z
 ## What it is
 The skill "bias-risk-triage" is a silent check that Claude runs before answering any short factual question. Its description says: before answering any short factual question, run a compiled check (a guard, a lookup and a decision table) for bias, myth, conspiracy, staleness (out-of-date information) or stakes, and set the verification depth T0–T3. It is version 3.3, "compiled", and was validated on the benchmarks TruthfulQA and WebQuestions.
 
+## Flow
+trigger t1: Any short factual question | [[giovanni]]
+step s1: Normalises it: a false premise is corrected first and sets at least tier T1
+decide d1: Does it pass the guard: one referent, a stable fact, no loaded word, no stakes?
+step s2: Looks the key term up in the table
+decide d2: Is there a hit?
+step s3: The hit gives the tier, T1 to T3, and the lookup stops
+step s4: Walks the decision table by descending severity; the first match sets the maximum tier
+step s5: Applies the actions of that tier; a domain skill still sets the format | [[skill-consulta-clinica]], [[skill-analise-artigo-cientifico]]
+product p1: T0: a one-line answer
+product p2: An answer checked as deeply as its tier needs, up to several sources
+
+t1 -> s1
+s1 -> d1
+d1 -yes-> p1
+d1 -no-> s2
+s2 -> d2
+d2 -yes-> s3
+d2 -no-> s4
+s3 -> s5
+s4 -> s5
+s5 -> p2
+
 ## What it does
 Its output is a tier from T0 (answer in one line) to T3 (multi-source treatment of a contested topic). It sets only the minimum depth of verification, never the format: when a domain skill such as [[skill-consulta-clinica]] or [[skill-analise-artigo-cientifico]] also applies, that skill's structure and format are followed, and the sourcing is made at least as strict as the tier here.
 

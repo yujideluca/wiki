@@ -90,6 +90,11 @@ type alias Strings =
     , glossary : String
     , notTranslated : String
     , legend : String
+    , flowStart : String
+    , flowStep : String
+    , flowQuestion : String
+    , flowEnd : String
+    , flowHint : String
     }
 
 
@@ -133,6 +138,11 @@ strings lang =
             , glossary = "Glossary"
             , notTranslated = "This page has no translation yet; showing English."
             , legend = "Kinds"
+            , flowStart = "What starts it"
+            , flowStep = "A step"
+            , flowQuestion = "A question"
+            , flowEnd = "End product"
+            , flowHint = "Click a page name to open it."
             }
 
         De ->
@@ -172,6 +182,11 @@ strings lang =
             , glossary = "Glossar"
             , notTranslated = "Diese Seite ist noch nicht übersetzt; Anzeige auf Englisch."
             , legend = "Arten"
+            , flowStart = "Was es auslöst"
+            , flowStep = "Ein Schritt"
+            , flowQuestion = "Eine Frage"
+            , flowEnd = "Endprodukt"
+            , flowHint = "Auf einen Seitennamen klicken, um ihn zu öffnen."
             }
 
         PtBr ->
@@ -211,6 +226,11 @@ strings lang =
             , glossary = "Glossário"
             , notTranslated = "Esta página ainda não foi traduzida; exibindo em inglês."
             , legend = "Tipos"
+            , flowStart = "O que inicia"
+            , flowStep = "Um passo"
+            , flowQuestion = "Uma pergunta"
+            , flowEnd = "Produto final"
+            , flowHint = "Clique no nome de uma página para abri-la."
             }
 
 
@@ -231,6 +251,9 @@ sectionHeading lang key =
 
         ( En, "receives" ) ->
             "Who receives its output"
+
+        ( En, "flow" ) ->
+            "Flow chart"
 
         ( En, "steps" ) ->
             "Steps"
@@ -256,6 +279,9 @@ sectionHeading lang key =
         ( De, "receives" ) ->
             "Wer seine Ausgabe erhält"
 
+        ( De, "flow" ) ->
+            "Flussdiagramm"
+
         ( De, "steps" ) ->
             "Schritte"
 
@@ -279,6 +305,9 @@ sectionHeading lang key =
 
         ( PtBr, "receives" ) ->
             "Quem recebe o que produz"
+
+        ( PtBr, "flow" ) ->
+            "Fluxograma"
 
         ( PtBr, "steps" ) ->
             "Passos"

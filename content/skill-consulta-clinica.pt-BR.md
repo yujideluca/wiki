@@ -1,12 +1,29 @@
 ---
 id: skill-consulta-clinica
 lang: pt-BR
-source_hash: a3984072b927
+source_hash: 0744056df86a
 title: Skill: consulta-clinica (respostas clínicas)
 ---
 
 ## What it is
 A skill "consulta-clinica" dá respostas clínicas rápidas e cálculos de dose para o trabalho do Giovanni em emergência e atendimento pré-hospitalar. É escrita em português. Sua descrição diz: respostas clínicas rápidas e cálculos de dose: conduta, dose, diluição, infusão, escores, calculadoras, interações e suplementos; não serve para analisar artigo ou estudo ([[skill-analise-artigo-cientifico]]). Nunca guarda dados de pacientes.
+
+## Flow
+trigger t1: O Giovanni faz uma pergunta clínica rápida ou um cálculo de dose | [[giovanni]]
+step s1: Responde no modelo fixo, sempre na mesma ordem
+step s2: Usa as fontes por especialidade
+decide d1: Falta um número ou ele é incerto?
+step s3: Diz isso em vez de inventar
+step s4: Escreve as doses com unidades e mostra cada cálculo ou escore passo a passo
+product p1: Uma resposta clínica curta para usar no trabalho
+
+t1 -> s1
+s1 -> s2
+s2 -> d1
+d1 -sim-> s3
+d1 -não-> s4
+s3 -> p1
+s4 -> p1
 
 ## What it does
 Responde em um modelo fixo para que o número que o Giovanni vai usar esteja sempre em primeiro e a diretriz sempre seja nomeada com o ano. É uma skill de "domínio": é dona do formato de respostas clínicas e cálculos, remete à [[skill-analise-artigo-cientifico]] para artigos e pedidos de evidência aprofundada e à [[skill-bias-risk-triage]] só para a profundidade mínima de verificação, e respeita o idioma da mensagem e as flags de profundidade `!!`, `***` e `...`.

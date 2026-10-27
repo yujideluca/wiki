@@ -1,12 +1,43 @@
 ---
 id: skill-alemao-goethe-fsp
 lang: pt-BR
-source_hash: d76cfcb8ef6c
+source_hash: 1d140d707bd3
 title: Skill: alemao-goethe-fsp (treino de alemão)
 ---
 
 ## What it is
 A skill "alemao-goethe-fsp" é o treino de alemão do Giovanni, escrita em português, para o exame Goethe-Zertifikat B2 ([Goethe B2](https://www.goethe.de/en/spr/prf/gzb2.html), o exame geral de alemão em nível intermediário-superior) e, depois dele, a FSP (Fachsprachprüfung, a prova alemã de linguagem médica no nível C1, "C1 Medizin"). Sua descrição diz: usar sempre que o Giovanni enviar frases ou textos em alemão para corrigir, pedir exercícios, simular prova (Schreiben = escrita, Sprechen = fala, Arzt-Patienten-Gespräch = conversa médico-paciente, Arztbrief = carta médica, Arzt-Arzt-Gespräch = conversa médico-médico), vocabulário médico PT–DE, explicação gramatical ou heurísticas para verbos com preposição, casos e declinação.
+
+## Flow
+trigger t1: O Giovanni envia alemão para corrigir, ou pede exercícios, simulado, vocabulário ou gramática | [[giovanni]]
+step s1: Responde no idioma em que o Giovanni escreveu; o material de treino é em alemão
+decide d1: O que ele quer?
+step s2: Corrige primeiro cada frase isoladamente
+step s3: Explica cada erro: categoria, regra em uma linha e uma heurística
+step s4: Só depois oferece alternativas, marcadas B2 ou C1
+step s5: Conduz o formato da prova: Schreiben, Sprechen, conversa com paciente ou colega, Arztbrief
+step s6: Dá uma estimativa no estilo Goethe: critérios de A a E, aprovação a partir de 60 de 100
+step s7: Responde com vocabulário médico PT–DE, regras de gramática e heurísticas
+step s8: Mantém um registro de erros recorrentes e o revisita com repetição espaçada
+product p1: Um texto corrigido com perfil de erros
+product p2: Uma avaliação no estilo da prova com exercícios
+product p3: Uma resposta sobre vocabulário ou gramática
+product p4: Cartões do Anki, sob pedido
+
+t1 -> s1
+s1 -> d1
+d1 -corrigir texto-> s2
+d1 -prova-> s5
+d1 -vocabulário ou gramática-> s7
+s2 -> s3
+s3 -> s4
+s4 -> p1
+s4 -> s8
+s5 -> s6
+s6 -> p2
+s6 -> s8
+s7 -> p3
+s8 -> p4
 
 ## What it does
 Corrige frases e textos em alemão, dá exercícios, simula partes da prova, fornece vocabulário médico e explicações gramaticais e mantém um registro de erros recorrentes que retoma em sessões futuras com repetição espaçada. O perfil de aluno que ela supõe: médico brasileiro, nível B1+/B2 em formação, Goethe B2 em novembro de 2026, depois FSP e Kenntnisprüfung (a prova de conhecimentos para médicos formados no exterior); dificuldades recorrentes são casos, terminações de adjetivos, declinação-n, preposições, advérbios pronominais, verbos com preposição, zu-Infinitiv, Konjunktiv I/II, Perfekt versus Präteritum e ordem das palavras em orações subordinadas. Erros achados em textos corrigidos também alimentaram o modo "achar o erro" do [[quizapp]].

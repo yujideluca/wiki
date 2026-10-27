@@ -2,11 +2,33 @@
 id: skill-setup-writing-style
 title: Skill: setup-writing-style in Codex
 lang: de
-source_hash: 7c1446559aef
+source_hash: 0e5c555ebbf8
 ---
 
 ## What it is
 Ein Skill ist eine gespeicherte Anleitung für eine wiederkehrende Aufgabe. Codex prüft die Beschreibung, um die vollständigen Anweisungen bei Bedarf zu laden. Dieser Skill behandelt `setup-writing-style`; Auslöser und Grenzen stehen im vollständigen Quelltext unten.
+
+## Flow
+trigger t1: Giovanni bittet darum, seinen Schreibstil zu lernen, oder sagt, Entwürfe klängen allgemein | [[giovanni]]
+step s1: Fragt nach Einverständnis, die einzige Frage vor dem Start
+decide d1: Stimmt Giovanni zu?
+step s2: Sammelt Schreibproben aus gesendeten Nachrichten und Dokumenten in Dateien
+step s3: Analysiert sie mit dem Stilometrie-Skript
+step s4: Verdichtet ein Stilprofil und speichert es als Skill my-writing-style
+step s5: Stellt das Profil vor und führt eine Kalibrierungsprüfung durch
+step s6: Bestätigt und räumt die Probedateien auf
+product p1: Ein Stilprofil, das Entwürfe wie Giovanni klingen lässt
+product p2: Nichts wird gelesen
+
+t1 -> s1
+s1 -> d1
+d1 -ja-> s2
+d1 -nein-> p2
+s2 -> s3
+s3 -> s4
+s4 -> s5
+s5 -> s6
+s6 -> p1
 
 ## What it does
 Liefert das in der Quelle beschriebene Ergebnis. Benötigte Fähigkeiten: `local-python, consented-writing-samples`. Fehlende Fähigkeiten werden gemeldet; der Skill stellt keine neuen Werkzeuge bereit.

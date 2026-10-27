@@ -1,12 +1,35 @@
 ---
 id: skill-candidatura-alemanha
 lang: pt-BR
-source_hash: 0d862a77018c
+source_hash: 1583a0720d1e
 title: Skill: candidatura-alemanha (candidaturas na Alemanha)
 ---
 
 ## What it is
 A skill "candidatura-alemanha" apoia as candidaturas do Giovanni a vagas médicas na Alemanha (formação de especialista em radiologia, Hospitation = visita de observação em hospital, e vaga de Assistenzarzt = médico residente) e o processo de reconhecimento (Approbation, a licença para exercer a medicina, e Anerkennung, reconhecimento de qualificações) para um médico formado fora da UE. É escrita em português. Sua descrição diz: usar sempre que ele pedir Lebenslauf (currículo), Anschreiben (carta de apresentação), Bewerbung (candidatura), e-mail para hospital ou chefe, Bestätigung über beabsichtigte Beschäftigung (confirmação de intenção de contratação), checklist de documentos, escolha de estado (Bundesland), Kenntnisprüfung (prova de conhecimentos), FSP (Fachsprachprüfung, a prova de linguagem médica) ou dúvidas sobre prazos e órgãos de reconhecimento.
+
+## Flow
+trigger t1: O Giovanni pede currículo, carta, e-mail a um hospital, lista de documentos ou conselho sobre reconhecimento | [[giovanni]]
+step s1: Confere a data: reabre a fonte oficial e anota quando foi consultada
+decide d1: O que é preciso?
+step s2: Lebenslauf: em tabela, do mais recente, MM/AAAA, sem lacunas; um currículo mestre
+step s3: Anschreiben ou e-mail ao chefe do serviço
+step s4: Uma lista de documentos sob medida para o estado
+step s5: Um pedido de confirmação de emprego, Stellenzusage
+step s6: Entrega o rascunho ao Giovanni; nada é enviado pelo Claude
+product p1: Rascunhos e listas nas mãos do Giovanni, para ele mesmo enviar
+
+t1 -> s1
+s1 -> d1
+d1 -currículo-> s2
+d1 -carta-> s3
+d1 -documentos-> s4
+d1 -emprego-> s5
+s2 -> s6
+s3 -> s6
+s4 -> s6
+s5 -> s6
+s6 -> p1
 
 ## What it does
 Prepara currículos e cartas em alemão, checklists de documentos sob medida para o estado e conselho sobre estados e hospitais. O perfil do Giovanni de que parte: médico brasileiro com experiência em atendimento pré-hospitalar e medicina aeroportuária, visando a formação em radiologia, com Goethe B2 em novembro de 2026, depois Approbation e mudança prevista para o primeiro semestre de 2027. A skill é do tipo "domínio": é dona do CV mestre, das cartas e do checklist de Approbation; remete à [[skill-alemao-goethe-fsp]] para corrigir textos que ele mesmo escreveu; e respeita o idioma da mensagem (documentos para hospitais são em alemão) e as flags de profundidade `!!`, `***` e `...`.

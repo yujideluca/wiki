@@ -1,12 +1,37 @@
 ---
 id: skill-skill-forge
 lang: pt-BR
-source_hash: 760068d70caf
+source_hash: f12dd759b280
 title: Skill: skill-forge
 ---
 
 ## What it is
 A skill "skill-forge" é o pipeline completo para criar ou refazer uma skill para o Giovanni. Sua descrição diz: três versões concorrentes, testes, verificações de compatibilidade com as outras skills dele e depois validação e empacotamento pelo skill-creator; usar quando ele pedir para criar, refazer, otimizar ou "forjar" uma skill, transformar uma regra ou fluxo em uma nova skill, ou quiser versões testadas ou comparadas; para pequenas mudanças em uma skill (corrigir uma linha, renomear, mudar a descrição, acrescentar um exemplo) ou só empacotar um arquivo de skill, o skill-creator sozinho basta. Sua filosofia: uma skill é conhecimento especializado codificado, então entender o domínio e o usuário a fundo, projetar uma arquitetura explícita e depois avaliar o resultado contra os requisitos (construir → avaliar → refinar, como na pesquisa em design science).
+
+## Flow
+trigger t1: O Giovanni pede para criar, refazer ou otimizar uma skill, ou quer versões testadas ou comparadas | [[giovanni]]
+step s1: Escolhe o modo primeiro
+step s2: Analisa os requisitos e depois desenha a arquitetura
+step s3: Constrói três versões concorrentes
+step s4: Faz duas avaliações
+decide d1: Algum resultado é irreproduzível?
+step s5: Resolução de lacunas: descobre o porquê e fecha a lacuna
+step s6: Camada de compatibilidade: confere a vencedora com as outras skills, configurações e tarefas agendadas
+step s7: Síntese e depois entrega ao skill-creator para validar e empacotar
+product p1: Uma skill testada, salva na pasta de skills | [[skills]]
+product p2: Atualizações propostas para cada skill afetada | [[claude-ai-skills]]
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> s4
+s4 -> d1
+d1 -sim-> s5
+d1 -não-> s6
+s5 -> s6
+s6 -> s7
+s7 -> p1
+s7 -> p2
 
 ## What it does
 Produz uma skill testada que não colide com as outras skills, configurações ou tarefas agendadas do Giovanni, e propõe atualizações para toda skill que ela afeta.

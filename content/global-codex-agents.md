@@ -7,7 +7,7 @@ project: laptop-setup
 status: active
 location: home:.codex/AGENTS.md
 fed_by: []
-feeds: [codex-pbar]
+feeds: [codex, codex-pbar]
 sources: [home:.codex/AGENTS.md]
 memory: [3f1e29]
 reviewed: 2026-10-26T18:16Z

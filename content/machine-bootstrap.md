@@ -15,6 +15,35 @@ reviewed: 2026-10-26T19:05Z
 ## What it is
 `machine-bootstrap` records the setup of Giovanni's laptop ([[acer-nitro]]) so it can be rebuilt after reinstalling the operating system or moving to another computer. It uses Python's standard library and a Bash starter script. Its local repository is `~/dev/machine-bootstrap`; the public source repository is [yujideluca/machine-bootstrap](https://github.com/yujideluca/machine-bootstrap). Captured settings and package lists are public; encrypted archives and credentials are excluded. Start with `docs/RESTORE.md`; `docs/MANUAL.md` contains the longer instructions and failure cases.
 
+## Flow
+trigger t1: Giovanni wants to record or rebuild the laptop setup | [[acer-nitro]]
+decide d1: Record or rebuild?
+step s1: capture records packages, repositories and allowed settings; the secret scanner refuses secrets
+step s2: status and a weekly timer report what changed since the record
+step s3: restore prints a plan
+decide d2: Does Giovanni add --apply?
+step s4: Installs sources, packages, tools and repositories; settings last, with dated .mb-bak copies
+step s5: Secrets come back from the encrypted archive; personal folders are copied back
+trigger t2: Giovanni backs up keys, logins and personal folders
+step s6: secrets-backup encrypts keys and logins; data-backup copies the folders
+product p1: A public record of packages and settings, without secrets
+product p2: A plan only: nothing on the laptop changed
+product p3: A rebuilt laptop
+product p4: Encrypted archives and copied folders, kept outside the public repository
+
+t1 -> d1
+d1 -record-> s1
+d1 -rebuild-> s3
+s1 -> s2
+s2 -> p1
+s3 -> d2
+d2 -no-> p2
+d2 -yes-> s4
+s4 -> s5
+s5 -> p3
+t2 -> s6
+s6 -> p4
+
 ## What it does
 The command `python3 -m mb` has eight subcommands. `capture` records packages, repositories and allowed settings in `state/`. `status` reports changes since that record. `install-timer` enables a weekly background check. `restore` prints a plan and applies it only with `--apply`. `secrets-backup` encrypts keys and logins; `secrets-restore` restores an archive. `data-backup` copies personal folders. `scan` checks the recorded settings for secrets.
 

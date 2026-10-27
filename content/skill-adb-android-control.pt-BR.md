@@ -1,12 +1,32 @@
 ---
 id: skill-adb-android-control
 lang: pt-BR
-source_hash: 2531b2e59904
+source_hash: 5c2b694f25f7
 title: Skill: adb-android-control
 ---
 
 ## What it is
 A skill "adb-android-control" é a referência de comandos para trabalhar com o celular do Giovanni (um Motorola edge 50 fusion) por adb durante o desenvolvimento de apps, como o QuizApp. adb é a Android Debug Bridge ([documentação](https://developer.android.com/tools/adb)): uma ferramenta que permite a um computador controlar um celular por cabo. Sua descrição diz: usar em trabalho Android por adb durante o desenvolvimento de apps: instalar um APK (Android Package, o arquivo instalável do app), abrir o app, tocar, deslizar e digitar para exercitar um fluxo, tirar uma captura de tela, ler o logcat (o log do sistema do Android, [documentação](https://developer.android.com/tools/logcat)) em busca de travamentos, o dumpsys (um despejo do estado dos serviços do sistema) e permissões. É a referência de comandos da verificação de depuração depois de programar. Não serve para perguntas gerais sobre o celular, problemas de USB ou Kubuntu ([[skill-reparo-kubuntu]]) nem nada sem adb. É adaptada da skill de código aberto hah23255/adb-android-control 2.0.1 (licença MIT): só a referência de comandos e os fluxos; os scripts do Termux, o scanner de portas de rede, o scanner de rádio e o pacote Python foram deixados de fora, e um escaneamento de rede nunca deve ser executado a partir desta skill.
+
+## Flow
+trigger t1: Trabalho Android via adb no celular do Giovanni, por exemplo testar o QuizApp | [[quizapp]]
+step s1: Conecta: lista dispositivos, depuração sem fio, reinicia o adb se travar
+step s2: Instala o arquivo do app; limpa os dados ou força a parada quando preciso
+step s3: Exercita o fluxo com toques, deslizes, texto digitado e teclas
+step s4: Tira capturas ou grava a tela direto no notebook | [[phone]]
+step s5: Lê o logcat atrás de falhas, mais dumpsys e permissões | [[study-debug-log]]
+decide d1: O app travou ou se comportou mal?
+product p1: Evidência do celular: um fluxo limpo e suas capturas
+product p2: Linhas de falha entregues à depuração sistemática | [[skill-systematic-debugging]]
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> s4
+s4 -> s5
+s5 -> d1
+d1 -não-> p1
+d1 -sim-> p2
 
 ## What it does
 Permite ao Claude exercitar um app no celular e ler o que aconteceu: a verificação de depuração de primeira linha depois de programar o [[quizapp]]. Seu papel é "domínio"; remete ao CLAUDE.md do projeto (no QuizApp, `source ~/dev/env.sh` coloca o adb no caminho e descreve os passos de build e instalação), à [[skill-verification-before-completion]] (o que conta como prova) e à [[skill-reparo-kubuntu]] (problemas de USB e do hospedeiro).

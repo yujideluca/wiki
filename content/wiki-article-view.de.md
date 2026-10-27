@@ -1,7 +1,7 @@
 ---
 id: wiki-article-view
 lang: de
-source_hash: 44e710d67918
+source_hash: fc23cc39a8cf
 title: Artikelansicht
 ---
 
@@ -13,7 +13,7 @@ Sie zeigt Titel und Art, den Einleitungsabsatz, eine Infobox (Art, Projekt, Stat
 
 Der Ring um den hervorgehobenen Schritt (sein Leuchten und sein leichtes Wachsen) bleibt durch Abstand um die Punktereihe vollständig sichtbar.
 
-Auf einem Handy (Fenster bis 760 Pixel Breite) folgt die Seite dem Aufbau der mobilen Wikipedia: oben eine Leiste mit Pfeil zurück zur Karte, Menüknopf und Suchfeld; dann Titel, Einleitungsabsatz und Infobox in einer Spalte; jeder andere Abschnitt beginnt geschlossen und öffnet sich beim Antippen seiner Überschrift.
+Auf einem Handy (Fenster bis 760 Pixel Breite) folgt die Seite dem Aufbau der mobilen Wikipedia: oben eine Leiste mit Pfeil zurück zur Karte, Menüknopf und Suchfeld; dann Titel, Einleitungsabsatz und Infobox in einer Spalte; jeder andere Abschnitt beginnt geschlossen und öffnet sich beim Antippen seiner Überschrift. Eine Seite mit einem Flow-Abschnitt zeigt ihn als Flussdiagramm unter dem Einleitungsabsatz: eine Pille für das, was die Kette auslöst, Kästen für Schritte, eine Raute für eine Frage und einen Doppelkasten für ein Endprodukt, gefärbt nach der Art der verlinkten Seite, mit einer Legende darunter ([[wiki-flow-view]]).
 
 ## How it does it
 Der Markdown-Text wird mit elm-markdown dargestellt, nachdem die `[[id]]`-Links in `/p/<id>` umgeschrieben wurden (Anforderung MP-3); Links zu anderen Websites öffnen sich in einem neuen Tab (MP-8). Sie zeigt einen Hinweis, wenn eine Seite noch keine Übersetzung hat oder veraltet sein kann.

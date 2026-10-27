@@ -1,12 +1,39 @@
 ---
 id: laptop-setup
 lang: pt-BR
-source_hash: 226376c49473
+source_hash: 1c96429c2c86
 title: Configuração do notebook
 ---
 
 ## What it is
 A "configuração do notebook" é o conjunto de tudo o que está instalado e configurado no notebook ([[acer-nitro]]) para que os assistentes Claude possam trabalhar. Não é um programa só, e sim uma caixa de ferramentas: configurações do [[claude-code]], o assistente em segundo plano, ferramentas auxiliares, as ferramentas de build do Android e os meios de alcançar o notebook pelo celular.
+
+## Flow
+trigger t1: Os assistentes precisam de uma ferramenta ou configuração no notebook | [[acer-nitro]]
+decide d1: O passo precisa de direitos de administrador?
+step s1: O Claude instala nas pastas do próprio usuário | [[user-space-tools]]
+step s2: O comando é entregue ao Giovanni para executar | [[giovanni]]
+step s3: O fato duradouro é registrado na memória | [[claude-auto-memory]], [[workflow-memory]]
+step s4: Configurações do Claude Code e instruções globais | [[claude-code-settings]], [[global-claude-md]]
+step s5: O assistente sempre ligado e a barra de status | [[claude-assistant]], [[pbar]]
+step s6: Ferramentas de build do Android e acesso remoto | [[android-toolchain]], [[remote-terminal]]
+step s7: O machine-bootstrap captura a configuração | [[machine-bootstrap]]
+product p1: Um notebook pronto para o Claude Code, o assistente remoto e todos os projetos | [[claude-code]]
+product p2: Uma configuração registrada que pode ser refeita após reinstalar
+
+t1 -> d1
+d1 -não-> s1
+d1 -sim-> s2
+s1 -> s3
+s2 -> s3
+s3 -> s4
+s3 -> s5
+s3 -> s6
+s4 -> p1
+s5 -> p1
+s6 -> p1
+s3 -> s7
+s7 -> p2
 
 ## What it does
 Ela fornece o chão sobre o qual todo projeto se apoia. As partes são: as configurações e instruções do Claude Code ([[claude-code-settings]], [[global-claude-md]]), o serviço sempre ligado [[claude-assistant]], a barra de status [[pbar]], o enviador de Telegram [[tg-send]], as ferramentas de build do Android ([[android-toolchain]]), as ferramentas extras em `~/.local` ([[user-space-tools]]), a rede privada [[tailscale]] e o acesso remoto seguro [[remote-terminal]].

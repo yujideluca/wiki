@@ -1,12 +1,37 @@
 ---
 id: skill-browser-automacao-segura
 lang: pt-BR
-source_hash: 1c9734d89aa5
+source_hash: 9208c8496d7c
 title: Skill: browser-automacao-segura (automação de navegador segura)
 ---
 
 ## What it is
 A skill "browser-automacao-segura" ("automação de navegador segura") guarda as regras de segurança para qualquer ação em um navegador (o navegador embutido do app ou o Claude in Chrome), especialmente ações em lote, remoções, edições em massa e scripts em páginas. É escrita em português. Sua descrição diz: usar sempre que for executar ações em qualquer navegador, especialmente ações em lote, remoções, edições em massa e scripts JavaScript em páginas.
+
+## Flow
+trigger t1: Qualquer ação num navegador, em especial ações em lote, remoções, edições em massa ou scripts de página
+trigger t2: Um alerta já está aberto
+step s1: Neutraliza alertas antes de um lote e os registra para ler depois
+step s2: Roda um laço por vez e espera o efeito real após cada ação | [[skill-click-protocol]]
+decide d1: A ação é destrutiva ou irreversível?
+step s3: Pergunta ao Giovanni antes de agir | [[giovanni]]
+step s4: Laços longos rodam em segundo plano e têm o progresso conferido
+step s5: Para o laço anterior e limpa o alerta aberto
+step s6: Recarrega a página para verificar o estado final
+product p1: Um resultado verificado na página
+product p2: Nenhuma sessão travada e nada destrutivo sem um sim
+
+t1 -> s1
+s1 -> s2
+s2 -> d1
+d1 -sim-> s3
+d1 -não-> s4
+s3 -> s4
+s4 -> s6
+t2 -> s5
+s5 -> s6
+s6 -> p1
+s3 -> p2
 
 ## What it does
 Evita diálogos que travam a sessão, laços sobrepostos e erros destrutivos, e pergunta antes de qualquer coisa irreversível. Para a mecânica dos cliques remete à [[skill-click-protocol]], e para reduzir cliques de aprovação à [[skill-minimize-site-approvals]]; onde discordam, as regras de segurança desta skill prevalecem.

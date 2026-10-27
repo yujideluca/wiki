@@ -1,12 +1,46 @@
 ---
 id: quizapp-release
 lang: pt-BR
-source_hash: 094ad2e7e9e9
+source_hash: 66c38a45b9c1
 title: Lançamento do QuizApp (beta → estável)
 ---
 
 ## What it is
 Esta página descreve o caminho que uma mudança no [[quizapp]] percorre da ideia até o celular do Giovanni. O caminho é construído para que nada chegue ao jogador sem especificação, sem teste ou sem ter sido experimentado.
+
+## Flow
+trigger t1: Giovanni descreve um comportamento que o app deve ter | [[giovanni]]
+step s1: Vira uma linha nos requisitos | [[quizapp-requirements]]
+step s2: O Claude escreve o teste marcado com o requisito, depois o código | [[quizapp-core]], [[quizapp-app]]
+step s3: Depuração: testes, instalar no celular, exercitar o fluxo, ler o logcat | [[phone]], [[skill-adb-android-control]]
+step s4: O quality gate passa localmente; push; as verificações automáticas precisam passar | [[quizapp-quality-gate]], [[quizapp-ci]]
+step s5: Uma beta é publicada no branch bleeding-edge do feed de releases | [[publish-apk]], [[release-feed]]
+step s6: O app beta oferece a atualização; o Giovanni testa | [[update-client]]
+decide d1: O Giovanni manda promover?
+step s7: O gate de promoção com checagem de mutação e de testes atualizados publica o app estável | [[mutation-check]], [[check-tests-updated]]
+step s8: O port do QuizWeb que esperava é integrado ao main | [[quizweb]]
+trigger t2: Só entram perguntas novas | [[question-pool-updater]]
+step s9: Edita os arquivos de perguntas e roda o build-vocab | [[build-vocab]]
+step s10: Publica a beta e depois promove quando o pipeline automático passa | [[publish-content]]
+product p1: O app estável no celular do Giovanni | [[quizapp]]
+product p2: A versão continua beta e espera
+product p3: Perguntas novas entregues sem um novo arquivo do app
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> s4
+s4 -> s5
+s5 -> s6
+s6 -> d1
+d1 -sim-> s7
+d1 -não-> p2
+s7 -> s8
+s7 -> p1
+s8 -> p1
+t2 -> s9
+s9 -> s10
+s10 -> p3
 
 ## What it does
 Garante que toda mudança seja especificada, testada, experimentada em uma versão beta e promovida à versão estável somente quando o Giovanni disser.

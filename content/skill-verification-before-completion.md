@@ -15,6 +15,26 @@ reviewed: 2026-10-25T20:41Z
 ## What it is
 The skill "verification-before-completion" is the rule that evidence comes before any claim that work is done, fixed or passing. Its description says: use it before saying work is done, fixed, passing or complete, and before committing: run the verification commands and read their output first; evidence before assertions. It feeds the `Verified by:` line that ends every report to Giovanni. It was adapted from the open-source "superpowers" skills (version 7.0.0, MIT licence), without their always-on startup hook. Its role is "process"; it defers to the project's CLAUDE.md for the build, test and device steps and to the global [[global-claude-md]] for the closing steps (`mem use`, `wiki publish`).
 
+## Flow
+trigger t1: About to say work is done, fixed or passing, or to commit
+step s1: Identifies the command that would prove the claim
+step s2: Runs it in full, now
+step s3: Reads all of the output and the exit code
+decide d1: Does the output confirm the claim?
+step s4: Reports with a Verified by line: what was run and what could not be
+step s5: States the real status, with the evidence
+product p1: A done-report backed by evidence, and the commit | [[giovanni]]
+product p2: An honest status instead of a false done
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> d1
+d1 -yes-> s4
+d1 -no-> s5
+s4 -> p1
+s5 -> p2
+
 ## What it does
 Before saying "done" or committing, Claude must run the command that proves the claim and read its output. The closing "Verified by:" line then says what was run and what could not be checked.
 

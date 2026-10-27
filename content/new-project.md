@@ -14,6 +14,28 @@ reviewed: 2026-10-24T22:03Z
 ## What it is
 This page lists the steps that every new software project of Giovanni's follows, so that it starts with tests, a quality gate, automatic checks and recorded decisions instead of adding them later.
 
+## Flow
+trigger t1: Giovanni wants a new software project | [[giovanni]]
+step s1: Brainstorms what is wanted and sizes it; Giovanni approves a written design | [[skill-brainstorming]]
+step s2: Giovanni chooses the programming languages | [[work-ask-language]]
+step s3: Copies the template to a new folder and starts a fresh git history | [[project-template]]
+step s4: Fills in CLAUDE.md, DESIGN.md, requirements, gate steps, limits and a decision note | [[template-quality-gate]], [[fitness-check]]
+step s5: Creates the private GitHub repository, pushes, gets the first automatic checks green | [[github]], [[maintenance-pipeline]]
+step s6: Builds end to end, then does the first debug pass | [[skill-verification-before-completion]]
+step s7: Adds the project's pages to this wiki | [[end-of-task]]
+product p1: A private repository born with tests, a gate and recorded decisions
+product p2: The project documented in the wiki | [[wiki]]
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> s4
+s4 -> s5
+s5 -> s6
+s6 -> p1
+s6 -> s7
+s7 -> p2
+
 ## What it does
 It turns an approved idea into a private repository that already has the practices of [[project-template]] in place.
 

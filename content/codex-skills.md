@@ -7,13 +7,39 @@ project: codex-skills
 status: active
 location: codex-skills:README.md
 fed_by: []
-feeds: []
+feeds: [codex]
 sources: [codex-skills:README.md, codex-skills:manifest.json, codex-skills:DESIGN.md]
 reviewed: 2026-10-25T21:08Z
 ---
 
 ## What it is
 A private repository of Codex-owned adaptations of Giovanni’s Claude skills. A skill is a saved recipe that the assistant reads when its description matches a task. The project preserves Claude originals and gives Codex independently maintained instructions.
+
+## Flow
+trigger t1: A Claude skill changes | [[skills]]
+step s1: codex-skillsctl compares the source with its stored fingerprint | [[codex-skillsctl]]
+decide d1: Did the source change?
+step s2: Reports the change without overwriting the Codex adaptation
+step s3: The adaptation and its baseline are updated by hand
+step s4: The quality gate runs on every push to GitHub
+step s5: codex-skillsctl installs the adaptations, reversibly
+trigger t2: Giovanni asks Codex for a task that matches a skill description
+step s6: Codex reads the installed adaptation
+product p1: Nothing to do: adaptations stay as they are
+product p2: Up-to-date adaptations with fresh fingerprints
+product p3: The task result, or a report of a missing capability
+
+t1 -> s1
+s1 -> d1
+d1 -yes-> s2
+d1 -no-> p1
+s2 -> s3
+s3 -> s4
+s4 -> s5
+s4 -> p2
+s5 -> s6
+t2 -> s6
+s6 -> p3
 
 ## What it does
 Keeps 26 adaptations, complete source baselines and content fingerprints. A fingerprint is a calculated value that detects changed files. Reports source changes without overwriting adaptations. Vendor document skills remain under their existing owners.

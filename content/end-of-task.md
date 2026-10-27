@@ -14,6 +14,35 @@ reviewed: 2026-10-26T18:38Z
 ## What it is
 This page describes what Claude does every time it finishes a task, so that the memory and this wiki never fall behind what has actually been built. Giovanni decided on 2026-10-22 that the wiki update is tied to the `mem use` report.
 
+## Flow
+trigger t1: Claude finishes a coding task | [[claude-code]]
+trigger t2: Claude tries to stop after code changes without publishing | [[wiki-hook-stop]]
+step s1: Proves the work by running checks | [[skill-verification-before-completion]]
+step s2: Writes or updates the English pages, then the German and Portuguese ones | [[wiki-content]]
+step s3: Gives its own page to anything that outgrew its place | [[wiki-check]]
+decide d1: Does the content check pass?
+step s3b: Fixes what the check reports
+step s4: Runs wiki publish: checks, builds the site, commits content/, uploads | [[wiki-cli]]
+step s5: The live site serves the new pages at once | [[wiki-site]]
+step s6: Reports which memory entries shaped the work | [[mem-use]]
+product p1: A wiki that matches what was built | [[wiki]]
+product p2: The pages stored on GitHub | [[github]]
+product p3: Memory usage recorded in the log | [[events-log]]
+
+t1 -> s1
+s1 -> s2
+t2 -> s2
+s2 -> s3
+s3 -> d1
+d1 -yes-> s4
+d1 -no-> s3b
+s3b -> s4
+s4 -> s5
+s4 -> p2
+s5 -> p1
+s5 -> s6
+s6 -> p3
+
 ## What it does
 Claude updates the wiki pages for whatever changed (new, changed or retired things, each with its German and Portuguese translation), publishes them through the content checks, and then reports which memory entries shaped the work.
 

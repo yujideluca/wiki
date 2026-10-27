@@ -1,12 +1,41 @@
 ---
 id: machine-bootstrap
 lang: pt-BR
-source_hash: 0a9f6ed9b563
+source_hash: 39d493cd12bd
 title: machine-bootstrap (reconstruir a configuração do notebook)
 ---
 
 ## What it is
 `machine-bootstrap` registra a configuração do notebook do Giovanni ([[acer-nitro]]) para reconstruí-la após reinstalar o sistema operacional ou mudar de computador. Usa a biblioteca padrão do Python e um script inicial em Bash. Seu repositório local fica em `~/dev/machine-bootstrap`; o código público está em [yujideluca/machine-bootstrap](https://github.com/yujideluca/machine-bootstrap). Configurações capturadas e listas de pacotes são públicas; arquivos criptografados e credenciais ficam excluídos. Comece por `docs/RESTORE.md`; `docs/MANUAL.md` contém as instruções extensas e os casos de falha.
+
+## Flow
+trigger t1: Giovanni quer registrar ou refazer a configuração do notebook | [[acer-nitro]]
+decide d1: Registrar ou refazer?
+step s1: capture registra pacotes, repositórios e configurações permitidas; o detector recusa segredos
+step s2: status e um timer semanal informam o que mudou desde o registro
+step s3: restore imprime um plano
+decide d2: O Giovanni acrescenta --apply?
+step s4: Instala fontes, pacotes, ferramentas e repositórios; configurações por último, com cópias .mb-bak
+step s5: Os segredos voltam do arquivo criptografado; as pastas pessoais são copiadas de volta
+trigger t2: Giovanni faz backup de chaves, logins e pastas pessoais
+step s6: secrets-backup criptografa chaves e logins; data-backup copia as pastas
+product p1: Um registro público de pacotes e configurações, sem segredos
+product p2: Só um plano: nada mudou no notebook
+product p3: Um notebook refeito
+product p4: Arquivos criptografados e pastas copiadas, fora do repositório público
+
+t1 -> d1
+d1 -registrar-> s1
+d1 -refazer-> s3
+s1 -> s2
+s2 -> p1
+s3 -> d2
+d2 -não-> p2
+d2 -sim-> s4
+s4 -> s5
+s5 -> p3
+t2 -> s6
+s6 -> p4
 
 ## What it does
 O comando `python3 -m mb` tem oito subcomandos. `capture` registra pacotes, repositórios e configurações permitidas em `state/`. `status` informa mudanças desde esse registro. `install-timer` ativa uma verificação semanal em segundo plano. `restore` mostra um plano e só o aplica com `--apply`. `secrets-backup` criptografa chaves e logins; `secrets-restore` restaura um arquivo. `data-backup` copia pastas pessoais. `scan` procura segredos nas configurações registradas.

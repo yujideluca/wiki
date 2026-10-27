@@ -15,6 +15,28 @@ reviewed: 2026-10-25T20:41Z
 ## What it is
 A skill is a saved set of instructions for a recurring task. Codex reads its description to decide when to load the complete instructions. This skill handles `setup-writing-style`; its exact trigger and exclusions appear in the complete source below.
 
+## Flow
+trigger t1: Giovanni asks to learn their writing voice, or says drafts sound generic | [[giovanni]]
+step s1: Asks for consent, the only question before starting
+decide d1: Does Giovanni consent?
+step s2: Gathers writing samples from sent messages and documents into files
+step s3: Analyses them with the stylometry script
+step s4: Distils a voice profile and saves it as the my-writing-style skill
+step s5: Presents the profile and runs a calibration check
+step s6: Confirms and cleans up the sample files
+product p1: A voice profile that makes drafts sound like Giovanni
+product p2: Nothing is read
+
+t1 -> s1
+s1 -> d1
+d1 -yes-> s2
+d1 -no-> p2
+s2 -> s3
+s3 -> s4
+s4 -> s5
+s5 -> s6
+s6 -> p1
+
 ## What it does
 Produces the task-specific result described in its source. Required capabilities: `local-python, consented-writing-samples`. Missing capabilities are reported; the skill does not provide new tools.
 

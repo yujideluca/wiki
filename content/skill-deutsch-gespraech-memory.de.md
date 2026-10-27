@@ -2,11 +2,32 @@
 id: skill-deutsch-gespraech-memory
 title: Skill: deutsch-gespraech-memory in Codex
 lang: de
-source_hash: c51a717a5d48
+source_hash: c2cb6a49342c
 ---
 
 ## What it is
 Ein Skill ist eine gespeicherte Anleitung für eine wiederkehrende Aufgabe. Codex prüft die Beschreibung, um die vollständigen Anweisungen bei Bedarf zu laden. Dieser Skill behandelt `deutsch-gespraech-memory`; Auslöser und Grenzen stehen im vollständigen Quelltext unten.
+
+## Flow
+trigger t1: Die erste Nachricht eines Chats im Projekt Deutsch-Gespräch | [[deutsch-gespraech]]
+step s1: Lädt den Stand aus dem Google Doc deutsch-gespraech-state | [[skill-google-workspace]]
+step s2: Der Chat läuft auf Deutsch weiter, mit diesem Stand im Kopf
+decide d1: Was tippt Giovanni?
+step s3: Speichert die Sitzung im Doc
+step s4: Zeigt die gespeicherten Einträge
+step s5: Löscht den genannten Eintrag
+product p1: Ein aktualisierter Stand im Doc
+product p2: Die gespeicherten Einträge auf dem Bildschirm
+
+t1 -> s1
+s1 -> s2
+s2 -> d1
+d1 -Ende-> s3
+d1 -Gedächtnis?-> s4
+d1 -Vergiss …-> s5
+s3 -> p1
+s5 -> p1
+s4 -> p2
 
 ## What it does
 Liefert das in der Quelle beschriebene Ergebnis. Benötigte Fähigkeiten: `google-docs-structural-read, guarded-google-docs-write-for-save`. Fehlende Fähigkeiten werden gemeldet; der Skill stellt keine neuen Werkzeuge bereit.

@@ -6,7 +6,7 @@ kind: project
 project: none
 status: active
 location: workflow-memory:
-fed_by: [claude-code]
+fed_by: [claude-code, codex]
 feeds: []
 sources: [workflow-memory:README.md, workflow-memory:docs/DESIGN.md]
 reviewed: 2026-10-25T21:20Z
@@ -14,6 +14,26 @@ reviewed: 2026-10-25T21:20Z
 
 ## What it is
 workflow-memory is the shared, long-lived memory of all the Claude assistants Giovanni uses. A Claude chat normally forgets everything when it ends; this project is what lets a preference said once ("answer in the language I wrote in") still apply months later, in a different chat, on a different device. It is a public repository (`yujideluca/workflow-memory`, since 2026-10-25) and lives in `~/dev/workflow-memory`. It has no branch protection on purpose: its `mem` job pushes derived files to `main` and a required check would reject them, so the local pre-push check stands in and `pipeline-check.toml` records the exception ([[maintenance-pipeline]]). It replaced the retired protocol described in [[retired-workflow-pipeline]].
+
+## Flow
+trigger t1: Giovanni states a correction or a lasting preference | [[giovanni]]
+step s1: Claude Code writes it with mem; the Claude app writes through the connector | [[mem]], [[mem-github-connector]]
+step s2: One new file is added to the log and never edited later | [[events-log]]
+step s3: A GitHub action validates the file and rebuilds the readable views | [[mem-action]], [[memory-views]]
+step s4: memory-fold reads the log and works out the current state, the latest ruling wins | [[memory-fold]]
+trigger t2: A new chat starts | [[claude-code]]
+step s5: The start hook prints the brief | [[hook-session-start]], [[session-brief]]
+product p1: Every Claude instance follows the preference in later chats
+product p2: A review file waiting for Giovanni | [[memory-views]]
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> s4
+s3 -> p2
+s4 -> s5
+t2 -> s5
+s5 -> p1
 
 ## What it does
 It keeps preferences, facts, decisions and open items (things still to be done), and shows the relevant ones at the start of every chat as the [[session-brief]]. It is the only channel between the different Claude instances ([[claude-code]], the [[remote-assistant]] and the [[claude-app]]); this is decision ADR-0003 in [[memory-adrs]] (an ADR, "architecture decision record", is a short note that records one decision and its reasons).

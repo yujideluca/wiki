@@ -1,12 +1,32 @@
 ---
 id: skill-verification-before-completion
 lang: pt-BR
-source_hash: ac2db376af7d
+source_hash: 742e0ca89c3e
 title: Skill: verification-before-completion
 ---
 
 ## What it is
 A skill "verification-before-completion" é a regra de que a evidência vem antes de qualquer afirmação de que o trabalho está pronto, corrigido ou passando. Sua descrição diz: usar antes de dizer que o trabalho está pronto, corrigido, passando ou completo, e antes de commitar: executar os comandos de verificação e ler a saída primeiro; evidência antes de afirmações. Ela alimenta a linha `Verified by:` que encerra todo relatório ao Giovanni. Foi adaptada das skills de código aberto "superpowers" (versão 7.0.0, licença MIT), sem o hook de inicialização sempre ativo delas. Seu papel é "processo"; remete ao CLAUDE.md do projeto para os passos de build, teste e aparelho e ao [[global-claude-md]] global para os passos finais (`mem use`, `wiki publish`).
+
+## Flow
+trigger t1: Prestes a dizer que o trabalho está pronto, corrigido ou passando, ou a fazer commit
+step s1: Identifica o comando que provaria a afirmação
+step s2: Roda por inteiro, agora
+step s3: Lê toda a saída e o código de saída
+decide d1: A saída confirma a afirmação?
+step s4: Relata com uma linha Verified by: o que rodou e o que não foi possível
+step s5: Diz o estado real, com a evidência
+product p1: Um relatório de pronto com evidência, e o commit | [[giovanni]]
+product p2: Um estado honesto em vez de um falso pronto
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> d1
+d1 -sim-> s4
+d1 -não-> s5
+s4 -> p1
+s5 -> p2
 
 ## What it does
 Antes de dizer "pronto" ou commitar, o Claude precisa executar o comando que prova a afirmação e ler a saída. A linha final "Verified by:" diz então o que foi executado e o que não pôde ser verificado.

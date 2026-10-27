@@ -1,12 +1,36 @@
 ---
 id: skill-analise-artigo-cientifico
 lang: de
-source_hash: 9be456db0a71
+source_hash: 972d8aaa0eca
 title: Skill: analise-artigo-cientifico (Artikelbewertung)
 ---
 
 ## What it is
 Die Skill „analise-artigo-cientifico“ ist die kritische Bewertung wissenschaftlicher Artikel und evidenzbasierter klinischer Fragen für Giovanni, einen Arzt. Sie ist auf Portugiesisch geschrieben. Ihre Beschreibung sagt: immer verwenden, wenn Giovanni einen Artikel, ein PDF, eine DOI (die dauerhafte Kennung einer Veröffentlichung), PMID (die PubMed-Nummer einer Veröffentlichung) oder einen Studienlink schickt, „analysiere diese Studie“ sagt, fragt, ob eine Behandlung, Therapie oder Untersuchung „funktioniert“, oder nach Evidenzniveau, GRADE (Grading of Recommendations Assessment, Development and Evaluation, eine Methode, um die Sicherheit der Evidenz einzustufen, [GRADE](https://www.gradeworkinggroup.org/)), Leitlinienvergleich oder Studienzusammenfassung fragt, auch ohne die Worte „kritische Analyse“.
+
+## Flow
+trigger t1: Giovanni schickt Artikel, PDF, DOI, PMID oder Link, oder fragt, ob eine Behandlung wirkt | [[giovanni]]
+step s1: Kalibriert die Tiefe: seine Kürzel gelten, sonst die Größe der Frage
+decide d1: Eine schnelle Frage oder ein ganzer Artikel?
+step s2: Kurzmodus: Urteil, kleine Tabelle, vorläufiges GRADE, regionale Unterschiede, praktisches Vorgehen
+step s3: Liest den Volltext und prüft die Quelle, auch auf Rücknahmen
+step s4: Füllt fehlende Daten nie auf; folgt dem Aufbau einer Einzelartikel-Analyse
+step s5: Wendet GRADE auf die Evidenzlage an, je Endpunkt
+step s6: Sucht und vergleicht Leitlinien: Brasilien, Deutschland und Europa, USA
+step s7: Hält Quelle und Begründung getrennt
+product p1: Ein kurzes Urteil mit Quellen
+product p2: Eine kritische Analyse: Evidenzgrad, GRADE-Sicherheit, Leitlinienvergleich
+
+t1 -> s1
+s1 -> d1
+d1 -schnell-> s2
+d1 -ganz-> s3
+s2 -> p1
+s3 -> s4
+s4 -> s5
+s5 -> s6
+s6 -> s7
+s7 -> p2
 
 ## What it does
 Sie liefert eine kritische Lektüre, die Giovanni praktisch nutzen und als Denkweise trainieren kann, ohne Daten zu erfinden: Evidenzniveau, Sicherheit nach GRADE, Leitlinienvergleich (Brasilien, Deutschland und Europa, USA), Studienzusammenfassung. Sie ist auf Postgraduierten-Niveau, didaktisch, mit Mechanismen und Effektgrößen. Dosen, Verdünnungen und Rechner übernimmt [[skill-consulta-clinica]]; diese Skill kümmert sich um Artikel, „funktioniert das?“ und das Evidenzniveau.

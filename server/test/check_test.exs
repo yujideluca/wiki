@@ -56,7 +56,7 @@ defmodule Wiki.Content.CheckTest do
   test "orphans are reported, except actors", %{content: c} do
     valid_wiki(c)
     write_page(c, "lonely", base_header("lonely", project: "none"))
-    write_page(c, "giovanni", base_header("giovanni", kind: "actor", project: "none"))
+    write_page(c, "giovanni", base_header("giovanni", kind: "actor", project: "none"), %{"flow" => flow()})
     errs = errors(c)
     assert Enum.any?(errs, &(&1 =~ "lonely.md: orphan page"))
     refute Enum.any?(errs, &(&1 =~ "giovanni.md: orphan"))
@@ -95,7 +95,7 @@ defmodule Wiki.Content.CheckTest do
     write_page(c, "b", base_header("b", fed_by: ["a"]), %{"how" => "Calls `fold`."})
     assert errors(c) == []
 
-    write_page(c, "proj", base_header("proj", kind: "project", project: "none"), %{"what" => "[[a]] [[b]] use `fold`."})
+    write_page(c, "proj", base_header("proj", kind: "project", project: "none"), %{"what" => "[[a]] [[b]] use `fold`.", "flow" => flow()})
     assert Enum.any?(errors(c), &(&1 =~ "a.md: `fold` is mentioned by b, proj: give it its own page"))
 
     write_page(c, "fold", base_header("fold"), %{"what" => "Part of [[a]]."})
@@ -166,11 +166,11 @@ defmodule Wiki.Content.CheckTest do
   # REQ CO-8
   test "a skill page must carry the skill's own definition in a Steps section", %{content: c} do
     valid_wiki(c)
-    write_page(c, "skill-x", base_header("skill-x", kind: "skill", feeds: ["b"]))
+    write_page(c, "skill-x", base_header("skill-x", kind: "skill", feeds: ["b"]), %{"flow" => flow()})
     write_page(c, "b", base_header("b", fed_by: ["a", "skill-x"]))
     assert Enum.any?(errors(c), &(&1 =~ "skill-x.md: a skill page needs a ## Steps section"))
 
-    write_page(c, "skill-x", base_header("skill-x", kind: "skill", feeds: ["b"]), %{"steps" => "1. Do the first thing."})
+    write_page(c, "skill-x", base_header("skill-x", kind: "skill", feeds: ["b"]), %{"steps" => "1. Do the first thing.", "flow" => flow()})
     refute Enum.any?(errors(c), &(&1 =~ "needs a ## Steps section"))
   end
 

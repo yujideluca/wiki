@@ -15,6 +15,28 @@ reviewed: 2026-10-25T20:41Z
 ## What it is
 The skill "reparo-kubuntu" ("Kubuntu repair") diagnoses and fixes problems of Giovanni's laptop (an Acer Nitro running Kubuntu 24.04 with the Plasma 5.27 desktop, the X11 display system and an Nvidia graphics card) and makes the fixes survive reboots. It is written in Portuguese. Its description says exactly that. Its role is "domain": it owns the diagnosis and fix flow on his Linux; it defers to [[skill-browser-automacao-segura]] if a browser is used; and it honours the language of the message and the depth flags `!!`, `***` and `...`. The version for Claude Code is edited only there; the Claude app keeps its own version ([[claude-ai-skills]]).
 
+## Flow
+trigger t1: A problem on Giovanni's laptop: Kubuntu, Plasma, X11 or the Nvidia card | [[acer-nitro]]
+step s1: Collects diagnostics without changing anything, saved to a diag file
+step s2: Maps the symptom to a first hypothesis and a safe test
+decide d1: Does the safe test confirm the hypothesis?
+step s3: Changes one thing safely, with a way back ready
+step s4: Makes the fix permanent across reboots
+step s5: Retests after a restart and records the result
+step s6: Asks only what the log cannot answer: what changed, and is it reproducible | [[giovanni]]
+product p1: A fix that survives reboots, with its Verify and Undo steps
+product p2: A narrower hypothesis; nothing changed yet
+
+t1 -> s1
+s1 -> s2
+s2 -> d1
+d1 -yes-> s3
+d1 -no-> s6
+s3 -> s4
+s4 -> s5
+s5 -> p1
+s6 -> p2
+
 ## What it does
 It covers display, driver, audio, network, desktop and boot problems, step by step, with the commands that need administrator rights (`sudo`) handed to Giovanni to run with the `!` prefix. Its method comes from Google's "Effective Troubleshooting" ([SRE book](https://sre.google/sre-book/effective-troubleshooting/); SRE is site reliability engineering) and the Ubuntu seven-step troubleshooting: stabilise and preserve evidence → examine → hypotheses ordered by probability → one change at a time → fix → retest after a reboot → document. The traps are chasing an irrelevant symptom, an unsafe change during testing and assuming the old cause has returned.
 

@@ -1,12 +1,39 @@
 ---
 id: monthly-architecture-review
 lang: de
-source_hash: 528e8d4043f6
+source_hash: 7cb37dd5f3ea
 title: Monatlicher Architektur-Review
 ---
 
 ## What it is
 Einmal im Monat betrachtet eine Arbeitssitzung alle Projekte von Giovanni zusammen, in der Rolle, die in einem Unternehmen ein Staff Engineer hätte (ein erfahrener Ingenieur, der die Gesamtstimmigkeit im Blick hat). Die Idee stammt aus Entscheidung ADR-0003 von [[workflow-memory]] (ein ADR ist ein Architecture Decision Record, eine kurze Notiz, die eine Entscheidung und ihre Gründe festhält). Sie ist als offener Punkt im Gedächtnis hinterlegt, sodass jeder Chat sie zeigt, bis sie erledigt ist.
+
+## Flow
+trigger t1: Der offene Punkt der monatlichen Überprüfung wird fällig | [[maintenance-policy]]
+step s1: Der Review-Skill führt pipeline-check aus und liest report.json | [[skill-revisao-manutencao]], [[pipeline-check]]
+step s2: Prüft Gate, automatische Läufe, Lieferkennzahlen und Fitness-Funktionen | [[fitness-check]]
+step s3: Beurteilt: Diagramme und ADRs passen zum Code, Tool-Updates auf einem Branch erprobt
+decide d1: Ist eine P1-Schuld älter als ein Monat?
+step s4: Plant sie jetzt ein
+step s5: Blickt über Projekte: dasselbe Problem zweimal gelöst? | [[project-template]]
+step s6: Prüft, ob Gedächtniseinträge noch stimmen, markiert veraltete | [[workflow-memory]]
+step s7: Meldet, was die Überprüfung geprägt hat | [[mem-use]]
+product p1: Eine Preventive-Zeile im Entscheidungsprotokoll je Projekt
+product p2: Eine Schuldenliste, die stimmt und priorisiert ist
+product p3: Die bessere Lösung in die Vorlage übernommen | [[project-template]]
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> d1
+d1 -ja-> s4
+d1 -nein-> s5
+s4 -> s5
+s4 -> p2
+s5 -> p3
+s5 -> s6
+s6 -> s7
+s7 -> p1
 
 ## What it does
 Er geht für jedes aktive Projekt in `~/dev` die Checkliste von [[maintenance-policy]] durch und hält das Ergebnis fest. Seit 2026-10-24 führt ihn die Skill [[skill-revisao-manutencao]] aus, auf Grundlage des Berichts von [[pipeline-check]] ([[maintenance-pipeline]]).

@@ -1,12 +1,33 @@
 ---
 id: skill-ligamagic-replicar-carrinho-nas-lojas
 lang: pt-BR
-source_hash: e4df24589328
+source_hash: 3e244f2e1b5d
 title: Skill: ligamagic-replicar-carrinho-nas-lojas
 ---
 
 ## What it is
 A skill "ligamagic-replicar-carrinho-nas-lojas" refaz o carrinho por loja da LigaMagic no site próprio de cada loja e concilia os dois antes do checkout. É escrita em português. Sua descrição diz: refaz o carrinho por loja da LigaMagic no site próprio de cada loja (mesma carta, edição, idioma, qualidade, extras e quantidade) e concilia os dois antes do checkout; usar quando o Giovanni pedir para conferir os carrinhos da LigaMagic e montá-los ou conferi-los nos sites das lojas, sem usar os links da Liga. Vem de uma tarefa de 12 de outubro de 2026 (5 lojas, 90 itens) e previne os erros encontrados então: item Foil/Promo pulado na leitura, estoque lido como quantidade, cópia duplicada por clique repetido, edição parecida escolhida no lugar da certa e conferência só pelo número de itens.
+
+## Flow
+trigger t1: O Giovanni pede para conferir os carrinhos da LigaMagic e refazê-los nos sites das lojas | [[giovanni]]
+step s1: Lê o carrinho da LigaMagic, só leitura: a lista esperada por loja; pede acesso aos sites uma vez | [[skill-minimize-site-approvals]]
+step s2: Lê o carrinho de cada loja antes de mexer
+step s3: Adiciona cada item: busca, botão de compra, quantidade certa, um por vez | [[skill-browser-automacao-segura]], [[skill-click-protocol]]
+step s4: Concilia o carrinho da loja com a lista esperada
+decide d1: O carrinho da loja confere?
+step s5: Corrige a diferença e concilia de novo
+step s6: Relata; nunca faz login, paga nem aperta o botão de finalizar do carrinho
+product p1: Um carrinho conferido em cada loja, deixado para o Giovanni pagar
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> s4
+s4 -> d1
+d1 -sim-> s6
+d1 -não-> s5
+s5 -> s6
+s6 -> p1
 
 ## What it does
 Copia a mesma carta, edição, idioma, qualidade, extras e quantidade para o carrinho de cada loja, sem usar os links da LigaMagic; as compras em si precisam da aprovação do Giovanni. Seu papel é "domínio": é dona do fluxo Liga→loja, dos scripts de leitura do carrinho por loja e da página de produto, da conciliação e do relatório final; remete à [[skill-ligamagic-listas]], à [[skill-browser-automacao-segura]] (alertas, laços, ações destrutivas: esta prevalece), à [[skill-click-protocol]] (mecânica de clique) e à [[skill-minimize-site-approvals]] (domínios).

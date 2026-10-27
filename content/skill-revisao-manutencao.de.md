@@ -1,12 +1,37 @@
 ---
 id: skill-revisao-manutencao
 lang: de
-source_hash: 6b84917b9efa
+source_hash: 1fabaebb644c
 title: Skill: revisao-manutencao
 ---
 
 ## What it is
 Die Skill „revisao-manutencao“ („Wartungs-Review“) ist die urteilende Hälfte der [[maintenance-pipeline]]: Sie liest, was [[pipeline-check]] gemessen hat, und schlägt vor, was damit zu tun ist. Ihre Beschreibung sagt: in Claude Code für den monatlichen Architektur-Review von Giovannis Softwareprojekten (ein offener Punkt im Gedächtnis) und am Ende einer Aufgabe in einem Softwareprojekt verwenden (Monatsreview, Wartungsreview, technische Schulden, debt, pipeline-check, report.json); sie führt pipeline-check aus, liest dessen `report.json`, schlägt Schulden-Issues P1–P3 und eine Präventiv-Zeile im Entscheidungsprotokoll vor; nicht zum Schreiben von Code, nicht für einen einzelnen Bug, nicht für Arbeit außerhalb von Software. Ihr Prinzip: Das Programm misst, die Skill urteilt (Entscheidung ADR-0013; ein ADR ist ein Architecture Decision Record, eine kurze Notiz, die die Gründe einer Entscheidung festhält). Sie schlägt vor und entscheidet nie.
+
+## Flow
+trigger t1: Die monatliche Überprüfung oder das Ende einer Aufgabe in einem Softwareprojekt | [[monthly-architecture-review]]
+step s1: Führt pipeline-check aus und liest dessen report.json | [[pipeline-check]]
+step s2: Schreibt einen Vorschlag je Warnung oder Fehler, mit Priorität P1 bis P3
+step s3: Ergänzt, was die Maschine nicht sehen kann
+decide d1: Ist es die erste Überprüfung dieses Projekts?
+step s4: Erstellt die fehlersuchenden Tests | [[skill-gerar-teste-automatizado]]
+step s5: Aktualisiert die fehlersuchenden Tests | [[skill-gerar-teste-automatizado]]
+step s6: Trägt eine Preventive-Zeile in das Entscheidungsprotokoll des Projekts ein
+step s7: Schließt ab: meldet die Vorschläge an Giovanni | [[giovanni]]
+product p1: Schuldenvorschläge, über die Giovanni entscheidet
+product p2: Eine Preventive-Zeile im Entscheidungsprotokoll jedes Projekts
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> d1
+d1 -ja-> s4
+d1 -nein-> s5
+s4 -> s6
+s5 -> s6
+s6 -> s7
+s7 -> p1
+s6 -> p2
 
 ## What it does
 Sie führt `tools/pipeline-check.sh` aus, liest `report.json` und misst nie neu. Für jede Warnung oder jeden Fehlschlag schlägt sie ein `debt`-Issue mit einer Priorität vor. Dann prüft sie, was eine Maschine nicht sieht, ergänzt eine Präventiv-Zeile im Entscheidungsprotokoll jedes geprüften Projekts, ruft [[skill-gerar-teste-automatizado]] auf (beim ersten Review „create“, danach „update“) und schließt mit `mem use`, `wiki publish` und „Verified by:“. Sie schließt nie Issues, ändert nie eine Grenze, befördert nie eine Version und ändert nie den Branch-Schutz, und sie legt ohne Giovannis Ok keine Issues an.

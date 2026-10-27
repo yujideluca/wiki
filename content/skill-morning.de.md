@@ -2,11 +2,33 @@
 id: skill-morning
 title: Skill: morning in Codex
 lang: de
-source_hash: 9c51062f3e63
+source_hash: ade53a1eef25
 ---
 
 ## What it is
 Ein Skill ist eine gespeicherte Anleitung für eine wiederkehrende Aufgabe. Codex prüft die Beschreibung, um die vollständigen Anweisungen bei Bedarf zu laden. Dieser Skill behandelt `morning`; Auslöser und Grenzen stehen im vollständigen Quelltext unten.
+
+## Flow
+trigger t1: Giovanni bittet darum, den Morgenbericht auszuführen, zu sehen oder einzurichten, oder tippt /morning | [[giovanni]]
+decide d1: Jetzt ausführen oder für Werktage einrichten?
+step s1: Prüft die Verbindungen und ordnet die Werkzeuge Rollen zu: Kalender, E-Mail, Chat, andere
+step s2: Sammelt, was jede Rolle für heute hat
+step s3: Sortiert, was wichtig ist
+step s4: Schreibt die Seite: ein visueller Anker, das Wichtige, Abschnitte, ein Knopf
+step s5: Baut eine gestaltete Seite und prüft die Darstellung einmal
+step s6: Richtet eine wiederkehrende Werktags-Aufgabe ein, die diese Schritte wiederholt
+product p1: Eine gestaltete Morgenbericht-Seite
+product p2: Ein Werktagsplan, der den Bericht automatisch erstellt
+
+t1 -> d1
+d1 -jetzt-> s1
+d1 -Werktage-> s6
+s1 -> s2
+s2 -> s3
+s3 -> s4
+s4 -> s5
+s5 -> p1
+s6 -> p2
 
 ## What it does
 Liefert das in der Quelle beschriebene Ergebnis. Benötigte Fähigkeiten: `calendar-email-chat-as-available, local-output, browser-for-render-check`. Fehlende Fähigkeiten werden gemeldet; der Skill stellt keine neuen Werkzeuge bereit.

@@ -1,12 +1,34 @@
 ---
 id: skill-click-protocol
 lang: de
-source_hash: 1f36ece8ff8d
+source_hash: ada2530ffbf2
 title: Skill: click-protocol
 ---
 
 ## What it is
 Die Skill „click-protocol“ ist ein Protokoll für mehrstufiges Klicken auf Webseiten mit Menüs, Dialogen, Suchergebnissen oder Medien (YouTube Music, Spotify Web): über die Elementreferenz klicken, jeden Schritt prüfen, versehentliches Abspielen vermeiden. Ihre Beschreibung sagt genau das: vor mehrstufigem Klicken in Weboberflächen mit Menüs, Dialogen, Suchergebnissen oder Medien verwenden. Sie entstand beim Aufbau einer YouTube-Music-Playlist am 2026-10-10, als Fehlklicks Musik starteten, eine veraltete Benachrichtigung wie Erfolg aussah und Bildschirmkoordinaten zwischen Layouts brachen. Die Fassung für Claude Code wird nur dort bearbeitet; die Claude-App behält ihre eigene Fassung ([[claude-ai-skills]]).
+
+## Flow
+trigger t1: Mehrstufiges Klicken auf einer Webseite mit Menüs, Dialogen, Suchergebnissen oder Medien
+step s1: Plant zuerst die ganze Abfolge
+step s2: Klickt über Elementverweise, nie über Rohkoordinaten
+step s3: Prüft das Element vor jedem Klick und schützt vor versehentlicher Wiedergabe
+step s4: Eine Aktion, dann eine Prüfung
+decide d1: Zeigt ein frischer Beleg, dass der Schritt geklappt hat?
+step s5: Macht mit dem nächsten Schritt weiter; am Ende Seite neu laden und nachzählen
+step s6: Hält nach Fehlschlägen an, statt blind zu klicken, und fragt Giovanni | [[giovanni]]
+product p1: Ein geprüftes Ergebnis
+product p2: Eine Frage statt eines Blindklicks
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> s4
+s4 -> d1
+d1 -ja-> s5
+d1 -nein-> s6
+s5 -> p1
+s6 -> p2
 
 ## What it does
 Sie macht das Klicken im Browser zuverlässig: Jeder Klick zielt auf eine stabile Referenz eines Elements, und jeder Schritt wird mit frischem Beleg geprüft, bevor der nächste kommt. Ihre Rolle ist „übergreifend“; sie verweist auf [[skill-browser-automacao-segura]] (Warnungen, Schleifen, zerstörerische Aktionen), [[skill-minimize-site-approvals]] (Domains und Freigaben) und die Domänen-Skills (Formate).

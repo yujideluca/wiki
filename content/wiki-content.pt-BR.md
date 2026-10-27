@@ -1,7 +1,7 @@
 ---
 id: wiki-content
 lang: pt-BR
-source_hash: 1a821c508079
+source_hash: bb007afb8bf1
 title: Conteúdo do wiki (páginas Markdown)
 ---
 
@@ -11,7 +11,7 @@ São as próprias páginas: a fonte da verdade deste wiki. Há um arquivo [Markd
 ## What it does
 Cada página tem um cabeçalho (`id, title, aliases, kind, project, status, location, fed_by, feeds, sources, memory, since, until, reviewed`) e seções fixas: What it is, What it does, How it does it, Where it sits in the pipeline, Who receives its output, mais, opcionalmente, Steps (para processos e skills), Functions e Notes. O campo `reviewed` é obrigatório em toda página: diz quando a página foi comparada com suas fontes pela última vez, como data e minuto em UTC (tempo universal coordenado, o mesmo horário em qualquer lugar), por exemplo `2026-10-24T18:30Z`, ou só como data (o início desse dia), e nunca está no futuro. Só quem de fato comparou a página com suas fontes o define.
 
-As regras de escrita são estas: toda página deve ser compreensível para quem não sabe nada do sistema; um termo técnico é definido onde aparece pela primeira vez e, quando é complexo, aponta para uma definição (uma fonte externa ou o [[glossary]]); uma sigla é escrita por extenso no primeiro uso em cada página; e uma página de skill traz a definição da própria skill na seção Steps, de modo que a página basta para entender a skill.
+As regras de escrita são estas: toda página deve ser compreensível para quem não sabe nada do sistema; um termo técnico é definido onde aparece pela primeira vez e, quando é complexo, aponta para uma definição (uma fonte externa ou o [[glossary]]); uma sigla é escrita por extenso no primeiro uso em cada página; e uma página de skill traz a definição da própria skill na seção Steps, de modo que a página basta para entender a skill. Páginas dos tipos actor, project, process e skill também trazem, logo depois de „What it is“, uma seção `Flow`: um fluxograma escrito como uma linha por caixa e uma por seta, que a wiki desenha de cima para baixo ([[wiki-flow-view]]).
 
 ## How it does it
 Os links entre páginas são escritos `[[id]]`. Os cabeçalhos `fed_by` e `feeds` são as arestas do pipeline (o que alimenta o quê) e devem concordar nos dois sentidos. `sources` são escritos `repo:path`, para que uma fonte que mudou depois do `reviewed` da página marque a página como desatualizada ([[wiki-stale]]). Uma tradução guarda um hash (uma impressão digital curta) do texto em inglês de que foi feita, então uma tradução desatualizada é detectada. As páginas dizem o que existe; regras e preferências ficam na memória e são ligadas pelo `#code`.

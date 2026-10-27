@@ -15,6 +15,30 @@ reviewed: 2026-10-25T20:41Z
 ## What it is
 The skill "systematic-debugging" is the discipline Claude follows on any bug, test failure, crash or unexpected behaviour (in code, scripts, the sync pipeline or an app on the phone), before proposing a fix: find the root cause first, change one thing at a time, and stop after three failed fixes. Its description says it is not for Kubuntu desktop repair ([[skill-reparo-kubuntu]]). It was adapted from the open-source "superpowers" skills (version 7.0.0, MIT licence), without their always-on startup hook. Its role is "process"; it defers to [[skill-reparo-kubuntu]] for system problems, to [[workflow-memory]] for recording a lasting correction, and to the project's CLAUDE.md.
 
+## Flow
+trigger t1: A bug, test failure, crash or unexpected behaviour
+step s1: Phase 1: finds the root cause before proposing any fix
+step s2: Phase 2: finds the pattern, working versus broken
+step s3: Phase 3: states one hypothesis and tests it
+step s4: Phase 4: fixes with one change at a time
+decide d1: Did the fix work?
+step s5: Hands the fix to verification before completion | [[skill-verification-before-completion]]
+decide d2: Is this the third failed fix?
+product p1: A fix with its root cause explained
+product p2: Stop and question the design together with Giovanni | [[giovanni]]
+product p3: Back to phase 1 with the new evidence
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> s4
+s4 -> d1
+d1 -yes-> s5
+d1 -no-> d2
+s5 -> p1
+d2 -yes-> p2
+d2 -no-> p3
+
 ## What it does
 It forbids guessing. Its core principle is: always find the root cause before attempting fixes; symptom fixes are failure. Under time pressure, when a fix "seems obvious", or after a first fix failed, the process matters most.
 

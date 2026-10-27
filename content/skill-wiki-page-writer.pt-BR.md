@@ -1,12 +1,39 @@
 ---
 id: skill-wiki-page-writer
 lang: pt-BR
-source_hash: 9658a8cb6426
+source_hash: 82b9f13ad934
 title: Skill: wiki-page-writer
 ---
 
 ## What it is
 A skill "wiki-page-writer" é o método que o [[claude-code]] segue para escrever ou atualizar as páginas desta wiki. Uma skill é um conjunto empacotado de instruções que o Claude carrega quando um pedido combina com a sua descrição, para que um tipo de tarefa seja feito sempre com o mesmo cuidado (veja [[skills]] e o [[glossary]]). Esta cobre uma única tarefa: transformar o que existe nos sistemas do Giovanni em páginas verdadeiras que um estranho consiga entender, em inglês, alemão e português do Brasil.
+
+## Flow
+trigger t1: Trabalho no conteúdo da wiki: escrever, atualizar, traduzir ou aposentar uma página | [[claude-code]]
+step s1: Protege a árvore: confere o estado do git antes, mesmo se deveria estar limpo
+step s2: Aprende as regras atuais | [[wiki-content]]
+step s3: Acha o trabalho e verifica os fatos nas fontes antes de escrever
+step s4: Escreve para um estranho e dá forma à página, com um fluxograma
+step s5: Confere a privacidade
+step s6: Traduz para alemão e português
+step s7: Roda a verificação | [[wiki-check]]
+decide d1: A verificação passa?
+step s8: Corrige os problemas e atualiza os hashes
+step s9: Publica | [[wiki-cli]]
+product p1: Páginas em três idiomas na wiki no ar | [[wiki]]
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> s4
+s4 -> s5
+s5 -> s6
+s6 -> s7
+s7 -> d1
+d1 -sim-> s9
+d1 -não-> s8
+s8 -> s9
+s9 -> p1
 
 ## What it does
 É usada depois de qualquer tarefa que mudou algo nos sistemas, quando o hook Stop (um programa pequeno que roda quando o Claude termina uma vez, veja [[wiki-hook-stop]]) avisa "Wiki update needed", ou quando o Giovanni pede uma página da wiki. A descrição também cita o trabalho de tradução (as versões em alemão e português, correções de `source_hash`) como parte da tarefa e diz para que ela não serve: artigos gerais de enciclopédia, comentários de código, `DESIGN.md`, registros de decisão, entradas de memória e depurar ou explicar a própria ferramenta da wiki. Seu papel é "processo": ela é dona do conteúdo das páginas e das três versões de idioma; segue as regras da própria wiki em [[wiki-content]] e o verificador [[wiki-check]], que as faz valer; e respeita a regra do idioma da resposta e a regra da linguagem simples. A skill produz páginas em `~/dev/wiki/content`, publicadas com `wiki publish`.

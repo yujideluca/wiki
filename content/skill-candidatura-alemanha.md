@@ -15,6 +15,29 @@ reviewed: 2026-10-25T20:41Z
 ## What it is
 The skill "candidatura-alemanha" supports Giovanni's applications for medical posts in Germany (specialist training in radiology, a Hospitation = a trial visit at a hospital, and a position as Assistenzarzt = resident doctor) and the recognition process (Approbation, the licence to practise medicine, and Anerkennung, recognition of qualifications) for a doctor trained outside the EU. It is written in Portuguese. Its description says: use it whenever he asks for a Lebenslauf (CV), Anschreiben (cover letter), Bewerbung (application), an e-mail to a hospital or chief physician, a Bestätigung über beabsichtigte Beschäftigung (confirmation of intended employment), a document checklist, the choice of federal state, the Kenntnisprüfung (knowledge exam), the FSP (Fachsprachprüfung, the medical-language exam) or questions about deadlines and recognition authorities.
 
+## Flow
+trigger t1: Giovanni asks for a CV, a letter, an e-mail to a hospital, a document list or advice on recognition | [[giovanni]]
+step s1: Checks the date: reopens the official source and notes when it was consulted
+decide d1: What is needed?
+step s2: Lebenslauf: tabular, newest first, MM/YYYY, no gaps; one master CV
+step s3: Anschreiben or an e-mail to the chief physician
+step s4: A document checklist made to measure for the state
+step s5: A request for a confirmation of employment, Stellenzusage
+step s6: Hands the draft to Giovanni; nothing is sent by Claude
+product p1: Drafts and checklists in Giovanni's hands, to send himself
+
+t1 -> s1
+s1 -> d1
+d1 -CV-> s2
+d1 -letter-> s3
+d1 -documents-> s4
+d1 -employment-> s5
+s2 -> s6
+s3 -> s6
+s4 -> s6
+s5 -> s6
+s6 -> p1
+
 ## What it does
 It prepares CVs and letters in German, document checklists tailored to the state, and advice on states and hospitals. Giovanni's profile it works from: a Brazilian doctor with experience in pre-hospital emergency care and airport medicine, aiming at radiology training, with Goethe B2 in November 2026, then Approbation and a move planned for the first half of 2027. The skill is of the "domain" kind: it owns the master CV, the cover letters and the Approbation checklist; it defers to [[skill-alemao-goethe-fsp]] for correcting texts Giovanni wrote himself; and it honours the language of the message (documents for hospitals are in German) and the depth flags `!!`, `***` and `...`.
 

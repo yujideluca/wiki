@@ -1,12 +1,35 @@
 ---
 id: skill-candidatura-alemanha
 lang: de
-source_hash: 0d862a77018c
+source_hash: 1583a0720d1e
 title: Skill: candidatura-alemanha (Bewerbungen in Deutschland)
 ---
 
 ## What it is
 Die Skill „candidatura-alemanha“ unterstützt Giovannis Bewerbungen auf ärztliche Stellen in Deutschland (Facharztausbildung Radiologie, Hospitation, Assistenzarzt) und das Anerkennungsverfahren (Approbation, die Erlaubnis zur Ausübung des Arztberufs, und Anerkennung von Qualifikationen) für einen außerhalb der EU ausgebildeten Arzt. Sie ist auf Portugiesisch geschrieben. Ihre Beschreibung sagt: immer verwenden, wenn er einen Lebenslauf, ein Anschreiben, eine Bewerbung, eine E-Mail an ein Krankenhaus oder einen Chefarzt, eine Bestätigung über beabsichtigte Beschäftigung, eine Dokumenten-Checkliste, die Wahl des Bundeslands, die Kenntnisprüfung, die FSP (Fachsprachprüfung, die medizinische Sprachprüfung) oder Fragen zu Fristen und Anerkennungsbehörden verlangt.
+
+## Flow
+trigger t1: Giovanni bittet um Lebenslauf, Anschreiben, E-Mail an ein Krankenhaus, Unterlagenliste oder Rat zur Anerkennung | [[giovanni]]
+step s1: Prüft das Datum: öffnet die offizielle Quelle neu und notiert den Abrufzeitpunkt
+decide d1: Was wird gebraucht?
+step s2: Lebenslauf: tabellarisch, neueste zuerst, MM/JJJJ, ohne Lücken; ein Master-Lebenslauf
+step s3: Anschreiben oder E-Mail an den Chefarzt
+step s4: Eine Unterlagenliste, maßgeschneidert für das Bundesland
+step s5: Eine Bitte um Bestätigung der Beschäftigung, Stellenzusage
+step s6: Übergibt den Entwurf an Giovanni; nichts wird von Claude gesendet
+product p1: Entwürfe und Listen in Giovannis Hand, von ihm selbst zu senden
+
+t1 -> s1
+s1 -> d1
+d1 -Lebenslauf-> s2
+d1 -Anschreiben-> s3
+d1 -Unterlagen-> s4
+d1 -Beschäftigung-> s5
+s2 -> s6
+s3 -> s6
+s4 -> s6
+s5 -> s6
+s6 -> p1
 
 ## What it does
 Sie bereitet Lebensläufe und Briefe auf Deutsch vor, auf das Bundesland zugeschnittene Dokumenten-Checklisten und Beratung zu Ländern und Kliniken. Giovannis Profil, von dem sie ausgeht: ein brasilianischer Arzt mit Erfahrung in der präklinischen Notfallversorgung und Flughafenmedizin, Ziel Radiologie-Weiterbildung, mit Goethe B2 im November 2026, danach Approbation und einem geplanten Umzug im ersten Halbjahr 2027. Die Skill ist von der Art „Domäne“: Sie besitzt den Master-Lebenslauf, die Anschreiben und die Approbations-Checkliste; sie verweist für das Korrigieren selbst geschriebener Texte auf [[skill-alemao-goethe-fsp]]; und sie beachtet die Sprache der Nachricht (Dokumente für Kliniken sind auf Deutsch) und die Tiefe-Flags `!!`, `***` und `...`.

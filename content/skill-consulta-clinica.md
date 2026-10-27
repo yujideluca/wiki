@@ -15,6 +15,23 @@ reviewed: 2026-10-25T20:41Z
 ## What it is
 The skill "consulta-clinica" gives quick clinical answers and dose calculations for Giovanni's work in emergency and pre-hospital medicine. It is written in Portuguese. Its description says: quick clinical answers and dose calculations: conduct, dose, dilution, infusion, scores, calculators, interactions and supplements; not for appraising an article or study ([[skill-analise-artigo-cientifico]]). It never stores patient data.
 
+## Flow
+trigger t1: Giovanni asks a quick clinical question or a dose calculation | [[giovanni]]
+step s1: Answers in the fixed template, always in the same order
+step s2: Takes the sources by specialty
+decide d1: Is a number missing or uncertain?
+step s3: Says so instead of inventing it
+step s4: Writes doses with units and shows each calculation or score step by step
+product p1: A short clinical answer to use at work
+
+t1 -> s1
+s1 -> s2
+s2 -> d1
+d1 -yes-> s3
+d1 -no-> s4
+s3 -> p1
+s4 -> p1
+
 ## What it does
 It answers in a fixed template so that the number Giovanni will use is always first, and always names the guideline with its year. It is a "domain" skill: it owns the format of clinical answers and calculations, defers to [[skill-analise-artigo-cientifico]] for articles and deep evidence requests and to [[skill-bias-risk-triage]] only for the minimum depth of verification, and honours the language of the message and the depth flags `!!`, `***` and `...`.
 

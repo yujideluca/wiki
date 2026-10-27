@@ -1,12 +1,33 @@
 ---
 id: skill-regras-magic
 lang: de
-source_hash: 2624709e46b2
+source_hash: 4a54708c415a
 title: Skill: regras-magic (Magic-Regeln)
 ---
 
 ## What it is
 Die Skill „regras-magic“ beantwortet Giovannis Regelfragen zu [Magic: The Gathering](https://en.wikipedia.org/wiki/Magic:_The_Gathering), dem Sammelkartenspiel. Sie ist auf Portugiesisch geschrieben. Ihre Beschreibung sagt: sie beantwortet Giovannis Magic-Regelfragen: Karteninteraktionen, der Stapel, Trigger, Ebenen, Kopien, Spielmarken, Commander; nicht für LigaMagic-Listen oder Käufe ([[skill-ligamagic-listas]]).
+
+## Flow
+trigger t1: Giovanni stellt eine Magic-Regelfrage: Interaktionen, Stapel, Trigger, Ebenen, Kopien, Token, Commander | [[giovanni]]
+step s1: Schlägt den Oracle-Text jeder Karte nach oder markiert ihn als aus dem Gedächtnis
+step s2: Nennt das Urteil in einer Zeile
+step s3: Geht die Zeitleiste durch: wirken, Stapel, Auflösung, Zustandsaktionen, Trigger
+step s4: Nennt die Nummern der Comprehensive Rules
+decide d1: Wurde der Kartentext an einer Quelle geprüft?
+step s5: Sicherheit: hoch
+step s6: Sicherheit: mittel, Kartentext als aus dem Gedächtnis markiert
+product p1: Ein Urteil mit Karten, Zeitleiste, Regeln und Sicherheit
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> s4
+s4 -> d1
+d1 -ja-> s5
+d1 -nein-> s6
+s5 -> p1
+s6 -> p1
 
 ## What it does
 Sie gibt Regelentscheidungen in einer festen Vorlage. Ihre Rolle ist „Domäne“: Sie besitzt das Format von Magic-Rulings; sie verweist auf [[skill-ligamagic-listas]] (Käufe) und [[skill-browser-automacao-segura]] (falls ein Browser benutzt wird); und sie beachtet die Sprache der Nachricht und die Tiefe-Flags `!!`, `***` und `...`.

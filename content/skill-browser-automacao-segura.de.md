@@ -1,12 +1,37 @@
 ---
 id: skill-browser-automacao-segura
 lang: de
-source_hash: 1c9734d89aa5
+source_hash: 9208c8496d7c
 title: Skill: browser-automacao-segura (sichere Browser-Automatisierung)
 ---
 
 ## What it is
 Die Skill „browser-automacao-segura“ („sichere Browser-Automatisierung“) enthält die Sicherheitsregeln für jede Aktion in einem Webbrowser (dem eingebauten Browser der App oder Claude in Chrome), besonders für Stapelaktionen, Löschungen, Massenänderungen und Skripte auf Seiten. Sie ist auf Portugiesisch geschrieben. Ihre Beschreibung sagt: immer verwenden, wenn Aktionen in irgendeinem Browser ausgeführt werden, besonders Stapelaktionen, Löschungen, Massenänderungen und JavaScript-Skripte auf Seiten.
+
+## Flow
+trigger t1: Jede Aktion in einem Browser, besonders Stapelaktionen, Löschungen, Massenänderungen oder Seitenskripte
+trigger t2: Ein Warndialog ist schon offen
+step s1: Entschärft Warnungen vor einem Stapel und protokolliert sie zum späteren Lesen
+step s2: Führt eine Schleife nach der anderen aus und wartet nach jeder Aktion auf die echte Wirkung | [[skill-click-protocol]]
+decide d1: Ist die Aktion zerstörend oder unumkehrbar?
+step s3: Fragt Giovanni, bevor es handelt | [[giovanni]]
+step s4: Lange Schleifen laufen im Hintergrund und werden auf Fortschritt geprüft
+step s5: Stoppt die frühere Schleife und löscht die offene Warnung
+step s6: Lädt die Seite neu, um den Endzustand zu prüfen
+product p1: Ein geprüftes Ergebnis auf der Seite
+product p2: Keine eingefrorene Sitzung und nichts Zerstörendes ohne Ja
+
+t1 -> s1
+s1 -> s2
+s2 -> d1
+d1 -ja-> s3
+d1 -nein-> s4
+s3 -> s4
+s4 -> s6
+t2 -> s5
+s5 -> s6
+s6 -> p1
+s3 -> p2
 
 ## What it does
 Sie verhindert Dialoge, die die Sitzung einfrieren, sich überlappende Schleifen und zerstörerische Fehler, und sie fragt vor allem Unumkehrbaren. Für die Mechanik des Klickens verweist sie auf [[skill-click-protocol]], für weniger Freigabeklicks auf [[skill-minimize-site-approvals]]; wo sie sich widersprechen, gewinnen die Sicherheitsregeln dieser Skill.

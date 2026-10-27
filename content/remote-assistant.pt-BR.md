@@ -1,12 +1,34 @@
 ---
 id: remote-assistant
 lang: pt-BR
-source_hash: c65b5d957be4
+source_hash: 0cc6544c394b
 title: Assistente remoto
 ---
 
 ## What it is
 O assistente remoto é uma sessão do Claude Code que roda o tempo todo no notebook e que o [[giovanni]] alcança pelo app Claude no celular, por um recurso chamado Remote Control. No app ele aparece como `yuji-nitro-assistant`. Pense nele como uma segunda porta para o mesmo notebook: o mesmo Claude, os mesmos repositórios, mas acessível de qualquer lugar.
+
+## Flow
+trigger t1: O notebook liga, ou a sessão do assistente termina | [[claude-assistant]]
+step s1: O serviço reinicia uma sessão tmux com claude remote-control em ~/assistant
+step s2: A sessão lê seu próprio CLAUDE.md e o resumo da memória | [[session-brief]], [[global-claude-md]]
+trigger t2: Giovanni envia uma mensagem pelo app Claude no celular | [[giovanni]]
+step s3: O Remote Control leva a mensagem à sessão yuji-nitro-assistant
+step s4: Faz a tarefa curta no notebook, com as mesmas regras do Claude Code | [[claude-code]]
+step s5: Responde em poucas linhas, para ler bem no celular
+product p1: Uma resposta curta no celular do Giovanni
+product p2: Mudanças nos repositórios dos projetos
+product p3: Entradas da memória marcadas com o nome de instância assistant | [[events-log]]
+
+t1 -> s1
+s1 -> s2
+s2 -> s4
+t2 -> s3
+s3 -> s4
+s4 -> s5
+s4 -> p2
+s4 -> p3
+s5 -> p1
 
 ## What it does
 Faz tarefas curtas no notebook enquanto o Giovanni está longe dele. Segue as mesmas regras do [[claude-code]] e escreve na memória compartilhada com o nome de instância `assistant`, para a memória saber quem escreveu o quê.

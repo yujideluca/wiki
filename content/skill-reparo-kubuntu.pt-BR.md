@@ -1,12 +1,34 @@
 ---
 id: skill-reparo-kubuntu
 lang: pt-BR
-source_hash: ab9b9d26c71d
+source_hash: 4e4c84a33b6b
 title: Skill: reparo-kubuntu (conserto do notebook)
 ---
 
 ## What it is
 A skill "reparo-kubuntu" ("conserto do Kubuntu") diagnostica e corrige problemas do notebook do Giovanni (um Acer Nitro com Kubuntu 24.04, a área de trabalho Plasma 5.27, o sistema de exibição X11 e uma placa de vídeo Nvidia) e faz as correções sobreviverem a reinicializações. É escrita em português. Sua descrição diz exatamente isso. Seu papel é "domínio": é dona do fluxo de diagnóstico e correção no Linux dele; remete à [[skill-browser-automacao-segura]] se usar navegador; e respeita o idioma da mensagem e as flags de profundidade `!!`, `***` e `...`. A versão do Claude Code só é editada lá; o app Claude mantém a sua ([[claude-ai-skills]]).
+
+## Flow
+trigger t1: Um problema no notebook do Giovanni: Kubuntu, Plasma, X11 ou a placa Nvidia | [[acer-nitro]]
+step s1: Coleta diagnósticos sem mudar nada, salvos num arquivo diag
+step s2: Liga o sintoma a uma primeira hipótese e a um teste seguro
+decide d1: O teste seguro confirma a hipótese?
+step s3: Muda uma coisa com segurança, com a volta pronta
+step s4: Torna a correção permanente entre reinicializações
+step s5: Testa de novo após reiniciar e registra o resultado
+step s6: Pergunta só o que o log não responde: o que mudou e se é reproduzível | [[giovanni]]
+product p1: Uma correção que sobrevive a reinicializações, com passos de Verify e Undo
+product p2: Uma hipótese mais estreita; nada mudou ainda
+
+t1 -> s1
+s1 -> s2
+s2 -> d1
+d1 -sim-> s3
+d1 -não-> s6
+s3 -> s4
+s4 -> s5
+s5 -> p1
+s6 -> p2
 
 ## What it does
 Cobre problemas de tela, drivers, áudio, rede, desktop e boot, passo a passo, com os comandos que exigem direitos de administrador (`sudo`) entregues ao Giovanni para executar com o prefixo `!`. O método vem do "Effective Troubleshooting" do Google ([livro SRE](https://sre.google/sre-book/effective-troubleshooting/); SRE é site reliability engineering) e do troubleshooting de sete passos do Ubuntu: estabilizar e preservar evidências → examinar → hipóteses ordenadas por probabilidade → uma mudança por vez → corrigir → retestar após reiniciar → documentar. As armadilhas são perseguir um sintoma irrelevante, uma mudança insegura durante o teste e assumir que a causa antiga voltou.

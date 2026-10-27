@@ -15,6 +15,30 @@ reviewed: 2026-10-27T00:13Z
 ## What it is
 A fixed line at the bottom of Giovanni's Codex terminal shows task progress and estimated time remaining. The Python source lives in `~/dev/codex-pbar`. Start with its `README.md`. This is separate from the Claude terminal display [[pbar]].
 
+## Flow
+trigger t1: Giovanni starts codex in a terminal | [[global-codex-agents]]
+step s1: The codex launcher wraps the session in tmux
+step s2: A dedicated codex-status server reserves the bottom row of the terminal | [[codex-status-line]]
+step s3: Each terminal gets its own identifier, linking its footer to its task state
+trigger t2: Codex starts a task with several steps
+step s4: The agent runs codex-task-progress set with steps done, total, seconds left and label
+decide d1: Is there an active task plan?
+decide d2: Has the time estimate run out?
+product p1: Footer shows percentage, tasks done and time left
+product p2: Footer shows over by, and the excess time
+product p3: Footer says No active task
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> d1
+t2 -> s4
+s4 -> d1
+d1 -yes-> d2
+d1 -no-> p3
+d2 -no-> p1
+d2 -yes-> p2
+
 ## What it does
 The line remains visible while Codex works or waits. It matches Claude’s compact style: a green Progress label on the normal terminal background, middle-dot separators, percentage, completed tasks and estimated time remaining. It draws no block bar. For example, two completed steps out of five show `Progress: [ 40%] 2/5 tasks`. Time alone never advances the percentage. If an estimate runs out, the line says `over by` and the elapsed excess. When there is no task plan, the line says `No active task`. Explicit completion remains visible until the next task starts.
 

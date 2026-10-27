@@ -15,6 +15,31 @@ reviewed: 2026-10-25T20:41Z
 ## What it is
 The skill "gerar-teste-automatizado" ("generate automated test") creates, and later updates, the automated test suite that hunts for real bugs in a software project. Its description says: use it in Claude Code to create or update the automated bug-finding test suite of a project: full diagnosis of the code, a test matrix, tests that detect real defects, mutation and coverage checks. It is called by [[skill-revisao-manutencao]] on the first review of a project (create) and on later reviews (update), and can be asked for directly. It is not for fixing a single failing test or a bug ([[skill-systematic-debugging]]). It is based on a prompt written by Giovanni.
 
+## Flow
+trigger t1: The first review of a project, a later review, or a direct request for a bug-finding test suite | [[skill-revisao-manutencao]]
+step s1: Decides the mode first: create or update
+step s2: Analyses the whole code before writing any test
+step s3: Plans the test matrix
+step s4: Implements tests that can find real defects
+step s5: Verifies that the tests detect defects, with mutation and coverage checks | [[mutation-check]]
+decide d1: Do the tests catch the injected defects?
+step s6: Strengthens the weak tests
+step s7: Writes docs/TESTES-AUTOMATIZADOS.md and reports
+product p1: Tests in the project's test folders
+product p2: A report of defects found and residual risks, for Giovanni | [[giovanni]]
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> s4
+s4 -> s5
+s5 -> d1
+d1 -yes-> s7
+d1 -no-> s6
+s6 -> s7
+s7 -> p1
+s7 -> p2
+
 ## What it does
 The aim is tests that find real errors, regressions, invalid inputs, boundaries and integration failures, not tests that confirm the easy path. It never edits production code to make tests pass and proposes any needed fix separately.
 

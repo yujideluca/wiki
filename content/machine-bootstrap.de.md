@@ -1,12 +1,41 @@
 ---
 id: machine-bootstrap
 lang: de
-source_hash: 0a9f6ed9b563
+source_hash: 39d493cd12bd
 title: machine-bootstrap (die Einrichtung des Laptops wiederherstellen)
 ---
 
 ## What it is
 `machine-bootstrap` zeichnet die Einrichtung von Giovannis Laptop ([[acer-nitro]]) auf, um sie nach einer Neuinstallation des Betriebssystems oder auf einem anderen Computer wiederherzustellen. Es nutzt Pythons Standardbibliothek und ein Bash-Startskript. Das lokale Repository liegt in `~/dev/machine-bootstrap`; der öffentliche Quellcode liegt in [yujideluca/machine-bootstrap](https://github.com/yujideluca/machine-bootstrap). Erfasste Einstellungen und Paketlisten sind öffentlich; verschlüsselte Archive und Zugangsdaten sind ausgeschlossen. Einstieg ist `docs/RESTORE.md`; `docs/MANUAL.md` enthält die ausführliche Anleitung und Fehlerfälle.
+
+## Flow
+trigger t1: Giovanni will die Laptop-Einrichtung festhalten oder wiederherstellen | [[acer-nitro]]
+decide d1: Festhalten oder wiederherstellen?
+step s1: capture erfasst Pakete, Repositories, erlaubte Einstellungen; der Scanner weist Geheimnisse ab
+step s2: status und ein wöchentlicher Timer melden Änderungen seit der Aufnahme
+step s3: restore gibt einen Plan aus
+decide d2: Fügt Giovanni --apply hinzu?
+step s4: Installiert Quellen, Pakete, Werkzeuge, Repositories; Einstellungen zuletzt, mit .mb-bak-Kopien
+step s5: Geheimnisse kommen aus dem verschlüsselten Archiv zurück; persönliche Ordner werden zurückkopiert
+trigger t2: Giovanni sichert Schlüssel, Logins und persönliche Ordner
+step s6: secrets-backup verschlüsselt Schlüssel und Logins; data-backup kopiert die Ordner
+product p1: Ein öffentlicher Stand von Paketen und Einstellungen, ohne Geheimnisse
+product p2: Nur ein Plan: nichts am Laptop verändert
+product p3: Ein wiederhergestellter Laptop
+product p4: Verschlüsselte Archive und kopierte Ordner, außerhalb des öffentlichen Repositorys
+
+t1 -> d1
+d1 -festhalten-> s1
+d1 -wiederherstellen-> s3
+s1 -> s2
+s2 -> p1
+s3 -> d2
+d2 -nein-> p2
+d2 -ja-> s4
+s4 -> s5
+s5 -> p3
+t2 -> s6
+s6 -> p4
 
 ## What it does
 `python3 -m mb` hat acht Unterbefehle. `capture` zeichnet Pakete, Repositories und erlaubte Einstellungen in `state/` auf. `status` meldet Änderungen seit dieser Aufzeichnung. `install-timer` aktiviert eine wöchentliche Hintergrundprüfung. `restore` zeigt einen Plan und führt ihn erst mit `--apply` aus. `secrets-backup` verschlüsselt Schlüssel und Zugänge; `secrets-restore` stellt ein Archiv wieder her. `data-backup` kopiert persönliche Ordner. `scan` prüft die aufgezeichneten Einstellungen auf Geheimnisse.

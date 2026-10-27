@@ -9,6 +9,7 @@ defmodule Wiki.Content.Page do
 
   @sections [
     {"what", "What it is"},
+    {"flow", "Flow"},
     {"does", "What it does"},
     {"how", "How it does it"},
     {"where", "Where it sits in the pipeline"},

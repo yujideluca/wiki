@@ -1,12 +1,36 @@
 ---
 id: skill-analise-artigo-cientifico
 lang: pt-BR
-source_hash: 9be456db0a71
+source_hash: 972d8aaa0eca
 title: Skill: analise-artigo-cientifico (avaliação de artigos)
 ---
 
 ## What it is
 A skill "analise-artigo-cientifico" é a análise crítica de artigos científicos e de perguntas clínicas baseadas em evidência para o Giovanni, médico. É escrita em português. Sua descrição diz: usar sempre que ele enviar um artigo, PDF, DOI (o identificador permanente de um artigo), PMID (o número de um artigo no PubMed) ou link de estudo, pedir "analise este estudo", perguntar se uma conduta, terapia ou exame "funciona", pedir nível de evidência, GRADE (Grading of Recommendations Assessment, Development and Evaluation, um método para classificar a certeza da evidência, [GRADE](https://www.gradeworkinggroup.org/)), comparação de diretrizes ou resumo de estudo, mesmo que não diga "análise crítica".
+
+## Flow
+trigger t1: O Giovanni envia artigo, PDF, DOI, PMID ou link, ou pergunta se um tratamento funciona | [[giovanni]]
+step s1: Calibra a profundidade: os sinalizadores dele valem, senão o tamanho da pergunta
+decide d1: Pergunta rápida ou artigo completo?
+step s2: Modo curto: veredito, tabela pequena, GRADE provisório, divergência regional, conduta prática
+step s3: Lê o texto completo e verifica a fonte, inclusive retratações
+step s4: Nunca preenche dados ausentes; segue a estrutura de análise de um artigo
+step s5: Aplica o GRADE ao conjunto de evidências, por desfecho
+step s6: Busca e compara diretrizes: Brasil, Alemanha e Europa, EUA
+step s7: Mantém a fonte e o raciocínio separados
+product p1: Um veredito curto com as fontes
+product p2: Uma análise crítica: nível de evidência, certeza GRADE, comparação de diretrizes
+
+t1 -> s1
+s1 -> d1
+d1 -rápida-> s2
+d1 -completo-> s3
+s2 -> p1
+s3 -> s4
+s4 -> s5
+s5 -> s6
+s6 -> s7
+s7 -> p2
 
 ## What it does
 Entrega uma leitura crítica que ele possa usar na prática e treinar como raciocínio, sem inventar dados: nível de evidência, certeza por GRADE, comparação de diretrizes (Brasil, Alemanha e Europa, EUA), resumo de estudo. É em nível de pós-graduação, didática, com mecanismos e tamanhos de efeito. Dose, diluição e calculadoras ficam com a [[skill-consulta-clinica]]; esta skill cuida de artigos, "isso funciona?" e nível de evidência.

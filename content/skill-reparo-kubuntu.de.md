@@ -1,12 +1,34 @@
 ---
 id: skill-reparo-kubuntu
 lang: de
-source_hash: ab9b9d26c71d
+source_hash: 4e4c84a33b6b
 title: Skill: reparo-kubuntu (Laptop-Reparatur)
 ---
 
 ## What it is
 Die Skill „reparo-kubuntu“ („Kubuntu-Reparatur“) diagnostiziert und behebt Probleme von Giovannis Laptop (ein Acer Nitro mit Kubuntu 24.04, der Plasma-5.27-Oberfläche, dem Anzeigesystem X11 und einer Nvidia-Grafikkarte) und macht die Reparaturen neustartfest. Sie ist auf Portugiesisch geschrieben. Ihre Beschreibung sagt genau das. Ihre Rolle ist „Domäne“: Sie besitzt den Diagnose- und Reparaturablauf auf seinem Linux; sie verweist auf [[skill-browser-automacao-segura]], falls ein Browser benutzt wird; und sie beachtet die Sprache der Nachricht und die Tiefe-Flags `!!`, `***` und `...`. Die Fassung für Claude Code wird nur dort bearbeitet; die Claude-App behält ihre eigene Fassung ([[claude-ai-skills]]).
+
+## Flow
+trigger t1: Ein Problem an Giovannis Laptop: Kubuntu, Plasma, X11 oder die Nvidia-Karte | [[acer-nitro]]
+step s1: Sammelt Diagnosen ohne etwas zu ändern, gespeichert in einer diag-Datei
+step s2: Ordnet das Symptom einer ersten Hypothese und einem sicheren Test zu
+decide d1: Bestätigt der sichere Test die Hypothese?
+step s3: Ändert eine Sache sicher, mit bereitem Rückweg
+step s4: Macht die Korrektur über Neustarts hinweg dauerhaft
+step s5: Testet nach einem Neustart erneut und hält das Ergebnis fest
+step s6: Fragt nur, was das Protokoll nicht beantwortet: was sich änderte und ob es reproduzierbar ist | [[giovanni]]
+product p1: Eine Korrektur, die Neustarts übersteht, mit Verify- und Undo-Schritten
+product p2: Eine engere Hypothese; noch nichts geändert
+
+t1 -> s1
+s1 -> s2
+s2 -> d1
+d1 -ja-> s3
+d1 -nein-> s6
+s3 -> s4
+s4 -> s5
+s5 -> p1
+s6 -> p2
 
 ## What it does
 Sie deckt Probleme mit Anzeige, Treibern, Ton, Netzwerk, Desktop und Start ab, Schritt für Schritt, wobei Befehle, die Administratorrechte brauchen (`sudo`), Giovanni zum Ausführen mit dem Präfix `!` übergeben werden. Ihre Methode stammt aus Googles „Effective Troubleshooting“ ([SRE-Buch](https://sre.google/sre-book/effective-troubleshooting/); SRE ist Site Reliability Engineering) und dem siebenstufigen Troubleshooting von Ubuntu: stabilisieren und Beweise sichern → untersuchen → nach Wahrscheinlichkeit geordnete Hypothesen → eine Änderung nach der anderen → beheben → nach einem Neustart erneut testen → dokumentieren. Die Fallen sind, einem irrelevanten Symptom nachzujagen, eine unsichere Änderung während des Tests und die Annahme, die alte Ursache sei zurückgekehrt.

@@ -1,12 +1,35 @@
 ---
 id: skill-bias-risk-triage
 lang: pt-BR
-source_hash: a0f472943f46
+source_hash: ebc181485377
 title: Skill: bias-risk-triage
 ---
 
 ## What it is
 A skill "bias-risk-triage" é uma verificação silenciosa que o Claude executa antes de responder qualquer pergunta factual curta. Sua descrição diz: antes de responder qualquer pergunta factual curta, executar uma verificação compilada (uma guarda, uma consulta e uma tabela de decisão) para viés, mito, conspiração, defasagem (informação desatualizada) ou risco alto, e definir a profundidade de verificação T0–T3. É a versão 3.3, "compilada", e foi validada nos benchmarks TruthfulQA e WebQuestions.
+
+## Flow
+trigger t1: Qualquer pergunta factual curta | [[giovanni]]
+step s1: Normaliza: uma premissa falsa é corrigida primeiro e dá no mínimo o nível T1
+decide d1: Passa na guarda: um referente, fato estável, sem palavra carregada, sem risco?
+step s2: Procura o termo-chave na tabela
+decide d2: Há correspondência?
+step s3: A correspondência dá o nível, T1 a T3, e a busca para
+step s4: Percorre a tabela de decisão por gravidade decrescente; a primeira correspondência fixa o nível máximo
+step s5: Aplica as ações desse nível; uma skill de domínio ainda define o formato | [[skill-consulta-clinica]], [[skill-analise-artigo-cientifico]]
+product p1: T0: uma resposta de uma linha
+product p2: Uma resposta checada na profundidade que o nível exige, até várias fontes
+
+t1 -> s1
+s1 -> d1
+d1 -sim-> p1
+d1 -não-> s2
+s2 -> d2
+d2 -sim-> s3
+d2 -não-> s4
+s3 -> s5
+s4 -> s5
+s5 -> p2
 
 ## What it does
 Sua saída é um nível de T0 (resposta em uma linha) a T3 (tratamento com várias fontes de um tema contestado). Ela define apenas a profundidade mínima de verificação, nunca o formato: quando uma skill de domínio como a [[skill-consulta-clinica]] ou a [[skill-analise-artigo-cientifico]] também se aplica, segue-se a estrutura e o formato dela, e as fontes são ao menos tão rigorosas quanto o nível daqui.

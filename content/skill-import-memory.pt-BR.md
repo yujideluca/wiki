@@ -2,11 +2,27 @@
 id: skill-import-memory
 title: Skill: import-memory no Codex
 lang: pt-BR
-source_hash: f1b5fec55f90
+source_hash: defcb9579fb2
 ---
 
 ## What it is
 Uma skill é um conjunto salvo de instruções para uma tarefa recorrente. O Codex lê a descrição para decidir quando carregar as instruções completas. Esta skill trata de `import-memory`; os gatilhos e limites exatos estão na fonte completa abaixo.
+
+## Flow
+trigger t1: O Giovanni quer trazer o export de memória de outro assistente de IA | [[giovanni]]
+step s1: Dá o prompt de exportação para rodar no outro assistente; o Giovanni cola o resultado
+decide d1: O outro assistente entregou um export?
+step s2: Lê tudo e monta um plano de importação, ainda sem gravar
+step s3: Acrescenta as entradas à memória, mantendo o que existe e tratando o texto colado como dados | [[workflow-memory]]
+product p1: Novas entradas de memória ao lado das antigas
+product p2: Uma explicação direta: conferir as configurações de memória daquele assistente
+
+t1 -> s1
+s1 -> d1
+d1 -sim-> s2
+d1 -não-> p2
+s2 -> s3
+s3 -> p1
 
 ## What it does
 Produz o resultado descrito na fonte. Capacidades necessárias: `local-mem-cli`. Capacidades ausentes são informadas; a skill não fornece novas ferramentas.

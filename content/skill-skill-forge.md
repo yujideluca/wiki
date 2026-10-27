@@ -15,6 +15,31 @@ reviewed: 2026-10-25T21:08Z
 ## What it is
 The skill "skill-forge" is the full pipeline for creating or rebuilding a skill for Giovanni. Its description says: three competing versions, tests, compatibility checks with his other skills, then validation and packaging through skill-creator; use it when he asks to create, rebuild, optimise or "forge" a skill, turn a rule or workflow into a new skill, or wants tested or compared versions; for small changes to one skill (fix a line, rename, change the description, add an example) or just packaging a skill file, skill-creator alone is enough. Its philosophy: a skill is codified expert knowledge, so understand the domain and the user deeply, design an explicit architecture, then evaluate the result against the requirements (build → evaluate → refine, as in design-science research).
 
+## Flow
+trigger t1: Giovanni asks to create, rebuild or optimise a skill, or wants tested or compared versions | [[giovanni]]
+step s1: Picks the mode first
+step s2: Analyses the requirements, then designs the architecture
+step s3: Builds three competing versions
+step s4: Runs two evaluations
+decide d1: Is any result unreproducible?
+step s5: Gap resolution: finds out why and closes the gap
+step s6: Compatibility layer: checks the winner against his other skills, settings and scheduled tasks
+step s7: Synthesis, then hand-off to skill-creator to validate and package
+product p1: A tested skill saved in the skills folder | [[skills]]
+product p2: Proposed updates for every skill it affects | [[claude-ai-skills]]
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> s4
+s4 -> d1
+d1 -yes-> s5
+d1 -no-> s6
+s5 -> s6
+s6 -> s7
+s7 -> p1
+s7 -> p2
+
 ## What it does
 It produces a tested skill that does not collide with Giovanni's other skills, settings or scheduled tasks, and proposes updates to every skill it affects.
 

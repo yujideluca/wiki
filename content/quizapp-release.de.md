@@ -1,12 +1,46 @@
 ---
 id: quizapp-release
 lang: de
-source_hash: 094ad2e7e9e9
+source_hash: 66c38a45b9c1
 title: QuizApp-Release (Beta → stabil)
 ---
 
 ## What it is
 Diese Seite beschreibt den Weg, den eine Änderung an [[quizapp]] von der Idee bis zu Giovannis Handy nimmt. Der Weg ist so gebaut, dass nichts unspezifiziert, ungetestet oder unerprobt beim Spieler ankommt.
+
+## Flow
+trigger t1: Giovanni nennt ein Verhalten, das die App haben soll | [[giovanni]]
+step s1: Es wird eine Zeile in den Anforderungen | [[quizapp-requirements]]
+step s2: Claude schreibt den mit der Anforderung markierten Test, dann den Code | [[quizapp-core]], [[quizapp-app]]
+step s3: Fehlersuche: Tests, Installation am Handy, Ablauf durchspielen, Logcat lesen | [[phone]], [[skill-adb-android-control]]
+step s4: Das Quality Gate besteht lokal; Push; die automatischen Prüfungen müssen bestehen | [[quizapp-quality-gate]], [[quizapp-ci]]
+step s5: Eine Beta wird im Branch bleeding-edge des Release-Feeds veröffentlicht | [[publish-apk]], [[release-feed]]
+step s6: Die Beta-App bietet das Update an; Giovanni probiert es aus | [[update-client]]
+decide d1: Sagt Giovanni: freigeben?
+step s7: Das Promote-Gate (Mutations- und Testprüfung) veröffentlicht die stabile App | [[mutation-check]], [[check-tests-updated]]
+step s8: Der wartende QuizWeb-Port wird nach main gemergt | [[quizweb]]
+trigger t2: Es kommen nur neue Fragen hinzu | [[question-pool-updater]]
+step s9: Bearbeitet die Fragen-Dateien und führt build-vocab aus | [[build-vocab]]
+step s10: Veröffentlicht Beta, dann Promote, sobald die automatische Pipeline besteht | [[publish-content]]
+product p1: Die stabile App auf Giovannis Handy | [[quizapp]]
+product p2: Die Version bleibt Beta und wartet
+product p3: Neue Fragen ausgeliefert ohne neue App-Datei
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> s4
+s4 -> s5
+s5 -> s6
+s6 -> d1
+d1 -ja-> s7
+d1 -nein-> p2
+s7 -> s8
+s7 -> p1
+s8 -> p1
+t2 -> s9
+s9 -> s10
+s10 -> p3
 
 ## What it does
 Er stellt sicher, dass jede Änderung spezifiziert, getestet, in einer Beta-Version ausprobiert und nur auf Giovannis Ansage in die stabile Version befördert wird.

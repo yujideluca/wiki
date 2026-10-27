@@ -1,12 +1,41 @@
 ---
 id: end-of-task
 lang: pt-BR
-source_hash: 72209cc47fd9
+source_hash: 5521ba05f6ea
 title: Fim de uma tarefa (cadeia de atualização do wiki)
 ---
 
 ## What it is
 Esta página descreve o que o Claude faz toda vez que termina uma tarefa, para que a memória e este wiki nunca fiquem atrás do que foi realmente construído. O Giovanni decidiu em 2026-10-22 que a atualização do wiki está ligada ao relatório `mem use`.
+
+## Flow
+trigger t1: O Claude termina uma tarefa de programação | [[claude-code]]
+trigger t2: O Claude tenta parar após mudar código sem publicar | [[wiki-hook-stop]]
+step s1: Comprova o trabalho rodando verificações | [[skill-verification-before-completion]]
+step s2: Escreve ou atualiza as páginas em inglês, depois em alemão e português | [[wiki-content]]
+step s3: Dá página própria ao que ficou grande demais | [[wiki-check]]
+decide d1: A verificação do conteúdo passa?
+step s3b: Corrige o que a verificação aponta
+step s4: Roda wiki publish: verifica, monta o site, faz commit de content/ e envia | [[wiki-cli]]
+step s5: O site no ar serve as páginas novas na hora | [[wiki-site]]
+step s6: Informa quais entradas da memória moldaram o trabalho | [[mem-use]]
+product p1: Uma wiki que corresponde ao que foi construído | [[wiki]]
+product p2: As páginas guardadas no GitHub | [[github]]
+product p3: Uso da memória registrado no log | [[events-log]]
+
+t1 -> s1
+s1 -> s2
+t2 -> s2
+s2 -> s3
+s3 -> d1
+d1 -sim-> s4
+d1 -não-> s3b
+s3b -> s4
+s4 -> s5
+s4 -> p2
+s5 -> p1
+s5 -> s6
+s6 -> p3
 
 ## What it does
 O Claude atualiza as páginas do wiki para tudo o que mudou (coisas novas, alteradas ou aposentadas, cada uma com sua tradução em alemão e português), publica-as passando pelas verificações de conteúdo e depois informa quais entradas da memória influenciaram o trabalho.

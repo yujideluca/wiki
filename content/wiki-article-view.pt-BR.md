@@ -1,7 +1,7 @@
 ---
 id: wiki-article-view
 lang: pt-BR
-source_hash: 44e710d67918
+source_hash: fc23cc39a8cf
 title: Vista do artigo
 ---
 
@@ -13,7 +13,7 @@ Mostra o título e o tipo, o parágrafo de abertura, uma caixa de informações 
 
 O anel ao redor do passo aceso (seu brilho e seu leve crescimento) fica inteiro graças ao espaçamento em volta da fileira de pontos.
 
-Em um celular (janela de até 760 pixels de largura) a página segue o layout do Wikipédia móvel: no alto uma barra com seta de volta ao mapa, botão de menu e campo de busca; depois título, parágrafo de abertura e infobox em uma coluna; cada outra seção começa fechada e abre ao tocar no título.
+Em um celular (janela de até 760 pixels de largura) a página segue o layout do Wikipédia móvel: no alto uma barra com seta de volta ao mapa, botão de menu e campo de busca; depois título, parágrafo de abertura e infobox em uma coluna; cada outra seção começa fechada e abre ao tocar no título. Uma página com uma seção Flow a mostra como fluxograma sob o parágrafo de abertura: uma pílula para o que inicia a cadeia, caixas para os passos, um losango para uma pergunta e uma caixa dupla para um produto final, coloridos pelo tipo da página a que se ligam, com uma legenda embaixo ([[wiki-flow-view]]).
 
 ## How it does it
 O texto Markdown é renderizado com elm-markdown depois que os links `[[id]]` são reescritos para `/p/<id>` (requisito MP-3); links para outros sites abrem em uma nova aba (MP-8). Mostra um aviso quando uma página ainda não tem tradução ou pode estar desatualizada.

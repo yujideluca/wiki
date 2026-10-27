@@ -1,12 +1,36 @@
 ---
 id: codex-pbar
 lang: pt-BR
-source_hash: c947ad3ab3b2
+source_hash: b1d9d2fef442
 title: Progresso de tarefas no terminal do Codex
 ---
 
 ## What it is
 Uma linha fixa no rodapé do terminal do Codex mostra o progresso da tarefa e o tempo restante estimado. O código Python fica em `~/dev/codex-pbar`. Comece pelo `README.md` do repositório. Esta exibição é separada da barra do terminal do Claude [[pbar]].
+
+## Flow
+trigger t1: Giovanni inicia o codex num terminal | [[global-codex-agents]]
+step s1: O lançador do codex envolve a sessão em tmux
+step s2: Um servidor codex-status dedicado reserva a última linha do terminal | [[codex-status-line]]
+step s3: Cada terminal recebe um identificador próprio, ligando rodapé e estado da tarefa
+trigger t2: O Codex inicia uma tarefa com vários passos
+step s4: O agente roda codex-task-progress set com passos feitos, total, segundos restantes e rótulo
+decide d1: Há um plano de tarefa ativo?
+decide d2: A estimativa de tempo acabou?
+product p1: Rodapé mostra porcentagem, tarefas feitas e tempo restante
+product p2: Rodapé mostra over by e o tempo excedido
+product p3: Rodapé diz No active task
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> d1
+t2 -> s4
+s4 -> d1
+d1 -sim-> d2
+d1 -não-> p3
+d2 -não-> p1
+d2 -sim-> p2
 
 ## What it does
 A linha permanece visível enquanto o Codex trabalha ou espera. Usa o estilo compacto do Claude: rótulo Progress verde sobre o fundo normal do terminal, separadores por ponto central, porcentagem, tarefas concluídas e tempo restante estimado. Não desenha uma barra de blocos. Duas etapas concluídas de cinco aparecem como `Progress: [ 40%] 2/5 tasks`. O tempo passar não aumenta a porcentagem. Quando a estimativa vence, aparece `over by` e o tempo excedido. Sem um plano de tarefa, a linha mostra `No active task`. Uma conclusão explícita continua visível até começar a próxima tarefa.

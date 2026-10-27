@@ -84,8 +84,12 @@ defmodule Wiki.ContentCase do
   end
 
   @doc "A minimal valid wiki: project `proj`, program `a` feeding program `b`."
+  @flow "trigger t: Someone asks | [[a]]\nstep s: The thing works | [[b]]\nproduct p: A result\n\nt -> s\ns -> p"
+
+  def flow, do: @flow
+
   def valid_wiki(content) do
-    write_page(content, "proj", base_header("proj", kind: "project", project: "none"), %{"what" => "Has [[a]] and [[b]]."})
+    write_page(content, "proj", base_header("proj", kind: "project", project: "none"), %{"what" => "Has [[a]] and [[b]].", "flow" => @flow})
     write_page(content, "a", base_header("a", feeds: ["b"]))
     write_page(content, "b", base_header("b", fed_by: ["a"]))
   end

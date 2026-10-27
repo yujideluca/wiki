@@ -15,6 +15,30 @@ reviewed: 2026-10-25T20:41Z
 ## What it is
 The skill "analise-artigo-cientifico" is critical appraisal of scientific articles and of evidence-based clinical questions for Giovanni, a physician. It is written in Portuguese. Its description says: use it whenever Giovanni sends an article, PDF, DOI (the permanent identifier of a paper), PMID (the PubMed number of a paper) or study link, asks "analyse this study", asks whether a treatment, therapy or test "works", or asks for the level of evidence, GRADE (Grading of Recommendations Assessment, Development and Evaluation, a method to rate how certain the evidence is, [GRADE](https://www.gradeworkinggroup.org/)), a comparison of guidelines or a study summary, even without the words "critical analysis".
 
+## Flow
+trigger t1: Giovanni sends an article, PDF, DOI, PMID or link, or asks whether a treatment works | [[giovanni]]
+step s1: Calibrates the depth: his flags win, otherwise the size of the question
+decide d1: A quick question or a full article?
+step s2: Short mode: verdict, small table, provisional GRADE, regional divergence, practical conduct
+step s3: Reads the full text and verifies the source, including retractions
+step s4: Never fills in missing data; follows the structure of a single-article analysis
+step s5: Applies GRADE to the body of evidence, per outcome
+step s6: Searches and compares guidelines: Brazil, Germany and Europe, USA
+step s7: Keeps the source and the reasoning apart
+product p1: A short verdict with its sources
+product p2: A critical analysis: level of evidence, GRADE certainty, guideline comparison
+
+t1 -> s1
+s1 -> d1
+d1 -quick-> s2
+d1 -full-> s3
+s2 -> p1
+s3 -> s4
+s4 -> s5
+s5 -> s6
+s6 -> s7
+s7 -> p2
+
 ## What it does
 It produces a critical reading that Giovanni can use in practice and train as reasoning, without inventing data: level of evidence, certainty by GRADE, comparison of guidelines (Brazil, Germany and Europe, USA), study summary. It is for postgraduate level, didactic, with mechanisms and effect sizes. Doses, dilutions and calculators are handled by [[skill-consulta-clinica]]; this skill handles articles, "does this work?" and the level of evidence.
 

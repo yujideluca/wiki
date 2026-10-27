@@ -16,6 +16,7 @@
             "elm/svg": "1.0.1",
             "elm/time": "1.0.0",
             "elm/url": "1.0.0",
+            "folkertdev/one-true-path-experiment": "6.0.1",
             "gampleman/elm-visualization": "2.4.3"
         },
         "indirect": {
@@ -28,7 +29,6 @@
             "elm-community/list-extra": "8.7.0",
             "elmcraft/core-extra": "2.3.0",
             "folkertdev/elm-deque": "3.0.1",
-            "folkertdev/one-true-path-experiment": "6.0.1",
             "folkertdev/svg-path-lowlevel": "4.0.1",
             "gampleman/elm-rosetree": "1.1.0",
             "ianmackenzie/elm-1d-parameter": "1.0.1",

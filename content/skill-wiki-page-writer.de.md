@@ -1,12 +1,39 @@
 ---
 id: skill-wiki-page-writer
 lang: de
-source_hash: 9658a8cb6426
+source_hash: 82b9f13ad934
 title: Skill: wiki-page-writer
 ---
 
 ## What it is
 Der Skill „wiki-page-writer“ ist die Methode, nach der [[claude-code]] die Seiten dieses Wikis schreibt oder aktualisiert. Ein Skill ist ein Paket aus Anweisungen, das Claude lädt, wenn eine Anfrage zu seiner Beschreibung passt, damit eine Art von Aufgabe jedes Mal gleich sorgfältig erledigt wird (siehe [[skills]] und das [[glossary]]). Dieser hier deckt genau eine Aufgabe ab: das, was in Giovannis Systemen existiert, in wahre Seiten zu verwandeln, die ein Fremder versteht, auf Englisch, Deutsch und brasilianischem Portugiesisch.
+
+## Flow
+trigger t1: Arbeit am Wiki-Inhalt: Seite schreiben, aktualisieren, übersetzen oder auslaufen lassen | [[claude-code]]
+step s1: Schützt den Baum: prüft zuerst den Git-Stand, auch wenn er sauber sein sollte
+step s2: Lernt die aktuellen Regeln | [[wiki-content]]
+step s3: Findet die Arbeit, prüft dann die Fakten an den Quellen vor dem Schreiben
+step s4: Schreibt für Fremde und gibt der Seite ihre Form, mit Flussdiagramm
+step s5: Prüft den Datenschutz
+step s6: Übersetzt ins Deutsche und Portugiesische
+step s7: Führt die Prüfung aus | [[wiki-check]]
+decide d1: Besteht die Prüfung?
+step s8: Behebt die Probleme und aktualisiert die Hashes
+step s9: Veröffentlicht | [[wiki-cli]]
+product p1: Seiten in drei Sprachen im Live-Wiki | [[wiki]]
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> s4
+s4 -> s5
+s5 -> s6
+s6 -> s7
+s7 -> d1
+d1 -ja-> s9
+d1 -nein-> s8
+s8 -> s9
+s9 -> p1
 
 ## What it does
 Er wird nach jeder Aufgabe benutzt, die etwas an den Systemen verändert hat, wenn der Stop-Hook (ein kleines Programm, das läuft, wenn Claude einen Durchgang beendet, siehe [[wiki-hook-stop]]) „Wiki update needed“ meldet, oder wenn Giovanni eine Wiki-Seite verlangt. Die Beschreibung nennt auch die Übersetzungsarbeit (die deutschen und portugiesischen Fassungen, Korrekturen von `source_hash`) als Teil der Aufgabe und sagt, wofür er nicht gedacht ist: allgemeine Enzyklopädie-Artikel, Code-Kommentare, `DESIGN.md`, Entscheidungsprotokolle, Memory-Einträge sowie das Debuggen oder Erklären des Wiki-Werkzeugs selbst. Seine Rolle ist „Prozess“: Er besitzt den Inhalt der Seiten und der drei Sprachfassungen; er richtet sich nach den Regeln des Wikis in [[wiki-content]] und nach dem Prüfer [[wiki-check]], der sie durchsetzt; und er beachtet die Regel zur Antwortsprache und die Regel zur einfachen Sprache. Der Skill erzeugt Seiten in `~/dev/wiki/content`, veröffentlicht mit `wiki publish`.

@@ -1,12 +1,32 @@
 ---
 id: claude-app
 lang: pt-BR
-source_hash: aff0088ffa10
+source_hash: 4df448f50784
 title: App Claude (claude.ai)
 ---
 
 ## What it is
 O app Claude é o Claude como o Giovanni o usa no claude.ai, no celular e no navegador, incluindo "projetos" (espaços de conversa salvos, com instruções próprias). Ele difere do [[claude-code]] em um ponto importante: não alcança o notebook, então não pode executar programas nem ler arquivos de projeto lá.
+
+## Flow
+trigger t1: Giovanni abre um chat no claude.ai, no celular ou no navegador | [[giovanni]]
+step s1: O texto colado nas configurações manda o chat ler o resumo da memória | [[claude-ai-settings-pointer]]
+step s2: Lê views/BRIEF.md do workflow-memory pelo conector do GitHub | [[workflow-memory]]
+step s3: Responde: conversa, escrita, estudo, dúvidas clínicas, candidaturas | [[claude-ai-skills]]
+decide d1: O Giovanni corrigiu ou declarou uma preferência duradoura?
+step s4: Cria um novo arquivo de evento pelo conector | [[mem-github-connector]]
+product p1: Respostas, textos e ajuda de estudo para o Giovanni
+product p2: Uma nova entrada no log da memória | [[events-log]]
+product p3: Nada é guardado; o próximo chat começa pelo resumo
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> p1
+s3 -> d1
+d1 -sim-> s4
+d1 -não-> p3
+s4 -> p2
 
 ## What it does
 É usado para conversa, escrita e estudo: prática de alemão ([[skill-alemao-goethe-fsp]]), perguntas clínicas ([[skill-consulta-clinica]]) e candidaturas à Alemanha ([[skill-candidatura-alemanha]]).

@@ -1,12 +1,30 @@
 ---
 id: skill-minimize-site-approvals
 lang: de
-source_hash: 01dc574f6b52
+source_hash: 9d9759257243
 title: Skill: minimize-site-approvals
 ---
 
 ## What it is
 Die Skill „minimize-site-approvals“ ist ein Planungsschritt vor dem Surfen, damit Giovanni so selten wie möglich auf „Genehmigen“ klicken muss. Ihre Beschreibung sagt: vor jeder Browseraufgabe verwenden, um Freigabeklicks für Websites zu verringern: die Domains vorab planen, einmal seitenweiten Zugriff anfordern und Werkzeuge bevorzugen, die keine Freigabe brauchen. Die Fassung für Claude Code wird nur dort bearbeitet; die Claude-App behält ihre eigene Fassung ([[claude-ai-skills]]).
+
+## Flow
+trigger t1: Vor jeder Browser-Aufgabe
+step s1: Bevorzugt den günstigsten Weg: Werkzeuge ohne Freigabe
+decide d1: Gibt es ein Werkzeug ohne Freigabe?
+step s2: Listet jede Domain auf, die die Aufgabe braucht
+step s3: Nennt Giovanni die ganze Liste in einer Zeile | [[giovanni]]
+step s4: Fragt einmal nach seitenweitem Zugriff
+product p1: Die Aufgabe erledigt, ohne Freigabe-Klicks
+product p2: Eine Freigaberunde statt vieler
+
+t1 -> s1
+s1 -> d1
+d1 -ja-> p1
+d1 -nein-> s2
+s2 -> s3
+s3 -> s4
+s4 -> p2
 
 ## What it does
 Sie plant die Domains vorab, bittet einmal um seitenweiten Zugriff und bevorzugt Werkzeuge ohne Freigabe. Sie umgeht, deaktiviert oder unterläuft nie Freigaben oder die Sicherheitsprüfung der Seite; sie verringert nur, wie viele Abfragen ausgelöst werden. Sie läuft zusammen mit [[skill-browser-automacao-segura]] und [[skill-click-protocol]].

@@ -2,11 +2,33 @@
 id: skill-morning
 title: Skill: morning no Codex
 lang: pt-BR
-source_hash: 9c51062f3e63
+source_hash: ade53a1eef25
 ---
 
 ## What it is
 Uma skill é um conjunto salvo de instruções para uma tarefa recorrente. O Codex lê a descrição para decidir quando carregar as instruções completas. Esta skill trata de `morning`; os gatilhos e limites exatos estão na fonte completa abaixo.
+
+## Flow
+trigger t1: O Giovanni pede para rodar, ver ou configurar o resumo da manhã, ou digita /morning | [[giovanni]]
+decide d1: Rodar agora ou configurar para dias úteis?
+step s1: Confere as conexões e separa as ferramentas em papéis: agenda, e-mail, chat, outros
+step s2: Reúne o que cada papel tem para hoje
+step s3: Ordena o que é importante
+step s4: Escreve a página: uma âncora visual, o importante, seções, um botão
+step s5: Monta uma página estilizada e confere a renderização uma vez
+step s6: Configura uma tarefa recorrente de dias úteis que repete esses passos
+product p1: Uma página estilizada do resumo da manhã
+product p2: Uma agenda de dias úteis que faz o resumo sozinha
+
+t1 -> d1
+d1 -agora-> s1
+d1 -dias úteis-> s6
+s1 -> s2
+s2 -> s3
+s3 -> s4
+s4 -> s5
+s5 -> p1
+s6 -> p2
 
 ## What it does
 Produz o resultado descrito na fonte. Capacidades necessárias: `calendar-email-chat-as-available, local-output, browser-for-render-check`. Capacidades ausentes são informadas; a skill não fornece novas ferramentas.

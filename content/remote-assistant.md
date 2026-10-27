@@ -14,6 +14,28 @@ reviewed: 2026-10-26T18:16Z
 ## What it is
 The remote assistant is a Claude Code session that runs all the time on the laptop, and that [[giovanni]] can reach from the Claude app on the phone through a feature called Remote Control. In the app it appears as `yuji-nitro-assistant`. Think of it as a second door into the same laptop: the same Claude, the same repositories, but reachable from anywhere.
 
+## Flow
+trigger t1: The laptop starts, or the assistant session ends | [[claude-assistant]]
+step s1: The service restarts a tmux session running claude remote-control in ~/assistant
+step s2: The session reads its own CLAUDE.md and the memory brief | [[session-brief]], [[global-claude-md]]
+trigger t2: Giovanni sends a message from the Claude app on the phone | [[giovanni]]
+step s3: Remote Control carries the message to the session yuji-nitro-assistant
+step s4: Does the short task on the laptop, with the same rules as Claude Code | [[claude-code]]
+step s5: Replies briefly, so it reads well on a phone
+product p1: A short reply on Giovanni's phone
+product p2: Changes in the project repositories
+product p3: Memory entries tagged with the instance name assistant | [[events-log]]
+
+t1 -> s1
+s1 -> s2
+s2 -> s4
+t2 -> s3
+s3 -> s4
+s4 -> s5
+s4 -> p2
+s4 -> p3
+s5 -> p1
+
 ## What it does
 It does short tasks on the laptop while Giovanni is away from it. It follows the same rules as [[claude-code]] and writes to the shared memory under the instance name `assistant`, so the memory can tell who wrote what.
 

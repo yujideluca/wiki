@@ -1,12 +1,35 @@
 ---
 id: skill-bias-risk-triage
 lang: de
-source_hash: a0f472943f46
+source_hash: ebc181485377
 title: Skill: bias-risk-triage
 ---
 
 ## What it is
 Die Skill „bias-risk-triage“ ist eine stille Prüfung, die Claude vor jeder Antwort auf eine kurze Sachfrage ausführt. Ihre Beschreibung sagt: vor der Antwort auf jede kurze Sachfrage eine kompilierte Prüfung (eine Schranke, eine Nachschlagetabelle und eine Entscheidungstabelle) auf Verzerrung, Mythos, Verschwörung, Veraltetheit (überholte Informationen) oder hohen Einsatz ausführen und die Prüftiefe T0–T3 festlegen. Sie ist Version 3.3, „kompiliert“, und wurde an den Benchmarks TruthfulQA und WebQuestions validiert.
+
+## Flow
+trigger t1: Jede kurze Sachfrage | [[giovanni]]
+step s1: Normalisiert sie: eine falsche Prämisse wird zuerst korrigiert und setzt mindestens Stufe T1
+decide d1: Besteht sie die Schranke: ein Bezug, stabile Tatsache, kein wertendes Wort, kein Risiko?
+step s2: Schlägt den Schlüsselbegriff in der Tabelle nach
+decide d2: Gibt es einen Treffer?
+step s3: Der Treffer gibt die Stufe T1 bis T3 und die Suche endet
+step s4: Geht die Entscheidungstabelle nach absteigendem Schweregrad durch; der erste Treffer setzt die Höchststufe
+step s5: Wendet die Maßnahmen dieser Stufe an; ein Fach-Skill bestimmt weiter das Format | [[skill-consulta-clinica]], [[skill-analise-artigo-cientifico]]
+product p1: T0: eine einzeilige Antwort
+product p2: Eine Antwort, so tief geprüft wie ihre Stufe verlangt, bis zu mehreren Quellen
+
+t1 -> s1
+s1 -> d1
+d1 -ja-> p1
+d1 -nein-> s2
+s2 -> d2
+d2 -ja-> s3
+d2 -nein-> s4
+s3 -> s5
+s4 -> s5
+s5 -> p2
 
 ## What it does
 Ihre Ausgabe ist eine Stufe von T0 (Antwort in einer Zeile) bis T3 (Mehrquellenbehandlung eines umstrittenen Themas). Sie legt nur die Mindesttiefe der Prüfung fest, nie das Format: Greift zusätzlich eine Domänen-Skill wie [[skill-consulta-clinica]] oder [[skill-analise-artigo-cientifico]], gelten deren Struktur und Format, und die Quellenarbeit wird mindestens so streng wie die Stufe hier.

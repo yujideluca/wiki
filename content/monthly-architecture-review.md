@@ -14,6 +14,33 @@ reviewed: 2026-10-24T22:03Z
 ## What it is
 Once a month, one working session looks at all of Giovanni's projects together, in the role that a staff engineer (a senior engineer who watches the overall coherence) would have in a company. The idea comes from decision ADR-0003 of [[workflow-memory]] (an ADR is an architecture decision record, a short note that records one decision and its reasons). It is kept as an open item in the memory, so every chat shows it until it is done.
 
+## Flow
+trigger t1: The open item for the monthly review comes due | [[maintenance-policy]]
+step s1: The review skill runs pipeline-check and reads report.json | [[skill-revisao-manutencao]], [[pipeline-check]]
+step s2: Checks the gate, the automatic runs, delivery metrics and fitness functions | [[fitness-check]]
+step s3: Judges: diagrams and ADRs match the code, tool updates tried on a branch
+decide d1: Is a P1 debt older than a month?
+step s4: Schedules it now
+step s5: Looks across projects: same problem solved twice? | [[project-template]]
+step s6: Checks that memory entries are still true, marks outdated ones stale | [[workflow-memory]]
+step s7: Reports what shaped the review | [[mem-use]]
+product p1: A Preventive decision-log row per project
+product p2: A debt list that is true and prioritised
+product p3: The better solution moved into the template | [[project-template]]
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> d1
+d1 -yes-> s4
+d1 -no-> s5
+s4 -> s5
+s4 -> p2
+s5 -> p3
+s5 -> s6
+s6 -> s7
+s7 -> p1
+
 ## What it does
 It walks through the checklist of [[maintenance-policy]] for each active project in `~/dev` and records the outcome. Since 2026-10-24 it is run by the skill [[skill-revisao-manutencao]], based on the report of [[pipeline-check]] ([[maintenance-pipeline]]).
 

@@ -15,6 +15,26 @@ reviewed: 2026-10-25T20:41Z
 ## What it is
 The skill "adb-android-control" is the command reference for working with Giovanni's phone (a Motorola edge 50 fusion) over adb during app development, such as QuizApp. adb is the Android Debug Bridge ([documentation](https://developer.android.com/tools/adb)): a tool that lets a computer control a phone over a cable. Its description says: use it for Android work over adb during app development: install an APK (Android Package, the installable app file), launch the app, tap, swipe and type to exercise a flow, take a screenshot, read logcat (Android's system log, [documentation](https://developer.android.com/tools/logcat)) for crashes, dumpsys (a status dump of system services) and permissions. It is the command reference for the debug pass after coding. It is not for general phone questions, USB or Kubuntu problems ([[skill-reparo-kubuntu]]), or anything without adb. It is adapted from the open-source skill hah23255/adb-android-control 2.0.1 (MIT licence): the command reference and workflows only; the Termux scripts, the network port scanner, the radio scanner and the Python package were left out, and a network scan must never be run from this skill.
 
+## Flow
+trigger t1: Android work over adb on Giovanni's phone, for example testing QuizApp | [[quizapp]]
+step s1: Connects: lists devices, wireless debugging, restarts adb if stuck
+step s2: Installs the app file; clears data or force-stops it when needed
+step s3: Exercises the flow with taps, swipes, typed text and key events
+step s4: Takes screenshots or screen recordings straight to the laptop | [[phone]]
+step s5: Reads logcat for crashes, plus dumpsys and permissions | [[study-debug-log]]
+decide d1: Did the app crash or misbehave?
+product p1: Evidence from the phone: a clean flow and its screenshots
+product p2: Crash lines handed to systematic debugging | [[skill-systematic-debugging]]
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> s4
+s4 -> s5
+s5 -> d1
+d1 -no-> p1
+d1 -yes-> p2
+
 ## What it does
 It lets Claude exercise an app on the phone and read what happened: the first-line debug pass after coding [[quizapp]]. Its role is "domain"; it defers to the project's CLAUDE.md (for QuizApp, `source ~/dev/env.sh` puts adb on the path and describes build and install steps), to [[skill-verification-before-completion]] (what counts as proof) and to [[skill-reparo-kubuntu]] (USB and host problems).
 

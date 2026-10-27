@@ -8,6 +8,7 @@ step-through diagram.
 import Data exposing (Article, Graph)
 import Dict
 import Filter
+import FlowView
 import Html exposing (Html, a, aside, button, code, div, h1, h2, li, p, section, span, table, td, text, th, tr, ul)
 import Html.Attributes as A
 import Html.Events as E
@@ -30,7 +31,10 @@ view lang graph step phone openSecs art =
             Data.nodeById graph id |> Maybe.map (Data.title lang) |> Maybe.withDefault id
 
         body sec =
-            if sec.key == "steps" && art.kind == "skill" then
+            if sec.key == "flow" then
+                [ FlowView.view lang graph sec.markdown ]
+
+            else if sec.key == "steps" && art.kind == "skill" then
                 [ stepper lang graph step (WikiText.steps sec.markdown) ]
 
             else

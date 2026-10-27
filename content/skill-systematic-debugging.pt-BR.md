@@ -1,12 +1,36 @@
 ---
 id: skill-systematic-debugging
 lang: pt-BR
-source_hash: b9f72bf9ed65
+source_hash: 418ca299c311
 title: Skill: systematic-debugging
 ---
 
 ## What it is
 A skill "systematic-debugging" é a disciplina que o Claude segue em qualquer bug, teste que falha, travamento ou comportamento inesperado (em código, scripts, no pipeline de sincronização ou em um app no celular), antes de propor uma correção: achar primeiro a causa raiz, mudar uma coisa de cada vez e parar depois de três correções que falharam. A descrição diz que não serve para consertar o desktop Kubuntu ([[skill-reparo-kubuntu]]). Foi adaptada das skills de código aberto "superpowers" (versão 7.0.0, licença MIT), sem o hook de inicialização sempre ativo delas. Seu papel é "processo"; remete à [[skill-reparo-kubuntu]] para problemas de sistema, ao [[workflow-memory]] para registrar uma correção duradoura e ao CLAUDE.md do projeto.
+
+## Flow
+trigger t1: Um bug, falha de teste, travamento ou comportamento inesperado
+step s1: Fase 1: acha a causa raiz antes de propor qualquer correção
+step s2: Fase 2: acha o padrão, funcionando versus quebrado
+step s3: Fase 3: formula uma hipótese e a testa
+step s4: Fase 4: corrige com uma mudança por vez
+decide d1: A correção funcionou?
+step s5: Entrega a correção à verificação antes da conclusão | [[skill-verification-before-completion]]
+decide d2: É a terceira correção que falha?
+product p1: Uma correção com a causa raiz explicada
+product p2: Parar e questionar o design junto com o Giovanni | [[giovanni]]
+product p3: De volta à fase 1 com a evidência nova
+
+t1 -> s1
+s1 -> s2
+s2 -> s3
+s3 -> s4
+s4 -> d1
+d1 -sim-> s5
+d1 -não-> d2
+s5 -> p1
+d2 -sim-> p2
+d2 -não-> p3
 
 ## What it does
 Proíbe adivinhar. Seu princípio central: sempre achar a causa raiz antes de tentar correções; correções de sintoma são fracasso. Sob pressão de tempo, quando uma correção "parece óbvia" ou depois que uma primeira falhou, o processo é o que mais importa.
