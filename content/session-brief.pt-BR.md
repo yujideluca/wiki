@@ -1,7 +1,7 @@
 ---
 id: session-brief
 lang: pt-BR
-source_hash: eb21f1167079
+source_hash: 494e3acc6e30
 title: Resumo de sessão (memória no início da conversa)
 ---
 
@@ -12,7 +12,7 @@ O resumo de sessão (session brief) é o bloco de texto que uma conversa do [[cl
 Define os padrões da sessão. Ele nunca autoriza nada sozinho: a ordem de precedência é a instrução atual primeiro, depois o arquivo de regras do repositório, depois a memória do projeto, depois o perfil geral. Em outras palavras, o que o Giovanni diz agora sempre vale mais do que o que a memória diz.
 
 ## How it does it
-O [[hook-session-start]] o imprime, usando a classificação do [[memory-fold]] e as regras de pendências do [[mem-pendency]], cada um dentro de um orçamento de tamanho para o resumo ficar curto. Quando o download da memória mais recente falhou, o resumo diz "memory may be stale".
+O [[hook-session-start]] o imprime, usando a classificação do [[memory-fold]] e as regras de pendências do [[mem-pendency]], cada um dentro de um orçamento de tamanho para o resumo ficar curto. Quando o download da memória mais recente falhou, o resumo diz "memory may be stale". Depois de `/clear` ou de uma compactação, o hook imprime uma versão mais curta: cada regra é cortada nos primeiros 110 caracteres e o texto completo se encontra com `mem search`. Regras que dizem respeito só ao Codex têm o escopo `instance:codex` e não aparecem no brief do Claude Code.
 
 ## Where it sits in the pipeline
 É a primeira entrada de toda sessão do Claude Code ([[chat-start]]).

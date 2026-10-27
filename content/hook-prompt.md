@@ -9,7 +9,7 @@ location: workflow-memory:mem/hooks.py
 fed_by: [claude-code-settings]
 feeds: [mem-harvester]
 sources: [workflow-memory:mem/hooks.py]
-reviewed: 2026-10-22T16:33Z
+reviewed: 2026-10-27T00:22Z
 ---
 
 ## What it is
@@ -19,7 +19,7 @@ A hook is a small program that [[claude-code]] runs automatically at a certain e
 It passes the text of the message to the [[mem-harvester]], which looks for a preference that Giovanni has stated and records it, so that a rule said once is not forgotten. The hook itself prints nothing.
 
 ## How it does it
-It is designed never to get in the way. Any error goes to the hook log, and the program always ends with exit code 0 (the number a program returns to say "all fine"), so a failure here can never block a message from reaching Claude.
+It is designed never to get in the way. Any error goes to the hook log, and the program always ends with exit code 0 (the number a program returns to say "all fine"), so a failure here can never block a message from reaching Claude. Messages longer than 1500 characters are not read for preferences, because they are pasted documents or prompts written by a program.
 
 ## Where it sits in the pipeline
 Between Giovanni's message and the model: the message is read on the way through.

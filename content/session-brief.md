@@ -8,7 +8,7 @@ status: active
 fed_by: [hook-session-start, mem-pendency, memory-fold]
 feeds: [claude-code, remote-assistant]
 sources: [workflow-memory:mem/hooks.py, workflow-memory:mem/project.py]
-reviewed: 2026-10-22T16:33Z
+reviewed: 2026-10-27T00:22Z
 ---
 
 ## What it is
@@ -18,7 +18,7 @@ The session brief is the block of text a [[claude-code]] chat sees first. It sta
 It sets the defaults for the session. It never authorizes anything by itself: the order of precedence is the current instruction first, then the repository's rules file, then project memory, then the general profile. In other words, what Giovanni says now always beats what memory says.
 
 ## How it does it
-The [[hook-session-start]] prints it, using the ranking from [[memory-fold]] and the open-item rules from [[mem-pendency]], each within a size budget so the brief stays short. When the download of the newest memory failed, the brief says "memory may be stale".
+The [[hook-session-start]] prints it, using the ranking from [[memory-fold]] and the open-item rules from [[mem-pendency]], each within a size budget so the brief stays short. When the download of the newest memory failed, the brief says "memory may be stale". After `/clear` or a compaction the hook prints a shorter version: each rule is cut to its first 110 characters and the full text is found with `mem search`. Rules that concern only Codex are scoped `instance:codex` and do not appear in Claude Code's brief.
 
 ## Where it sits in the pipeline
 It is the first input of every Claude Code session ([[chat-start]]).
