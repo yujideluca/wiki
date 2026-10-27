@@ -8,6 +8,7 @@ import Browser.Navigation as Nav
 import Data exposing (Graph)
 import Dict
 import Filter
+import FlowView
 import Html exposing (Html, a, button, div, header, input, label, li, option, select, span, text, ul)
 import Html.Attributes as A
 import Html.Events as E
@@ -20,6 +21,7 @@ import MapCamera
 import MapSize
 import MapView
 import Motion
+import Process
 import Route exposing (Route(..))
 import Search
 import Set exposing (Set)
@@ -94,6 +96,21 @@ init flags url key =
     )
 
 
+{-| A diagram wider than its column is scrolled to its middle, where the top box sits, instead of to its left edge.
+The charts are drawn a moment after the article arrives or a section opens, hence the short wait (PJ-3). -}
+centreCharts : Cmd Msg
+centreCharts =
+    let
+        centre domId =
+            Browser.Dom.getViewportOf domId
+                |> Task.andThen (\vp -> Browser.Dom.setViewportOf domId ((vp.scene.width - vp.viewport.width) / 2) 0)
+                |> Task.onError (\_ -> Task.succeed ())
+    in
+    Process.sleep 80
+        |> Task.andThen (\_ -> Task.sequence (List.map centre FlowView.chartIds.all))
+        |> Task.perform (always NoOp)
+
+
 loadArticle : Model -> Cmd Msg
 loadArticle model =
     case model.route of
@@ -135,7 +152,7 @@ update msg model =
             ( { model | graph = Failed }, Cmd.none )
 
         GotArticle (Ok art) ->
-            ( { model | article = Loaded art }, Cmd.none )
+            ( { model | article = Loaded art }, centreCharts )
 
         GotArticle (Err _) ->
             ( { model | article = Failed }, Cmd.none )
@@ -262,7 +279,11 @@ update msg model =
                     else
                         Set.insert key model.openSecs
               }
-            , Cmd.none
+            , if Set.member key model.openSecs then
+                Cmd.none
+
+              else
+                centreCharts
             )
 
         QueryChanged q ->

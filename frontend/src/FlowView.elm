@@ -1,4 +1,4 @@
-module FlowView exposing (view, viewArchitecture)
+module FlowView exposing (chartIds, view, viewArchitecture)
 
 {-| The flowchart of a page (requirement FL-3): what starts the chain at the top, the steps and questions in between,
 the end products at the bottom. Boxes take the colour of the kind of the first page they link to, so a box says what
@@ -20,6 +20,15 @@ import Svg.Events as SE
 import Types exposing (Msg(..))
 
 
+{-| The ids of the scrolling boxes around the charts of one article, so that `Main` can centre them (PJ-3). -}
+chartIds : { flow : String, arch : Int -> String, all : List String }
+chartIds =
+    { flow = "flow-chart"
+    , arch = \i -> "arch-chart-" ++ String.fromInt i
+    , all = [ "flow-chart", "arch-chart-0", "arch-chart-1" ]
+    }
+
+
 view : Lang -> Graph -> String -> Html Msg
 view lang graph markdown =
     let
@@ -34,7 +43,7 @@ view lang graph markdown =
 
     else
         div [ A.class "flow" ]
-            [ chartSvg graph lang chart
+            [ chartSvg chartIds.flow graph lang chart
             , div [ A.class "flow-legend" ]
                 [ legendItem "fl-trigger" s.flowStart
                 , legendItem "fl-step" s.flowStep
@@ -60,7 +69,7 @@ viewArchitecture lang graph markdown =
             div [ A.class "arch-level" ]
                 [ h3 [] [ text heading ]
                 , p [ A.class "arch-caption" ] [ text (captions |> List.drop i |> List.head |> Maybe.withDefault "") ]
-                , chartSvg graph lang chart
+                , chartSvg (chartIds.arch i) graph lang chart
                 ]
     in
     div [ A.class "flow arch" ]
@@ -77,8 +86,8 @@ viewArchitecture lang graph markdown =
         )
 
 
-chartSvg : Graph -> Lang -> Flow.Chart -> Html Msg
-chartSvg graph lang chart =
+chartSvg : String -> Graph -> Lang -> Flow.Chart -> Html Msg
+chartSvg domId graph lang chart =
     let
         laid =
             FlowLayout.layout chart
@@ -93,7 +102,7 @@ chartSvg graph lang chart =
                 |> Maybe.map (.kind >> Data.kindColour graph)
                 |> Maybe.withDefault "#8a8f98"
     in
-    div [ A.class "flow-scroll" ]
+    div [ A.class "flow-scroll", A.id domId ]
         [ Svg.svg
             [ S.viewBox ("0 0 " ++ String.fromFloat laid.width ++ " " ++ String.fromFloat laid.height)
             , S.width (String.fromFloat laid.width)
