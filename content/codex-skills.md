@@ -9,7 +9,7 @@ location: codex-skills:README.md
 fed_by: []
 feeds: [codex]
 sources: [codex-skills:README.md, codex-skills:manifest.json, codex-skills:DESIGN.md]
-reviewed: 2026-10-25T21:08Z
+reviewed: 2026-10-27T01:34Z
 ---
 
 ## What it is
@@ -41,6 +41,32 @@ s5 -> s6
 t2 -> s6
 s6 -> p3
 
+## Architecture
+### Context
+person g: Giovanni — reviews each adaptation | [[giovanni]]
+system s: codex-skills — Codex's own adapted skills
+external c: Claude skills — the originals, read only | [[skills]]
+external x: Codex — finds and loads the skills | [[codex]]
+
+g -adapts by hand-> s
+c -is copied as snapshots into-> s
+s -installs skills for-> x
+
+### Containers
+person g: Giovanni | [[giovanni]]
+store sr: sources/ — exact snapshots of the Claude skills
+store mf: manifest.json — fingerprints, source paths, limits
+store sk: skills/ — the adapted skills Codex owns
+container ct: skillsctl — checks, reports drift, installs, rolls back | [[codex-skillsctl]]
+external lv: Skill links Codex can discover | [[codex]]
+
+g -adapts-> sk
+g -runs-> ct
+ct -compares with-> sr
+ct -records fingerprints in-> mf
+ct -validates-> sk
+ct -installs, with backups-> lv
+
 ## What it does
 Keeps 26 adaptations, complete source baselines and content fingerprints. A fingerprint is a calculated value that detects changed files. Reports source changes without overwriting adaptations. Vendor document skills remain under their existing owners.
 
@@ -52,6 +78,30 @@ Claude source folders feed manual review, then Codex skill folders feed the inst
 
 ## Who receives its output
 Codex reads the installed skills. The user receives task results and reports of missing capabilities.
+
+## Engineering practices
+How this project follows the golden path of [[project-template]].
+
+### Principles
+1. **Codex owns the adaptations**: the Claude originals are read-only inputs, never merged automatically and never read as live instructions.
+2. **Nothing is installed unchecked**: `skillsctl check` validates every skill and installation keeps backups that can be rolled back.
+3. **Requirement, then test, then code**: tests carry `REQ CS-N`, checked by the traceability step of the gate.
+4. **The gate decides**: `tools/quality_gate.sh` is the only definition of passing, and continuous integration runs it.
+
+### Decisions
+Three architecture decision records (ADRs, short notes that keep the reasons for a decision) in `docs/adr/`: 0002 Codex-owned adaptations with explicit capability discovery; 0003 a program measures and a skill judges. `DESIGN.md` holds the diagram and the decision log.
+
+### Requirements
+8 requirements (prefix CS) in `docs/REQUIREMENTS.md`. Each has a test tagged `REQ CS-N`, and the traceability check ([[check-traceability]]) fails when one has none.
+
+### Quality gate
+The gate runs `skillsctl check`; the unit tests; a mutation check (faults planted on purpose must be caught); requirement traceability; and the fitness functions.
+
+### Continuous integration
+Continuous integration (CI) means automatic checks on every push. The workflow `quality-gate.yml` runs the gate on GitHub for every push, through `pipeline-check` pinned in `pipeline-check.version`.
+
+### Maintenance
+Technical debt is tracked as GitHub issues labelled `debt` (P1 to P3) under the [[maintenance-policy]]. The [[monthly-architecture-review]] checks the project every month; the next is due 2026-11-22.
 
 ## Notes
 

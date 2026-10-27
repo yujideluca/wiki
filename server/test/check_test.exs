@@ -95,7 +95,7 @@ defmodule Wiki.Content.CheckTest do
     write_page(c, "b", base_header("b", fed_by: ["a"]), %{"how" => "Calls `fold`."})
     assert errors(c) == []
 
-    write_page(c, "proj", base_header("proj", kind: "project", project: "none"), %{"what" => "[[a]] [[b]] use `fold`.", "flow" => flow()})
+    write_page(c, "proj", base_header("proj", kind: "project", project: "none"), Map.merge(%{"what" => "[[a]] [[b]] use `fold`."}, project_sections()))
     assert Enum.any?(errors(c), &(&1 =~ "a.md: `fold` is mentioned by b, proj: give it its own page"))
 
     write_page(c, "fold", base_header("fold"), %{"what" => "Part of [[a]]."})

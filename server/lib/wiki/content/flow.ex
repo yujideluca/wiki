@@ -22,21 +22,25 @@ defmodule Wiki.Content.Flow do
   @max_label 120
   @max_links 2
 
-  @node ~r/^(trigger|step|decide|product)\s+([a-z][a-z0-9_]*)\s*:\s*(.+)$/
   @edge ~r/^([a-z][a-z0-9_]*)\s+-(?:([^>]*?)-)?>\s+([a-z][a-z0-9_]*)$/
   @link ~r/\[\[([^\]|]+)(?:\|[^\]]*)?\]\]/
 
   def kinds, do: @kinds
 
-  @doc "Parses the section text into `{nodes, edges, errors}` (nodes and edges in file order)."
-  def parse(text) do
+  @doc """
+  Parses the section text into `{nodes, edges, errors}` (nodes and edges in file order). `kinds` is the list of box
+  words the section allows: the flow's own, or the architecture diagram's (`Wiki.Content.Architecture`).
+  """
+  def parse(text, kinds \\ @kinds) do
+    node = Regex.compile!("^(#{Enum.join(kinds, "|")})\\s+([a-z][a-z0-9_]*)\\s*:\\s*(.+)$")
+
     text
     |> String.split("\n")
     |> Enum.map(&String.trim/1)
     |> Enum.reject(&(&1 == ""))
     |> Enum.reduce({[], [], []}, fn line, {nodes, edges, errs} ->
       cond do
-        m = Regex.run(@node, line) ->
+        m = Regex.run(node, line) ->
           [_, kind, id, rest] = m
           {label, links} = split_links(rest)
           {[%{id: id, kind: kind, label: label, links: links} | nodes], edges, errs}
@@ -104,11 +108,16 @@ defmodule Wiki.Content.Flow do
   end
 
   # Kahn's algorithm: whatever cannot be removed lies on or behind a loop.
-  defp cycle(edges, id_set) do
+  defp cycle(edges, id_set), do: loop_through(edges, id_set) |> loop_problem("flow")
+
+  @doc "The boxes that lie on or behind a loop of arrows (empty when the arrows form no loop)."
+  def loop_through(edges, id_set) do
     edges = Enum.filter(edges, &(&1.from in id_set and &1.to in id_set))
-    left = peel(MapSet.to_list(id_set), edges)
-    if left == [], do: [], else: ["flow has a loop through #{Enum.join(Enum.sort(left), ", ")}: write a repeat in the text, not as an arrow"]
+    peel(MapSet.to_list(id_set), edges)
   end
+
+  defp loop_problem([], _what), do: []
+  defp loop_problem(left, what), do: ["#{what} has a loop through #{Enum.join(Enum.sort(left), ", ")}: write a repeat in the text, not as an arrow"]
 
   defp peel(ids, edges) do
     free = for id <- ids, Enum.all?(edges, &(&1.to != id)), do: id

@@ -20,6 +20,7 @@ type alias Placed =
     , w : Float
     , h : Float
     , lines : List String
+    , head : Int -- how many of the first lines are the box's name (the rest describe it); 0 for a flowchart box
     }
 
 
@@ -95,8 +96,13 @@ wrap perLine text =
     List.reverse (last :: finished) |> List.filter (not << String.isEmpty)
 
 
-{-| Size and label lines of one box. A question is a diamond and its text only fits in the middle of it. -}
-sizeOf : Box -> ( Float, Float, List String )
+type alias Size =
+    { w : Float, h : Float, lines : List String, head : Int }
+
+
+{-| Size, label lines and name-line count of one box. A question is a diamond and its text only fits in the middle of it. A
+box of an architecture diagram is written `Name — what it does`: the name goes on its own lines above the description. -}
+sizeOf : Box -> Size
 sizeOf box =
     case box.role of
         Decide ->
@@ -104,12 +110,28 @@ sizeOf box =
                 lines =
                     wrap 17 box.label
             in
-            ( diamondWidth, max 104 (52 + 16 * toFloat (List.length lines)), lines )
+            { w = diamondWidth, h = max 104 (52 + 16 * toFloat (List.length lines)), lines = lines, head = 0 }
 
         _ ->
             let
-                lines =
-                    wrap (floor ((rectWidth - 2 * pad) / charWidth)) box.label
+                perLine =
+                    floor ((rectWidth - 2 * pad) / charWidth)
+
+                ( nameLines, lines ) =
+                    case ( Flow.isC4 box.role, String.split " — " box.label ) of
+                        ( True, name :: rest ) ->
+                            if List.isEmpty rest then
+                                ( 0, wrap perLine box.label )
+
+                            else
+                                let
+                                    named =
+                                        wrap perLine name
+                                in
+                                ( List.length named, named ++ wrap perLine (String.join " — " rest) )
+
+                        _ ->
+                            ( 0, wrap perLine box.label )
 
                 linkRow =
                     if List.isEmpty box.links then
@@ -117,8 +139,21 @@ sizeOf box =
 
                     else
                         20
+
+                extra =
+                    if box.role == Person then
+                        14
+
+                    else
+                        0
             in
-            ( rectWidth, max 52 (22 + 16 * toFloat (List.length lines) + linkRow), lines )
+            { w = rectWidth, h = max 52 (22 + extra + 16 * toFloat (List.length lines) + linkRow), lines = lines, head = nameLines }
+
+
+
+fallbackSize : Size
+fallbackSize =
+    { w = rectWidth, h = 52, lines = [], head = 0 }
 
 
 
@@ -185,10 +220,10 @@ layout chart =
                 |> List.map
                     (\b ->
                         let
-                            ( w, h, _ ) =
-                                Dict.get b.id sizes |> Maybe.withDefault ( rectWidth, 52, [] )
+                            size =
+                                Dict.get b.id sizes |> Maybe.withDefault fallbackSize
                         in
-                        ( rankOf b.id, { key = b.id, w = w, h = h } )
+                        ( rankOf b.id, { key = b.id, w = size.w, h = size.h } )
                     )
 
         rowCount =
@@ -230,7 +265,7 @@ layout chart =
             Dict.get key keyRank |> Maybe.andThen (\r -> List.drop r rowCentre |> List.head) |> Maybe.withDefault 0
 
         halfH key =
-            Dict.get key sizes |> Maybe.map (\( _, h, _ ) -> h / 2) |> Maybe.withDefault 0
+            Dict.get key sizes |> Maybe.map (\size -> size.h / 2) |> Maybe.withDefault 0
 
         xOf key =
             Dict.get key xs |> Maybe.withDefault 0
@@ -249,10 +284,10 @@ layout chart =
                 |> List.map
                     (\b ->
                         let
-                            ( w, h, lines ) =
-                                Dict.get b.id sizes |> Maybe.withDefault ( rectWidth, 52, [] )
+                            size =
+                                Dict.get b.id sizes |> Maybe.withDefault fallbackSize
                         in
-                        { box = b, x = xOf b.id + shift, y = centreY b.id, w = w, h = h, lines = lines }
+                        { box = b, x = xOf b.id + shift, y = centreY b.id, w = size.w, h = size.h, lines = size.lines, head = size.head }
                     )
 
         routes =

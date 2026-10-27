@@ -1,7 +1,7 @@
 ---
 id: codex-pbar
 lang: de
-source_hash: b1d9d2fef442
+source_hash: b51165c50416
 title: Codex-Aufgabenfortschritt im Terminal
 ---
 
@@ -32,6 +32,36 @@ d1 -nein-> p3
 d2 -nein-> p1
 d2 -ja-> p2
 
+## Architecture
+### Kontext
+person g: Giovanni — arbeitet mit Codex in einem Terminal | [[giovanni]]
+system p: codex-pbar — zeigt den Aufgabenfortschritt unter dem Terminal
+external a: Globale Codex-Anweisungen — sagen Codex, Meilensteine zu melden | [[global-codex-agents]]
+external x: Codex — der Assistent, der die Arbeit macht | [[codex]]
+external t: tmux-Terminal — hat die Zeile, in der die Fußzeile gezeichnet wird
+
+a -weist an-> x
+x -meldet Meilensteine an-> p
+p -zeichnet die Fußzeile in-> t
+g -liest die Fußzeile in-> t
+
+### Container
+person g: Giovanni | [[giovanni]]
+external x: Codex-Sitzungsdateien | [[codex]]
+container rd: Inkrementeller Leser — der einzige Code, der Sitzungsdateien öffnet
+container co: Reiner Sitzungszustand — behält keinen Prompt- und Werkzeugtext
+container ap: Desktop-Fenster — erhalten, nicht eingeschaltet
+container ft: Terminal-Fußzeile — erledigte/gesamte Aufgaben und Restzeit
+store ts: Privater Aufgabenzustand — von Meilenstein-Updates geschrieben
+store hs: Private Zeitverlaufsdaten — gehasht
+
+rd -liest-> x
+rd -aktualisiert-> co
+rd -ergänzt-> hs
+co -speist-> ap
+ft -liest-> ts
+g -sieht-> ft
+
 ## What it does
 Die Zeile bleibt sichtbar, während Codex arbeitet oder wartet. Sie übernimmt Claudes kompakten Stil: eine grüne Progress-Beschriftung auf normalem Terminalhintergrund, Mittelpunkte als Trenner, Prozentwert, erledigte Aufgaben und geschätzte Restzeit. Ein Blockbalken wird nicht gezeichnet. Zwei erledigte von fünf Schritten erscheinen als `Progress: [ 40%] 2/5 tasks`. Zeitablauf allein erhöht den Fortschritt nicht. Läuft die Schätzung ab, erscheint `over by` mit der überschrittenen Zeit. Ohne Aufgabenplan steht dort `No active task`. Ein ausdrücklich abgeschlossener Auftrag bleibt bis zur nächsten Aufgabe sichtbar.
 
@@ -47,6 +77,30 @@ Die Anzeige läuft im Laptop-Terminal. Das Quality Gate, die automatisierten Pr�
 
 ## Who receives its output
 Giovanni liest die Zeile. Der Agent kann `codex-task-progress show` prüfen. Die ältere Implementierung als Desktopfenster wird durch diese Terminalinstallation nicht aktiviert.
+
+## Engineering practices
+Wie dieses Projekt dem Goldenen Weg von [[project-template]] folgt.
+
+### Prinzipien
+1. **Anforderungen gehen Änderungen voraus**: Tests tragen `REQ PB-N`, und der Rückverfolgbarkeitsschritt des Gates schlägt fehl, wenn eine keinen hat.
+2. **Reine Module bleiben frei von GUI- und Netzcode**: Zustand und Leser werden mit gewöhnlichen Unit-Tests geprüft, Zweigabdeckung ist Pflicht.
+3. **Nichts Privates wird behalten**: keine Modell- oder Netzaufrufe, keine Lesezugriffe auf Anmeldedaten und keine rohen Werkzeugargumente oder -ausgaben im gespeicherten Status oder Verlauf.
+4. **Das Gate entscheidet**: `tools/quality_gate.sh` ist die einzige Definition von „bestanden“, und die kontinuierliche Integration führt es aus.
+
+### Entscheidungen
+Vier Architekturentscheidungsprotokolle (kurze Notizen, die die Gründe einer Entscheidung bewahren) in `docs/adr/`: 0002 ein Python-Desktop-Begleiter, der Sitzungsdateien liest; 0003 ein Programm misst und ein Skill urteilt; 0004 die dauerhafte Terminal-Fußzeile in einer eigenen tmux-Zeile, an ihre Sitzung gebunden. `DESIGN.md` enthält das Diagramm und das Entscheidungsprotokoll.
+
+### Anforderungen
+10 Anforderungen (Präfix PB) in `docs/REQUIREMENTS.md`. Jede hat einen Test mit dem Tag `REQ PB-N`, und die Rückverfolgbarkeitsprüfung ([[check-traceability]]) schlägt fehl, wenn eine keinen hat.
+
+### Quality Gate
+Das Gate führt die Unit-Tests mit mindestens 85 % Zweigabdeckung für Zustands- und Lesemodul aus; eine Mutationsprüfung (absichtlich eingebaute Fehler müssen auffallen); einen Fenster-Rauchtest ohne Bildschirm; die Rückverfolgbarkeit der Anforderungen; und die Fitnessfunktionen.
+
+### Kontinuierliche Integration
+Kontinuierliche Integration (CI) heißt automatische Prüfungen bei jedem Push. Der Workflow `quality-gate.yml` führt das Gate bei jedem Push auf GitHub aus, über `pipeline-check`, festgelegt in `pipeline-check.version`.
+
+### Wartung
+Technische Schulden werden als GitHub-Issues mit dem Label `debt` (P1 bis P3) nach der [[maintenance-policy]] geführt. Die [[monthly-architecture-review]] prüft das Projekt jeden Monat; die nächste ist am 22.11.2026 fällig.
 
 ## Notes
 Installation aus `~/dev/codex-pbar`: `PYTHONPATH=src .venv/bin/python -m codex_pbar.terminal install`. Mit `Ctrl-b d` trennen und mit `tmux -L codex-status attach` wieder verbinden. Die Restzeit ist eine Prognose des Agenten, keine gemessene Zusage. Token-, Kontext- und Kontingentfelder werden nicht ergänzt.

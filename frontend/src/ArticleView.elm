@@ -34,6 +34,9 @@ view lang graph step phone openSecs art =
             if sec.key == "flow" then
                 [ FlowView.view lang graph sec.markdown ]
 
+            else if sec.key == "architecture" then
+                [ FlowView.viewArchitecture lang graph sec.markdown ]
+
             else if sec.key == "steps" && art.kind == "skill" then
                 [ stepper lang graph step (WikiText.steps sec.markdown) ]
 

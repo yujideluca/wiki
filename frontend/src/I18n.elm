@@ -95,6 +95,13 @@ type alias Strings =
     , flowQuestion : String
     , flowEnd : String
     , flowHint : String
+    , archContext : String
+    , archContainers : String
+    , archPerson : String
+    , archSystem : String
+    , archContainer : String
+    , archStore : String
+    , archExternal : String
     }
 
 
@@ -143,6 +150,13 @@ strings lang =
             , flowQuestion = "A question"
             , flowEnd = "End product"
             , flowHint = "Click a page name to open it. A wide chart scrolls sideways."
+            , archContext = "Level 1 of the C4 model: the system as one box, with the people and outside systems around it."
+            , archContainers = "Level 2: the system opened into the parts that run or keep data."
+            , archPerson = "A person"
+            , archSystem = "This system"
+            , archContainer = "A part that runs"
+            , archStore = "A data store"
+            , archExternal = "Outside system"
             }
 
         De ->
@@ -187,6 +201,13 @@ strings lang =
             , flowQuestion = "Eine Frage"
             , flowEnd = "Endprodukt"
             , flowHint = "Auf einen Seitennamen klicken, um ihn zu öffnen. Ein breites Diagramm lässt sich seitlich scrollen."
+            , archContext = "Ebene 1 des C4-Modells: das System als ein Kasten, umgeben von Personen und fremden Systemen."
+            , archContainers = "Ebene 2: das System geöffnet in die Teile, die laufen oder Daten halten."
+            , archPerson = "Eine Person"
+            , archSystem = "Dieses System"
+            , archContainer = "Ein laufender Teil"
+            , archStore = "Ein Datenspeicher"
+            , archExternal = "Fremdes System"
             }
 
         PtBr ->
@@ -231,6 +252,13 @@ strings lang =
             , flowQuestion = "Uma pergunta"
             , flowEnd = "Produto final"
             , flowHint = "Clique no nome de uma página para abri-la. Um diagrama largo rola para os lados."
+            , archContext = "Nível 1 do modelo C4: o sistema como uma caixa só, com as pessoas e os sistemas de fora ao redor."
+            , archContainers = "Nível 2: o sistema aberto nas partes que executam ou guardam dados."
+            , archPerson = "Uma pessoa"
+            , archSystem = "Este sistema"
+            , archContainer = "Uma parte que executa"
+            , archStore = "Um armazém de dados"
+            , archExternal = "Sistema de fora"
             }
 
 
@@ -251,6 +279,12 @@ sectionHeading lang key =
 
         ( En, "receives" ) ->
             "Who receives its output"
+
+        ( En, "architecture" ) ->
+            "Architecture"
+
+        ( En, "practices" ) ->
+            "Engineering practices"
 
         ( En, "flow" ) ->
             "Flow chart"
@@ -279,6 +313,12 @@ sectionHeading lang key =
         ( De, "receives" ) ->
             "Wer seine Ausgabe erhält"
 
+        ( De, "architecture" ) ->
+            "Architektur"
+
+        ( De, "practices" ) ->
+            "Entwicklungspraktiken"
+
         ( De, "flow" ) ->
             "Flussdiagramm"
 
@@ -305,6 +345,12 @@ sectionHeading lang key =
 
         ( PtBr, "receives" ) ->
             "Quem recebe o que produz"
+
+        ( PtBr, "architecture" ) ->
+            "Arquitetura"
+
+        ( PtBr, "practices" ) ->
+            "Práticas de engenharia"
 
         ( PtBr, "flow" ) ->
             "Fluxograma"

@@ -1,4 +1,4 @@
-module Flow exposing (Arrow, Box, Chart, Role(..), parse)
+module Flow exposing (Arrow, Box, Chart, Role(..), isC4, parse, parseLevels)
 
 {-| The `## Flow` section of a page: a flowchart written as one line per box and one line per arrow (the same text
 `Wiki.Content.Flow` checks on the server, requirement FL-1):
@@ -13,6 +13,10 @@ module Flow exposing (Arrow, Box, Chart, Role(..), parse)
     d -yes-> p
 
 `parse` reads that text into boxes and arrows; `FlowLayout` puts them on the page and `FlowView` draws them.
+
+The `## Architecture` section of a project page uses the same lines with the box words `person`, `system`, `container`,
+`store` and `external` (the C4 model), in two parts under `### ` headings; `parseLevels` reads those
+(`Wiki.Content.Architecture` checks them on the server, requirement PJ-1).
 -}
 
 import Regex exposing (Regex)
@@ -23,6 +27,17 @@ type Role
     | Step
     | Decide
     | Product
+    | Person
+    | System
+    | Container
+    | Store
+    | External
+
+
+{-| The box words of the architecture diagrams. -}
+isC4 : Role -> Bool
+isC4 role =
+    List.member role [ Person, System, Container, Store, External ]
 
 
 type alias Box =
@@ -51,7 +66,7 @@ type alias Chart =
 
 nodeLine : Regex
 nodeLine =
-    Regex.fromString "^(trigger|step|decide|product)\\s+([a-z][a-z0-9_]*)\\s*:\\s*(.+)$" |> Maybe.withDefault Regex.never
+    Regex.fromString "^(trigger|step|decide|product|person|system|container|store|external)\\s+([a-z][a-z0-9_]*)\\s*:\\s*(.+)$" |> Maybe.withDefault Regex.never
 
 
 arrowLine : Regex
@@ -78,6 +93,36 @@ parse text =
             List.filterMap parseArrow lines
     in
     { boxes = boxes, arrows = arrows }
+
+
+{-| The `### ` parts of an architecture section, each with its heading, in file order. -}
+parseLevels : String -> List ( String, Chart )
+parseLevels text =
+    let
+        add line ( done, current ) =
+            if String.startsWith "### " line then
+                ( done ++ currentPart current, Just ( String.dropLeft 4 line |> String.trim, [] ) )
+
+            else
+                case current of
+                    Just ( heading, body ) ->
+                        ( done, Just ( heading, body ++ [ line ] ) )
+
+                    Nothing ->
+                        ( done, Nothing )
+
+        currentPart current =
+            case current of
+                Just ( heading, body ) ->
+                    [ ( heading, parse (String.join "\n" body) ) ]
+
+                Nothing ->
+                    []
+
+        ( finished, last ) =
+            String.lines text |> List.foldl add ( [], Nothing )
+    in
+    finished ++ currentPart last
 
 
 parseBox : String -> Maybe Box
@@ -125,6 +170,21 @@ roleOf kind =
 
         "product" ->
             Product
+
+        "person" ->
+            Person
+
+        "system" ->
+            System
+
+        "container" ->
+            Container
+
+        "store" ->
+            Store
+
+        "external" ->
+            External
 
         _ ->
             Step

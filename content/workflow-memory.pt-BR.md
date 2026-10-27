@@ -1,7 +1,7 @@
 ---
 id: workflow-memory
 lang: pt-BR
-source_hash: 1bbd85413101
+source_hash: ef53006f253a
 title: workflow-memory (memória compartilhada)
 ---
 
@@ -28,6 +28,38 @@ s4 -> s5
 t2 -> s5
 s5 -> p1
 
+## Architecture
+### Contexto
+person g: Giovanni — diz preferências e correções | [[giovanni]]
+external c: Claude Code — lê o resumo, escreve eventos | [[claude-code]]
+external x: Codex — o mesmo, com seu próprio escopo de memória | [[codex]]
+system w: workflow-memory — a memória compartilhada dos sistemas do Giovanni
+external h: GitHub — roda as verificações e guarda o histórico | [[github]]
+
+g -diz ao-> c
+g -diz ao-> x
+c -escreve eventos no e lê o resumo do-> w
+x -escreve eventos no e lê o resumo do-> w
+w -é conferido e reconstruído no-> h
+
+### Contêineres
+person g: Giovanni | [[giovanni]]
+external c: Claude Code | [[claude-code]]
+container hk: Hook de início de conversa — imprime o resumo | [[hook-session-start]]
+container m: Comando mem — adiciona eventos, dobra-os, busca | [[mem]]
+store ev: Registro de eventos — um arquivo por evento, só acrescenta | [[events-log]]
+store vw: Visões — resumos derivados, nunca editados à mão | [[memory-views]]
+container ci: Job do GitHub — reconstrói as visões, recusa edições em eventos antigos | [[mem-action]]
+
+g -diz ao-> c
+c -inicia o-> hk
+c -executa o-> m
+hk -pede o resumo ao-> m
+m -acrescenta ao-> ev
+m -reconstrói as-> vw
+ci -confere o-> ev
+ci -reconstrói as-> vw
+
 ## What it does
 Guarda preferências, fatos, decisões e pendências (coisas ainda por fazer) e mostra as relevantes no início de toda conversa como o [[session-brief]]. É o único canal entre as diferentes instâncias do Claude ([[claude-code]], o [[remote-assistant]] e o [[claude-app]]); é a decisão ADR-0003 em [[memory-adrs]] (uma ADR, "architecture decision record", é uma nota curta que registra uma decisão e seus motivos).
 
@@ -39,3 +71,29 @@ Sob todos os outros projetos: eles leem seus padrões daqui e informam de volta 
 
 ## Who receives its output
 Toda instância do Claude, pelo brief; o [[giovanni]], pelo arquivo de revisão em [[memory-views]].
+
+## Engineering practices
+Como este projeto segue o caminho dourado do [[project-template]].
+
+### Princípios
+1. **Eventos só são acrescentados**: um job de integração contínua recusa a mudança de um arquivo de evento antigo.
+2. **As visões são derivadas**: um teste falha quando uma visão foi editada à mão, e as visões são reconstruídas a cada push.
+3. **A ordem de entrega nunca importa**: testes conferem que dobrar o registro dá o mesmo resultado em qualquer ordem.
+4. **As palavras do próprio Giovanni valem mais que o coletor**: um teste confere que uma entrada automática nunca reescreve uma delas.
+5. **Sem segredos nem dados de contato**: um teste de privacidade confere a fronteira, e um evento inválido vai para a quarentena.
+6. **Este repositório é a única interface entre as instâncias do Claude**: nenhum protocolo novo.
+
+### Decisões
+Cinco registros de decisão de arquitetura (notas curtas que guardam os motivos de uma decisão) em `docs/adr/`, [[memory-adrs]]: 0002 um registro de eventos só de acréscimo, dobrado por uma função pura, em vez de um protocolo; 0003 os papéis do Giovanni e das instâncias do Claude; 0004 um programa mede e uma skill julga; 0005 enxugar o resumo de início e separar a memória por ferramenta. O projeto, as regras da dobra e os limites conhecidos estão em `docs/DESIGN.md` (ainda não há um `DESIGN.md` na raiz com registro de decisões).
+
+### Requisitos
+Não há lista de requisitos. Os princípios acima são fixados por testes nomeados em `tests/` (por exemplo os testes de independência de ordem, de privacidade e do coletor), executados pelo portão.
+
+### Portão de qualidade
+O portão tem dois passos: os testes unitários da memória (`python3 -m unittest discover`) e as verificações de aptidão do `pipeline-check`.
+
+### Integração contínua
+Integração contínua (CI) significa verificações automáticas a cada push. Dois workflows rodam no GitHub: `quality-gate.yml` roda o portão, e `mem.yml` confere que os eventos só são acrescentados e que as visões são reconstruídas ([[mem-action]]). Este repositório não tem proteção de branch de propósito: seu job envia os arquivos derivados para a `main`.
+
+### Manutenção
+A dívida técnica é registrada como issues do GitHub com o rótulo `debt` (P1 a P3), conforme a [[maintenance-policy]]. A [[monthly-architecture-review]] confere o projeto todo mês; a próxima vence em 2026-11-22.

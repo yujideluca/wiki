@@ -1,7 +1,7 @@
 ---
 id: quizweb
 lang: de
-source_hash: 54da115249d9
+source_hash: 31b9a69077cc
 title: QuizWeb (German Quiz, Web)
 ---
 
@@ -43,6 +43,41 @@ d2 -ja-> s8
 d2 -nein-> p4
 s8 -> p3
 
+## Architecture
+### Kontext
+person p: Spieler — lernt auf dem iPhone oder in jedem Browser | [[giovanni]]
+system w: German Quiz Web — Quiz mit fünf Modi, das offline funktioniert
+external g: GitHub Pages — liefert die Seite aus | [[github-pages]]
+external a: German-Quiz-Android-App — Quelle der Fragen und Testvektoren | [[quizapp]]
+external b: Browser-Speicher auf dem Gerät — behält den Fortschritt
+
+p -lernt in-> w
+g -liefert aus-> w
+a -teilt Fragen und Testvektoren mit-> w
+w -behält den Fortschritt in-> b
+
+### Container
+person p: Spieler | [[giovanni]]
+container ui: Bildschirme — Tasten, Karten, Kalender | [[quizweb-app]]
+container ct: Steuerung — die eine Tür der Bildschirme | [[quizweb-controller]]
+container dm: Domäne — Planer, Bewerter, Warteschlange; kein Browser | [[quizweb-domain]]
+container ch: Inhalt — macht aus Wörtern Karten | [[quizweb-content]]
+container i: Texte — die Oberfläche in drei Sprachen | [[quizweb-i18n]]
+container sv: Speicher — sichert und lädt den Fortschritt | [[quizweb-store]]
+store ls: Browser-Speicher — hier lebt der Fortschritt
+store vw: Wortlisten — dieselben Dateien wie in der App | [[vocab-tsv]]
+container sw: Service Worker — hält eine Offline-Kopie | [[quizweb-service-worker]]
+
+p -tippt-> ui
+ui -ruft auf-> ct
+ui -liest Texte aus-> i
+ct -wendet die Regeln an aus-> dm
+ct -baut Karten mit-> ch
+ct -speichert über-> sv
+ch -liest-> vw
+sv -schreibt in-> ls
+sw -behält eine Kopie von-> ui
+
 ## What it does
 Sie hat dieselben fünf Modi, denselben Scheduler, dasselbe Tagesziel und denselben Serienkalender wie [[quizapp]] und funktioniert offline. Der Fortschritt liegt im Browser des jeweiligen Geräts und ist von der Android-App getrennt; Einstellungen > Sicherung speichert und stellt ihn wieder her.
 
@@ -54,6 +89,30 @@ Sie ist der Zwilling von [[quizapp]] (Entscheidung ADR-0006 dort; ein ADR ist ei
 
 ## Who receives its output
 Giovannis iPhone oder jeder Browser, über [[github-pages]].
+
+## Engineering practices
+Wie dieses Projekt dem Goldenen Weg von [[project-template]] folgt.
+
+### Prinzipien
+1. **Die Domäne bleibt rein**: Planer, Bewerter und Warteschlange wissen nichts vom Browser. Nur `app.js` und `store.js` dürfen ihn berühren, und `tests/architecture.test.js` hält diese Abhängigkeitsregeln fest.
+2. **Das Web verhält sich wie die App**: Konformanzvektoren, die mit der Android-App geteilt werden, geprüft von `tests/conformance.test.js`.
+3. **Das Gate entscheidet**: `tools/quality_gate.sh` führt die Tests und die Fitnessprüfungen aus, und die kontinuierliche Integration führt dasselbe Skript aus.
+4. **Eine Portierung wartet auf die App**: Das Web übernimmt die neueste veröffentlichte App-Version; eine Version in der Beta wartet auf einem Branch.
+
+### Entscheidungen
+Es gibt noch keine Entwurfsdatei und keinen Ordner `docs/adr/`; die Entscheidungen stehen in `README.md` (kein Build-Schritt und keine Abhängigkeiten, reine ES-Module; der Service Worker fragt zuerst das Netz; eine eigenständige Wartungsversion darf Korrekturen ausliefern, ohne auf die App zu warten). Die monatliche Prüfung führt die fehlende Entwurfsdatei als offen. Die passenden Entscheidungen für die App stehen in [[quizapp-adrs]].
+
+### Anforderungen
+Es gibt noch keine Anforderungsliste. Das Verhalten wird durch die Testdateien in `tests/` (Domäne, Inhalt, Steuerung, Texte, Architekturregeln, Fehlersuch-Tests) und durch die mit der App geteilten Konformanzvektoren festgehalten ([[quizweb-conformance]]).
+
+### Quality Gate
+Das Gate `tools/quality_gate.sh` hat zwei Schritte: `npm test` (die gesamte Web-Testsuite) und die Fitnessprüfungen von `pipeline-check`, die einen Bericht nach `build/pipeline-check/report.json` schreiben.
+
+### Kontinuierliche Integration
+Kontinuierliche Integration (CI) heißt automatische Prüfungen bei jedem Push. Der Workflow `test.yml` führt das Gate bei jedem Push und Pull Request auf GitHub aus ([[quizweb-ci]]); Node 22 und sonst keine Abhängigkeiten.
+
+### Wartung
+Technische Schulden werden als GitHub-Issues mit dem Label `debt` (P1 bis P3) nach der [[maintenance-policy]] geführt. Die [[monthly-architecture-review]] prüft das Projekt jeden Monat; die nächste ist am 22.11.2026 fällig.
 
 ## Notes
 

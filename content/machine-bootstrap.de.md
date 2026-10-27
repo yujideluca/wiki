@@ -1,7 +1,7 @@
 ---
 id: machine-bootstrap
 lang: de
-source_hash: 39d493cd12bd
+source_hash: 3121f5ef9454
 title: machine-bootstrap (die Einrichtung des Laptops wiederherstellen)
 ---
 
@@ -37,6 +37,45 @@ s5 -> p3
 t2 -> s6
 s6 -> p4
 
+## Architecture
+### Kontext
+person g: Giovanni — sichert und stellt wieder her | [[giovanni]]
+system m: machine-bootstrap — baut die Einrichtung des Laptops wieder auf
+external pc: Der Computer — Pakete, Einstellungen, Dienste | [[acer-nitro]]
+external gh: GitHub — bewahrt den erfassten Zustand | [[github]]
+external ssd: Externe Platte — verschlüsselte Schlüssel und persönliche Dateien
+external gd: Google Drive — eine zweite Kopie der verschlüsselten Schlüssel
+
+g -sichert und stellt wieder her mit-> m
+m -liest und baut wieder auf-> pc
+m -legt den Zustand ab in-> gh
+m -speichert verschlüsselte Schlüssel auf-> ssd
+m -speichert verschlüsselte Schlüssel auf-> gd
+
+### Container
+person g: Giovanni | [[giovanni]]
+container cl: Befehlszeile — Befehle und Passphrase-Abfrage
+container pl: Plan — der Bau ist rein, nur execute ändert etwas
+container cp: Erfassung — kopiert nur, was die Erlaubnisliste nennt
+container sb: Geheimnis-Sicherung — verschlüsseltes Archiv der Schlüssel und Anmeldungen
+container db: Datensicherung — Vorabprüfung, dann Kopie
+container fa: Fakten — wie die Maschine aussieht
+container sc: Geheimnis-Scanner — weist alles ab, was geheim aussieht
+store ss: state/ — was die Erfassung schreibt, in git gehalten
+store cf: mb.toml — die Erlaubnisliste
+
+g -führt aus-> cl
+cl -plant mit-> pl
+cl -erfasst mit-> cp
+cl -sichert Schlüssel mit-> sb
+cl -sichert Dateien mit-> db
+cl -liest die Liste aus-> cf
+pl -fragt-> fa
+pl -liest-> ss
+cp -fragt-> fa
+cp -prüft mit-> sc
+cp -schreibt-> ss
+
 ## What it does
 `python3 -m mb` hat acht Unterbefehle. `capture` zeichnet Pakete, Repositories und erlaubte Einstellungen in `state/` auf. `status` meldet Änderungen seit dieser Aufzeichnung. `install-timer` aktiviert eine wöchentliche Hintergrundprüfung. `restore` zeigt einen Plan und führt ihn erst mit `--apply` aus. `secrets-backup` verschlüsselt Schlüssel und Zugänge; `secrets-restore` stellt ein Archiv wieder her. `data-backup` kopiert persönliche Ordner. `scan` prüft die aufgezeichneten Einstellungen auf Geheimnisse.
 
@@ -50,6 +89,33 @@ Es zeichnet [[laptop-setup]] auf und baut die Einrichtung nach einer Neuinstalla
 
 ## Who receives its output
 Giovanni und der Assistent bei der Wiederherstellung. Die dokumentierte Reihenfolge: Werkzeug beschaffen, Schlüssel wiederherstellen, Programme und Einstellungen wiederherstellen, persönliche Dateien zurückkopieren.
+
+## Engineering practices
+Wie dieses Projekt dem Goldenen Weg von [[project-template]] folgt.
+
+### Prinzipien
+1. **Anforderung, dann Test, dann Code**: geprüft vom Rückverfolgbarkeitsschritt des Gates.
+2. **Planen ist rein, das System wird an einer Stelle berührt**: `build_plan` liest nur; nur `execute` ändert etwas, und der Befehlsausführer ist ein Pflichtargument. Die Tests übergeben einen Ausführer, der den Test scheitern lässt, wenn er aufgerufen wird.
+3. **Nichts Geheimes in git**: Erfassung ist eine Erlaubnisliste plus ein Scanner, und das Gate durchsucht `state/`. Geheimnisse gehen nur durch die verschlüsselte Sicherung.
+4. **Das Gate entscheidet**: `tools/quality_gate.sh` ist die einzige Definition von „bestanden“, und die kontinuierliche Integration führt es aus.
+5. **Nur die virtuelle Maschine beweist eine Wiederherstellung**: Nach Änderung eines Rezepts, des Plans oder von `bootstrap.sh` läuft `tools/vm-test.sh`, und das Ergebnis kommt ins Entscheidungsprotokoll.
+6. **Ein Werkzeug, das mehrere Projekte nutzen, lebt nur einmal**, in einem eigenen Repository, nach Version festgelegt.
+7. **Entscheidungen stehen dort, wo der Code ist**: Entscheidungsprotokoll und für Strukturelles ein Architekturentscheidungsprotokoll.
+
+### Entscheidungen
+Fünf Architekturentscheidungsprotokolle (kurze Notizen, die die Gründe einer Entscheidung bewahren) in `docs/adr/`: 0002 Python nur mit Standardbibliothek plus ein kleiner Bash-Starter; 0003 ein Programm misst und ein Skill urteilt; 0004 Erfassung per Erlaubnisliste und Ablehnung von allem, was der Geheimnis-Scanner meldet; 0005 Schlüssel und Anmeldungen in einem passphrase-verschlüsselten Archiv an zwei Orten. `DESIGN.md` enthält die Diagramme, auch die Wiederherstellungsreihenfolge, und das Entscheidungsprotokoll.
+
+### Anforderungen
+16 Anforderungen (Präfix MB) in `docs/REQUIREMENTS.md`. Jede hat einen Test mit dem Tag `REQ MB-N`, und die Rückverfolgbarkeitsprüfung ([[check-traceability]]) schlägt fehl, wenn eine keinen hat.
+
+### Quality Gate
+Das Gate hat drei Schritte: die Unit-Tests, eine Shell-Skript-Prüfung von `bootstrap.sh` und der Geheimnis-Scan von `state/`; die Rückverfolgbarkeit der Anforderungen; und die Fitnessfunktionen (Grenzen in `pipeline-check.toml`, auch die Gate-Dauer).
+
+### Kontinuierliche Integration
+Kontinuierliche Integration (CI) heißt automatische Prüfungen bei jedem Push. Der Workflow `quality-gate.yml` führt das Gate bei jedem Push auf GitHub aus, über `pipeline-check`, festgelegt in `pipeline-check.version`.
+
+### Wartung
+Technische Schulden werden als GitHub-Issues mit dem Label `debt` (P1 bis P3) nach der [[maintenance-policy]] geführt. Die [[monthly-architecture-review]] prüft das Projekt jeden Monat; die nächste ist am 22.11.2026 fällig.
 
 ## Notes
 Browserprofile, Spielinstallationen und die eigenen Einstellungen des Handys sind nicht enthalten. Die aktuelle Aufzeichnungskonfiguration enthält `.codex/skills`, lässt aber `.agents/skills` aus; die Wiederherstellung der verwalteten Codex-Skill-Verknüpfungen ist damit nicht nachgewiesen. Diese Lücke steht im Ablauf-Audit von [[codex-skills]]. Downloadrezepte hängen von externen Adressen ab; eine frühere erfolgreiche Wiederherstellung beweist daher keinen künftigen Erfolg. Auf dem Laufwerk liegt ein Geheimnisarchiv vom 2026-10-26; eine Wiederherstellung damit auf einem neuen Computer wurde nicht getestet. `DESIGN.md` hält fest, dass der Hauptzweig (main) des öffentlichen Repositorys die GitHub-Actions-Prüfung `gate` verlangt, dies auch für Administratoren gilt und Force-Pushes sowie das Löschen des Zweigs verboten sind. Das Repository enthält außerdem `docs/PRIVACY.md`, den Datenschutzhinweis einer persönlichen Google-OAuth-Anwendung (Open Authorization, ein Standard, um Zugriff ohne Weitergabe des Passworts zu erlauben; die Identität, mit der [rclone](https://rclone.org/) auf Google Drive zugreift), die die gemeinsame von rclone ersetzt; er nennt, dass die Anwendung alle Dateien des autorisierenden Drive-Kontos ansehen und verwalten darf, dass der Ablauf verschlüsselte Archive hochlädt und vorhandene Drive-Sicherungen nicht löscht und dass Zugangsdaten und Tokens in der privaten rclone-Konfiguration bleiben. Ein Upload damit wurde nicht getestet.

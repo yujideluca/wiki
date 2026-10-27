@@ -1,7 +1,7 @@
 ---
 id: processing-sketches
 lang: pt-BR
-source_hash: fcc5f904671a
+source_hash: a379c53d1133
 title: Sketches do Processing
 ---
 
@@ -31,6 +31,32 @@ s4 -> p1
 t2 -> s5
 s5 -> p3
 
+## Architecture
+### Contexto
+person g: Giovanni — desenha e executa os sketches | [[giovanni]]
+system s: processing-sketches — uma pasta de sketches pequenos do Processing
+external p: Processing — a ferramenta que executa um sketch
+external h: GitHub — guarda o histórico, privado | [[github]]
+
+g -executa sketches com o-> p
+g -mantém os sketches em-> s
+s -é enviado ao-> h
+
+### Contêineres
+person g: Giovanni | [[giovanni]]
+container dk: Sketch da curva do dragão | [[drachenkurve]]
+container df: Sketch do fractal do dragão | [[drachenfraktal]]
+store bo: build/ — jars gerados ao executar, nunca versionados
+container qg: Portão de qualidade — cada sketch tem seu arquivo .pde e nenhuma saída de build é versionada
+
+g -executa-> dk
+g -executa-> df
+dk -grava em-> bo
+df -grava em-> bo
+qg -confere-> dk
+qg -confere-> df
+qg -confere que nada está versionado em-> bo
+
 ## What it does
 Desenha a curva do dragão de Heighway em duas versões: [[drachenkurve]] (exportada como app; gerou o ícone de lançamento do QuizApp) e [[drachenfraktal]].
 
@@ -42,3 +68,27 @@ Cada sketch é um arquivo `.pde` em sua própria pasta; a `drachenkurve` também
 
 ## Who receives its output
 O [[quizapp]] (seu ícone de lançamento).
+
+## Engineering practices
+Como este projeto segue o caminho dourado do [[project-template]].
+
+### Princípios
+1. **Uma pasta por sketch**: cada uma tem um arquivo `.pde` de mesmo nome; o portão falha quando falta.
+2. **Saída de build nunca é versionada**: o portão falha quando um arquivo rastreado está dentro de uma pasta `build/`.
+3. **O portão decide**: `tools/quality_gate.sh` é a única definição de “passou”, e a integração contínua a executa.
+4. **As decisões vão no `DESIGN.md`.**
+
+### Decisões
+Ainda não há registros de decisão de arquitetura; o registro de decisões do `DESIGN.md` tem três linhas: o projeto foi posto sob git no GitHub (privado) com portão e CI, a primeira revisão de manutenção e a revisão mensal de 2026-10-25.
+
+### Requisitos
+Ainda não há lista de requisitos, porque os sketches não têm testes de comportamento (dívida técnica P3: mover a geometria da curva para uma função testada se os sketches crescerem).
+
+### Portão de qualidade
+O portão `tools/quality_gate.sh` confere que cada pasta de sketch tem seu arquivo `.pde` e que o git não rastreia saída de build. O `tools/pipeline-check.sh` acrescenta a medição completa.
+
+### Integração contínua
+Integração contínua (CI) significa verificações automáticas a cada push. O workflow `quality-gate.yml` roda o portão no GitHub a cada push, por meio do `pipeline-check` fixado em `pipeline-check.version`.
+
+### Manutenção
+A dívida técnica é registrada como issues do GitHub com o rótulo `debt` (P1 a P3), conforme a [[maintenance-policy]]. A [[monthly-architecture-review]] confere o projeto todo mês; a próxima vence em 2026-11-22.

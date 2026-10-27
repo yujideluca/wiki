@@ -88,8 +88,29 @@ defmodule Wiki.ContentCase do
 
   def flow, do: @flow
 
+  @architecture """
+  ### Context
+  person u: Someone — asks
+  system s: The project — does the thing
+  u -asks-> s
+
+  ### Containers
+  person u: Someone — asks
+  container c: The core — does the thing
+  store d: The data — keeps the result
+  u -asks-> c
+  c -writes-> d
+  """
+  @practices "### Principles\nOne.\n\n### Decisions\nTwo.\n\n### Requirements\nThree.\n\n### Quality gate\nFour.\n\n### Continuous integration\nFive.\n\n### Maintenance\nSix."
+
+  def architecture, do: @architecture
+  def practices, do: @practices
+
+  @doc "The sections a project in a repository must have besides the usual ones."
+  def project_sections, do: %{"flow" => @flow, "architecture" => @architecture, "practices" => @practices}
+
   def valid_wiki(content) do
-    write_page(content, "proj", base_header("proj", kind: "project", project: "none"), %{"what" => "Has [[a]] and [[b]].", "flow" => @flow})
+    write_page(content, "proj", base_header("proj", kind: "project", project: "none"), Map.merge(%{"what" => "Has [[a]] and [[b]]."}, project_sections()))
     write_page(content, "a", base_header("a", feeds: ["b"]))
     write_page(content, "b", base_header("b", fed_by: ["a"]))
   end

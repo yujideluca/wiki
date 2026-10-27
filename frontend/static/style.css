@@ -328,6 +328,18 @@ svg.map { touch-action: none; }
 .fl-text { font-size: 12.5px; fill: var(--ink); }
 .fl-link { font-size: 11px; fill: var(--link); cursor: pointer; text-decoration: underline; }
 .fl-link:hover { fill: var(--gold); }
+.fl-name { font-weight: 700; }
+.fl-system { stroke-width: 2.6; }
+@supports (fill: color-mix(in srgb, red 10%, white)) { .fl-system { fill: color-mix(in srgb, var(--c, #888) 30%, var(--pl-bg)); } }
+.fl-external { stroke-dasharray: 5 4; --c: #8a8f98; }
+.arch-level { margin: 0 0 16px; }
+.arch-level h3 { margin: 14px 0 2px; }
+.arch-caption { margin: 0 0 4px; font-size: 13px; color: var(--ink-muted); }
+.flow-swatch.fl-person { border-radius: 8px; }
+.flow-swatch.fl-system { border-width: 3px; border-radius: 3px; }
+.flow-swatch.fl-container { border-radius: 2px; }
+.flow-swatch.fl-store { border-radius: 40% / 30%; }
+.flow-swatch.fl-external { border-style: dashed; border-radius: 2px; }
 .flow-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; font-size: 12px; color: var(--ink-muted); margin-top: 4px; }
 .flow-key { display: inline-flex; align-items: center; gap: 6px; }
 .flow-swatch { display: inline-block; width: 22px; height: 12px; border: 2px solid var(--rule); background: var(--pl-bg); }

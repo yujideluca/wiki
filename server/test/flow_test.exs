@@ -49,7 +49,7 @@ defmodule Wiki.Content.FlowTest do
     valid_wiki(c)
     write_page(c, "proc", base_header("proc", kind: "project", project: "none"), %{"what" => "[[a]]"})
     assert Enum.any?(errors(c), &(&1 =~ "proc.md: section ## Flow is missing"))
-    write_page(c, "proc", base_header("proc", kind: "project", project: "none"), %{"what" => "[[a]]", "flow" => flow()})
+    write_page(c, "proc", base_header("proc", kind: "project", project: "none"), Map.merge(%{"what" => "[[a]]"}, project_sections()))
     assert errors(c) == []
   end
 
@@ -57,7 +57,7 @@ defmodule Wiki.Content.FlowTest do
   test "a flow link must point to an existing page", %{content: c} do
     valid_wiki(c)
     bad = "trigger t: x | [[ghost]]\nproduct p: y\nt -> p"
-    write_page(c, "proj", base_header("proj", kind: "project", project: "none"), %{"what" => "[[a]] [[b]]", "flow" => bad})
+    write_page(c, "proj", base_header("proj", kind: "project", project: "none"), Map.merge(project_sections(), %{"what" => "[[a]] [[b]]", "flow" => bad}))
     assert Enum.any?(errors(c), &(&1 =~ "link [[ghost]] points to no page"))
   end
 
@@ -65,7 +65,7 @@ defmodule Wiki.Content.FlowTest do
   test "a translated flow keeps boxes, links and arrows and may change the words", %{content: c} do
     valid_wiki(c)
     hdr = base_header("proj", kind: "project", project: "none")
-    sections = %{"what" => "[[a]] [[b]]", "flow" => flow()}
+    sections = Map.merge(project_sections(), %{"what" => "[[a]] [[b]]"})
     write_page(c, "proj", hdr, sections)
     assert errors(c) == []
 

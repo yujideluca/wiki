@@ -1,7 +1,7 @@
 ---
 id: quizweb
 lang: pt-BR
-source_hash: 54da115249d9
+source_hash: 31b9a69077cc
 title: QuizWeb (German Quiz, web)
 ---
 
@@ -43,6 +43,41 @@ d2 -sim-> s8
 d2 -não-> p4
 s8 -> p3
 
+## Architecture
+### Contexto
+person p: Jogador — estuda no iPhone ou em qualquer navegador | [[giovanni]]
+system w: German Quiz web — quiz de cinco modos que funciona offline
+external g: GitHub Pages — entrega o site | [[github-pages]]
+external a: App Android German Quiz — origem das perguntas e dos vetores de teste | [[quizapp]]
+external b: Armazenamento do navegador no aparelho — guarda o progresso
+
+p -estuda no-> w
+g -entrega-> w
+a -compartilha perguntas e vetores de teste com-> w
+w -guarda o progresso no-> b
+
+### Contêineres
+person p: Jogador | [[giovanni]]
+container ui: Telas — botões, cartas, calendário | [[quizweb-app]]
+container ct: Controlador — a única porta das telas | [[quizweb-controller]]
+container dm: Domínio — agendador, avaliador, fila; sem navegador | [[quizweb-domain]]
+container ch: Conteúdo — transforma palavras em cartas | [[quizweb-content]]
+container i: Textos — a interface em três idiomas | [[quizweb-i18n]]
+container sv: Armazenamento — salva e carrega o progresso | [[quizweb-store]]
+store ls: Armazenamento do navegador — o progresso fica aqui
+store vw: Listas de palavras — os mesmos arquivos do app | [[vocab-tsv]]
+container sw: Service worker — mantém uma cópia offline | [[quizweb-service-worker]]
+
+p -toca-> ui
+ui -chama-> ct
+ui -lê textos de-> i
+ct -aplica as regras do-> dm
+ct -monta cartas com-> ch
+ct -salva por meio do-> sv
+ch -lê-> vw
+sv -grava no-> ls
+sw -guarda uma cópia das-> ui
+
 ## What it does
 Tem os mesmos cinco modos, agendador, meta diária e calendário de sequência do [[quizapp]] e funciona offline. O progresso fica no navegador daquele aparelho e é separado do app Android; Configurações > Backup o salva e restaura.
 
@@ -54,6 +89,30 @@ Tem os mesmos cinco modos, agendador, meta diária e calendário de sequência d
 
 ## Who receives its output
 O iPhone do Giovanni, ou qualquer navegador, por meio do [[github-pages]].
+
+## Engineering practices
+Como este projeto segue o caminho dourado do [[project-template]].
+
+### Princípios
+1. **O domínio continua puro**: agendador, avaliador e fila não sabem nada do navegador. Só `app.js` e `store.js` podem tocá-lo, e `tests/architecture.test.js` guarda essas regras de dependência.
+2. **A web se comporta como o app**: vetores de conformidade compartilhados com o app Android, conferidos por `tests/conformance.test.js`.
+3. **O portão decide**: `tools/quality_gate.sh` roda os testes e as verificações de aptidão, e a integração contínua roda o mesmo script.
+4. **Um port espera o app**: a web porta a última versão lançada do app; uma versão ainda em beta espera em um branch.
+
+### Decisões
+Ainda não há arquivo de projeto nem a pasta `docs/adr/`; as escolhas estão no `README.md` (sem etapa de build e sem dependências, módulos ES puros; o service worker tenta a rede primeiro; uma versão de manutenção avulsa pode sair com correções sem esperar o app). A revisão mensal lista o arquivo de projeto que falta como pendência. As decisões correspondentes do app estão em [[quizapp-adrs]].
+
+### Requisitos
+Ainda não há lista de requisitos. O comportamento é fixado pelos arquivos de teste em `tests/` (domínio, conteúdo, controlador, textos, regras de arquitetura, testes de caça a bugs) e pelos vetores de conformidade compartilhados com o app ([[quizweb-conformance]]).
+
+### Portão de qualidade
+O portão `tools/quality_gate.sh` tem dois passos: `npm test` (toda a suíte de testes web) e as verificações de aptidão do `pipeline-check`, que escrevem um relatório em `build/pipeline-check/report.json`.
+
+### Integração contínua
+Integração contínua (CI) significa verificações automáticas a cada push. O workflow `test.yml` roda o portão no GitHub a cada push e pull request ([[quizweb-ci]]); Node 22 e nenhuma outra dependência.
+
+### Manutenção
+A dívida técnica é registrada como issues do GitHub com o rótulo `debt` (P1 a P3), conforme a [[maintenance-policy]]. A [[monthly-architecture-review]] confere o projeto todo mês; a próxima vence em 2026-11-22.
 
 ## Notes
 

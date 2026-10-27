@@ -10,10 +10,12 @@ defmodule Wiki.Content.Page do
   @sections [
     {"what", "What it is"},
     {"flow", "Flow"},
+    {"architecture", "Architecture"},
     {"does", "What it does"},
     {"how", "How it does it"},
     {"where", "Where it sits in the pipeline"},
     {"receives", "Who receives its output"},
+    {"practices", "Engineering practices"},
     {"steps", "Steps"},
     {"functions", "Functions"},
     {"notes", "Notes"}

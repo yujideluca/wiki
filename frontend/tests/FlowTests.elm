@@ -52,6 +52,11 @@ graph =
 
 article : String -> Data.Article
 article markdown =
+    articleWith "flow" markdown
+
+
+articleWith : String -> String -> Data.Article
+articleWith key markdown =
     { id = "example"
     , lang = "en"
     , title = "Example"
@@ -67,7 +72,7 @@ article markdown =
     , feeds = []
     , memory = []
     , sources = []
-    , sections = [ { key = "flow", markdown = markdown } ]
+    , sections = [ { key = key, markdown = markdown } ]
     , history = []
     }
 
@@ -225,6 +230,76 @@ view =
         ]
 
 
+-- the same text as server/test/support/content_case.ex, so both parsers are held to one example
+architecture : String
+architecture =
+    String.join "\n"
+        [ "### Context"
+        , "person u: Someone — asks"
+        , "system s: The project — does the thing"
+        , "u -asks-> s"
+        , ""
+        , "### Containers"
+        , "person u: Someone — asks"
+        , "container c: The core — does the thing | [[a]]"
+        , "store d: The data — keeps the result"
+        , "u -asks-> c"
+        , "c -writes-> d"
+        ]
+
+
+-- REQ PJ-3
+architectureView : Test
+architectureView =
+    describe "REQ PJ-3: the article draws the Architecture section as two C4 diagrams"
+        [ test "the two parts are read with their headings, boxes and arrows" <|
+            \_ ->
+                Flow.parseLevels architecture
+                    |> List.map (\( heading, chart ) -> ( heading, List.map .role chart.boxes, List.length chart.arrows ))
+                    |> Expect.equal
+                        [ ( "Context", [ Person, System ], 1 )
+                        , ( "Containers", [ Person, Container, Store ], 2 )
+                        ]
+        , test "a name goes on its own line above the description" <|
+            \_ ->
+                let
+                    laid =
+                        FlowLayout.layout (Flow.parse "person u: A very long name here — and a long description of it\nsystem s: S — x\nu -uses-> s")
+
+                    heads =
+                        laid.boxes |> List.map (\p -> ( p.box.id, p.head ))
+                in
+                heads |> List.filter (\( id, _ ) -> id == "s") |> Expect.equal [ ( "s", 1 ) ]
+        , test "two diagrams, a caption for each, the five-shape key, and a translated heading" <|
+            \_ ->
+                [ ( En, "Architecture" ), ( De, "Architektur" ), ( PtBr, "Arquitetura" ) ]
+                    |> List.map
+                        (\( lang, heading ) ->
+                            \_ ->
+                                ArticleView.view lang graph 0 False Set.empty (articleWith "architecture" architecture)
+                                    |> Query.fromHtml
+                                    |> Query.find [ Selector.class "sec-architecture" ]
+                                    |> Expect.all
+                                        [ Query.has [ Selector.text heading ]
+                                        , Query.findAll [ Selector.class "flow-svg" ] >> Query.count (Expect.equal 2)
+                                        , Query.findAll [ Selector.class "arch-caption" ] >> Query.count (Expect.equal 2)
+                                        , Query.findAll [ Selector.class "flow-key" ] >> Query.count (Expect.equal 5)
+                                        , Query.findAll [ Selector.class "fl-group" ] >> Query.count (Expect.equal 5)
+                                        ]
+                        )
+                    |> (\checks -> Expect.all checks ())
+        , test "a data store is drawn as a cylinder and a person has a head" <|
+            \_ ->
+                ArticleView.view En graph 0 False Set.empty (articleWith "architecture" architecture)
+                    |> Query.fromHtml
+                    |> Query.find [ Selector.class "sec-architecture" ]
+                    |> Expect.all
+                        [ Query.findAll [ Selector.class "fl-store" ] >> Query.count (Expect.atLeast 1)
+                        , Query.findAll [ Selector.tag "circle" ] >> Query.count (Expect.equal 2)
+                        ]
+        ]
+
+
 tests : Test
 tests =
-    describe "flow chart" [ parsing, layouts, view ]
+    describe "flow chart" [ parsing, layouts, view, architectureView ]

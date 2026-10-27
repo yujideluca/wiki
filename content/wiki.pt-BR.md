@@ -1,7 +1,7 @@
 ---
 id: wiki
 lang: pt-BR
-source_hash: e26a9ade6c4e
+source_hash: 9ccec706bb6b
 title: Wiki (este site)
 ---
 
@@ -32,6 +32,40 @@ t2 -> s5
 s5 -> s6
 s6 -> p2
 
+## Architecture
+### Contexto
+person g: Giovanni — lê as páginas no notebook ou no celular | [[giovanni]]
+person c: Claude Code — escreve as páginas no fim de cada tarefa | [[claude-code]]
+system w: Wiki — as páginas, o mapa e as verificações
+external f: Tailscale Funnel — o endereço público na web | [[tailscale-funnel]]
+external o: Login do Google — prova que é o Giovanni | [[google-oauth-client]]
+external h: GitHub — guarda o histórico das páginas | [[github]]
+
+g -abre-> f
+f -repassa os pedidos para-> w
+c -publica páginas no-> w
+w -pergunta quem está lá-> o
+w -envia as páginas ao-> h
+
+### Contêineres
+person g: Giovanni — no navegador | [[giovanni]]
+person c: Claude Code — no fim de uma tarefa | [[claude-code]]
+container fe: Front end em Elm — o mapa e os artigos | [[wiki-frontend]]
+container sv: Servidor em Elixir — portão de login, página falsa, arquivos | [[wiki-server]]
+container cli: O comando wiki — verificar, publicar, hook | [[wiki-cli]]
+store pg: Páginas — arquivos Markdown em três idiomas | [[wiki-content]]
+store st: Site gerado — os arquivos de dados que o front end lê | [[wiki-site]]
+external o: Login do Google | [[google-oauth-client]]
+
+g -usa-> fe
+g -entra por meio do-> sv
+fe -lê-> st
+sv -entrega-> st
+sv -pergunta ao-> o
+c -executa-> cli
+cli -lê e verifica-> pg
+cli -gera-> st
+
 ## What it does
 Permite ao Giovanni responder uma pergunta de arquitetura com uma busca e no máximo dois cliques: busca com sugestões enquanto digita, passar o mouse sobre um ponto do mapa para ver o que é em quatro caixas, clicar no ponto para a página completa ([[wiki-frontend]]). No celular o mapa ocupa a tela com uma barra de busca no alto e tocar em um ponto abre um balão com sua descrição; no desktop o mapa é visto por uma lente e seus pontos se esticam elasticamente quando arrastados ([[wiki-map-view]]). É mantido em dia automaticamente no fim de cada tarefa ([[end-of-task]]). Para o sistema inteiro numa página, comece por [[system-overview]].
 
@@ -43,3 +77,28 @@ Ao lado do [[workflow-memory]]: a memória guarda regras e preferências, enquan
 
 ## Who receives its output
 O [[giovanni]], no navegador do notebook ou do celular.
+
+## Engineering practices
+Como este projeto segue o caminho dourado do [[project-template]].
+
+### Princípios
+1. **Requisito, depois teste, depois código**: toda promessa é uma linha em `docs/REQUIREMENTS.md`, conferida pela verificação de rastreabilidade do portão.
+2. **Negar por padrão**: sem a sessão Google verificada do Giovanni nada real é entregue; os testes do portão de login e da página falsa conferem isso.
+3. **O conteúdo segue as regras antes de ser publicado**: `wiki check` recusa uma página ruim e `wiki publish` não roda com um problema.
+4. **O portão decide**: `tools/quality_gate.sh` é a única definição de “passou”, e a integração contínua roda o mesmo script.
+5. **As decisões ficam onde está o código**: uma linha no registro de decisões do `DESIGN.md` e, para as estruturais, um registro de decisão de arquitetura.
+
+### Decisões
+O arquivo de projeto `DESIGN.md` guarda os diagramas C4 e um registro de decisões, a mais nova primeiro, cada linha com seu tipo de manutenção. Registros de decisão de arquitetura (notas curtas que guardam os motivos de uma decisão) em `docs/adr/`: 0002 front end em Elm e back end em Elixir; 0003 um portão de login com página falsa para todos os outros; 0004 páginas em Markdown com cabeçalho, verificadas antes de publicar; 0005 um programa mede e uma skill julga; 0006 o horário da revisão fica na página; 0007 a seção de fluxograma. Veja também a [[monthly-architecture-review]].
+
+### Requisitos
+69 requisitos em `docs/REQUIREMENTS.md`, agrupados por um prefixo de duas letras (login AU, página falsa DC, conteúdo CO, fluxogramas FL, páginas de projeto PJ, mapa MP, layout de celular MB e outros). Cada um tem um teste marcado `REQ <ID>`, e a verificação de rastreabilidade ([[check-traceability]]) falha quando algum não tem.
+
+### Portão de qualidade
+O [[wiki-quality-gate]] é um script com cinco passos: os testes de Elixir; os testes de Elm e o build otimizado; a rastreabilidade dos requisitos; as regras de conteúdo (`wiki check`); as funções de aptidão (maior arquivo, tempo do portão, tamanho do pacote).
+
+### Integração contínua
+Integração contínua (CI) significa verificações automáticas a cada push. O workflow `quality-gate.yml` no GitHub instala Erlang, Elixir, Node e Elm e roda o portão por meio do `pipeline-check` a cada push e pull request. Um commit só chega à `main` depois que o portão está verde nesse mesmo commit.
+
+### Manutenção
+A dívida técnica é registrada como issues do GitHub com o rótulo `debt` (P1 a P3), conforme a [[maintenance-policy]]. A [[monthly-architecture-review]] confere o projeto todo mês; a próxima vence em 2026-11-22.

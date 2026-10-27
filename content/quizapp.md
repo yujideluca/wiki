@@ -9,7 +9,7 @@ location: QuizApp:
 fed_by: [claude-code, project-template]
 feeds: [quizweb]
 sources: [QuizApp:DESIGN.md, QuizApp:CLAUDE.md]
-reviewed: 2026-10-25T08:22Z
+reviewed: 2026-10-27T01:34Z
 ---
 
 ## What it is
@@ -45,6 +45,38 @@ s7 -> s2
 t3 -> s8
 s8 -> p2
 
+## Architecture
+### Context
+person p: Player — studies German vocabulary | [[giovanni]]
+system a: German Quiz app — spaced-repetition quiz for Android
+external w: German Quiz web — the same quiz in a browser | [[quizweb]]
+external f: Release feed — latest version, signed app file, question pack | [[release-feed]]
+external d: Phone storage or Google Drive — holds the backup file | [[phone]]
+
+p -studies with-> a
+p -studies with-> w
+a -shares questions and test vectors with-> w
+a -downloads updates and questions from-> f
+a -saves backups to-> d
+
+### Containers
+person p: Player | [[giovanni]]
+container ui: Screens — what the player sees and taps
+container ct: Study controller — the one door the screens use | [[quizapp-app]]
+container co: Core module — scheduler, grader, queue; no Android | [[quizapp-core]]
+container da: Data layer — progress, settings, updater
+store v: Vocabulary files — built into the app | [[vocab-assets]]
+store dl: Downloaded question pack — newer questions
+external f: Release feed | [[release-feed]]
+
+p -taps-> ui
+ui -calls-> ct
+ct -runs the rules in-> co
+ct -saves through-> da
+da -reads-> v
+da -reads and writes-> dl
+da -downloads from-> f
+
 ## What it does
 It offers five study modes over a curated pool of B2 content ([[game-modes]]): der/die/das, prepositions, plural forms, Präteritum (the German simple past) and "Fehler finden" (find the error). Wrong or slow answers return soon; known cards move out to days, weeks and months ([[spaced-repetition-scheduler]]). It has a daily goal and a streak calendar ([[daily-goal]], [[activity-calendar]]), a backup of progress ([[progress-backup]]) and updates from inside the app ([[update-client]]). Since 2026-10-22 the question pool can grow without a new app release: new [[question-pack]]s arrive from the update feed ([[question-pool-updater]], [[publish-content]]).
 
@@ -56,3 +88,29 @@ It is Giovanni's main study tool. Its web twin is [[quizweb]], which must behave
 
 ## Who receives its output
 Giovanni, on the [[phone]]; [[quizweb]] receives its rules, test vectors and translations.
+
+## Engineering practices
+How this project follows the golden path of [[project-template]].
+
+### Principles
+1. **The spacing rules come first** (they are requirements, pinned by tests): the spacing-rule and simulation tests, the shared vectors and the planted-fault checks.
+2. **Logic is framework-free**: scheduler, grader, queue and session live in the core module, which has no Android; an `import android.*` there does not compile.
+3. **Requirement, then test, then code**: checked by the traceability step of the gate.
+4. **Nothing reaches the player without the beta app first**, and a version may be promoted once it survives the automated tests updated for what it changes; then promoting is Giovanni's call.
+5. **The web twin behaves like the app**: shared test vectors, a sync check, and both continuous integration runs.
+6. **Decisions are written where the code is**: decision log with its type, an architecture decision record for structural ones, the C4 diagrams in `DESIGN.md` change in the same commit.
+
+### Decisions
+13 architecture decision records (ADRs, short notes that keep the reasons for a decision) in `docs/adr/`, [[quizapp-adrs]]: Kotlin with Jetpack Compose; a pure scheduler with an injected clock; an update feed with an in-app updater; two release channels (beta first); a web twin; spacing rules as requirements; requirements first; a pure core module; progress backup as one file; promotion after updated tests; a downloadable question pool; a program that measures and a skill that judges. `DESIGN.md` also holds the decision log.
+
+### Requirements
+33 requirements in `docs/REQUIREMENTS.md` ([[quizapp-requirements]]), grouped by prefix (spacing rules SP, scheduling and daily goal DG, question pool QP, backup PE, updates UP and more). Each has a test tagged `REQ <ID>`, and the traceability check ([[check-traceability]]) fails when one has none.
+
+### Quality gate
+[[quizapp-quality-gate]] is one script, seven steps: core and app tests with coverage; coverage thresholds for the logic packages; the web tests; the conformance vectors identical in app and web; requirement traceability; Android lint; the fitness functions and the question pool manifest. Before a promotion a mutation check also runs (faults planted on purpose must be caught).
+
+### Continuous integration
+Continuous integration (CI) means automatic checks on every push. The workflow `quality-gate.yml` runs the gate on GitHub for every push ([[quizapp-ci]]); after pushing, the run must be green.
+
+### Maintenance
+Technical debt is tracked as GitHub issues labelled `debt` (P1 to P3) under the [[maintenance-policy]]. The [[monthly-architecture-review]] checks the project every month; the next is due 2026-11-22.

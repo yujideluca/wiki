@@ -9,7 +9,7 @@ location: codex-pbar:src/codex_pbar/terminal.py
 fed_by: [global-codex-agents]
 feeds: []
 sources: [home:fixes/codex-touchpad-scroll.sh, home:fixes/LEIAME.md, codex-pbar:docs, codex-pbar:src/codex_pbar, codex-pbar:tests, codex-pbar:tools, codex-pbar:upstream, codex-pbar:pipeline-check.toml, codex-pbar:pipeline-check.version, codex-pbar:pyproject.toml, codex-pbar:.github/workflows/quality-gate.yml, codex-pbar:.gitignore, codex-pbar:AGENTS.md, codex-pbar:CLAUDE.md, codex-pbar:DESIGN.md, codex-pbar:docs/2026-10-25-codex-pbar-design.md, codex-pbar:docs/MAINTENANCE.md, codex-pbar:docs/REQUIREMENTS.md, codex-pbar:src/codex_pbar/terminal.py, codex-pbar:tests/test_terminal.py, codex-pbar:tests/test_terminal_mouse.py, codex-pbar:tools/terminal_smoke.py, codex-pbar:docs/adr/0004-persistent-terminal-footer.md, codex-pbar:README.md, home:AGENTS.md, home:.codex/AGENTS.md, home:.config/systemd/user/codex-pbar.service]
-reviewed: 2026-10-27T00:13Z
+reviewed: 2026-10-27T01:34Z
 ---
 
 ## What it is
@@ -39,6 +39,36 @@ d1 -no-> p3
 d2 -no-> p1
 d2 -yes-> p2
 
+## Architecture
+### Context
+person g: Giovanni — works with Codex in a terminal | [[giovanni]]
+system p: codex-pbar — shows task progress under the terminal
+external a: Global Codex instructions — tell Codex to report milestones | [[global-codex-agents]]
+external x: Codex — the assistant doing the work | [[codex]]
+external t: tmux terminal — has the row where the footer is drawn
+
+a -instructs-> x
+x -reports milestones to-> p
+p -draws the footer in-> t
+g -reads the footer in-> t
+
+### Containers
+person g: Giovanni | [[giovanni]]
+external x: Codex session files | [[codex]]
+container rd: Incremental reader — the only code that opens session files
+container co: Pure session state — keeps no prompt or tool text
+container ap: Desktop window — kept, not switched on
+container ft: Terminal footer — completed/total tasks and time left
+store ts: Private task state — written by milestone updates
+store hs: Private timing history — hashed
+
+rd -reads-> x
+rd -updates-> co
+rd -appends to-> hs
+co -feeds-> ap
+ft -reads-> ts
+g -sees-> ft
+
 ## What it does
 The line remains visible while Codex works or waits. It matches Claude’s compact style: a green Progress label on the normal terminal background, middle-dot separators, percentage, completed tasks and estimated time remaining. It draws no block bar. For example, two completed steps out of five show `Progress: [ 40%] 2/5 tasks`. Time alone never advances the percentage. If an estimate runs out, the line says `over by` and the elapsed excess. When there is no task plan, the line says `No active task`. Explicit completion remains visible until the next task starts.
 
@@ -54,6 +84,30 @@ It runs in the laptop terminal. The quality gate, the automated checks required 
 
 ## Who receives its output
 Giovanni reads the footer. The agent can inspect `codex-task-progress show`. The older desktop window implementation is not enabled by this terminal installation.
+
+## Engineering practices
+How this project follows the golden path of [[project-template]].
+
+### Principles
+1. **Requirements precede changes**: tests carry `REQ PB-N`, and the traceability step of the gate fails when one has none.
+2. **Pure modules stay free of GUI and network code**: the state and the reader are tested by plain unit tests, with branch coverage required.
+3. **Nothing private is kept**: no model or network calls, no authentication reads, and no raw tool arguments or output in the saved status or history.
+4. **The gate decides**: `tools/quality_gate.sh` is the only definition of passing, and continuous integration runs it.
+
+### Decisions
+Four architecture decision records (ADRs, short notes that keep the reasons for a decision) in `docs/adr/`: 0002 a Python desktop companion that reads session files; 0003 a program measures and a skill judges; 0004 the persistent terminal footer in a dedicated tmux row, bound to its session. `DESIGN.md` holds the diagram and the decision log.
+
+### Requirements
+10 requirements (prefix PB) in `docs/REQUIREMENTS.md`. Each has a test tagged `REQ PB-N`, and the traceability check ([[check-traceability]]) fails when one has none.
+
+### Quality gate
+The gate runs the unit tests with branch coverage of at least 85 % on the state and reader modules; a mutation check (faults planted on purpose must be caught); a window smoke test without a screen; requirement traceability; and the fitness functions.
+
+### Continuous integration
+Continuous integration (CI) means automatic checks on every push. The workflow `quality-gate.yml` runs the gate on GitHub for every push, through `pipeline-check` pinned in `pipeline-check.version`.
+
+### Maintenance
+Technical debt is tracked as GitHub issues labelled `debt` (P1 to P3) under the [[maintenance-policy]]. The [[monthly-architecture-review]] checks the project every month; the next is due 2026-11-22.
 
 ## Notes
 Install from `~/dev/codex-pbar` with `PYTHONPATH=src .venv/bin/python -m codex_pbar.terminal install`. Detach with `Ctrl-b d` and reattach with `tmux -L codex-status attach`. Estimated time is the agent's forecast, not a measured guarantee. This change adds no token, context or quota fields.

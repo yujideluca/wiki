@@ -2,7 +2,7 @@
 id: codex-skills
 title: Codex skills
 lang: de
-source_hash: eb3b95269d69
+source_hash: 674c2db2650d
 ---
 
 ## What it is
@@ -34,6 +34,32 @@ s5 -> s6
 t2 -> s6
 s6 -> p3
 
+## Architecture
+### Kontext
+person g: Giovanni — prüft jede Anpassung | [[giovanni]]
+system s: codex-skills — Codex' eigene angepasste Skills
+external c: Claude-Skills — die Originale, nur lesbar | [[skills]]
+external x: Codex — findet und lädt die Skills | [[codex]]
+
+g -passt von Hand an-> s
+c -wird als Schnappschuss kopiert nach-> s
+s -installiert Skills für-> x
+
+### Container
+person g: Giovanni | [[giovanni]]
+store sr: sources/ — genaue Schnappschüsse der Claude-Skills
+store mf: manifest.json — Fingerabdrücke, Quellpfade, Grenzen
+store sk: skills/ — die angepassten Skills, die Codex gehören
+container ct: skillsctl — prüft, meldet Abweichungen, installiert, macht rückgängig | [[codex-skillsctl]]
+external lv: Skill-Links, die Codex finden kann | [[codex]]
+
+g -passt an-> sk
+g -führt aus-> ct
+ct -vergleicht mit-> sr
+ct -speichert Fingerabdrücke in-> mf
+ct -prüft-> sk
+ct -installiert mit Sicherungen-> lv
+
 ## What it does
 Enthält 26 Anpassungen, vollständige Ausgangsquellen und Fingerabdrücke der Dateien. Ein Fingerabdruck ist ein berechneter Wert, der Änderungen erkennt. Änderungen an der Quelle werden gemeldet, ohne die Anpassungen zu überschreiben. Anbieter-Skills für Dokumente bleiben bei ihrem bisherigen Eigentümer.
 
@@ -45,6 +71,30 @@ Claude-Quellordner gehen in die manuelle Prüfung ein; danach installiert das We
 
 ## Who receives its output
 Codex liest die installierten Skills. Die nutzende Person erhält Ergebnisse und Hinweise auf fehlende Fähigkeiten.
+
+## Engineering practices
+Wie dieses Projekt dem Goldenen Weg von [[project-template]] folgt.
+
+### Prinzipien
+1. **Codex besitzt die Anpassungen**: Die Claude-Originale sind nur lesbare Eingaben, werden nie automatisch zusammengeführt und nie als gültige Anweisungen gelesen.
+2. **Nichts wird ungeprüft installiert**: `skillsctl check` prüft jeden Skill, und die Installation legt Sicherungen an, die sich zurückspielen lassen.
+3. **Anforderung, dann Test, dann Code**: Tests tragen `REQ CS-N`, geprüft vom Rückverfolgbarkeitsschritt des Gates.
+4. **Das Gate entscheidet**: `tools/quality_gate.sh` ist die einzige Definition von „bestanden“, und die kontinuierliche Integration führt es aus.
+
+### Entscheidungen
+Drei Architekturentscheidungsprotokolle (kurze Notizen, die die Gründe einer Entscheidung bewahren) in `docs/adr/`: 0002 Anpassungen im Besitz von Codex mit ausdrücklicher Fähigkeitserkennung; 0003 ein Programm misst und ein Skill urteilt. `DESIGN.md` enthält das Diagramm und das Entscheidungsprotokoll.
+
+### Anforderungen
+8 Anforderungen (Präfix CS) in `docs/REQUIREMENTS.md`. Jede hat einen Test mit dem Tag `REQ CS-N`, und die Rückverfolgbarkeitsprüfung ([[check-traceability]]) schlägt fehl, wenn eine keinen hat.
+
+### Quality Gate
+Das Gate führt `skillsctl check` aus; die Unit-Tests; eine Mutationsprüfung (absichtlich eingebaute Fehler müssen auffallen); die Rückverfolgbarkeit der Anforderungen; und die Fitnessfunktionen.
+
+### Kontinuierliche Integration
+Kontinuierliche Integration (CI) heißt automatische Prüfungen bei jedem Push. Der Workflow `quality-gate.yml` führt das Gate bei jedem Push auf GitHub aus, über `pipeline-check`, festgelegt in `pipeline-check.version`.
+
+### Wartung
+Technische Schulden werden als GitHub-Issues mit dem Label `debt` (P1 bis P3) nach der [[maintenance-policy]] geführt. Die [[monthly-architecture-review]] prüft das Projekt jeden Monat; die nächste ist am 22.11.2026 fällig.
 
 ## Notes
 

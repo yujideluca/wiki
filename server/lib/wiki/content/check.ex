@@ -6,7 +6,7 @@ defmodule Wiki.Content.Check do
   `local: true` adds the checks that need the laptop (sources exist, memory refs exist);
   CI runs without them because it cannot see the other private repositories.
   """
-  alias Wiki.Content.{Page, Store, Sources, Privacy, SkillSource, Flow}
+  alias Wiki.Content.{Page, Store, Sources, Privacy, SkillSource, Flow, Architecture, Practices}
 
   @statuses ~w(active beta retired planned)
   @no_edges_ok ~w(actor external)
@@ -54,6 +54,7 @@ defmodule Wiki.Content.Check do
         end) ++
         [skill_definition(p)] ++
         flow(p) ++
+        project_sections(p) ++
         acronyms(p, store.acronyms) ++
         Enum.map(Page.links(p), &(!MapSet.member?(ids, &1) && "link [[#{&1}]] points to no page")) ++
         Enum.map(Page.list(p, "fed_by"), &(!MapSet.member?(ids, &1) && "fed_by #{&1} points to no page")) ++
@@ -79,6 +80,20 @@ defmodule Wiki.Content.Check do
     cond do
       text == "" -> if p.header["kind"] in @flow_kinds, do: ["section ## Flow is missing: a #{p.header["kind"]} page shows its chain as a flowchart"], else: []
       true -> Flow.problems(text)
+    end
+  end
+
+  # PJ-1, PJ-2: a project that lives in a repository shows its C4 diagrams and how it follows the golden path of
+  # project-template. A project that is a folder of the laptop (`location: home:...`) has neither.
+  defp project_sections(p) do
+    repo? = p.header["kind"] == "project" and not String.starts_with?(p.header["location"] || "", "home:")
+    arch = Page.section(p, "architecture")
+    prac = Page.section(p, "practices")
+
+    cond do
+      repo? and arch == "" -> ["section ## Architecture is missing: a project in a repository shows its C4 diagrams"]
+      repo? and prac == "" -> ["section ## Engineering practices is missing: a project in a repository shows how it follows project-template"]
+      true -> (if arch == "", do: [], else: Architecture.problems(arch)) ++ (if prac == "", do: [], else: Practices.problems(prac))
     end
   end
 
@@ -200,6 +215,8 @@ defmodule Wiki.Content.Check do
               "#{t.file}: sections missing: #{Enum.join(miss, ", ")}"
             (flow_problem = translated_flow_problem(p, t)) != nil ->
               "#{t.file}: #{flow_problem}"
+            (project_problem = translated_project_problem(p, t)) != nil ->
+              "#{t.file}: #{project_problem}"
             true -> nil
           end
       end
@@ -221,6 +238,23 @@ defmodule Wiki.Content.Check do
       en == "" -> "section ## Flow has no English original"
       (problems = Flow.problems(tr)) != [] -> Enum.join(problems, "; ")
       Flow.skeleton(en) != Flow.skeleton(tr) -> "flow differs from the English one in boxes, links or arrows (only the words may change)"
+      true -> nil
+    end
+  end
+
+  # PJ-1, PJ-2: a translation keeps the English diagrams (boxes, links, arrows) and the number of practice parts.
+  defp translated_project_problem(p, t) do
+    {en_a, tr_a} = {Page.section(p, "architecture"), Page.section(t, "architecture")}
+    {en_p, tr_p} = {Page.section(p, "practices"), Page.section(t, "practices")}
+    arch_problems = if tr_a == "", do: [], else: Architecture.problems(tr_a)
+    prac_problems = if tr_p == "", do: [], else: Practices.problems(tr_p, true)
+
+    cond do
+      (en_a == "") != (tr_a == "") -> "section ## Architecture must exist in the translation exactly when it exists in English"
+      (en_p == "") != (tr_p == "") -> "section ## Engineering practices must exist in the translation exactly when it exists in English"
+      arch_problems != [] -> Enum.join(arch_problems, "; ")
+      tr_a != "" and Architecture.skeleton(en_a) != Architecture.skeleton(tr_a) -> "architecture differs from the English one in boxes, links or arrows (only the words may change)"
+      prac_problems != [] -> Enum.join(prac_problems, "; ")
       true -> nil
     end
   end

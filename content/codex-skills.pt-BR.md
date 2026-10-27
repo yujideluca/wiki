@@ -2,7 +2,7 @@
 id: codex-skills
 title: Codex skills
 lang: pt-BR
-source_hash: eb3b95269d69
+source_hash: 674c2db2650d
 ---
 
 ## What it is
@@ -34,6 +34,32 @@ s5 -> s6
 t2 -> s6
 s6 -> p3
 
+## Architecture
+### Contexto
+person g: Giovanni — revisa cada adaptação | [[giovanni]]
+system s: codex-skills — as skills adaptadas próprias do Codex
+external c: Skills do Claude — os originais, somente leitura | [[skills]]
+external x: Codex — encontra e carrega as skills | [[codex]]
+
+g -adapta à mão-> s
+c -é copiado como instantâneo para-> s
+s -instala skills para o-> x
+
+### Contêineres
+person g: Giovanni | [[giovanni]]
+store sr: sources/ — instantâneos exatos das skills do Claude
+store mf: manifest.json — impressões digitais, caminhos de origem, limites
+store sk: skills/ — as skills adaptadas que pertencem ao Codex
+container ct: skillsctl — verifica, aponta divergências, instala, desfaz | [[codex-skillsctl]]
+external lv: Links de skills que o Codex consegue descobrir | [[codex]]
+
+g -adapta-> sk
+g -executa-> ct
+ct -compara com-> sr
+ct -grava impressões digitais em-> mf
+ct -valida-> sk
+ct -instala, com backups-> lv
+
 ## What it does
 Mantém 26 adaptações, fontes originais completas e impressões digitais dos arquivos. Uma impressão digital é um valor calculado para detectar mudanças. Informa mudanças nas fontes sem sobrescrever as adaptações. Skills de documentos de fornecedores continuam sob os responsáveis anteriores.
 
@@ -45,6 +71,30 @@ As fontes Claude passam por revisão manual e as pastas Codex seguem para o inst
 
 ## Who receives its output
 O Codex lê as skills instaladas. A pessoa usuária recebe resultados e informações sobre capacidades ausentes.
+
+## Engineering practices
+Como este projeto segue o caminho dourado do [[project-template]].
+
+### Princípios
+1. **O Codex é dono das adaptações**: os originais do Claude são entradas somente de leitura, nunca mesclados automaticamente e nunca lidos como instruções ativas.
+2. **Nada é instalado sem verificação**: `skillsctl check` valida cada skill e a instalação guarda backups que podem ser desfeitos.
+3. **Requisito, depois teste, depois código**: os testes levam `REQ CS-N`, conferido pelo passo de rastreabilidade do portão.
+4. **O portão decide**: `tools/quality_gate.sh` é a única definição de “passou”, e a integração contínua a executa.
+
+### Decisões
+Três registros de decisão de arquitetura (notas curtas que guardam os motivos de uma decisão) em `docs/adr/`: 0002 adaptações pertencentes ao Codex com descoberta explícita de capacidades; 0003 um programa mede e uma skill julga. O `DESIGN.md` guarda o diagrama e o registro de decisões.
+
+### Requisitos
+8 requisitos (prefixo CS) em `docs/REQUIREMENTS.md`. Cada um tem um teste marcado `REQ CS-N`, e a verificação de rastreabilidade ([[check-traceability]]) falha quando algum não tem.
+
+### Portão de qualidade
+O portão roda `skillsctl check`; os testes unitários; uma checagem de mutação (falhas plantadas de propósito precisam ser pegas); a rastreabilidade dos requisitos; e as funções de aptidão.
+
+### Integração contínua
+Integração contínua (CI) significa verificações automáticas a cada push. O workflow `quality-gate.yml` roda o portão no GitHub a cada push, por meio do `pipeline-check` fixado em `pipeline-check.version`.
+
+### Manutenção
+A dívida técnica é registrada como issues do GitHub com o rótulo `debt` (P1 a P3), conforme a [[maintenance-policy]]. A [[monthly-architecture-review]] confere o projeto todo mês; a próxima vence em 2026-11-22.
 
 ## Notes
 

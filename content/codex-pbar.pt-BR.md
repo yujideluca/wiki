@@ -1,7 +1,7 @@
 ---
 id: codex-pbar
 lang: pt-BR
-source_hash: b1d9d2fef442
+source_hash: b51165c50416
 title: Progresso de tarefas no terminal do Codex
 ---
 
@@ -32,6 +32,36 @@ d1 -não-> p3
 d2 -não-> p1
 d2 -sim-> p2
 
+## Architecture
+### Contexto
+person g: Giovanni — trabalha com o Codex em um terminal | [[giovanni]]
+system p: codex-pbar — mostra o progresso da tarefa sob o terminal
+external a: Instruções globais do Codex — mandam o Codex relatar marcos | [[global-codex-agents]]
+external x: Codex — o assistente que faz o trabalho | [[codex]]
+external t: Terminal tmux — tem a linha em que o rodapé é desenhado
+
+a -instrui-> x
+x -relata marcos para-> p
+p -desenha o rodapé no-> t
+g -lê o rodapé no-> t
+
+### Contêineres
+person g: Giovanni | [[giovanni]]
+external x: Arquivos de sessão do Codex | [[codex]]
+container rd: Leitor incremental — o único código que abre os arquivos de sessão
+container co: Estado puro da sessão — não guarda texto de prompt nem de ferramenta
+container ap: Janela de desktop — mantida, não ligada
+container ft: Rodapé do terminal — tarefas concluídas/total e tempo restante
+store ts: Estado privado da tarefa — escrito pelas atualizações de marco
+store hs: Histórico privado de tempos — com hash
+
+rd -lê-> x
+rd -atualiza-> co
+rd -acrescenta ao-> hs
+co -alimenta a-> ap
+ft -lê-> ts
+g -vê-> ft
+
 ## What it does
 A linha permanece visível enquanto o Codex trabalha ou espera. Usa o estilo compacto do Claude: rótulo Progress verde sobre o fundo normal do terminal, separadores por ponto central, porcentagem, tarefas concluídas e tempo restante estimado. Não desenha uma barra de blocos. Duas etapas concluídas de cinco aparecem como `Progress: [ 40%] 2/5 tasks`. O tempo passar não aumenta a porcentagem. Quando a estimativa vence, aparece `over by` e o tempo excedido. Sem um plano de tarefa, a linha mostra `No active task`. Uma conclusão explícita continua visível até começar a próxima tarefa.
 
@@ -47,6 +77,30 @@ A barra funciona no terminal do notebook. O quality gate, conjunto de verificaç
 
 ## Who receives its output
 Giovanni lê a barra. O agente pode consultar `codex-task-progress show`. O programa de janela preservado não é ativado por esta instalação do terminal.
+
+## Engineering practices
+Como este projeto segue o caminho dourado do [[project-template]].
+
+### Princípios
+1. **Requisitos vêm antes das mudanças**: os testes levam `REQ PB-N`, e o passo de rastreabilidade do portão falha quando algum não tem.
+2. **Módulos puros ficam livres de código de interface e de rede**: o estado e o leitor são testados com testes unitários comuns, com cobertura de ramos exigida.
+3. **Nada privado é guardado**: nenhuma chamada de modelo ou de rede, nenhuma leitura de autenticação e nenhum argumento ou saída bruta de ferramenta no status ou histórico salvos.
+4. **O portão decide**: `tools/quality_gate.sh` é a única definição de “passou”, e a integração contínua o executa.
+
+### Decisões
+Quatro registros de decisão de arquitetura (notas curtas que guardam os motivos de uma decisão) em `docs/adr/`: 0002 um acompanhante de desktop em Python que lê os arquivos de sessão; 0003 um programa mede e uma skill julga; 0004 o rodapé persistente do terminal em uma linha própria do tmux, ligada à sua sessão. O `DESIGN.md` guarda o diagrama e o registro de decisões.
+
+### Requisitos
+10 requisitos (prefixo PB) em `docs/REQUIREMENTS.md`. Cada um tem um teste marcado `REQ PB-N`, e a verificação de rastreabilidade ([[check-traceability]]) falha quando algum não tem.
+
+### Portão de qualidade
+O portão roda os testes unitários com pelo menos 85 % de cobertura de ramos nos módulos de estado e de leitura; uma checagem de mutação (falhas plantadas de propósito precisam ser pegas); um teste de fumaça da janela sem tela; a rastreabilidade dos requisitos; e as funções de aptidão.
+
+### Integração contínua
+Integração contínua (CI) significa verificações automáticas a cada push. O workflow `quality-gate.yml` roda o portão no GitHub a cada push, por meio do `pipeline-check` fixado em `pipeline-check.version`.
+
+### Manutenção
+A dívida técnica é registrada como issues do GitHub com o rótulo `debt` (P1 a P3), conforme a [[maintenance-policy]]. A [[monthly-architecture-review]] confere o projeto todo mês; a próxima vence em 2026-11-22.
 
 ## Notes
 Instale a partir de `~/dev/codex-pbar` com `PYTHONPATH=src .venv/bin/python -m codex_pbar.terminal install`. Desconecte com `Ctrl-b d` e reconecte com `tmux -L codex-status attach`. O tempo é uma previsão do agente, não uma garantia medida. A mudança não acrescenta campos de tokens, contexto ou cotas.
