@@ -1,14 +1,14 @@
 ---
 id: radiology-report-matcher
 lang: de
-source_hash: 8ae7b3bc3078
+source_hash: ca16e3816285
 title: Radiology Report Matcher (geplante Website)
 ---
 
 ## What it is
 Ein Projekt für eine Website, auf der ein Radiologe den Freitextbefund einer bildgebenden Untersuchung eingibt, angibt, um welche Untersuchung und Technik es sich handelte, die Basisdaten der Patientin oder des Patienten und die klinische Vorgeschichte ergänzt und dann Folgendes erhält: eine gereihte Liste wahrscheinlicher Diagnosen mit den Befundwörtern, die jede einzelne ausgelöst haben, Links zu Artikeln, die den Fall erklären, und strukturierte Scores (ein „strukturierter Score“ ist ein festes Punktesystem, das beschriebene Befunde in eine Risikokategorie übersetzt; der erste geplante ist ACR TI-RADS, ein Score für Schilddrüsenknoten im Ultraschall). Das Matching ist reines Zählen und Rechnen mit Wörtern, kein Modell der künstlichen Intelligenz. Es soll für Befunde auf Englisch, Deutsch und brasilianischem Portugiesisch funktionieren. Giovanni will es auf einem eigens dafür gekauften Desktop-Computer betreiben, und es kann später ein kommerzielles Werkzeug werden.
 
-Stand 2026-10-27 gibt es nur den Teil zur Datensammlung: einen Crawler ([[radiopaedia-crawler]]) und einen Übersetzer ([[report-translator]]). Die Suche, die Score-Berechnung und die Website sind geplant, nicht gebaut. Der Plan mit Diagrammen und einem Entwicklungsprotokoll ist eine Offline-Website in `~/Documents/Radiology Report Matcher/`; das Skript `site_src/build.py` baut sie mit aktuellen Zahlen aus der Datenbank neu.
+Stand 2026-10-27 gibt es nur den Teil zur Datensammlung: einen Crawler ([[radiopaedia-crawler]]) und einen Übersetzer ([[report-translator]]). Die Suche, die Score-Berechnung und die Website sind geplant, nicht gebaut. Der Plan mit Diagrammen und einem Entwicklungsprotokoll ist eine Offline-Website in `~/Documents/Radiology Report Matcher/`; das Skript `site_src/build.py` baut sie mit aktuellen Zahlen aus der Datenbank neu. `python3 -I site_src/build.py watch` schreibt alle 5 Sekunden eine kleine Datendatei (`progress-data.js`); die geöffneten Seiten (Start, Crawler, Übersetzung) laden sie neu und bewegen ihre Fortschrittsbalken: heruntergeladene Artikel und Fälle, ins Deutsche und Portugiesische übersetzte Artikel. Läuft der Aktualisierer nicht, sagt die Seite, dass ihre Zahlen alt sind.
 
 ## Flow
 trigger t1: Giovanni bittet um das Projekt und den nächsten Schritt | [[claude-code]]
@@ -82,10 +82,10 @@ Wie dieses Projekt dem Goldenen Weg von [[project-template]] folgt.
 Vier Architecture Decision Records (ADRs, kurze Notizen, die die Gründe einer Entscheidung festhalten) in `docs/adr/`: Entscheidungen festhalten (0001), der Stack und die Regel für die Mathematik (0002), das Wartungsprogramm misst und der Review-Skill urteilt (0003), dazu die leere Vorlage (0000).
 
 ### Requirements
-Elf Anforderungen in `docs/REQUIREMENTS.md`: fünf für den Crawler (Präfix CW), fünf für den Übersetzer (TL) und eine für die Planwebsite (WS). Jede hat einen Test mit dem Tag `REQ <ID>`; der Rückverfolgbarkeitsschritt schlägt fehl, wenn eine keinen hat.
+Dreizehn Anforderungen in `docs/REQUIREMENTS.md`: fünf für den Crawler (Präfix CW), sechs für den Übersetzer (TL) und zwei für die Planwebsite (WS). Jede hat einen Test mit dem Tag `REQ <ID>`; der Rückverfolgbarkeitsschritt schlägt fehl, wenn eine keinen hat.
 
 ### Quality gate
-`tools/quality_gate.sh` hat drei Schritte: den Code kompilieren und die 11 Tests ausführen; Rückverfolgbarkeit der Anforderungen; die Fitnessfunktionen von `pipeline-check` (dem Wartungsprogramm, siehe [[pipeline-check]]): Architekturregel, Lint der Shell-Skripte, eine Grenze von 800 Zeilen pro Python-Datei und die Dauer des Tors.
+`tools/quality_gate.sh` hat drei Schritte: den Code kompilieren und die 13 Tests ausführen; Rückverfolgbarkeit der Anforderungen; die Fitnessfunktionen von `pipeline-check` (dem Wartungsprogramm, siehe [[pipeline-check]]): Architekturregel, Lint der Shell-Skripte, eine Grenze von 800 Zeilen pro Python-Datei und die Dauer des Tors.
 
 ### Continuous integration
 Continuous Integration (CI) bedeutet automatische Prüfungen bei jedem Push. Der Workflow `quality-gate.yml` führt das Tor auf GitHub aus; eine lokale Prüfung vor dem Push führt es aus, bevor `main` hochgeladen wird. Am 2026-10-27 scheiterte der erste Lauf, weil eine frische Kopie des Repositorys keinen Ordner `data/` hat und die Log-Funktion des Crawlers einen voraussetzte; die Korrektur bestand.

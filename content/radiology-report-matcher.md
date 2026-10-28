@@ -9,13 +9,13 @@ location: radiology-crawler:
 fed_by: []
 feeds: []
 sources: [radiology-crawler:DESIGN.md, radiology-crawler:CLAUDE.md, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/adr/0002-technology-and-languages.md, radiology-crawler:tools/quality_gate.sh, radiology-crawler:.github/workflows/quality-gate.yml, radiology-crawler:site_src/build.py, radiology-crawler:run_all.sh]
-reviewed: 2026-10-27T20:14Z
+reviewed: 2026-10-28T05:51Z
 ---
 
 ## What it is
 A project to build a website where a radiologist types the free-text report of an imaging exam, says which exam and technique it was, adds the patient's basic data and clinical history, and gets back: a ranked list of likely diagnoses with the report words that caused each one, links to articles that explain the case, and structured scores (a "structured score" is a fixed points system that turns described findings into a risk category; the first one planned is ACR TI-RADS, a score for thyroid nodules on ultrasound). The matching is plain counting and arithmetic on words, not an artificial-intelligence model. It should work for reports written in English, German and Brazilian Portuguese. Giovanni plans to run it on a desktop computer bought for the purpose, and it may become a commercial tool later.
 
-As of 2026-10-27 only the data-collection part exists: a crawler ([[radiopaedia-crawler]]) and a translator ([[report-translator]]). The search, the score engine and the website are planned, not built. The plan, with diagrams and a development log, is an offline website in `~/Documents/Radiology Report Matcher/`; the script `site_src/build.py` rebuilds it with live numbers from the database.
+As of 2026-10-27 only the data-collection part exists: a crawler ([[radiopaedia-crawler]]) and a translator ([[report-translator]]). The search, the score engine and the website are planned, not built. The plan, with diagrams and a development log, is an offline website in `~/Documents/Radiology Report Matcher/`; the script `site_src/build.py` rebuilds it with live numbers from the database. `python3 -I site_src/build.py watch` rewrites a small data file (`progress-data.js`) every 5 seconds, and the open pages (home, crawler, translation) reload it and move their progress bars: articles and cases downloaded, articles translated to German and Portuguese. If the updater is not running, the page says its numbers are old.
 
 ## Flow
 trigger t1: Giovanni asks for the project and its next step | [[claude-code]]
@@ -89,7 +89,7 @@ How this project follows the golden path of [[project-template]].
 Four architecture decision records (ADRs, short notes that keep the reasons for a decision) in `docs/adr/`: record decisions (0001), the stack and the rule for the math (0002), the maintenance program measures and the review skill judges (0003), plus the blank template (0000).
 
 ### Requirements
-Eleven requirements in `docs/REQUIREMENTS.md`: five for the crawler (prefix CW), five for the translator (TL) and one for the plan site (WS). Each has a test tagged `REQ <ID>`; the traceability step fails when one has none.
+Thirteen requirements in `docs/REQUIREMENTS.md`: five for the crawler (prefix CW), six for the translator (TL) and two for the plan site (WS). Each has a test tagged `REQ <ID>`; the traceability step fails when one has none.
 
 ### Quality gate
 `tools/quality_gate.sh` has three steps: compile the code and run the 11 tests; requirement traceability; the fitness functions of `pipeline-check` (the maintenance program, see [[pipeline-check]]): architecture rule, shell-script lint, a limit of 800 lines per Python file, and gate time.

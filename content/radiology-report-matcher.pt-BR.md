@@ -1,14 +1,14 @@
 ---
 id: radiology-report-matcher
 lang: pt-BR
-source_hash: 8ae7b3bc3078
+source_hash: ca16e3816285
 title: Radiology Report Matcher (site planejado)
 ---
 
 ## What it is
 Um projeto para construir um site em que um radiologista digita o laudo em texto livre de um exame de imagem, informa qual foi o exame e a técnica, acrescenta os dados básicos do paciente e a história clínica e recebe de volta: uma lista ordenada de diagnósticos prováveis com as palavras do laudo que causaram cada um, links para artigos que explicam o caso e escores estruturados (um "escore estruturado" é um sistema fixo de pontos que transforma achados descritos em uma categoria de risco; o primeiro planejado é o ACR TI-RADS, um escore para nódulos de tireoide na ultrassonografia). A correspondência é só contagem e aritmética com palavras, não um modelo de inteligência artificial. Deve funcionar para laudos em inglês, alemão e português do Brasil. Giovanni pretende rodá-lo em um computador desktop comprado para isso, e ele pode se tornar uma ferramenta comercial no futuro.
 
-Em 2026-10-27 existe apenas a parte de coleta de dados: um rastreador ([[radiopaedia-crawler]]) e um tradutor ([[report-translator]]). A busca, o cálculo dos escores e o site estão planejados, não construídos. O plano, com diagramas e um diário de desenvolvimento, é um site offline em `~/Documents/Radiology Report Matcher/`; o script `site_src/build.py` o reconstrói com números atuais do banco de dados.
+Em 2026-10-27 existe apenas a parte de coleta de dados: um rastreador ([[radiopaedia-crawler]]) e um tradutor ([[report-translator]]). A busca, o cálculo dos escores e o site estão planejados, não construídos. O plano, com diagramas e um diário de desenvolvimento, é um site offline em `~/Documents/Radiology Report Matcher/`; o script `site_src/build.py` o reconstrói com números atuais do banco de dados. `python3 -I site_src/build.py watch` reescreve a cada 5 segundos um pequeno arquivo de dados (`progress-data.js`); as páginas abertas (início, rastreador, tradução) o recarregam e movem suas barras de progresso: artigos e casos baixados, artigos traduzidos para alemão e português. Se o atualizador não estiver rodando, a página avisa que os números estão antigos.
 
 ## Flow
 trigger t1: Giovanni pede o projeto e o próximo passo | [[claude-code]]
@@ -82,10 +82,10 @@ Como este projeto segue o caminho dourado do [[project-template]].
 Quatro registros de decisão de arquitetura (ADRs, notas curtas que guardam os motivos de uma decisão) em `docs/adr/`: registrar decisões (0001), a stack e a regra para a matemática (0002), o programa de manutenção mede e a skill de revisão julga (0003), além do modelo em branco (0000).
 
 ### Requirements
-Onze requisitos em `docs/REQUIREMENTS.md`: cinco para o rastreador (prefixo CW), cinco para o tradutor (TL) e um para o site de plano (WS). Cada um tem um teste com a marca `REQ <ID>`; a etapa de rastreabilidade falha quando algum não tem.
+Treze requisitos em `docs/REQUIREMENTS.md`: cinco para o rastreador (prefixo CW), seis para o tradutor (TL) e dois para o site de plano (WS). Cada um tem um teste com a marca `REQ <ID>`; a etapa de rastreabilidade falha quando algum não tem.
 
 ### Quality gate
-`tools/quality_gate.sh` tem três etapas: compilar o código e rodar os 11 testes; rastreabilidade dos requisitos; as funções de aptidão do `pipeline-check` (o programa de manutenção, veja [[pipeline-check]]): regra de arquitetura, lint dos scripts de shell, limite de 800 linhas por arquivo Python e tempo do portão.
+`tools/quality_gate.sh` tem três etapas: compilar o código e rodar os 13 testes; rastreabilidade dos requisitos; as funções de aptidão do `pipeline-check` (o programa de manutenção, veja [[pipeline-check]]): regra de arquitetura, lint dos scripts de shell, limite de 800 linhas por arquivo Python e tempo do portão.
 
 ### Continuous integration
 Integração contínua (CI) significa verificações automáticas a cada push. O workflow `quality-gate.yml` roda o portão no GitHub; uma verificação local antes do push o roda antes de `main` ser enviada. Em 2026-10-27 a primeira execução falhou porque uma cópia nova do repositório não tem a pasta `data/` e a função de log do rastreador supunha que existia; a correção passou.
