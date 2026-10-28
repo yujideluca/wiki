@@ -1,7 +1,7 @@
 ---
 id: report-translator
 lang: pt-BR
-source_hash: 37604fb0312d
+source_hash: bd2c259b2e7a
 title: Tradutor de laudos (translate.py)
 ---
 
@@ -23,7 +23,7 @@ s -toma o vocabulário de-> b
 
 ### Containers
 person g: Giovanni | [[giovanni]]
-container cm: Comandos — refindex, translate, loop, tstats
+container cm: Comandos — refindex, translate, loop, tstats, progress
 container pf: Localizador de trechos — similaridade de cosseno de pedaços de 4 letras
 store ixf: Arquivos de índice dos livros — um por idioma
 store art: tabela articles — o texto em inglês
@@ -39,12 +39,13 @@ cm -pede traduções a-> c
 cm -grava resultados em-> tr
 
 ## What it does
-Tem quatro comandos, executados como `python3 -I translate.py <comando>` em `~/dev/radiology-crawler`:
+Tem cinco comandos, executados como `python3 -I translate.py <comando>` em `~/dev/radiology-crawler`:
 
 - `refindex` divide cada livro de referência em trechos de 60 a 160 palavras e monta uma tabela de busca para eles.
 - `translate --lang de|pt --limit N` traduz até N artigos que ainda não têm tradução.
 - `loop` roda continuamente em segundo plano e traduz os artigos à medida que chegam, cinco por vez em cada idioma, e dorme quando não há nada a fazer. Opções: `--worker I/K` (este worker pega um artigo a cada K, então vários workers podem rodar em paralelo), `--langs`, `--extract` (também extrai as páginas recém-baixadas; só um worker) e `--daily-cap N` (0, o padrão, significa sem limite; UTC é o mesmo horário em todo lugar). Um artigo que falha três vezes é registrado na tabela `translation_failures` e pulado; se toda tentativa de uma rodada falhar, o worker espera 15 minutos. Criar o arquivo `data/STOP_TRANSLATION` encerra todos os workers.
 - `tstats` mostra quantas páginas foram traduzidas e o tempo médio.
+- `progress` mostra uma barra de progresso ao vivo para cada idioma: páginas traduzidas do total de páginas de artigo listadas nos sitemaps, com porcentagem, mais uma barra das páginas extraídas até agora. No terminal ela é redesenhada no mesmo lugar a cada 2 segundos (`--interval S` muda isso) até Ctrl-C; `--once`, ou uma saída que não seja terminal, imprime um único quadro. Ela só lê o banco de dados e pode rodar ao lado dos workers.
 
 Os resultados vão para a tabela `translations` (endereço da página, idioma, título, texto, os trechos de livro usados, segundos gastos, modelo).
 

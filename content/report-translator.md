@@ -9,7 +9,7 @@ location: radiology-crawler:translate.py
 fed_by: [radiopaedia-crawler]
 feeds: []
 sources: [radiology-crawler:translate.py]
-reviewed: 2026-10-27T20:14Z
+reviewed: 2026-10-28T05:38Z
 ---
 
 ## What it is
@@ -30,7 +30,7 @@ s -takes wording from-> b
 
 ### Containers
 person g: Giovanni | [[giovanni]]
-container cm: Commands — refindex, translate, loop, tstats
+container cm: Commands — refindex, translate, loop, tstats, progress
 container pf: Passage finder — cosine similarity of 4-letter pieces
 store ixf: Book index files — one per language
 store art: articles table — the English text
@@ -46,12 +46,13 @@ cm -asks for translations from-> c
 cm -saves results in-> tr
 
 ## What it does
-It has four commands, run as `python3 -I translate.py <command>` in `~/dev/radiology-crawler`:
+It has five commands, run as `python3 -I translate.py <command>` in `~/dev/radiology-crawler`:
 
 - `refindex` cuts each reference book into passages of 60 to 160 words and builds a search table for them.
 - `translate --lang de|pt --limit N` translates up to N articles that have no translation yet.
 - `loop` runs forever in the background and translates articles as they arrive, five at a time per language, and sleeps when there is nothing to do. Options: `--worker I/K` (this worker takes every K-th article, so several workers can run in parallel), `--langs`, `--extract` (also extract newly downloaded pages; one worker only) and `--daily-cap N` (0, the default, means no cap; UTC is the same clock time everywhere). An article that fails three times is recorded in the table `translation_failures` and skipped; if every attempt in a round fails, the worker waits 15 minutes. Creating the file `data/STOP_TRANSLATION` ends all workers.
 - `tstats` shows how many pages are translated and the average time.
+- `progress` shows a live progress bar for each language: pages translated out of all article pages listed in the sitemaps, with a percentage, plus a bar for pages extracted so far. On a terminal it redraws in place every 2 seconds (`--interval S` changes this) until Ctrl-C; `--once`, or output that is not a terminal, prints one frame. It only reads the database, so it can run next to the workers.
 
 Results go into the table `translations` (page address, language, title, text, the textbook passages used, seconds taken, model).
 

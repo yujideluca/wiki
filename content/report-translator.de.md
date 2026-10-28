@@ -1,7 +1,7 @@
 ---
 id: report-translator
 lang: de
-source_hash: 37604fb0312d
+source_hash: bd2c259b2e7a
 title: Befund-Übersetzer (translate.py)
 ---
 
@@ -23,7 +23,7 @@ s -übernimmt Wortwahl aus-> b
 
 ### Containers
 person g: Giovanni | [[giovanni]]
-container cm: Befehle — refindex, translate, loop, tstats
+container cm: Befehle — refindex, translate, loop, tstats, progress
 container pf: Passagenfinder — Kosinus-Ähnlichkeit von Vier-Buchstaben-Stücken
 store ixf: Buchindex-Dateien — eine je Sprache
 store art: Tabelle articles — der englische Text
@@ -39,12 +39,13 @@ cm -bittet um Übersetzungen von-> c
 cm -speichert Ergebnisse in-> tr
 
 ## What it does
-Es hat vier Befehle, ausgeführt als `python3 -I translate.py <Befehl>` in `~/dev/radiology-crawler`:
+Es hat fünf Befehle, ausgeführt als `python3 -I translate.py <Befehl>` in `~/dev/radiology-crawler`:
 
 - `refindex` zerlegt jedes Referenzbuch in Passagen von 60 bis 160 Wörtern und baut dafür eine Suchtabelle.
 - `translate --lang de|pt --limit N` übersetzt bis zu N Artikel, die noch keine Übersetzung haben.
 - `loop` läuft dauerhaft im Hintergrund und übersetzt Artikel, sobald sie eintreffen, je Sprache fünf auf einmal, und schläft, wenn nichts zu tun ist. Optionen: `--worker I/K` (dieser Worker nimmt jeden K-ten Artikel, sodass mehrere Worker parallel laufen können), `--langs`, `--extract` (extrahiert auch neu heruntergeladene Seiten; nur ein Worker) und `--daily-cap N` (0, der Standard, heißt keine Grenze; UTC ist überall dieselbe Uhrzeit). Ein Artikel, der dreimal scheitert, wird in der Tabelle `translation_failures` vermerkt und übersprungen; scheitert in einer Runde jeder Versuch, wartet der Worker 15 Minuten. Das Anlegen der Datei `data/STOP_TRANSLATION` beendet alle Worker.
 - `tstats` zeigt, wie viele Seiten übersetzt sind, und die durchschnittliche Dauer.
+- `progress` zeigt für jede Sprache einen Live-Fortschrittsbalken: übersetzte Seiten von allen in den Sitemaps gelisteten Artikelseiten, mit Prozentzahl, dazu einen Balken für die bisher extrahierten Seiten. Im Terminal wird er alle 2 Sekunden an Ort und Stelle neu gezeichnet (`--interval S` ändert das) bis Strg-C; `--once` oder eine Ausgabe, die kein Terminal ist, gibt ein einzelnes Bild aus. Das Programm liest nur die Datenbank und kann neben den Workern laufen.
 
 Die Ergebnisse stehen in der Tabelle `translations` (Seitenadresse, Sprache, Titel, Text, die verwendeten Lehrbuchpassagen, benötigte Sekunden, Modell).
 
