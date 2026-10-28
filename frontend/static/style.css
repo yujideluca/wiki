@@ -73,7 +73,7 @@ button, select, input { font: inherit; }
 
 /* Map */
 .map-wrap { position: relative; overflow: hidden; background: radial-gradient(ellipse at 50% 40%, #10151c 0%, var(--bg) 70%); border-bottom: 1px solid var(--line); }
-svg.map { display: block; cursor: grab; max-width: 100%; }
+svg.map { display: block; cursor: grab; max-width: 100%; user-select: none; -webkit-user-select: none; }
 html, body { overflow-x: hidden; }
 svg.map:active { cursor: grabbing; }
 .globe-body { stroke: rgba(120,150,200,.18); stroke-width: 1; }
@@ -87,7 +87,7 @@ svg.map:active { cursor: grabbing; }
 .node { cursor: pointer; transition: opacity .07s; }
 .node .dot { stroke: rgba(0,0,0,.6); stroke-width: 1.5; transition: r .07s; }
 .node .halo { fill: none; stroke: var(--gold); stroke-width: 2; }
-.node .label { fill: #cfc9bb; pointer-events: none; paint-order: stroke; stroke: var(--bg); stroke-width: 3px; }
+.node .label { fill: #cfc9bb; pointer-events: all; user-select: text; -webkit-user-select: text; cursor: text; paint-order: stroke; stroke: var(--bg); stroke-width: 3px; }
 .node.active .label { fill: #fff; font-weight: 600; }
 .node.dim { opacity: .22; }
 .node.retired .dot { opacity: .45; }

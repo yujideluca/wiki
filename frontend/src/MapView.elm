@@ -331,6 +331,9 @@ node lang graph ( x, y ) look n =
                     , S.textAnchor "middle"
                     , S.class "label"
                     , S.fontSize (String.fromFloat look.labelSize)
+                    -- only a drag that starts on the text selects it: no pan, no dot drag, no page opening
+                    , SE.stopPropagationOn "mousedown" (D.succeed ( NoOp, True ))
+                    , SE.stopPropagationOn "click" (D.succeed ( NoOp, True ))
                     ]
                     [ Svg.text (Data.title lang n) ]
 
