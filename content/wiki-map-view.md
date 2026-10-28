@@ -9,7 +9,7 @@ location: wiki:frontend/src/MapView.elm
 fed_by: []
 feeds: [wiki-frontend]
 sources: [wiki:frontend/src/MapView.elm, wiki:frontend/src/Lens.elm, wiki:frontend/src/Motion.elm, wiki:frontend/src/Layout.elm, wiki:frontend/src/MapSize.elm, wiki:frontend/src/Filter.elm]
-reviewed: 2026-10-28T17:28Z
+reviewed: 2026-10-28T17:46Z
 ---
 
 ## What it is
