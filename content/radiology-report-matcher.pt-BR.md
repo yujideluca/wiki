@@ -1,14 +1,14 @@
 ---
 id: radiology-report-matcher
 lang: pt-BR
-source_hash: ca16e3816285
+source_hash: 6ca7f11a3733
 title: Radiology Report Matcher (site planejado)
 ---
 
 ## What it is
 Um projeto para construir um site em que um radiologista digita o laudo em texto livre de um exame de imagem, informa qual foi o exame e a técnica, acrescenta os dados básicos do paciente e a história clínica e recebe de volta: uma lista ordenada de diagnósticos prováveis com as palavras do laudo que causaram cada um, links para artigos que explicam o caso e escores estruturados (um "escore estruturado" é um sistema fixo de pontos que transforma achados descritos em uma categoria de risco; o primeiro planejado é o ACR TI-RADS, um escore para nódulos de tireoide na ultrassonografia). A correspondência é só contagem e aritmética com palavras, não um modelo de inteligência artificial. Deve funcionar para laudos em inglês, alemão e português do Brasil. Giovanni pretende rodá-lo em um computador desktop comprado para isso, e ele pode se tornar uma ferramenta comercial no futuro.
 
-Em 2026-10-27 existe apenas a parte de coleta de dados: um rastreador ([[radiopaedia-crawler]]) e um tradutor ([[report-translator]]). A busca, o cálculo dos escores e o site estão planejados, não construídos. O plano, com diagramas e um diário de desenvolvimento, é um site offline em `~/Documents/Radiology Report Matcher/`; o script `site_src/build.py` o reconstrói com números atuais do banco de dados. `python3 -I site_src/build.py watch` reescreve a cada 5 segundos um pequeno arquivo de dados (`progress-data.js`); as páginas abertas (início, rastreador, tradução) o recarregam e movem suas barras de progresso: artigos e casos baixados, artigos traduzidos para alemão e português. Se o atualizador não estiver rodando, a página avisa que os números estão antigos.
+Em 2026-10-27 existe apenas a parte de coleta de dados: um rastreador ([[radiopaedia-crawler]]) e um tradutor ([[report-translator]]). A busca, o cálculo dos escores e o site estão planejados, não construídos. O plano, com diagramas e um diário de desenvolvimento, é um site offline em `~/Documents/Radiology Report Matcher/`; o script `site_src/build.py` o reconstrói com números atuais do banco de dados. `python3 -I site_src/build.py watch` reescreve a cada 5 segundos um pequeno arquivo de dados (`progress-data.js`); todas as páginas abertas o recarregam e movem suas barras de progresso e os contadores das caixas de resumo: artigos e casos baixados, artigos extraídos, artigos traduzidos para alemão e português, tempo médio de tradução. Se o atualizador não estiver rodando, a página avisa que os números estão antigos.
 
 ## Flow
 trigger t1: Giovanni pede o projeto e o próximo passo | [[claude-code]]

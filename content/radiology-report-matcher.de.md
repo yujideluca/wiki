@@ -1,14 +1,14 @@
 ---
 id: radiology-report-matcher
 lang: de
-source_hash: ca16e3816285
+source_hash: 6ca7f11a3733
 title: Radiology Report Matcher (geplante Website)
 ---
 
 ## What it is
 Ein Projekt für eine Website, auf der ein Radiologe den Freitextbefund einer bildgebenden Untersuchung eingibt, angibt, um welche Untersuchung und Technik es sich handelte, die Basisdaten der Patientin oder des Patienten und die klinische Vorgeschichte ergänzt und dann Folgendes erhält: eine gereihte Liste wahrscheinlicher Diagnosen mit den Befundwörtern, die jede einzelne ausgelöst haben, Links zu Artikeln, die den Fall erklären, und strukturierte Scores (ein „strukturierter Score“ ist ein festes Punktesystem, das beschriebene Befunde in eine Risikokategorie übersetzt; der erste geplante ist ACR TI-RADS, ein Score für Schilddrüsenknoten im Ultraschall). Das Matching ist reines Zählen und Rechnen mit Wörtern, kein Modell der künstlichen Intelligenz. Es soll für Befunde auf Englisch, Deutsch und brasilianischem Portugiesisch funktionieren. Giovanni will es auf einem eigens dafür gekauften Desktop-Computer betreiben, und es kann später ein kommerzielles Werkzeug werden.
 
-Stand 2026-10-27 gibt es nur den Teil zur Datensammlung: einen Crawler ([[radiopaedia-crawler]]) und einen Übersetzer ([[report-translator]]). Die Suche, die Score-Berechnung und die Website sind geplant, nicht gebaut. Der Plan mit Diagrammen und einem Entwicklungsprotokoll ist eine Offline-Website in `~/Documents/Radiology Report Matcher/`; das Skript `site_src/build.py` baut sie mit aktuellen Zahlen aus der Datenbank neu. `python3 -I site_src/build.py watch` schreibt alle 5 Sekunden eine kleine Datendatei (`progress-data.js`); die geöffneten Seiten (Start, Crawler, Übersetzung) laden sie neu und bewegen ihre Fortschrittsbalken: heruntergeladene Artikel und Fälle, ins Deutsche und Portugiesische übersetzte Artikel. Läuft der Aktualisierer nicht, sagt die Seite, dass ihre Zahlen alt sind.
+Stand 2026-10-27 gibt es nur den Teil zur Datensammlung: einen Crawler ([[radiopaedia-crawler]]) und einen Übersetzer ([[report-translator]]). Die Suche, die Score-Berechnung und die Website sind geplant, nicht gebaut. Der Plan mit Diagrammen und einem Entwicklungsprotokoll ist eine Offline-Website in `~/Documents/Radiology Report Matcher/`; das Skript `site_src/build.py` baut sie mit aktuellen Zahlen aus der Datenbank neu. `python3 -I site_src/build.py watch` schreibt alle 5 Sekunden eine kleine Datendatei (`progress-data.js`); alle geöffneten Seiten laden sie neu und bewegen ihre Fortschrittsbalken und die Zähler in den Übersichtskästen: heruntergeladene Artikel und Fälle, extrahierte Artikel, ins Deutsche und Portugiesische übersetzte Artikel, durchschnittliche Übersetzungsdauer. Läuft der Aktualisierer nicht, sagt die Seite, dass ihre Zahlen alt sind.
 
 ## Flow
 trigger t1: Giovanni bittet um das Projekt und den nächsten Schritt | [[claude-code]]
