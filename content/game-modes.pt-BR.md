@@ -1,7 +1,7 @@
 ---
 id: game-modes
 lang: pt-BR
-source_hash: 5cfec11114a4
+source_hash: 5b6e8d2846c9
 title: Os cinco modos de jogo
 ---
 
@@ -13,7 +13,7 @@ São as cinco formas como o [[quizapp]] e o [[quizweb]] testam alemão de nível
 - **Präpositionen** (preposições): completar a preposição que falta em 309 frases.
 - **Pluralformen** (formas de plural): dar o plural dos mesmos substantivos.
 - **Präteritum** (passado simples): dar a forma er/sie/es ("ele/ela") de 253 verbos.
-- **Fehler finden** (achar o erro): tocar na única parte errada de 144 frases no estilo de postagens de fórum ou e-mails formais, construídas a partir dos erros que o Giovanni cometeu em simulados B2 corrigidos.
+- **Fehler finden** (achar o erro): tocar na única parte errada de 155 frases no estilo de postagens de fórum ou e-mails formais, construídas a partir dos erros que o Giovanni cometeu em simulados B2 corrigidos.
 
 ## How it does it
 Cada modo é um valor `GameMode` com um id de armazenamento. Todos produzem a mesma forma `Card` pelo [[card-factory]], então acrescentar um modo é uma mudança pequena. Só o Fehler finden espera um toque em "Próximo" (`autoAdvances = false`); os outros avançam sozinhos depois do feedback.

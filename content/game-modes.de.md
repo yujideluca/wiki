@@ -1,7 +1,7 @@
 ---
 id: game-modes
 lang: de
-source_hash: 5cfec11114a4
+source_hash: 5b6e8d2846c9
 title: Die fünf Spielmodi
 ---
 
@@ -13,7 +13,7 @@ Das sind die fünf Arten, wie [[quizapp]] und [[quizweb]] Deutsch auf B2-Niveau 
 - **Präpositionen**: in 309 Sätzen die fehlende Präposition ergänzen.
 - **Pluralformen**: den Plural derselben Nomen bilden.
 - **Präteritum**: die er/sie/es-Form von 253 Verben bilden.
-- **Fehler finden**: in 144 Sätzen im Stil von Forumsbeiträgen oder formellen E-Mails den einen falschen Teil antippen, gebaut aus den Fehlern, die Giovanni in korrigierten B2-Probeprüfungen gemacht hat.
+- **Fehler finden**: in 155 Sätzen im Stil von Forumsbeiträgen oder formellen E-Mails den einen falschen Teil antippen, gebaut aus den Fehlern, die Giovanni in korrigierten B2-Probeprüfungen gemacht hat.
 
 ## How it does it
 Jeder Modus ist ein `GameMode`-Wert mit einer Speicher-ID. Alle erzeugen über die [[card-factory]] dieselbe `Card`-Form, sodass ein neuer Modus eine kleine Änderung ist. Nur Fehler finden wartet auf einen Tipp auf „Weiter“ (`autoAdvances = false`); die anderen gehen nach dem Feedback von selbst weiter.

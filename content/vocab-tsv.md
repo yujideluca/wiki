@@ -9,11 +9,11 @@ location: QuizApp:tools/data
 fed_by: []
 feeds: [build-vocab]
 sources: [QuizApp:tools/data]
-reviewed: 2026-10-25T21:20Z
+reviewed: 2026-10-29T22:12Z
 ---
 
 ## What it is
-These are the human-editable source files of all the quiz content, as plain-text tables. Despite their `.tsv` names, their columns are separated by a vertical bar (`|`). They are `nouns.tsv` (484 nouns), `prepositions.tsv` (309 items), `verbs.tsv` (253 verbs) and `errors.tsv` (144 sentences for the "find the error" mode).
+These are the human-editable source files of all the quiz content, as plain-text tables. Despite their `.tsv` names, their columns are separated by a vertical bar (`|`). They are `nouns.tsv` (484 nouns), `prepositions.tsv` (309 items), `verbs.tsv` (253 verbs) and `errors.tsv` (155 sentences for the "find the error" mode).
 
 ## What it does
 They hold every word, its gender, plural, preposition and hint, and every error sentence together with its correction, the rule behind it and the expression it practises. Everything the app asks comes from here.

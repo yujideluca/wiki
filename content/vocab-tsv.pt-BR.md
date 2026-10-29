@@ -1,12 +1,12 @@
 ---
 id: vocab-tsv
 lang: pt-BR
-source_hash: d5f9d6b96a70
+source_hash: 1b16226fa2d8
 title: Arquivos-fonte de vocabulário (TSV)
 ---
 
 ## What it is
-São os arquivos-fonte, editáveis por pessoas, de todo o conteúdo do quiz, como tabelas de texto simples. Apesar da extensão `.tsv`, suas colunas são separadas por uma barra vertical (`|`). São `nouns.tsv` (484 substantivos), `prepositions.tsv` (309 itens), `verbs.tsv` (253 verbos) e `errors.tsv` (144 frases para o modo "achar o erro").
+São os arquivos-fonte, editáveis por pessoas, de todo o conteúdo do quiz, como tabelas de texto simples. Apesar da extensão `.tsv`, suas colunas são separadas por uma barra vertical (`|`). São `nouns.tsv` (484 substantivos), `prepositions.tsv` (309 itens), `verbs.tsv` (253 verbos) e `errors.tsv` (155 frases para o modo "achar o erro").
 
 ## What it does
 Guardam cada palavra, seu gênero, plural, preposição e dica, e cada frase com erro junto com sua correção, a regra por trás e a expressão que ela treina. Tudo o que o app pergunta vem daqui.
