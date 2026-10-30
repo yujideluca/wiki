@@ -9,7 +9,7 @@ location: radiology-crawler:
 fed_by: []
 feeds: []
 sources: [radiology-crawler:DESIGN.md, radiology-crawler:CLAUDE.md, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/adr/0002-technology-and-languages.md, radiology-crawler:tools/quality_gate.sh, radiology-crawler:.github/workflows/quality-gate.yml, radiology-crawler:site_src/build.py, radiology-crawler:run_all.sh, radiology-crawler:docs/modelling-directives.md, radiology-crawler:docs/analysis-status.json]
-reviewed: 2026-10-30T01:54Z
+reviewed: 2026-10-30T04:27Z
 ---
 
 ## What it is
