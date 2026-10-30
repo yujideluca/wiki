@@ -1,7 +1,7 @@
 ---
 id: radiopaedia-crawler
 lang: pt-BR
-source_hash: 0e873433ebb5
+source_hash: 2a51083bb0de
 title: Rastreador da Radiopaedia (crawl.py)
 ---
 
@@ -21,10 +21,11 @@ s -entrega artigos a-> t
 
 ### Containers
 person g: Giovanni | [[giovanni]]
-container cm: Comandos — sitemap, fetch, extract, stats
+container cm: Comandos — sitemap, fetch, extract, run, stats
 store u: tabela urls — cada endereço e seu estado
 store raw: Páginas brutas — cópia comprimida de cada página
 store a: tabelas articles e cases — o texto extraído
+store pj: progress-data.js — números ao vivo para o site do plano
 external r: Radiopaedia
 
 g -executa-> cm
@@ -32,16 +33,18 @@ cm -lê listas e páginas de-> r
 cm -acompanha cada página em-> u
 cm -guarda cópias em-> raw
 cm -grava texto em-> a
+cm -reescreve a cada poucos segundos-> pj
 
 ## What it does
-Tem quatro comandos, executados como `python3 -I crawl.py <comando>` em `~/dev/radiology-crawler`:
+Tem cinco comandos, executados como `python3 -I crawl.py <comando>` em `~/dev/radiology-crawler`:
 
 - `sitemap` lê o mapa do site (a lista de páginas do próprio site) e grava cada endereço de artigo e de caso na tabela `urls` com o estado `pending`.
 - `fetch` baixa as páginas pendentes, uma a cada 10 a 12 segundos, e salva cada uma como arquivo comprimido em `data/raw/`. Opções: `--kind articles|cases`, `--limit N`.
 - `extract` transforma as páginas salvas em linhas das tabelas `articles` e `cases` em `data/radiopaedia.sqlite` (SQLite é um banco de dados guardado em um único arquivo). Páginas já extraídas são puladas, a menos que se use `--all`.
+- `run` faz tudo o que está acima em sequência (sitemap, artigos, casos, extração) e repete enquanto uma passada ainda reduz a lista de pendentes. Enquanto trabalha, reescreve a cada 5 segundos o `progress-data.js` na pasta do site do plano `~/Documents/Radiology Report Matcher/` (o código está em `progress.py`), de modo que as barras de progresso do site do plano ficam ao vivo. Termina com sucesso quando não sobra nada, com falha quando sobram páginas (por exemplo sem rede) e com o código 75 após bloqueios repetidos.
 - `stats` mostra quantas páginas estão pendentes, prontas ou sumidas e quantos dias faltam.
 
-`run_all.sh` executa sitemap, depois fetch dos artigos, depois fetch dos casos, depois extract, e pode simplesmente ser executado de novo para continuar. Em 2026-10-27 os sitemaps listavam 17.359 artigos e 70.535 casos, cerca de 11 dias de download nessa velocidade.
+`run_all.sh` é a forma manual mais antiga: executa sitemap, depois fetch dos artigos, depois fetch dos casos, depois extract, e pode simplesmente ser executado de novo para continuar. Em 2026-10-27 os sitemaps listavam 17.359 artigos e 70.535 casos, cerca de 11 dias de download nessa velocidade.
 
 ## How it does it
 - Lê primeiro o `robots.txt` e pula qualquer endereço que esse arquivo bloqueie (busca, tags, playlists, a interface de programação, páginas de administração). O intervalo de 10 segundos é o valor `Crawl-delay` desse arquivo; somam-se 0 a 2 segundos aleatórios.
@@ -53,6 +56,8 @@ Tem quatro comandos, executados como `python3 -I crawl.py <comando>` em `~/dev/r
 
 ## Where it sits in the pipeline
 Primeiro passo da cadeia de dados do [[radiology-report-matcher]]. Roda em segundo plano no notebook ([[acer-nitro]]), com a suspensão bloqueada enquanto trabalha.
+
+O serviço de usuário `radiology-crawler.service` (systemd, o programa do Linux que inicia serviços em segundo plano) executa `python3 -I crawl.py run` sempre que o notebook liga. Depois de uma falha ele reinicia em 10 minutos; depois de sucesso (tudo baixado e extraído) ou do código 75 (bloqueado) fica parado. As barras do site do plano dizem "the crawler is not running" se os números tiverem mais de um minuto. Verifique com `systemctl --user status radiology-crawler`.
 
 ## Who receives its output
 O [[report-translator]] lê a tabela `articles`. O construtor de índice planejado lerá as duas tabelas.

@@ -1,7 +1,7 @@
 ---
 id: radiopaedia-crawler
 lang: de
-source_hash: 0e873433ebb5
+source_hash: 2a51083bb0de
 title: Radiopaedia-Crawler (crawl.py)
 ---
 
@@ -21,10 +21,11 @@ s -übergibt Artikel an-> t
 
 ### Containers
 person g: Giovanni | [[giovanni]]
-container cm: Befehle — sitemap, fetch, extract, stats
+container cm: Befehle — sitemap, fetch, extract, run, stats
 store u: Tabelle urls — jede Adresse und ihr Status
 store raw: Rohseiten — komprimierte Kopie jeder Seite
 store a: Tabellen articles und cases — der extrahierte Text
+store pj: progress-data.js — Live-Zahlen für die Planungsseite
 external r: Radiopaedia
 
 g -führt aus-> cm
@@ -32,16 +33,18 @@ cm -liest Listen und Seiten von-> r
 cm -verfolgt jede Seite in-> u
 cm -bewahrt Kopien auf in-> raw
 cm -schreibt Text in-> a
+cm -überschreibt alle paar Sekunden-> pj
 
 ## What it does
-Es hat vier Befehle, ausgeführt als `python3 -I crawl.py <Befehl>` in `~/dev/radiology-crawler`:
+Es hat fünf Befehle, ausgeführt als `python3 -I crawl.py <Befehl>` in `~/dev/radiology-crawler`:
 
 - `sitemap` liest die Sitemap der Website (die eigene Seitenliste der Website) und speichert jede Artikel- und Fall-Adresse in der Tabelle `urls` mit dem Status `pending`.
 - `fetch` lädt ausstehende Seiten herunter, eine alle 10 bis 12 Sekunden, und speichert jede als komprimierte Datei in `data/raw/`. Optionen: `--kind articles|cases`, `--limit N`.
 - `extract` verwandelt gespeicherte Seiten in Zeilen der Tabellen `articles` und `cases` in `data/radiopaedia.sqlite` (SQLite ist eine Datenbank in einer einzigen Datei). Bereits extrahierte Seiten werden übersprungen, außer mit `--all`.
+- `run` führt alles oben nacheinander aus (Sitemap, Artikel, Fälle, Extraktion) und wiederholt sich, solange ein Durchlauf die Liste der ausstehenden Seiten noch verkleinert. Während es arbeitet, überschreibt es alle 5 Sekunden `progress-data.js` im Ordner der Planungsseite `~/Documents/Radiology Report Matcher/` (der Code steht in `progress.py`), sodass die Fortschrittsbalken der Planungsseite live bleiben. Es endet mit Erfolg, wenn nichts mehr übrig ist, mit Fehler, wenn Seiten übrig sind (zum Beispiel ohne Netz), und mit Code 75 nach wiederholten Sperren.
 - `stats` zeigt, wie viele Seiten ausstehend, fertig oder verschwunden sind, und die verbleibenden Tage.
 
-`run_all.sh` führt sitemap aus, dann fetch für Artikel, dann fetch für Fälle, dann extract, und kann einfach erneut gestartet werden, um fortzufahren. Am 2026-10-27 nannten die Sitemaps 17.359 Artikel und 70.535 Fälle, bei dieser Geschwindigkeit etwa 11 Tage Download.
+`run_all.sh` ist der ältere manuelle Weg: es führt sitemap aus, dann fetch für Artikel, dann fetch für Fälle, dann extract, und kann einfach erneut gestartet werden, um fortzufahren. Am 2026-10-27 nannten die Sitemaps 17.359 Artikel und 70.535 Fälle, bei dieser Geschwindigkeit etwa 11 Tage Download.
 
 ## How it does it
 - Es liest zuerst `robots.txt` und überspringt jede Adresse, die diese Datei sperrt (Suche, Tags, Playlists, die Programmierschnittstelle, Admin-Seiten). Die Pause von 10 Sekunden ist der Wert `Crawl-delay` in dieser Datei; dazu kommen zufällige 0 bis 2 Sekunden.
@@ -53,6 +56,8 @@ Es hat vier Befehle, ausgeführt als `python3 -I crawl.py <Befehl>` in `~/dev/ra
 
 ## Where it sits in the pipeline
 Erster Schritt der Datenkette von [[radiology-report-matcher]]. Es läuft im Hintergrund auf dem Laptop ([[acer-nitro]]), solange es arbeitet, ist der Ruhezustand gesperrt.
+
+Der Benutzerdienst `radiology-crawler.service` (systemd, das Linux-Programm, das Hintergrunddienste startet) führt `python3 -I crawl.py run` bei jedem Start des Laptops aus. Nach einem Fehler startet er nach 10 Minuten neu; nach Erfolg (alles geladen und extrahiert) oder nach Code 75 (gesperrt) bleibt er gestoppt. Die Balken der Planungsseite melden „the crawler is not running“, wenn die Zahlen älter als eine Minute sind. Prüfen mit `systemctl --user status radiology-crawler`.
 
 ## Who receives its output
 [[report-translator]] liest die Tabelle `articles`. Die geplante Index-Erstellung liest beide Tabellen.

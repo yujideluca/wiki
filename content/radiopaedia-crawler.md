@@ -8,8 +8,8 @@ status: active
 location: radiology-crawler:crawl.py
 fed_by: []
 feeds: [report-translator]
-sources: [radiology-crawler:crawl.py, radiology-crawler:run_all.sh]
-reviewed: 2026-10-27T20:14Z
+sources: [radiology-crawler:crawl.py, radiology-crawler:progress.py, radiology-crawler:run_all.sh]
+reviewed: 2026-10-30T01:11Z
 ---
 
 ## What it is
@@ -28,10 +28,11 @@ s -hands articles to-> t
 
 ### Containers
 person g: Giovanni | [[giovanni]]
-container cm: Commands — sitemap, fetch, extract, stats
+container cm: Commands — sitemap, fetch, extract, run, stats
 store u: urls table — every address and its status
 store raw: Raw pages — compressed copy of each page
 store a: articles and cases tables — the extracted text
+store pj: progress-data.js — live numbers for the plan site
 external r: Radiopaedia
 
 g -runs-> cm
@@ -39,16 +40,18 @@ cm -reads lists and pages from-> r
 cm -tracks every page in-> u
 cm -keeps copies in-> raw
 cm -writes text to-> a
+cm -rewrites every few seconds-> pj
 
 ## What it does
-It has four commands, run as `python3 -I crawl.py <command>` in `~/dev/radiology-crawler`:
+It has five commands, run as `python3 -I crawl.py <command>` in `~/dev/radiology-crawler`:
 
 - `sitemap` reads the site's sitemap (the site's own list of its pages) and stores every article and case address in the table `urls` with status `pending`.
 - `fetch` downloads pending pages, one every 10 to 12 seconds, and saves each as a compressed file in `data/raw/`. Options: `--kind articles|cases`, `--limit N`.
 - `extract` turns saved pages into rows of the tables `articles` and `cases` in `data/radiopaedia.sqlite` (SQLite is a database kept in one file). It skips pages already extracted unless `--all` is given.
+- `run` does all of the above in turn (sitemap, articles, cases, extract) and repeats while a pass still reduces the pending list. While it works it rewrites `progress-data.js` in the plan site folder `~/Documents/Radiology Report Matcher/` every 5 seconds (the code is in `progress.py`), so the progress bars of the plan site stay live. It ends with success when nothing is left, with failure when pages are left (for example no network), and with code 75 after repeated blocks.
 - `stats` prints how many pages are pending, done or gone, and the days left.
 
-`run_all.sh` runs sitemap, then fetch for articles, then fetch for cases, then extract, and can simply be run again to resume. On 2026-10-27 the sitemaps listed 17,359 articles and 70,535 cases, about 11 days of downloading at this speed.
+`run_all.sh` is the older manual way: it runs sitemap, then fetch for articles, then fetch for cases, then extract, and can simply be run again to resume. On 2026-10-27 the sitemaps listed 17,359 articles and 70,535 cases, about 11 days of downloading at this speed.
 
 ## How it does it
 - It reads `robots.txt` first and skips any address that file blocks (search, tags, playlists, the programming interface, admin pages). The delay of 10 seconds is the `Crawl-delay` value in that file; a random 0 to 2 seconds is added.
@@ -60,6 +63,8 @@ It has four commands, run as `python3 -I crawl.py <command>` in `~/dev/radiology
 
 ## Where it sits in the pipeline
 First step of the data chain of [[radiology-report-matcher]]. It runs in the background on the laptop ([[acer-nitro]]) with sleep blocked while it works.
+
+The user service `radiology-crawler.service` (systemd, the Linux program that starts background services) runs `python3 -I crawl.py run` whenever the laptop starts. It restarts 10 minutes after a failure and stays stopped after success (everything fetched and extracted) or after code 75 (blocked). The page `plan site` bars say "the crawler is not running" if the numbers are older than a minute. Check it with `systemctl --user status radiology-crawler`.
 
 ## Who receives its output
 [[report-translator]] reads the `articles` table. The planned index builder will read both tables.
