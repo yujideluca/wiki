@@ -8,8 +8,8 @@ status: active
 location: codex-pbar:src/codex_pbar/terminal.py
 fed_by: [global-codex-agents]
 feeds: []
-sources: [home:fixes/codex-touchpad-scroll.sh, home:fixes/LEIAME.md, codex-pbar:docs, codex-pbar:src/codex_pbar, codex-pbar:tests, codex-pbar:tools, codex-pbar:upstream, codex-pbar:pipeline-check.toml, codex-pbar:pipeline-check.version, codex-pbar:pyproject.toml, codex-pbar:.github/workflows/quality-gate.yml, codex-pbar:.gitignore, codex-pbar:AGENTS.md, codex-pbar:CLAUDE.md, codex-pbar:DESIGN.md, codex-pbar:docs/2026-10-25-codex-pbar-design.md, codex-pbar:docs/MAINTENANCE.md, codex-pbar:docs/REQUIREMENTS.md, codex-pbar:src/codex_pbar/terminal.py, codex-pbar:tests/test_terminal.py, codex-pbar:tests/test_terminal_mouse.py, codex-pbar:tools/terminal_smoke.py, codex-pbar:docs/adr/0004-persistent-terminal-footer.md, codex-pbar:README.md, home:AGENTS.md, home:.codex/AGENTS.md, home:.config/systemd/user/codex-pbar.service]
-reviewed: 2026-10-27T01:34Z
+sources: [home:fixes/codex-touchpad-scroll.sh, home:fixes/LEIAME.md, codex-pbar:docs, codex-pbar:src/codex_pbar, codex-pbar:tests, codex-pbar:tools, codex-pbar:upstream, codex-pbar:pipeline-check.toml, codex-pbar:pipeline-check.version, codex-pbar:pyproject.toml, codex-pbar:.github/workflows/quality-gate.yml, codex-pbar:.gitignore, codex-pbar:AGENTS.md, codex-pbar:CLAUDE.md, codex-pbar:DESIGN.md, codex-pbar:docs/2026-10-25-codex-pbar-design.md, codex-pbar:docs/MAINTENANCE.md, codex-pbar:docs/REQUIREMENTS.md, codex-pbar:src/codex_pbar/terminal.py, codex-pbar:src/codex_pbar/watch.py, codex-pbar:tests/test_watch.py, codex-pbar:docs/adr/0005-automatic-footer-progress.md, codex-pbar:tests/test_terminal.py, codex-pbar:tests/test_terminal_mouse.py, codex-pbar:tools/terminal_smoke.py, codex-pbar:docs/adr/0004-persistent-terminal-footer.md, codex-pbar:README.md, home:AGENTS.md, home:.codex/AGENTS.md, home:.config/systemd/user/codex-pbar.service]
+reviewed: 2026-10-30T04:38Z
 ---
 
 ## What it is
@@ -20,24 +20,32 @@ trigger t1: Giovanni starts codex in a terminal | [[global-codex-agents]]
 step s1: The codex launcher wraps the session in tmux
 step s2: A dedicated codex-status server reserves the bottom row of the terminal | [[codex-status-line]]
 step s3: Each terminal gets its own identifier, linking its footer to its task state
+step s5: A watcher beside Codex notes the running commands and reads the session transcript
 trigger t2: Codex starts a task with several steps
 step s4: The agent runs codex-task-progress set with steps done, total, seconds left and label
 decide d1: Is there an active task plan?
+decide d3: Is a command running?
 decide d2: Has the time estimate run out?
 product p1: Footer shows percentage, tasks done and time left
 product p2: Footer shows over by, and the excess time
 product p3: Footer says No active task
+product p4: Footer shows the command's percentage and time left, or elapsed time on its first run
+product p5: Footer shows the session line with folder, model, context and usage
 
 t1 -> s1
 s1 -> s2
 s2 -> s3
-s3 -> d1
+s3 -> s5
+s5 -> d1
 t2 -> s4
 s4 -> d1
 d1 -yes-> d2
-d1 -no-> p3
+d1 -no-> d3
 d2 -no-> p1
 d2 -yes-> p2
+d3 -yes-> p4
+d3 -no-> p5
+d3 -none yet-> p3
 
 ## Architecture
 ### Context
@@ -58,22 +66,32 @@ external x: Codex session files | [[codex]]
 container rd: Incremental reader — the only code that opens session files
 container co: Pure session state — keeps no prompt or tool text
 container ap: Desktop window — kept, not switched on
-container ft: Terminal footer — completed/total tasks and time left
+container wt: Watcher in the launcher — running commands, model, context and usage
+container ft: Terminal footer — tasks, running command or session line
 store ts: Private task state — written by milestone updates
 store hs: Private timing history — hashed
+store ws: Private watcher state — removed when the session ends
 
 rd -reads-> x
 rd -updates-> co
 rd -appends to-> hs
 co -feeds-> ap
 ft -reads-> ts
+wt -reads-> x
+wt -appends to-> hs
+wt -writes-> ws
+ft -reads-> ws
 g -sees-> ft
 
 ## What it does
-The line remains visible while Codex works or waits. It matches Claude’s compact style: a green Progress label on the normal terminal background, middle-dot separators, percentage, completed tasks and estimated time remaining. It draws no block bar. For example, two completed steps out of five show `Progress: [ 40%] 2/5 tasks`. Time alone never advances the percentage. If an estimate runs out, the line says `over by` and the elapsed excess. When there is no task plan, the line says `No active task`. Explicit completion remains visible until the next task starts.
+The line remains visible while Codex works or waits. It matches Claude’s compact style: a green Progress label on the normal terminal background, middle-dot separators, percentage, completed tasks and estimated time remaining. It draws no block bar. For example, two completed steps out of five show `Progress: [ 40%] 2/5 tasks`. Time alone never advances the percentage. If an estimate runs out, the line says `over by` and the elapsed excess. Explicit completion remains visible for two minutes or until the next task starts.
+
+The footer needs no cooperation from the agent. When no task plan is active it shows what is happening now, as Claude's bar does. While a command runs in Codex, it shows the same label with a percentage and time left learned from earlier runs of that program, for example `Progress: [ 36%] ~7s left · sleep 12`; on the first run it shows `Progress: [ ?? ] 4s · sleep 12 (first run)`. Commands shorter than three seconds never appear. When nothing runs, it shows a session line: folder, git branch, model, a context bar and bars for the five-hour and weekly usage windows with their reset times. Parts that do not fit are dropped, least useful first. `No active task` appears only before the first message of a new conversation has a folder to show, or when the watcher is not running. This time estimate describes one command, never the whole task.
 
 ## How it does it
 The installed `codex` launcher wraps interactive sessions in tmux, a program that keeps terminal programs running after disconnection (see [[glossary]]). A dedicated `codex-status` server reserves its bottom row outside Codex's drawing area. The native `task-progress` setting remains configured, but the fixed row does not depend on the model's planning tool. Each new terminal receives a unique identifier linking its footer to its task state. Different tasks do not share a counter.
+
+Beside Codex, the same launcher process runs a watcher once a second, so there is no extra background service and it ends with the session. It looks at the processes below Codex for the shell each command runs in, names the program (for example `sleep 12` or `python3 -m pytest`), and times it. Finished durations go to a private history file that keeps only a hash of each program name. The watcher also reads the conversation file that Codex holds open, using only the last 4 MiB of a long one, for model, folder, context use and usage limits; it keeps no prompt or tool text. It publishes its result in a private file under `~/.local/share/codex-pbar/tasks/`, which the footer reads. If that file is older than a few seconds the footer ignores it.
 
 The agent updates the local command `codex-task-progress set --done 2 --total 5 --eta 300 --label 'Testing'`. `--eta` is seconds remaining; `--new` starts a new task. Instructions in both local `AGENTS.md` files make the agent maintain the count. State is saved by replacing a complete private file under `~/.local/share/codex-pbar/tasks/`; incomplete writes cannot replace valid state. Labels are short task descriptions. No model request or network listener is added.
 
@@ -95,10 +113,10 @@ How this project follows the golden path of [[project-template]].
 4. **The gate decides**: `tools/quality_gate.sh` is the only definition of passing, and continuous integration runs it.
 
 ### Decisions
-Four architecture decision records (ADRs, short notes that keep the reasons for a decision) in `docs/adr/`: 0002 a Python desktop companion that reads session files; 0003 a program measures and a skill judges; 0004 the persistent terminal footer in a dedicated tmux row, bound to its session. `DESIGN.md` holds the diagram and the decision log.
+Five architecture decision records (ADRs, short notes that keep the reasons for a decision) in `docs/adr/`: 0002 a Python desktop companion that reads session files; 0003 a program measures and a skill judges; 0004 the persistent terminal footer in a dedicated tmux row, bound to its session; 0005 automatic progress from a watcher inside the launcher. `DESIGN.md` holds the diagram and the decision log.
 
 ### Requirements
-10 requirements (prefix PB) in `docs/REQUIREMENTS.md`. Each has a test tagged `REQ PB-N`, and the traceability check ([[check-traceability]]) fails when one has none.
+11 requirements (prefix PB) in `docs/REQUIREMENTS.md`. Each has a test tagged `REQ PB-N`, and the traceability check ([[check-traceability]]) fails when one has none.
 
 ### Quality gate
 The gate runs the unit tests with branch coverage of at least 85 % on the state and reader modules; a mutation check (faults planted on purpose must be caught); a window smoke test without a screen; requirement traceability; and the fitness functions.
@@ -110,18 +128,18 @@ Continuous integration (CI) means automatic checks on every push. The workflow `
 Technical debt is tracked as GitHub issues labelled `debt` (P1 to P3) under the [[maintenance-policy]]. The [[monthly-architecture-review]] checks the project every month; the next is due 2026-11-22.
 
 ## Notes
-Install from `~/dev/codex-pbar` with `PYTHONPATH=src .venv/bin/python -m codex_pbar.terminal install`. Detach with `Ctrl-b d` and reattach with `tmux -L codex-status attach`. Estimated time is the agent's forecast, not a measured guarantee. This change adds no token, context or quota fields.
+Install from `~/dev/codex-pbar` with `PYTHONPATH=src .venv/bin/python -m codex_pbar.terminal install`. Detach with `Ctrl-b d` and reattach with `tmux -L codex-status attach`. Estimated time is the agent's forecast, not a measured guarantee.
 
 
 Failure limits: the fixed row requires the installed launcher and tmux. A missing or corrupt state file shows unknown values. A missing tmux executable reports an error. Marking all planned steps done explicitly sets 100%. New terminals have separate identifiers; two views of the same resumed conversation intentionally share its task counter. Existing desktop-window code remains in the repository but this installer does not start it.
 
 
-Project files: `AGENTS.md` points contributors to `CLAUDE.md`, which describes the Python architecture, privacy limits and required checks. `DESIGN.md` records the current terminal design and decisions. `docs/2026-10-25-codex-pbar-design.md` preserves the original desktop design; the newer terminal decision is in `docs/adr/0004-persistent-terminal-footer.md`. `docs/REQUIREMENTS.md` lists PB-1 through PB-10, including the retained desktop behavior and the terminal promises. `docs/MAINTENANCE.md` describes monthly reviews and debt handling. `.github/workflows/quality-gate.yml` runs the shared checker on pushes and pull requests and retains its report for fourteen days. `.gitignore` excludes virtual environments, Python caches, coverage files and build output, including private terminal captures, from version control.
+Project files: `AGENTS.md` points contributors to `CLAUDE.md`, which describes the Python architecture, privacy limits and required checks. `DESIGN.md` records the current terminal design and decisions. `docs/2026-10-25-codex-pbar-design.md` preserves the original desktop design; the newer terminal decision is in `docs/adr/0004-persistent-terminal-footer.md`. `docs/REQUIREMENTS.md` lists PB-1 through PB-11, including the retained desktop behavior, the terminal promises and the automatic footer (PB-11). `docs/MAINTENANCE.md` describes monthly reviews and debt handling. `.github/workflows/quality-gate.yml` runs the shared checker on pushes and pull requests and retains its report for fourteen days. `.gitignore` excludes virtual environments, Python caches, coverage files and build output, including private terminal captures, from version control.
 
 
-Validation files: `docs/TESTES-AUTOMATIZADOS.md` describes the test strategy, known gaps and terminal checks. `docs/TRACEABILITY.md` is generated and links PB-1 through PB-10 to their tests. `pipeline-check.toml` selects the required gate, forbids network-library imports in the source directory, sets a 1200-second gate limit and names the GitHub gate. `pipeline-check.version` pins the shared checker to `v0.5.0`; `tools/pipeline-check.sh` consumes that version rather than copying its implementation. `pyproject.toml` declares Python and the pinned display and test dependencies.
+Validation files: `docs/TESTES-AUTOMATIZADOS.md` describes the test strategy, known gaps and terminal checks. `docs/TRACEABILITY.md` is generated and links PB-1 through PB-11 to their tests. `pipeline-check.toml` selects the required gate, forbids network-library imports in the source directory, sets a 1200-second gate limit and names the GitHub gate. `pipeline-check.version` pins the shared checker to `v0.5.0`; `tools/pipeline-check.sh` consumes that version rather than copying its implementation. `pyproject.toml` declares Python and the pinned display and test dependencies.
 
-Decision files: `docs/adr/README.md` explains architecture decision records, short files recording the reason for structural choices, and `0000-template.md` supplies their format. `0001-record-decisions.md` requires recording those choices; `0002-python-transcript-companion.md` records the original desktop architecture; `0003-program-measures-skill-judges.md` separates automated measurement from maintenance judgement. The terminal decision is `0004-persistent-terminal-footer.md`. The `src/codex_pbar/` modules retain the desktop reader, state and display alongside the terminal entry point; `tests/` and `tools/` contain their checks and installers. `upstream/` holds the archival Claude source, which is not executed.
+Decision files: `docs/adr/README.md` explains architecture decision records, short files recording the reason for structural choices, and `0000-template.md` supplies their format. `0001-record-decisions.md` requires recording those choices; `0002-python-transcript-companion.md` records the original desktop architecture; `0003-program-measures-skill-judges.md` separates automated measurement from maintenance judgement. The terminal decisions are `0004-persistent-terminal-footer.md` and `0005-automatic-footer-progress.md`. The `src/codex_pbar/` modules retain the desktop reader, state and display alongside the terminal entry point and `watch.py`, the process and transcript watcher; `tests/` and `tools/` contain their checks and installers. `upstream/` holds the archival Claude source, which is not executed.
 
 
 Blocked user tasks pause the countdown and show `Blocked`; they do not keep accumulating overdue time. `codex-task-progress clear` removes a stale counter for the bound session. An idle greeting needs no task plan. Automatic documentation hooks retain the primary task counter rather than replacing it with documentation work.
@@ -137,3 +155,5 @@ Each new interactive terminal enables tmux mouse forwarding and installs wheel b
 The repair helper `~/fixes/codex-touchpad-scroll.sh` reapplies the maintained wheel bindings to the running dedicated server. Its `--undo` option restores the previous wheel bindings for that server; future launcher starts still install the correction. `~/fixes/LEIAME.md` records the cause, checks and rollback limits.
 
 Giovanni confirmed the quarter-screen movement feels right. A live capture measured 13 rows from one tick in a 52-row pane. A fresh session through the installed launcher moved seven rows in its 29-row pane, in both directions, without a model request. The continuous integration workflow installs tmux, and the regression fails rather than skips when tmux is missing. A physical reboot was not tested.
+
+A live check on 2026-10-30 started a real Codex terminal through the launcher: a `sleep 12` command showed `first run` with elapsed time, the second run showed a percentage and time left, and the idle line showed folder, model, context and both usage bars. Active task milestones took precedence, and the normal Ctrl-C handling of Codex was unchanged. Terminals started before this change keep the old footer until restarted.

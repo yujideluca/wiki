@@ -1,7 +1,7 @@
 ---
 id: codex-pbar
 lang: pt-BR
-source_hash: b51165c50416
+source_hash: 6dc14b007e82
 title: Progresso de tarefas no terminal do Codex
 ---
 
@@ -13,24 +13,32 @@ trigger t1: Giovanni inicia o codex num terminal | [[global-codex-agents]]
 step s1: O lançador do codex envolve a sessão em tmux
 step s2: Um servidor codex-status dedicado reserva a última linha do terminal | [[codex-status-line]]
 step s3: Cada terminal recebe um identificador próprio, ligando rodapé e estado da tarefa
+step s5: Um observador ao lado do Codex anota os comandos em execução e lê o registro da conversa
 trigger t2: O Codex inicia uma tarefa com vários passos
 step s4: O agente roda codex-task-progress set com passos feitos, total, segundos restantes e rótulo
 decide d1: Há um plano de tarefa ativo?
+decide d3: Há um comando rodando?
 decide d2: A estimativa de tempo acabou?
 product p1: Rodapé mostra porcentagem, tarefas feitas e tempo restante
 product p2: Rodapé mostra over by e o tempo excedido
 product p3: Rodapé diz No active task
+product p4: Rodapé mostra porcentagem e tempo restante do comando, ou o tempo decorrido na primeira execução
+product p5: Rodapé mostra a linha da sessão com pasta, modelo, contexto e uso
 
 t1 -> s1
 s1 -> s2
 s2 -> s3
-s3 -> d1
+s3 -> s5
+s5 -> d1
 t2 -> s4
 s4 -> d1
 d1 -sim-> d2
-d1 -não-> p3
+d1 -não-> d3
 d2 -não-> p1
 d2 -sim-> p2
+d3 -sim-> p4
+d3 -não-> p5
+d3 -ainda nada-> p3
 
 ## Architecture
 ### Contexto
@@ -51,22 +59,32 @@ external x: Arquivos de sessão do Codex | [[codex]]
 container rd: Leitor incremental — o único código que abre os arquivos de sessão
 container co: Estado puro da sessão — não guarda texto de prompt nem de ferramenta
 container ap: Janela de desktop — mantida, não ligada
-container ft: Rodapé do terminal — tarefas concluídas/total e tempo restante
+container wt: Observador no iniciador — comandos em execução, modelo, contexto e uso
+container ft: Rodapé do terminal — tarefas, comando em execução ou linha da sessão
 store ts: Estado privado da tarefa — escrito pelas atualizações de marco
 store hs: Histórico privado de tempos — com hash
+store ws: Estado privado do observador — apagado ao fim da sessão
 
 rd -lê-> x
 rd -atualiza-> co
 rd -acrescenta ao-> hs
 co -alimenta a-> ap
 ft -lê-> ts
+wt -lê-> x
+wt -acrescenta ao-> hs
+wt -escreve em-> ws
+ft -lê-> ws
 g -vê-> ft
 
 ## What it does
-A linha permanece visível enquanto o Codex trabalha ou espera. Usa o estilo compacto do Claude: rótulo Progress verde sobre o fundo normal do terminal, separadores por ponto central, porcentagem, tarefas concluídas e tempo restante estimado. Não desenha uma barra de blocos. Duas etapas concluídas de cinco aparecem como `Progress: [ 40%] 2/5 tasks`. O tempo passar não aumenta a porcentagem. Quando a estimativa vence, aparece `over by` e o tempo excedido. Sem um plano de tarefa, a linha mostra `No active task`. Uma conclusão explícita continua visível até começar a próxima tarefa.
+A linha permanece visível enquanto o Codex trabalha ou espera. Usa o estilo compacto do Claude: rótulo Progress verde sobre o fundo normal do terminal, separadores por ponto central, porcentagem, tarefas concluídas e tempo restante estimado. Não desenha uma barra de blocos. Duas etapas concluídas de cinco aparecem como `Progress: [ 40%] 2/5 tasks`. O tempo passar não aumenta a porcentagem. Quando a estimativa vence, aparece `over by` e o tempo excedido. Uma conclusão explícita continua visível por dois minutos ou até começar a próxima tarefa.
+
+O rodapé não depende da colaboração do agente. Sem plano de tarefa ativo, mostra o que está acontecendo agora, como a barra do Claude. Enquanto um comando roda no Codex, mostra o mesmo rótulo com porcentagem e tempo restante aprendidos em execuções anteriores desse programa, por exemplo `Progress: [ 36%] ~7s left · sleep 12`; na primeira execução mostra `Progress: [ ?? ] 4s · sleep 12 (first run)`. Comandos com menos de três segundos nunca aparecem. Quando nada roda, mostra uma linha da sessão: pasta, ramo do git, modelo, uma barra de contexto e barras das janelas de uso de cinco horas e semanal, com o horário de renovação. O que não cabe sai, o menos útil primeiro. `No active task` só aparece antes de haver uma pasta para mostrar ou quando o observador não está rodando. Essa estimativa vale para um comando, nunca para a tarefa inteira.
 
 ## How it does it
 O iniciador instalado `codex` abre sessões interativas no tmux, programa que mantém os programas do terminal ativos depois de uma desconexão (veja [[glossary]]). Um servidor próprio, `codex-status`, reserva a última linha fora da área desenhada pelo Codex. A configuração nativa `task-progress` continua selecionada, mas a linha fixa não depende da ferramenta de planejamento do modelo. Cada sessão do terminal possui uma identificação própria, para tarefas simultâneas não dividirem o contador.
+
+Ao lado do Codex, o mesmo processo do iniciador executa um observador a cada segundo; não há serviço extra em segundo plano e ele termina com a sessão. Ele olha os processos abaixo do Codex, acha o shell de cada comando, dá nome ao programa (por exemplo `sleep 12` ou `python3 -m pytest`) e mede o tempo. As durações concluídas vão para um arquivo de histórico privado que guarda só o hash do nome de cada programa. O observador também lê o arquivo da conversa que o Codex mantém aberto, nos últimos 4 MiB quando é longo, para modelo, pasta, uso de contexto e limites de uso; não guarda texto de prompts nem de ferramentas. O resultado fica num arquivo privado em `~/.local/share/codex-pbar/tasks/`, que o rodapé lê. Se esse arquivo tem mais que alguns segundos, o rodapé o ignora.
 
 O agente atualiza o comando local `codex-task-progress set --done 2 --total 5 --eta 300 --label 'Testing'`. `--eta` informa os segundos restantes; `--new` inicia uma nova tarefa. Instruções nos dois arquivos locais `AGENTS.md` atribuem a manutenção ao agente. O estado é salvo substituindo um arquivo privado completo em `~/.local/share/codex-pbar/tasks/`; uma escrita incompleta não substitui um estado válido. Os rótulos são descrições curtas da tarefa. Não há novas chamadas ao modelo nem serviço de rede.
 
@@ -88,10 +106,10 @@ Como este projeto segue o caminho dourado do [[project-template]].
 4. **O portão decide**: `tools/quality_gate.sh` é a única definição de “passou”, e a integração contínua o executa.
 
 ### Decisões
-Quatro registros de decisão de arquitetura (notas curtas que guardam os motivos de uma decisão) em `docs/adr/`: 0002 um acompanhante de desktop em Python que lê os arquivos de sessão; 0003 um programa mede e uma skill julga; 0004 o rodapé persistente do terminal em uma linha própria do tmux, ligada à sua sessão. O `DESIGN.md` guarda o diagrama e o registro de decisões.
+Cinco registros de decisão de arquitetura (notas curtas que guardam os motivos de uma decisão) em `docs/adr/`: 0002 um acompanhante de desktop em Python que lê os arquivos de sessão; 0003 um programa mede e uma skill julga; 0004 o rodapé persistente do terminal em uma linha própria do tmux, ligada à sua sessão; 0005 progresso automático por um observador dentro do iniciador. O `DESIGN.md` guarda o diagrama e o registro de decisões.
 
 ### Requisitos
-10 requisitos (prefixo PB) em `docs/REQUIREMENTS.md`. Cada um tem um teste marcado `REQ PB-N`, e a verificação de rastreabilidade ([[check-traceability]]) falha quando algum não tem.
+11 requisitos (prefixo PB) em `docs/REQUIREMENTS.md`. Cada um tem um teste marcado `REQ PB-N`, e a verificação de rastreabilidade ([[check-traceability]]) falha quando algum não tem.
 
 ### Portão de qualidade
 O portão roda os testes unitários com pelo menos 85 % de cobertura de ramos nos módulos de estado e de leitura; uma checagem de mutação (falhas plantadas de propósito precisam ser pegas); um teste de fumaça da janela sem tela; a rastreabilidade dos requisitos; e as funções de aptidão.
@@ -103,18 +121,18 @@ Integração contínua (CI) significa verificações automáticas a cada push. O
 A dívida técnica é registrada como issues do GitHub com o rótulo `debt` (P1 a P3), conforme a [[maintenance-policy]]. A [[monthly-architecture-review]] confere o projeto todo mês; a próxima vence em 2026-11-22.
 
 ## Notes
-Instale a partir de `~/dev/codex-pbar` com `PYTHONPATH=src .venv/bin/python -m codex_pbar.terminal install`. Desconecte com `Ctrl-b d` e reconecte com `tmux -L codex-status attach`. O tempo é uma previsão do agente, não uma garantia medida. A mudança não acrescenta campos de tokens, contexto ou cotas.
+Instale a partir de `~/dev/codex-pbar` com `PYTHONPATH=src .venv/bin/python -m codex_pbar.terminal install`. Desconecte com `Ctrl-b d` e reconecte com `tmux -L codex-status attach`. O tempo é uma previsão do agente, não uma garantia medida.
 
 
 Limites em falhas: a linha fixa precisa do iniciador instalado e do tmux. Um arquivo de estado ausente ou corrompido mostra valores desconhecidos. Se o tmux estiver ausente, o programa informa um erro. Só informar explicitamente todas as etapas como concluídas define 100%. Novos terminais recebem identificadores separados; duas interfaces da mesma conversa retomada compartilham intencionalmente o contador da tarefa. O código da janela permanece no repositório, mas este instalador não o inicia.
 
 
-Arquivos do projeto: `AGENTS.md` encaminha colaboradores ao `CLAUDE.md`, que descreve a arquitetura Python, os limites de privacidade e as verificações exigidas. `DESIGN.md` registra o desenho atual do terminal e as decisões. `docs/2026-10-25-codex-pbar-design.md` preserva o desenho original da janela; a decisão mais recente do terminal fica em `docs/adr/0004-persistent-terminal-footer.md`. `docs/REQUIREMENTS.md` lista PB-1 a PB-10, cobrindo a janela preservada e as promessas do terminal. `docs/MAINTENANCE.md` descreve revisões mensais e tratamento de dívida técnica. `.github/workflows/quality-gate.yml` executa a verificação compartilhada nos envios e pedidos de revisão e guarda o relatório por quatorze dias. `.gitignore` exclui ambientes virtuais, caches Python, arquivos de cobertura e saídas de compilação, incluindo capturas privadas do terminal, do controle de versão.
+Arquivos do projeto: `AGENTS.md` encaminha colaboradores ao `CLAUDE.md`, que descreve a arquitetura Python, os limites de privacidade e as verificações exigidas. `DESIGN.md` registra o desenho atual do terminal e as decisões. `docs/2026-10-25-codex-pbar-design.md` preserva o desenho original da janela; as decisões mais recentes do terminal ficam em `docs/adr/0004-persistent-terminal-footer.md` e `docs/adr/0005-automatic-footer-progress.md`. `docs/REQUIREMENTS.md` lista PB-1 a PB-11, cobrindo a janela preservada e as promessas do terminal. `docs/MAINTENANCE.md` descreve revisões mensais e tratamento de dívida técnica. `.github/workflows/quality-gate.yml` executa a verificação compartilhada nos envios e pedidos de revisão e guarda o relatório por quatorze dias. `.gitignore` exclui ambientes virtuais, caches Python, arquivos de cobertura e saídas de compilação, incluindo capturas privadas do terminal, do controle de versão.
 
 
-Arquivos de validação: `docs/TESTES-AUTOMATIZADOS.md` descreve a estratégia de testes, as lacunas conhecidas e as verificações do terminal. `docs/TRACEABILITY.md` é gerado e liga PB-1 a PB-10 aos testes. `pipeline-check.toml` seleciona a verificação obrigatória, proíbe importações de bibliotecas de rede no diretório de código, define o limite de 1200 segundos e identifica a verificação do GitHub. `pipeline-check.version` fixa o verificador compartilhado em `v0.5.0`; `tools/pipeline-check.sh` usa essa versão em vez de copiar a implementação. `pyproject.toml` declara Python e as dependências fixadas de exibição e testes.
+Arquivos de validação: `docs/TESTES-AUTOMATIZADOS.md` descreve a estratégia de testes, as lacunas conhecidas e as verificações do terminal. `docs/TRACEABILITY.md` é gerado e liga PB-1 a PB-11 aos testes. `pipeline-check.toml` seleciona a verificação obrigatória, proíbe importações de bibliotecas de rede no diretório de código, define o limite de 1200 segundos e identifica a verificação do GitHub. `pipeline-check.version` fixa o verificador compartilhado em `v0.5.0`; `tools/pipeline-check.sh` usa essa versão em vez de copiar a implementação. `pyproject.toml` declara Python e as dependências fixadas de exibição e testes.
 
-Arquivos de decisão: `docs/adr/README.md` explica os registros de decisão de arquitetura, arquivos curtos com os motivos de escolhas estruturais; `0000-template.md` fornece o formato. `0001-record-decisions.md` exige esses registros; `0002-python-transcript-companion.md` registra a arquitetura original da janela; `0003-program-measures-skill-judges.md` separa medição automática de julgamento de manutenção. A decisão do terminal fica em `0004-persistent-terminal-footer.md`. Os módulos em `src/codex_pbar/` preservam o leitor, estado e janela junto da entrada do terminal; `tests/` e `tools/` contêm verificações e instaladores. `upstream/` guarda o código Claude arquivado, que não é executado.
+Arquivos de decisão: `docs/adr/README.md` explica os registros de decisão de arquitetura, arquivos curtos com os motivos de escolhas estruturais; `0000-template.md` fornece o formato. `0001-record-decisions.md` exige esses registros; `0002-python-transcript-companion.md` registra a arquitetura original da janela; `0003-program-measures-skill-judges.md` separa medição automática de julgamento de manutenção. As decisões do terminal ficam em `0004-persistent-terminal-footer.md` e `0005-automatic-footer-progress.md`. Os módulos em `src/codex_pbar/` preservam o leitor, estado e janela junto da entrada do terminal; `tests/` e `tools/` contêm verificações e instaladores. `upstream/` guarda o código Claude arquivado, que não é executado.
 
 
 Tarefas do usuário bloqueadas pausam a contagem de tempo e mostram `Blocked`; o atraso não continua aumentando. `codex-task-progress clear` remove um contador antigo da sessão vinculada. Uma saudação não exige plano de tarefa. Hooks automáticos de documentação preservam o contador da tarefa principal em vez de substituí-lo por trabalho de documentação.
@@ -130,3 +148,5 @@ Cada terminal interativo novo ativa o encaminhamento do mouse pelo tmux e config
 O auxiliar `~/fixes/codex-touchpad-scroll.sh` reaplica as ações de roda mantidas pelo projeto ao servidor dedicado em uso. A opção `--undo` restaura as ações anteriores nesse servidor; novas inicializações continuam aplicando a correção. `~/fixes/LEIAME.md` registra a causa, os testes e os limites da reversão.
 
 Giovanni confirmou que o deslocamento de um quarto de tela ficou adequado. Uma captura da sessão em uso mediu 13 linhas por passo em um painel de 52 linhas. Uma sessão nova pelo iniciador instalado moveu sete linhas em seu painel de 29 linhas, nos dois sentidos, sem pedido ao modelo. O fluxo de integração contínua instala tmux; o teste de regressão falha, em vez de ser ignorado, se ele estiver ausente. Não foi testada uma reinicialização física.
+
+Uma verificação ao vivo em 30/10/2026 iniciou um terminal Codex real pelo iniciador: um comando `sleep 12` mostrou `first run` com o tempo decorrido, a segunda execução mostrou porcentagem e tempo restante, e a linha ociosa mostrou pasta, modelo, contexto e as duas barras de uso. Os marcos explícitos da tarefa tiveram prioridade, e o tratamento normal de Ctrl-C do Codex ficou igual. Terminais iniciados antes desta mudança mantêm o rodapé antigo até reiniciar.
