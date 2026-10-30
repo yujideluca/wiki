@@ -1,7 +1,7 @@
 ---
 id: memory-fold
 lang: de
-source_hash: 64bb824fbf4e
+source_hash: 60ecb1ecde3f
 title: Die Faltung (core.py)
 ---
 
@@ -12,7 +12,7 @@ title: Die Faltung (core.py)
 Für jedes Thema (Scope plus Key) gewinnt die jüngste Entscheidung; dieselbe Entscheidung noch einmal liefert zusätzliche Belege; eine Verneinung zählt als Änderung; `forget` und `done` schließen ihr Ziel; Feedback ändert, wie prominent ein Eintrag ist (`wrong` nimmt ihn aus dem Brief und legt ihn Giovanni zur Prüfung vor). Ein Ereignis des automatischen [[mem-harvester]] überschreibt nie Giovannis eigene Worte. Geben zwei Schreiber demselben Key innerhalb von 24 Stunden verschiedene Texte, entsteht ein Konflikt, den Giovanni sieht, keine stille Zusammenführung. Danach ordnet sie die Einträge für den Brief: Vorlieben verblassen nie; andere Typen verblassen mit einer Halbwertszeit (die Zeit, nach der das Gewicht sich halbiert): 180 Tage für Entscheidungen und Fakten, 7 Tage für Notizen, gestreckt durch jede gemeldete Nutzung ([[mem-use]]).
 
 ## How it does it
-Das Ergebnis hängt nicht von der Reihenfolge ab, in der Ereignisse eintreffen, und ist [idempotent](https://en.wikipedia.org/wiki/Idempotence) (ein Duplikat anzuwenden ändert nichts); beides ist getestet. Ereignisse werden nach Zeit und dann ID sortiert, Duplikate zählen einmal. Die Funktion `brief()` passt die Einträge in ein Budget von 2.900 Zeichen (`BRIEF_BUDGET`) ein; mit etwa 1.100 Zeichen festem Anleitungstext ist der ganze Brief etwa 4.000 Zeichen lang, das sind 2,5 % des am 2026-10-19 gemessenen mittleren ersten Durchgangs (44.860 Token); die Zahlen wurden mit `scripts/calibrate.py` kalibriert. Vorlieben sind angeheftet, das Budget lässt sie also nie weg; es begrenzt nur Entscheidungen, Fakten und Notizen. `brief()` kann außerdem jede Regel auf eine bestimmte Länge kürzen (nach `/clear` genutzt), und ein Eintrag mit dem Geltungsbereich `instance:X` wird nur dem Werkzeug namens X gezeigt.
+Das Ergebnis hängt nicht von der Reihenfolge ab, in der Ereignisse eintreffen, und ist [idempotent](https://en.wikipedia.org/wiki/Idempotence) (ein Duplikat anzuwenden ändert nichts); beides ist getestet. Ereignisse werden nach Zeit und dann ID sortiert, Duplikate zählen einmal. Eine Ereigniszeit, die nach dem Moment des Lesens liegt, wird auf diesen Moment begrenzt (der ursprüngliche Stempel bleibt in `ts_claimed`); so kann ein Schreiber mit falscher Uhr das Protokoll nicht umordnen (ADR-0006, ein Architecture Decision Record: [[memory-adrs]]). Die Funktion `brief()` passt die Einträge in ein Budget von 2.900 Zeichen (`BRIEF_BUDGET`) ein; mit etwa 1.100 Zeichen festem Anleitungstext ist der ganze Brief etwa 4.000 Zeichen lang, das sind 2,5 % des am 2026-10-19 gemessenen mittleren ersten Durchgangs (44.860 Token); die Zahlen wurden mit `scripts/calibrate.py` kalibriert. Vorlieben sind angeheftet, das Budget lässt sie also nie weg; es begrenzt nur Entscheidungen, Fakten und Notizen. `brief()` kann außerdem jede Regel auf eine bestimmte Länge kürzen (nach `/clear` genutzt), und ein Eintrag mit dem Geltungsbereich `instance:X` wird nur dem Werkzeug namens X gezeigt.
 
 ## Where it sits in the pipeline
 Zwischen [[events-log]] und allem, was Gedächtnis anzeigt.

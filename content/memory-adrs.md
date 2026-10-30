@@ -9,7 +9,7 @@ location: workflow-memory:docs/adr
 fed_by: []
 feeds: []
 sources: [workflow-memory:docs/adr]
-reviewed: 2026-10-30T20:13Z
+reviewed: 2026-10-30T20:27Z
 ---
 
 ## What it is

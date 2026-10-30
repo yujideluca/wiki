@@ -9,7 +9,7 @@ location: workflow-memory:views
 fed_by: [mem-action, memory-fold]
 feeds: [claude-app, giovanni]
 sources: [workflow-memory:mem/project.py]
-reviewed: 2026-10-27T00:22Z
+reviewed: 2026-10-30T20:27Z
 ---
 
 ## What it is
