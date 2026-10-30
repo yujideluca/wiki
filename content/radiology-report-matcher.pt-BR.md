@@ -1,7 +1,7 @@
 ---
 id: radiology-report-matcher
 lang: pt-BR
-source_hash: 6ca7f11a3733
+source_hash: 27daa4a10c5e
 title: Radiology Report Matcher (site planejado)
 ---
 
@@ -102,6 +102,8 @@ Fonte do conteúdo: Radiopaedia, um site de referência de radiologia gratuito. 
 O método foi escolhido a partir de um relatório de pesquisa escrito pelo [[codex]] em 2026-10-27: BM25 mais um léxico de termos, regras de negação e uma tabela fixa de escores, com reordenação aprendida e embeddings (números que representam o significado de um texto) só se um teste mostrar que ajudam. O próprio relatório disse que nenhum estudo publicado prova que algum método atenda exatamente a esse objetivo; por isso é preciso um conjunto de teste com laudos escritos por médicos.
 
 O código está no repositório privado `yujideluca/radiology-report-matcher` (pasta `~/dev/radiology-crawler`, mantida com esse nome porque tarefas longas rodam nela). O site de plano também está publicado abertamente, sem login, pelo Tailscale Funnel na porta 8443 (o wiki mantém a porta principal atrás do seu login); um pequeno servidor estático, `radiology-plan-site.service`, serve a pasta `~/Documents/Radiology Report Matcher/` a partir deste notebook, então fica no ar enquanto o notebook estiver ligado. Linguagens decididas por Giovanni em 2026-10-27: ferramentas em Python, back end em Elixir, front end em Elm e a matemática de comparação em Python numérico de alta velocidade (Cython, NumPy, bibliotecas em C), nunca laços em Python puro.
+
+Plano de modelagem, decidido por Giovanni em 2026-10-30 (texto completo em `docs/modelling-directives.md` do repositório): quando o download dos artigos terminar, quatro modelos matemáticos concorrentes serão construídos e pontuados do mesmo modo, no estilo da skill [[skill-skill-forge]] (várias versões comparadas por testes). A versão 1 é a análise própria de Claude de todos os artigos, sem viés prévio; a versão 2 é a mesma tarefa feita pelo Codex; a versão 3 é uma abordagem totalmente acadêmica após pesquisa profunda, com Claude e Codex debatendo; a versão 4 é a ideia do próprio Giovanni. A ideia dele trabalha em camadas: primeiro filtros duros que removem diagnósticos que não podem caber (grupo do paciente, como criança ou adulto, e sexo; método de imagem; localização no corpo), depois filtros mais suaves que apenas rebaixam um diagnóstico (textura, brilho ou densidade do achado, lado, tamanho e margens, captação de contraste e fluxo sanguíneo, história clínica) e, por fim, uma etapa puramente estatística sobre o vocabulário subjetivo do laudo, que dá pouco peso a palavras de enchimento usadas quando o radiologista está inseguro. A falta de informação nunca remove um diagnóstico; em vez disso, uma rotina "estilo akinator" (como o jogo de adivinhação, faz a pergunta que elimina mais candidatos) pergunta ao usuário, que pode sempre pular ou digitar texto. A página começa com a escolha entre busca guiada e caixa de texto aberta. Cada artigo é marcado pelo Codex e por listas de palavras, e os dois são comparados. Para cada diagnóstico, metade dos casos reais ajusta o modelo e a outra metade o testa; diagnósticos com poucos casos recebem casos da literatura científica.
 
 ## Where it sits in the pipeline
 Ele inicia a cadeia: [[radiopaedia-crawler]] → [[report-translator]] → (planejado) construtor de índice → (planejado) site.

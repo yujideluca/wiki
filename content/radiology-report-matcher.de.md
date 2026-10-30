@@ -1,7 +1,7 @@
 ---
 id: radiology-report-matcher
 lang: de
-source_hash: 6ca7f11a3733
+source_hash: 27daa4a10c5e
 title: Radiology Report Matcher (geplante Website)
 ---
 
@@ -102,6 +102,8 @@ Quelle der Inhalte: Radiopaedia, eine freie radiologische Referenzseite. Ihre Se
 Die Methode wurde aus einem Forschungsbericht gewählt, den [[codex]] am 2026-10-27 geschrieben hat: BM25 plus ein Begriffslexikon, Verneinungsregeln und eine feste Score-Tabelle, mit gelerntem Neuranking und Embeddings (Zahlen, die die Bedeutung eines Textes darstellen) nur, wenn ein Test zeigt, dass sie helfen. Der Bericht selbst sagte, dass keine veröffentlichte Studie belegt, dass eine Methode genau dieses Ziel erfüllt; deshalb ist ein Testsatz aus von Ärzten geschriebenen Befunden nötig.
 
 Der Code liegt im privaten Repository `yujideluca/radiology-report-matcher` (Ordner `~/dev/radiology-crawler`, unter diesem Namen belassen, weil lange Jobs darin laufen). Die Planwebsite ist außerdem offen, ohne Anmeldung, über Tailscale Funnel auf Port 8443 veröffentlicht (das Wiki behält den Hauptport hinter seiner Anmeldung); ein kleiner statischer Server, `radiology-plan-site.service`, liefert den Ordner `~/Documents/Radiology Report Matcher/` von diesem Laptop aus, sie ist also online, solange der Laptop läuft. Von Giovanni am 2026-10-27 entschiedene Sprachen: Werkzeuge in Python, Back End in Elixir, Front End in Elm und die Matching-Mathematik in schnellem numerischem Python (Cython, NumPy, C-Bibliotheken), niemals Schleifen in reinem Python.
+
+Modellierungsplan, von Giovanni am 2026-10-30 beschlossen (Volltext in `docs/modelling-directives.md` im Repository): Sobald der Download der Artikel beendet ist, werden vier konkurrierende mathematische Modelle gebaut und gleich bewertet, im Stil des Skills [[skill-skill-forge]] (mehrere Versionen, verglichen durch Tests). Version 1 ist Claudes eigene Analyse aller Artikel ohne Vorannahmen; Version 2 ist dieselbe Aufgabe durch Codex; Version 3 ist ein vollständig akademischer Ansatz nach gründlicher Recherche, bei dem Claude und Codex diskutieren; Version 4 ist Giovannis eigene Idee. Seine Idee arbeitet in Schichten: zuerst harte Filter, die Diagnosen entfernen, die nicht passen können (Patientengruppe wie Kind oder Erwachsener und Geschlecht, Bildgebungsverfahren, Ort im Körper), dann weichere Filter, die eine Diagnose nur abwerten (Textur, Helligkeit oder Dichte des Befunds, Seite, Größe und Rand, Kontrastmittelaufnahme und Durchblutung, Anamnese), und zuletzt ein rein statistischer Schritt über die subjektiven Formulierungen des Befunds, der Füllwörtern, die ein unsicherer Radiologe benutzt, wenig Gewicht gibt. Fehlende Angaben entfernen nie eine Diagnose; stattdessen fragt ein „Akinator-artiger“ Ablauf (wie das Ratespiel stellt er die Frage, die die meisten Kandidaten ausschließt) den Nutzer, der jede Frage überspringen oder Text eingeben kann. Die Seite beginnt mit der Wahl zwischen geführter Suche und offenem Textfeld. Jeder Artikel wird von Codex und von Wortlisten markiert, und beide werden verglichen. Für jede Diagnose tuned die Hälfte ihrer echten Fälle das Modell und die andere Hälfte testet es; Diagnosen mit zu wenigen Fällen erhalten Fälle aus der Fachliteratur.
 
 ## Where it sits in the pipeline
 Es steht am Anfang der Kette: [[radiopaedia-crawler]] → [[report-translator]] → (geplant) Index-Erstellung → (geplant) Website.

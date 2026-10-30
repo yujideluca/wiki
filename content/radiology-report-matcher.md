@@ -8,8 +8,8 @@ status: active
 location: radiology-crawler:
 fed_by: []
 feeds: []
-sources: [radiology-crawler:DESIGN.md, radiology-crawler:CLAUDE.md, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/adr/0002-technology-and-languages.md, radiology-crawler:tools/quality_gate.sh, radiology-crawler:.github/workflows/quality-gate.yml, radiology-crawler:site_src/build.py, radiology-crawler:run_all.sh]
-reviewed: 2026-10-28T05:51Z
+sources: [radiology-crawler:DESIGN.md, radiology-crawler:CLAUDE.md, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/adr/0002-technology-and-languages.md, radiology-crawler:tools/quality_gate.sh, radiology-crawler:.github/workflows/quality-gate.yml, radiology-crawler:site_src/build.py, radiology-crawler:run_all.sh, radiology-crawler:docs/modelling-directives.md]
+reviewed: 2026-10-30T01:54Z
 ---
 
 ## What it is
@@ -109,6 +109,8 @@ Source of the content: Radiopaedia, a free radiology reference site. Its pages a
 The method was chosen from a research report written by [[codex]] on 2026-10-27: BM25 plus a term lexicon, negation rules and a fixed score table, with learned reranking and embeddings (numbers that represent the meaning of a text) only if a test shows they help. The report itself said that no published study proves any method meets this exact goal, so a test set of physician-written reports is required.
 
 The code lives in the private repository `yujideluca/radiology-report-matcher` (folder `~/dev/radiology-crawler`, kept under that name because long jobs run from it). The plan site is also published openly, with no login, through Tailscale Funnel on port 8443 (the wiki keeps the main port behind its sign-in); a small static server, `radiology-plan-site.service`, serves the folder `~/Documents/Radiology Report Matcher/` from this laptop, so it is online while the laptop is on. Languages decided by Giovanni on 2026-10-27: Python tools, Elixir back end, Elm front end, and the matching math in high-speed numerical Python (Cython, NumPy, C libraries), never plain-Python loops.
+
+Modelling plan, decided by Giovanni on 2026-10-30 (full text in `docs/modelling-directives.md` of the repository): once the article download is finished, four competing mathematical models are built and scored the same way, in the style of the skill [[skill-skill-forge]] (several versions compared by tests). Version 1 is Claude's own analysis of all articles without prior bias; version 2 is the same by Codex; version 3 is a fully academic approach after thorough research, with Claude and Codex debating; version 4 is Giovanni's own idea. His idea works in layers: first hard filters that remove diagnoses which cannot fit (patient group such as child or adult and sex, imaging method, location in the body), then softer filters that only lower a diagnosis (texture, brightness or density of the finding, side, size and margins, contrast uptake and blood flow, clinical history), and last a purely statistical step on the subjective wording of the report, which gives little weight to filler words used when the radiologist is unsure. Missing information never removes a diagnosis; instead an "akinator-style" routine (like the guessing game, it asks the question that removes the most candidates) asks the user, who can always skip it or type text instead. The page starts with a choice between a guided search and an open text box. Every article is tagged by Codex and by word lists, and the two are compared. For each diagnosis, half of its real cases tune the model and half test it; diagnoses with too few cases get cases from published literature.
 
 ## Where it sits in the pipeline
 It starts the chain: [[radiopaedia-crawler]] → [[report-translator]] → (planned) index builder → (planned) website.
