@@ -9,7 +9,7 @@ location: radiology-crawler:crawl.py
 fed_by: []
 feeds: [report-translator]
 sources: [radiology-crawler:crawl.py, radiology-crawler:progress.py, radiology-crawler:run_all.sh]
-reviewed: 2026-10-30T01:11Z
+reviewed: 2026-10-30T04:25Z
 ---
 
 ## What it is
@@ -48,7 +48,7 @@ It has five commands, run as `python3 -I crawl.py <command>` in `~/dev/radiology
 - `sitemap` reads the site's sitemap (the site's own list of its pages) and stores every article and case address in the table `urls` with status `pending`.
 - `fetch` downloads pending pages, one every 10 to 12 seconds, and saves each as a compressed file in `data/raw/`. Options: `--kind articles|cases`, `--limit N`. Within each kind the pages are taken in a fixed pseudo-random order (not alphabetical), so a download stopped early still holds a fair sample of all diagnoses.
 - `extract` turns saved pages into rows of the tables `articles` and `cases` in `data/radiopaedia.sqlite` (SQLite is a database kept in one file). It skips pages already extracted unless `--all` is given.
-- `run` does all of the above in turn (sitemap, articles, cases, extract) and repeats while a pass still reduces the pending list. While it works it rewrites `progress-data.js` in the plan site folder `~/Documents/Radiology Report Matcher/` every 5 seconds (the code is in `progress.py`), so the progress bars of the plan site stay live. It ends with success when nothing is left, with failure when pages are left (for example no network), and with code 75 after repeated blocks.
+- `run` does all of the above in turn (sitemap, articles, cases, extract) and repeats while a pass still reduces the pending list. While it works it rewrites `progress-data.js` in the plan site folder `~/Documents/Radiology Report Matcher/` every 5 seconds (the code is in `progress.py`), so the progress bars of the plan site stay live. It ends with success when nothing is left, with failure when pages are left (for example no network), and with code 75 after repeated blocks. If the crawl is started with `run_all.sh`, that script also starts the background service `radiology-plan-updater` (systemd, the Linux service manager, user level), which keeps the same file fresh and restarts itself after a crash or reboot.
 - `stats` prints how many pages are pending, done or gone, and the days left.
 
 `run_all.sh` is the older manual way: it runs sitemap, then fetch for articles, then fetch for cases, then extract, and can simply be run again to resume. On 2026-10-27 the sitemaps listed 17,359 articles and 70,535 cases, about 11 days of downloading at this speed.
