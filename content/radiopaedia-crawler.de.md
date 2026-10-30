@@ -1,7 +1,7 @@
 ---
 id: radiopaedia-crawler
 lang: de
-source_hash: 2a51083bb0de
+source_hash: 8448b140a903
 title: Radiopaedia-Crawler (crawl.py)
 ---
 
@@ -39,7 +39,7 @@ cm -überschreibt alle paar Sekunden-> pj
 Es hat fünf Befehle, ausgeführt als `python3 -I crawl.py <Befehl>` in `~/dev/radiology-crawler`:
 
 - `sitemap` liest die Sitemap der Website (die eigene Seitenliste der Website) und speichert jede Artikel- und Fall-Adresse in der Tabelle `urls` mit dem Status `pending`.
-- `fetch` lädt ausstehende Seiten herunter, eine alle 10 bis 12 Sekunden, und speichert jede als komprimierte Datei in `data/raw/`. Optionen: `--kind articles|cases`, `--limit N`.
+- `fetch` lädt ausstehende Seiten herunter, eine alle 10 bis 12 Sekunden, und speichert jede als komprimierte Datei in `data/raw/`. Optionen: `--kind articles|cases`, `--limit N`. Innerhalb jeder Art werden die Seiten in einer festen Pseudozufallsreihenfolge geholt (nicht alphabetisch); ein vorzeitig beendeter Download enthält daher eine faire Stichprobe aller Diagnosen.
 - `extract` verwandelt gespeicherte Seiten in Zeilen der Tabellen `articles` und `cases` in `data/radiopaedia.sqlite` (SQLite ist eine Datenbank in einer einzigen Datei). Bereits extrahierte Seiten werden übersprungen, außer mit `--all`.
 - `run` führt alles oben nacheinander aus (Sitemap, Artikel, Fälle, Extraktion) und wiederholt sich, solange ein Durchlauf die Liste der ausstehenden Seiten noch verkleinert. Während es arbeitet, überschreibt es alle 5 Sekunden `progress-data.js` im Ordner der Planungsseite `~/Documents/Radiology Report Matcher/` (der Code steht in `progress.py`), sodass die Fortschrittsbalken der Planungsseite live bleiben. Es endet mit Erfolg, wenn nichts mehr übrig ist, mit Fehler, wenn Seiten übrig sind (zum Beispiel ohne Netz), und mit Code 75 nach wiederholten Sperren.
 - `stats` zeigt, wie viele Seiten ausstehend, fertig oder verschwunden sind, und die verbleibenden Tage.
