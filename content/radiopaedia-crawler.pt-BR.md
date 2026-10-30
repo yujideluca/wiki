@@ -1,7 +1,7 @@
 ---
 id: radiopaedia-crawler
 lang: pt-BR
-source_hash: dd420d8890b0
+source_hash: 2b4d39cf3707
 title: Rastreador da Radiopaedia (crawl.py)
 ---
 
@@ -44,7 +44,7 @@ Tem cinco comandos, executados como `python3 -I crawl.py <comando>` em `~/dev/ra
 - `run` faz tudo o que está acima em sequência (sitemap, artigos, casos, extração) e repete enquanto uma passada ainda reduz a lista de pendentes. Enquanto trabalha, reescreve a cada 5 segundos o `progress-data.js` na pasta do site do plano `~/Documents/Radiology Report Matcher/` (o código está em `progress.py`), de modo que as barras de progresso do site do plano ficam ao vivo. Termina com sucesso quando não sobra nada, com falha quando sobram páginas (por exemplo sem rede) e com o código 75 após bloqueios repetidos. Se o crawl for iniciado com `run_all.sh`, esse script também inicia o serviço em segundo plano `radiology-plan-updater` (systemd, o gerenciador de serviços do Linux, nível de usuário), que mantém o mesmo arquivo atualizado e se reinicia após uma falha ou reinício do computador.
 - `stats` mostra quantas páginas estão pendentes, prontas ou sumidas e quantos dias faltam.
 
-`run_all.sh` é a forma manual mais antiga: executa sitemap, depois fetch dos artigos, depois fetch dos casos, depois extract, e pode simplesmente ser executado de novo para continuar. Em 2026-10-27 os sitemaps listavam 17.359 artigos e 70.535 casos, cerca de 11 dias de download nessa velocidade.
+`run_all.sh` é a forma manual mais antiga: executa sitemap, depois fetch dos artigos, depois fetch dos casos, depois extract, e pode simplesmente ser executado de novo para continuar. Em 2026-10-27 os sitemaps listavam 17.359 artigos e 70.535 casos, cerca de 11 dias de download nessa velocidade. Os artigos baixados também alimentam a análise estatística: `analysis/codex_tags.py` (Codex, retomável) e `analysis/haiku_batches.py` (subinstâncias Haiku em ondas) marcam cada artigo com o mesmo vocabulário fechado, lendo a cópia congelada do banco de dados, nunca os arquivos do crawler.
 
 ## How it does it
 - Lê primeiro o `robots.txt` e pula qualquer endereço que esse arquivo bloqueie (busca, tags, playlists, a interface de programação, páginas de administração). O intervalo de 10 segundos é o valor `Crawl-delay` desse arquivo; somam-se 0 a 2 segundos aleatórios.

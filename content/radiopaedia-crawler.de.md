@@ -1,7 +1,7 @@
 ---
 id: radiopaedia-crawler
 lang: de
-source_hash: dd420d8890b0
+source_hash: 2b4d39cf3707
 title: Radiopaedia-Crawler (crawl.py)
 ---
 
@@ -44,7 +44,7 @@ Es hat fünf Befehle, ausgeführt als `python3 -I crawl.py <Befehl>` in `~/dev/r
 - `run` führt alles oben nacheinander aus (Sitemap, Artikel, Fälle, Extraktion) und wiederholt sich, solange ein Durchlauf die Liste der ausstehenden Seiten noch verkleinert. Während es arbeitet, überschreibt es alle 5 Sekunden `progress-data.js` im Ordner der Planungsseite `~/Documents/Radiology Report Matcher/` (der Code steht in `progress.py`), sodass die Fortschrittsbalken der Planungsseite live bleiben. Es endet mit Erfolg, wenn nichts mehr übrig ist, mit Fehler, wenn Seiten übrig sind (zum Beispiel ohne Netz), und mit Code 75 nach wiederholten Sperren. Wird der Crawl mit `run_all.sh` gestartet, startet dieses Skript auch den Hintergrunddienst `radiology-plan-updater` (systemd, die Linux-Dienstverwaltung, Benutzerebene), der dieselbe Datei aktuell hält und sich nach Absturz oder Neustart selbst neu startet.
 - `stats` zeigt, wie viele Seiten ausstehend, fertig oder verschwunden sind, und die verbleibenden Tage.
 
-`run_all.sh` ist der ältere manuelle Weg: es führt sitemap aus, dann fetch für Artikel, dann fetch für Fälle, dann extract, und kann einfach erneut gestartet werden, um fortzufahren. Am 2026-10-27 nannten die Sitemaps 17.359 Artikel und 70.535 Fälle, bei dieser Geschwindigkeit etwa 11 Tage Download.
+`run_all.sh` ist der ältere manuelle Weg: es führt sitemap aus, dann fetch für Artikel, dann fetch für Fälle, dann extract, und kann einfach erneut gestartet werden, um fortzufahren. Am 2026-10-27 nannten die Sitemaps 17.359 Artikel und 70.535 Fälle, bei dieser Geschwindigkeit etwa 11 Tage Download. Die geladenen Artikel speisen auch die statistische Analyse: `analysis/codex_tags.py` (Codex, wiederaufnehmbar) und `analysis/haiku_batches.py` (Haiku-Unterinstanzen in Wellen) taggen jeden Artikel mit demselben geschlossenen Vokabular; sie lesen die eingefrorene Kopie der Datenbank, nie die Dateien des Crawlers.
 
 ## How it does it
 - Es liest zuerst `robots.txt` und überspringt jede Adresse, die diese Datei sperrt (Suche, Tags, Playlists, die Programmierschnittstelle, Admin-Seiten). Die Pause von 10 Sekunden ist der Wert `Crawl-delay` in dieser Datei; dazu kommen zufällige 0 bis 2 Sekunden.
