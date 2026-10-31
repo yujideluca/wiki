@@ -1,7 +1,7 @@
 ---
 id: skill-alemao-goethe-fsp
 lang: pt-BR
-source_hash: 1d140d707bd3
+source_hash: ebf2b701e9a5
 title: Skill: alemao-goethe-fsp (treino de alemão)
 ---
 
@@ -46,7 +46,7 @@ Corrige frases e textos em alemão, dá exercícios, simula partes da prova, for
 Um `SKILL.md` em `~/.claude/skills/alemao-goethe-fsp` (com detalhes das provas em `references/provas.md`); o Claude o carrega quando um pedido combina com a descrição. Seu papel é "domínio": é dona da correção de alemão, dos exercícios, das simulações e do registro de erros; remete à [[skill-candidatura-alemanha]] para documentos de candidatura; e respeita o idioma da mensagem do Giovanni e as flags de profundidade `!!`, `***` e `...`.
 
 ## Where it sits in the pipeline
-Estudo e carreira do Giovanni, fora dos projetos de código.
+Estudo e carreira do Giovanni, fora dos projetos de código. A página [[b2-vorlagen]] reúne os modelos de redação e os temas de prática da parte de Schreiben.
 
 ## Who receives its output
 O Giovanni.

@@ -53,7 +53,7 @@ It corrects German sentences and texts, gives exercises, simulates exam parts, p
 A `SKILL.md` in `~/.claude/skills/alemao-goethe-fsp` (with exam details in `references/provas.md`); Claude loads it when a request matches its description. Its role is "domain": it owns correcting German, exercises, simulations and the error register; it defers to [[skill-candidatura-alemanha]] for application documents; and it honours the language of Giovanni's message and the depth flags `!!`, `***` and `...`.
 
 ## Where it sits in the pipeline
-Giovanni's study and career work, outside the code projects.
+Giovanni's study and career work, outside the code projects. The page [[b2-vorlagen]] holds the writing templates and practice topics for the Schreiben part.
 
 ## Who receives its output
 Giovanni.

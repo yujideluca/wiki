@@ -1,7 +1,7 @@
 ---
 id: skill-alemao-goethe-fsp
 lang: de
-source_hash: 1d140d707bd3
+source_hash: ebf2b701e9a5
 title: Skill: alemao-goethe-fsp (Deutsch-Training)
 ---
 
@@ -46,7 +46,7 @@ Sie korrigiert deutsche Sätze und Texte, gibt Übungen, simuliert Prüfungsteil
 Eine `SKILL.md` in `~/.claude/skills/alemao-goethe-fsp` (mit Prüfungsdetails in `references/provas.md`); Claude lädt sie, wenn eine Anfrage zu ihrer Beschreibung passt. Ihre Rolle ist „Domäne“: Sie besitzt das Korrigieren von Deutsch, Übungen, Simulationen und das Fehlerregister; sie verweist für Bewerbungsunterlagen auf [[skill-candidatura-alemanha]]; und sie beachtet die Sprache von Giovannis Nachricht und die Tiefe-Flags `!!`, `***` und `...`.
 
 ## Where it sits in the pipeline
-Giovannis Studium und Berufsweg, außerhalb der Code-Projekte.
+Giovannis Studium und Berufsweg, außerhalb der Code-Projekte. Die Seite [[b2-vorlagen]] enthält die Schreibvorlagen und Übungsthemen für den Teil Schreiben.
 
 ## Who receives its output
 Giovanni.
