@@ -1,7 +1,7 @@
 ---
 id: mem-sync
 lang: pt-BR
-source_hash: 951134bb249e
+source_hash: c28cf962daf0
 title: mem sync (pull e push)
 ---
 
@@ -12,7 +12,9 @@ title: mem sync (pull e push)
 `pull` baixa a versão mais recente antes de a memória ser lida (no início de uma sessão). `push` envia os novos eventos depois de escritos (no hook Stop), com novas tentativas. Nunca mescla os arquivos derivados (as visões geradas), porque eles sempre podem ser regenerados.
 
 ## How it does it
-Usa git simples com limites de tempo. Se outro escritor enviou no mesmo instante e o envio foi recusado, recomeça a partir do `main` mais recente (a linha principal do histórico). Nunca faz force-push.
+Usa Git com limites de tempo. Antes de enviar, baixa as mudanças remotas e reaplica os commits locais sobre elas (rebase). Se houver conflito em um evento, informa `conflict after pull, nothing pushed:` e para antes de tentar um envio. Mantém os arquivos em conflito disponíveis para inspeção. Nunca faz force-push.
+
+O teste de integração usa repositórios Git locais reais. Cria um evento compartilhado datado de 2001 antes de um novo evento datado de 2000 e seleciona o novo pelo caminho impresso por `mem add`. Essas datas fixas detectam a seleção pela ordem dos arquivos sem depender do relógio. O teste exige a mensagem de conflito, a referência do histórico remoto inalterada, nenhuma tentativa de envio e um arquivo de evento não resolvido. As chamadas ao Git são registradas e encaminhadas ao programa real; seus resultados não são simulados.
 
 ## Where it sits in the pipeline
 Entre o clone local e o [[github]].
