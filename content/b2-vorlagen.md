@@ -8,8 +8,8 @@ status: active
 location: home:dev/b2-vorlagen
 fed_by: []
 feeds: []
-sources: [home:dev/b2-vorlagen/build/site.py, home:dev/b2-vorlagen/build/templates.py, home:dev/b2-vorlagen/data/new_forum.py, home:dev/b2-vorlagen/data/new_mail.py]
-reviewed: 2026-10-31T22:20Z
+sources: [home:dev/b2-themen/build.py, home:dev/b2-vorlagen/build/site.py, home:dev/b2-vorlagen/build/templates.py, home:dev/b2-vorlagen/data/new_forum.py, home:dev/b2-vorlagen/data/new_mail.py]
+reviewed: 2026-10-31T22:23Z
 ---
 
 ## What it is
@@ -20,7 +20,7 @@ trigger t1: Giovanni runs build/site.py
 step s1: The task texts and slot values are read from the files in data/
 step s2: Each task is filled into the Forumsbeitrag or the E-Mail template
 step s3: The page index.html is written and copied to public/
-product p1: Page with the 20 corrected texts and the 40 new practice topics
+product p1: Page with the 20 corrected texts
 
 t1 -> s1
 s1 -> s2
@@ -49,14 +49,14 @@ bs -writes-> pg
 g -reads-> pg
 
 ## What it does
-The page has four parts: the two templates (Forumsbeitrag, a forum post, and formelle E-Mail, a formal e-mail) with a guide to each slot; a table of scores; the 20 tasks Giovanni has already written, each with the task, his text, a correction line by line and a template version; and, since 2026-10-31, 20 new Forumsbeitrag topics and 20 new E-Mail topics (section 4). The new topics have the task and a model text built from the template, but no text of Giovanni's, so they have no correction and no score.
+The page has four parts: the two templates (Forumsbeitrag, a forum post, and formelle E-Mail, a formal e-mail) with a guide to each slot; a table of scores; the 20 tasks Giovanni has already written, each with the task, his text, a correction line by line and a template version. A second page, built by `~/dev/b2-themen/build.py`, lists only the tasks of 20 new Forumsbeitrag topics and 20 new E-Mail topics, with no model text; it is a plain HTML (HyperText Markup Language, the format of web pages) file (`~/dev/b2-themen/index.html`) in the same style.
 
-The scores are "blind scores": a separate model session saw only the criteria, the task and the text. The build prints the means: 4.45 for Giovanni's originals and 9.31 for the template versions. They are one model's judgement, not an official Goethe mark. The new topics were not scored.
+The scores are "blind scores": a separate model session saw only the criteria, the task and the text. The build prints the means: 4.45 for Giovanni's originals and 9.31 for the template versions. They are one model's judgement, not an official Goethe mark.
 
 ## How it does it
 `python3 build/site.py` reads `data/` and `eval/` and writes `index.html`; `public/index.html` is a copy. `build/templates.py` holds each template as sentences marked core (always used) or extra (added only when the task asks for more); a sentence is dropped when one of its slots has no value. For example `Ehrlich gesagt bin ich der Ansicht, dass {MEINUNG_N}.` becomes a sentence once `MEINUNG_N` is given. The slot name tells the grammar: `_N` is a clause with the verb last, `_H` a main clause with the verb second, `_Z` a `zu` plus infinitive.
 
-The new topics are in `data/new_forum.py` and `data/new_mail.py`. Each task copies the shape of an exam task: four points to cover, a minimum number of words, greeting and closing. The page links are teal (CSS variable `--lk`, contrast about 7:1 on the light theme and 10:1 on the dark one).
+The tasks of the new topics are in `data/new_forum.py` and `data/new_mail.py`, with slot values that were used to draft model texts; the `b2-themen` page shows only the tasks. Each task copies the shape of an exam task: four points to cover, a minimum number of words, greeting and closing. The page links are teal (CSS variable `--lk`, contrast about 7:1 on the light theme and 10:1 on the dark one).
 
 ## Where it sits in the pipeline
 Off to the side. It supports the German practice described in [[skill-alemao-goethe-fsp]]. Nothing else reads its output.
@@ -86,4 +86,4 @@ None yet.
 Not covered by the [[monthly-architecture-review]]. It has no repository yet.
 
 ## Notes
-The model texts of the new topics were written in one session and checked only for completeness (every slot filled) and length (at least 125 words for an E-Mail and 224 for a Forumsbeitrag, with the extra sentences). A native speaker has not reviewed the German.
+The model texts behind the new tasks are not shown on any page. A native speaker has not reviewed the German of the tasks or of those texts.
