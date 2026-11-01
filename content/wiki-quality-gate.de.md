@@ -1,7 +1,7 @@
 ---
 id: wiki-quality-gate
 lang: de
-source_hash: dada3d67d078
+source_hash: 4d1ac0bcadfd
 title: Wiki Quality Gate
 ---
 
@@ -19,3 +19,6 @@ Vor dem Veröffentlichen von Codeänderungen und bei jedem Push.
 
 ## Who receives its output
 [[github]] (das CI-Ergebnis).
+
+## Notes
+Der Regressionstest für Zustandsschreibvorgänge nutzt `server/test/support/stamp_writer.exs`: Zwei unabhängige Elixir-Laufzeiten schreiben jeweils 20.000 Veröffentlichungszeitpunkte über das echte Modul. Er prüft, dass parallele Assistentenprozesse ohne Umbenennungskollision enden, einen gültigen Zeitpunkt und keine temporären Dateien hinterlassen. Diese Testdatei gehört zum Qualitäts-Gate und ist kein undokumentiertes neues Programm. Die Abdeckungsmessung ist getrennt: Das Standard-Gate führt Tests aus, ohne die voreingestellte Abdeckungsschwelle von Mix zu ändern.

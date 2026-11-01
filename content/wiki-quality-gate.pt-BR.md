@@ -1,7 +1,7 @@
 ---
 id: wiki-quality-gate
 lang: pt-BR
-source_hash: dada3d67d078
+source_hash: 4d1ac0bcadfd
 title: Portão de qualidade do wiki
 ---
 
@@ -19,3 +19,6 @@ Antes de publicar mudanças de código e a cada push.
 
 ## Who receives its output
 O [[github]] (o resultado da CI).
+
+## Notes
+O teste de regressão da gravação de estado usa `server/test/support/stamp_writer.exs`: duas execuções independentes de Elixir gravam, cada uma, 20.000 marcas de publicação pelo módulo real. Ele verifica que processos concorrentes terminam sem colisão de renomeação, deixam uma marca válida e não deixam arquivos temporários. Esse arquivo de teste pertence ao gate de qualidade, em vez de ser um programa novo sem documentação. A medição de cobertura é separada: o gate padrão executa testes sem alterar o limite padrão de cobertura do Mix.

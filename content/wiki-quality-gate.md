@@ -8,8 +8,8 @@ status: active
 location: wiki:tools/quality_gate.sh
 fed_by: [template-quality-gate, wiki-requirements]
 feeds: [github]
-sources: [wiki:tools/quality_gate.sh, wiki:.github/workflows/quality-gate.yml, wiki:pipeline-check.toml]
-reviewed: 2026-10-24T21:57Z
+sources: [wiki:tools/quality_gate.sh, wiki:.github/workflows/quality-gate.yml, wiki:pipeline-check.toml, wiki:server/test/support/stamp_writer.exs]
+reviewed: 2026-11-01T23:02Z
 ---
 
 ## What it is
@@ -26,3 +26,6 @@ Before publishing code changes and on every push.
 
 ## Who receives its output
 [[github]] (the CI result).
+
+## Notes
+The state-writer regression uses `server/test/support/stamp_writer.exs`: two independent Elixir runtimes each write 20,000 publication timestamps through the real module. It checks that concurrent assistant processes finish without a rename collision, leave a valid timestamp and leave no temporary files. This fixture belongs to the quality gate rather than being an undocumented new program. Coverage measurement is separate: the standard gate runs tests without changing Mix's default coverage threshold.
