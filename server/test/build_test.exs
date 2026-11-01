@@ -109,7 +109,7 @@ defmodule Wiki.Content.BuildTest do
 
       File.write!(Path.join(repo, "lib/x.ex"), "2")
       File.write!(Path.join(repo, "NEW.md"), "new")
-      commit_all(repo, "change", DateTime.utc_now() |> DateTime.to_iso8601())
+      commit_all(repo, "change", DateTime.utc_now() |> DateTime.add(-5) |> DateTime.to_iso8601())
 
       msg = Stale.hook_message(store, %{"session_id" => "s"})
       assert msg =~ "r1: update pages a"
@@ -179,6 +179,70 @@ defmodule Wiki.Content.BuildTest do
       commit_all(repo, "change", DateTime.utc_now() |> DateTime.to_iso8601())
       File.write!(Path.join(Stale.state_dir(), "hook_blocked"), <<255, 0, 254>> <> "\n\n   \ns 1")
       assert Stale.hook_message(Store.load(c), %{"session_id" => "s"}) =~ "update pages a"
+    end
+
+    # REQ UP-7
+    test "a missing stamp with a page that is behind its source is a visible obligation, a clean state stays quiet", %{content: c, repo: repo} do
+      store = Store.load(c)
+      File.write!(Path.join(repo, "lib/x.ex"), "2")
+      commit_all(repo, "change", DateTime.utc_now() |> DateTime.to_iso8601())
+      refute File.exists?(Path.join(Stale.state_dir(), "last_publish"))
+
+      msg = Stale.hook_message(store, %{"session_id" => "s"})
+      assert msg =~ "publish stamp" and msg =~ "a:", "the hook must derive the stale page, not go silent"
+      assert Stale.hook_message(store, %{"session_id" => "s"}) == nil, "once per session"
+
+      assert Stale.record_publish(store) == :kept, "a publish must not invent a baseline over a live obligation"
+      refute File.exists?(Path.join(Stale.state_dir(), "last_publish"))
+      File.mkdir_p!(Stale.state_dir())
+      File.write!(Path.join(Stale.state_dir(), "last_publish"), "partial")
+      assert Stale.record_publish(store) == :kept
+      assert File.read!(Path.join(Stale.state_dir(), "last_publish")) == "partial", "a corrupt stamp is not repaired blindly"
+      assert Stale.hook_message(store, %{"session_id" => "t"}) =~ "a:"
+
+      write_page(c, "a", base_header("a", feeds: ["b"], sources: ["r1:lib"], reviewed: "2999-01-01T00:00Z"))
+      clean = Store.load(c)
+      Stale.record_publish(clean)
+      assert is_integer(Stale.last_published()), "a verified clean state establishes the baseline"
+    end
+
+    # REQ UP-7
+    test "any stamp in the future is invalid, even one minute ahead", %{content: c} do
+      File.mkdir_p!(Stale.state_dir())
+      File.write!(Path.join(Stale.state_dir(), "last_publish"), Integer.to_string(System.os_time(:second) + 60))
+      assert {:invalid, _} = Stale.last_published()
+      assert Stale.hook_message(Store.load(c), %{"session_id" => "s"}) =~ "publish stamp"
+    end
+
+    # REQ UP-1
+    test "a real linked git worktree is watched (its .git is a file)", %{content: c, dir: dir} do
+      main = Path.join(dir, "dev/main2")
+      init_repo(main)
+      File.mkdir_p!(Path.join(main, "lib"))
+      File.write!(Path.join(main, "lib/y.ex"), "1")
+      commit_all(main, "first", "2026-01-01T10:00:00Z")
+      wt = Path.join(dir, "dev/wt")
+      git(main, ["worktree", "add", "-q", "-b", "side", wt])
+      assert File.regular?(Path.join(wt, ".git"))
+      write_page(c, "a", base_header("a", feeds: ["b"], sources: ["wt:lib/y.ex"]))
+      Stale.mark_published(System.os_time(:second) - 60)
+
+      File.write!(Path.join(wt, "lib/y.ex"), "2")
+      commit_all(wt, "change in worktree", DateTime.utc_now() |> DateTime.to_iso8601())
+      assert Stale.hook_message(Store.load(c), %{"session_id" => "w"}) =~ "wt: update pages a"
+    end
+
+    # REQ UP-7
+    test "a commit and a new file in the same second as the publish stamp are not dropped", %{content: c, repo: repo} do
+      stamp = System.os_time(:second) - 30
+      Stale.mark_published(stamp)
+      File.write!(Path.join(repo, "lib/x.ex"), "2")
+      File.write!(Path.join(repo, "SAME.md"), "new")
+      commit_all(repo, "same second", DateTime.from_unix!(stamp) |> DateTime.to_iso8601())
+
+      msg = Stale.hook_message(Store.load(c), %{"session_id" => "same"})
+      assert msg =~ "r1: update pages a"
+      assert msg =~ "SAME.md"
     end
 
     # REQ UP-1

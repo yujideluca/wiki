@@ -49,7 +49,7 @@ Source: G = stated by Giovanni, D = derived by Claude Code and accepted (design 
 | UP-3 | The Stop hook message tells Claude to record a page it checked and found right by setting its reviewed time, and keeps "review: no page change" for changes no page describes | G |
 | UP-4 | wiki publish adds a Co-Authored-By line only when the publishing session gives one (--co-author or WIKI_CO_AUTHOR, format "Name <email>"); no fixed name, and a malformed value is refused | G |
 | UP-5 | wiki --help, -h and help print the usage and run nothing; an unknown or malformed option prints the usage and runs nothing (exit 2), so a typo can never trigger a publish | G |
-| UP-7 | A publish moves the hook's stamp forward only when no page is still behind a change and no new file is uncovered since the previous stamp; a missing stamp is silent, a malformed one is reported and never crashes; the hook names only pages that are really behind | D |
+| UP-7 | A publish moves the hook's stamp forward only when no page is still behind a change and no new file is uncovered since the previous stamp; a missing stamp makes the hook list the pages that are behind (silent only when none is), a malformed or future one is always reported, none is ever repaired over a live obligation, and linked worktrees and same-second commits are watched; the hook names only pages that are really behind | D |
 | MP-1 | Search suggests matching pages (title and aliases) while typing, best match first | G |
 | MP-2 | Hovering a node fills the four info boxes; clicking a node opens its article | G |
 | MP-3 | Links written [[id]] in an article lead to that article | G |

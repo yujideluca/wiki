@@ -224,6 +224,24 @@ defmodule Wiki.Content.StaleTest do
     end
 
     # REQ ST-6
+    test "claimed/2 judges each source as of the tip: a later source commit cannot mask an earlier unreviewed one", %{c: c, wiki: wiki, dir: dir} do
+      repo = Path.join(dir, "dev/r1")
+      write_page(c, "a", base_header("a", feeds: ["b"], sources: ["r1:lib/x.ex"], reviewed: "2026-01-02T00:00Z"))
+      write_page(c, "b", base_header("b", fed_by: ["a"]))
+      commit_all(wiki, "pages", "2026-01-03T10:00:00Z")
+      change_source(repo, "2026-01-05T10:00:00Z")
+
+      # doc commit claims a review at Jan 4, before the Jan 5 source change
+      write_page(c, "a", base_header("a", feeds: ["b"], sources: ["r1:lib/x.ex"], reviewed: "2026-01-04T00:00Z"))
+      commit_all(wiki, "claim", "2026-01-07T10:00:00Z")
+      # another session changes the source again before the claim is validated
+      change_source(repo, "2026-01-08T10:00:00Z")
+
+      assert [%{id: "a", reason: reason}] = Stale.claimed(Store.load(c), "HEAD")
+      assert reason =~ "changed 2026-01-05 10:00 UTC", "the change that existed at the tip, not the later one"
+    end
+
+    # REQ ST-6
     test "publish's claim check refuses a review that a source already outdates, and passes a true one", %{c: c, wiki: wiki, dir: dir} do
       System.put_env("WIKI_ROOT", wiki)
       repo = Path.join(dir, "dev/r1")

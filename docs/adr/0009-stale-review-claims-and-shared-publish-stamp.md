@@ -37,9 +37,17 @@ listed, and so were pages of other work. Three separate gaps explain how this pa
   that existed when the commit was made (`Stale.claimed/2`). It names the page and the source.
 - The publish stamp moves forward only when no page is still behind a change, and no new file is left uncovered, since
   the previous stamp (`Stale.record_publish/2`), and the hook names a page only when it is really behind.
-- The stamp is read safely: missing means "never published" (silent); empty, torn, non-numeric, zero, negative or
-  far-future content is reported by the hook once per session and rewritten by the next publish. Both state files
-  are written by rename, and a state file that cannot be written never suppresses the message.
+- The stamp is read safely. Never written: the hook derives its obligations from the pages that are really behind
+  their sources (silent only when none is). Unreadable, empty, torn, non-numeric, zero, negative or ANY time in the
+  future: the hook always reports it, once per session, with the same list. A publish never overwrites a missing or
+  broken stamp while a page is behind a source (that would erase the obligation); a verified clean state sets the
+  baseline. Both state files are written by rename, and a state file that cannot be written never suppresses the message.
+- The hook finds repositories with git (`rev-parse --show-toplevel`), so linked worktrees (whose `.git` is a file) are
+  watched, and it includes commits and new files made in the same second as the stamp (a duplicate reminder is
+  preferred to a lost one). New files under the wiki's own `content/` are the documentation itself, never "uncovered".
+- `Stale.claimed/2` reads every source's history as of the commit being judged (the revision itself in the wiki repository,
+  the commit date elsewhere), so a later source commit cannot hide an earlier unreviewed one. A source outside git has no
+  history; its newest change counts only if it is not later than the commit.
 
 ## Consequences
 

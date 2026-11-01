@@ -42,9 +42,17 @@ defmodule Wiki.Content.Sources do
     end
   end
 
-  @doc "`{unix time, commit}` of the last commit touching a path in a repository, or nil."
-  def last_commit(repo, path) do
-    case Git.cmd(repo, ["log", "-1", "--format=%ct %H", "--", path]) do
+  defp at_args(nil), do: []
+  defp at_args({:rev, rev}) when is_binary(rev), do: [rev]
+  defp at_args({:until, time}), do: ["--until=@#{time}"]
+  defp at_args(_), do: []
+
+  @doc """
+  `{unix time, commit}` of the last commit touching a path in a repository, or nil. `at` limits the history:
+  `{:rev, revision}` (commits reachable from it) or `{:until, unix time}` (commit date).
+  """
+  def last_commit(repo, path, at \\ nil) do
+    case Git.cmd(repo, ["log", "-1", "--format=%ct %H"] ++ at_args(at) ++ ["--", path]) do
       nil -> nil
       "" -> nil
       out -> out |> String.split(" ") |> then(fn [t, h] -> {String.to_integer(t), h} end)
@@ -54,11 +62,11 @@ defmodule Wiki.Content.Sources do
   @volatile ~r/^(reviewed|since):/
 
   @doc """
-  Like `last_commit/2` for a wiki page file, but a commit counts only when it changed something other than the
+  Like `last_commit/3` for a wiki page file, but a commit counts only when it changed something other than the
   `reviewed` and `since` header lines (dates of when the page was checked or the thing began, not what it says).
   """
-  def last_substantive_commit(repo, path, limit \\ 60) do
-    case Git.cmd(repo, ["log", "-#{limit}", "--format=%ct %H", "--", path]) do
+  def last_substantive_commit(repo, path, at \\ nil, limit \\ 60) do
+    case Git.cmd(repo, ["log", "-#{limit}", "--format=%ct %H"] ++ at_args(at) ++ ["--", path]) do
       nil -> nil
       "" -> nil
       out ->

@@ -52,5 +52,13 @@ defmodule Wiki.Content.Git do
     end
   end
 
+  @doc "True when `dir` is itself the top folder of a git working tree (a normal clone or a linked worktree, whose `.git` is a file)."
+  def toplevel?(dir) do
+    case cmd(dir, ["rev-parse", "--show-toplevel"]) do
+      nil -> false
+      top -> Wiki.Content.Sources.real(top) == Wiki.Content.Sources.real(dir)
+    end
+  end
+
   def head(repo), do: cmd(repo, ["rev-parse", "HEAD"])
 end

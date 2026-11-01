@@ -94,7 +94,9 @@ defmodule Wiki.CLI do
          0 <- run(["check"], local: true),
          0 <- run(["build"], []),
          0 <- commit_and_push(msg, co_author) do
-      Stale.record_publish(Store.load(content_dir()))
+      if Stale.record_publish(Store.load(content_dir())) == :kept,
+        do: IO.puts("note: unreviewed changes of other work remain, so the Stop hook's publish stamp was not moved")
+
       IO.puts("wiki published")
       0
     end

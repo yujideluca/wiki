@@ -9,7 +9,7 @@ location: wiki:server/lib/wiki/content/stale.ex
 fed_by: [claude-code-settings]
 feeds: [claude-code]
 sources: [wiki:server/lib/wiki/content/stale.ex, wiki:docs/adr/0009-stale-review-claims-and-shared-publish-stamp.md]
-reviewed: 2026-11-01T22:25Z
+reviewed: 2026-11-01T22:29Z
 ---
 
 ## What it is
@@ -28,7 +28,7 @@ It runs at the end of every turn, next to the memory's [[hook-stop]].
 [[claude-code]] (the message).
 
 ## Notes
-Since 2026-11-01 (ADR-0009, an architecture decision record) the stamp this hook compares against is shared by every session, so it moves forward after a publish only when no page is still behind a change and no new file is left uncovered since the previous stamp; one session's publish can no longer hide another session's unreviewed work. The hook also names a page only when it is really behind its sources. The stamp file is read safely: a missing file means "never published" and the hook stays silent, but an empty, cut-off, non-numeric, zero, negative or far-future value is reported once per session in the hook message, and the next publish writes a fresh one. Both state files are written by rename, and a state file that cannot be written never hides the message (requirement UP-7).
+Since 2026-11-01 (ADR-0009, an architecture decision record) the stamp this hook compares against is shared by every session, so it moves forward after a publish only when no page is still behind a change and no new file is left uncovered since the previous stamp; one session's publish can no longer hide another session's unreviewed work. The hook also names a page only when it is really behind its sources, finds repositories with git itself (so linked worktrees count), and includes changes made in the same second as the stamp. If the stamp file was never written, the hook lists the pages that are behind their sources and stays silent only when there are none. A stamp that is empty, cut off, not a number, zero, negative or in the future (even one minute ahead) is always reported once per session, together with that list; a publish never overwrites a missing or broken stamp while a page is behind a source, only a verified clean state sets a fresh one. Both state files are written by rename, and a state file that cannot be written never hides the message (requirement UP-7).
 
 `wiki stale` and this hook answer two different questions, so a page can be listed by one and not by the other. `wiki stale` asks, page by page: "did a source change after the time the page says it was last checked (its `reviewed` field)?" It does not depend on publishing. The hook asks: "since the last `wiki publish`, did a project get commits that touch a page's sources, or add files no page covers?" It is the safety net for what `wiki stale` cannot see: a change in the same minute as a review, a new file that no page names, and the work of the current session. When the hook flags a page, read the `git log` of the source repository and compare it with the page text; if the page is right, set its `reviewed` time. Before 2026-10-24 `wiki stale` compared the commit time of the source with that of the page file, so a rewrite of many pages hid every earlier change, and this hook was the only thing that still saw them (see [[wiki-stale]]).
 
