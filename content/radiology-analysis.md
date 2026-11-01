@@ -9,7 +9,7 @@ location: radiology-crawler:analysis
 fed_by: [radiopaedia-crawler]
 feeds: []
 sources: [radiology-crawler:analysis/__init__.py, radiology-crawler:analysis/corpus.py, radiology-crawler:analysis/hardware.py, radiology-crawler:analysis/harness.py, radiology-crawler:analysis/tagger.py, radiology-crawler:analysis/filters.py, radiology-crawler:analysis/wording.py, radiology-crawler:analysis/pipeline.py, radiology-crawler:analysis/v1_model.py, radiology-crawler:analysis/codex_tags.py, radiology-crawler:analysis/haiku_batches.py, radiology-crawler:analysis/tag_agreement.py, radiology-crawler:analysis/filler_test.py, radiology-crawler:analysis/sanity.py, radiology-crawler:tools/analysis_status.py, radiology-crawler:docs/analysis-status.json, radiology-crawler:AGENTS.md]
-reviewed: 2026-11-01T18:38Z
+reviewed: 2026-11-01T19:21Z
 ---
 
 ## What it is
@@ -32,6 +32,7 @@ It provides the pieces below, each in its own file. Each piece has a requirement
 - **Wording layer.** Each diagnosis article becomes a weighted bag of words and word pairs using BM25 (a standard formula that gives more weight to rare, informative words); sections about imaging count fully and the rest of the article a little. In a report, words inside a negation get a negative sign, words after a hedge ("possibly") are softened, and filler words are dropped. The score is one sparse-matrix product (a table of numbers multiplied in bulk), run on the processor or the GPU, and the result lists the words that moved each score.
 - **Tagging by models.** `analysis/codex_tags.py` sends one article per call in a new, throw-away [[codex]] session far below 250,000 tokens (Giovanni's limit), with the article marked as untrusted text. An answer outside the allowed values is rejected, not silently fixed. Results are appended one line per article, so a stop loses nothing and a restart tags only what is missing. `analysis/haiku_batches.py` cuts batches of 100 articles from the other end of the same queue for Haiku subagents and merges only valid answers.
 - **Status record.** The state of the work is the file `docs/analysis-status.json`; `tools/analysis_status.py set STEP STATUS --note "..."` changes it, rewrites the readable copy `docs/ANALYSIS-STATUS.md` and rebuilds the plan site, so the three never disagree. Anyone continuing the work reads it first. `AGENTS.md` in the repository gives [[codex]] the same working notes that `CLAUDE.md` gives [[claude-code]].
+- **One model set per language (since 2026-11-01).** Snapshots, the rule tagger, the wording layer, the version 1 model and the version 4 engine take a language (`en`, `de`, `pt`). Each language has its own frozen snapshot (German and Portuguese come from the translations, with the sections rebuilt from the translated headings) and its own data files in `analysis/wordlists/`: `tags.<lang>.json` (tag words), `lang.<lang>.json` (section headings and title words) and `wording.<lang>.json` (negation, hedging, filler and stop words). The German and Portuguese lists are starting lists, not yet tested on the real corpus, and scores per language wait for the translated cases.
 - **Data stays local.** The snapshot, tags and results live in `data/analysis/`, which git ignores, like the rest of `data/`.
 
 ## Functions
