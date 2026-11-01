@@ -1,7 +1,7 @@
 ---
 id: radiology-analysis
 lang: de
-source_hash: 8cf4da67c0e4
+source_hash: fff513e234de
 title: Analysepaket für Radiologie (analysis/)
 ---
 
@@ -26,6 +26,7 @@ Es liefert die folgenden Bausteine, jeder in einer eigenen Datei. Jeder Baustein
 - **Tagging durch Modelle.** `analysis/codex_tags.py` schickt einen Artikel pro Aufruf in einer neuen Wegwerf-Sitzung von [[codex]], weit unter 250.000 Tokens (Giovannis Grenze), wobei der Artikel als nicht vertrauenswürdiger Text gekennzeichnet ist. Eine Antwort außerhalb der erlaubten Werte wird abgelehnt, nicht stillschweigend korrigiert. Die Ergebnisse werden zeilenweise je Artikel angehängt, ein Abbruch verliert also nichts, und ein Neustart taggt nur, was fehlt. `analysis/haiku_batches.py` schneidet Stapel zu je 100 Artikeln vom anderen Ende derselben Warteschlange für Haiku-Subagenten und übernimmt nur gültige Antworten.
 - **Statusdatei.** Der Stand der Arbeit ist die Datei `docs/analysis-status.json`; `tools/analysis_status.py set STEP STATUS --note "..."` ändert sie, schreibt die lesbare Kopie `docs/ANALYSIS-STATUS.md` neu und baut die Planwebsite neu, sodass die drei nie voneinander abweichen. Wer die Arbeit fortsetzt, liest sie zuerst. `AGENTS.md` im Repository gibt [[codex]] dieselben Arbeitsnotizen, die `CLAUDE.md` [[claude-code]] gibt.
 - **Ein Modellsatz pro Sprache (seit 2026-11-01).** Schnappschüsse, der Regel-Tagger, die Formulierungsebene, das Modell der Version 1 und die Engine der Version 4 nehmen eine Sprache (`en`, `de`, `pt`). Jede Sprache hat ihren eigenen eingefrorenen Schnappschuss (Deutsch und Portugiesisch stammen aus den Übersetzungen, die Abschnitte werden aus den übersetzten Überschriften neu aufgebaut) und eigene Datendateien in `analysis/wordlists/`: `tags.<lang>.json` (Tag-Wörter), `lang.<lang>.json` (Abschnittsüberschriften und Titelwörter) und `wording.<lang>.json` (Negations-, Absicherungs-, Füll- und Stoppwörter). Die deutschen und portugiesischen Listen sind Startlisten und noch nicht am echten Korpus getestet; Bewertungen pro Sprache warten auf die übersetzten Fälle.
+- **Prüfung des Taggens pro Sprache (2026-11-01).** `analysis/codex_tags.py N LANG` wiederholt den Tagging-Pilot an den deutschen oder portugiesischen Übersetzungen derselben 300 Artikel. Codex hatte sein Budget aufgebraucht, daher haben stattdessen Haiku (ein günstigeres Modell) sie getaggt. Gegen den Regel-Tagger liegt die Typ-Übereinstimmung in beiden Sprachen bei 0,72 (Englisch: 0,75); Modalität und Region sind etwa so gut wie im Englischen. Die Wortlisten für Geschlecht, Einzel-oder-mehrfach und Textur sind schwach und werden als Nächstes verbessert. Haiku auf der Übersetzung stimmt mit Codex auf dem Englischen beim Typ zu 0,89 überein; die Übersetzungen behalten also den Inhalt.
 - **Daten bleiben lokal.** Kopie, Tags und Ergebnisse liegen in `data/analysis/`, das git wie den Rest von `data/` ignoriert.
 
 ## Functions

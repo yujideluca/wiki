@@ -1,7 +1,7 @@
 ---
 id: radiology-analysis
 lang: pt-BR
-source_hash: 8cf4da67c0e4
+source_hash: fff513e234de
 title: Pacote de análise de radiologia (analysis/)
 ---
 
@@ -26,6 +26,7 @@ Fornece as peças abaixo, cada uma em seu arquivo. Cada peça tem um requisito (
 - **Marcação por modelos.** `analysis/codex_tags.py` envia um artigo por chamada em uma sessão nova e descartável do [[codex]], bem abaixo de 250.000 tokens (limite do Giovanni), com o artigo marcado como texto não confiável. Uma resposta fora dos valores permitidos é rejeitada, não corrigida em silêncio. Os resultados são acrescentados uma linha por artigo, então uma parada não perde nada e uma retomada marca só o que falta. `analysis/haiku_batches.py` corta lotes de 100 artigos da outra ponta da mesma fila para subagentes Haiku e incorpora só respostas válidas.
 - **Registro de status.** O estado do trabalho é o arquivo `docs/analysis-status.json`; `tools/analysis_status.py set STEP STATUS --note "..."` o altera, reescreve a cópia legível `docs/ANALYSIS-STATUS.md` e reconstrói o site de plano, de modo que os três nunca divergem. Quem continua o trabalho lê esse arquivo primeiro. O `AGENTS.md` do repositório dá ao [[codex]] as mesmas notas de trabalho que o `CLAUDE.md` dá ao [[claude-code]].
 - **Um conjunto de modelos por idioma (desde 2026-11-01).** Instantâneos, o marcador por regras, a camada de redação, o modelo da versão 1 e o motor da versão 4 recebem um idioma (`en`, `de`, `pt`). Cada idioma tem seu próprio instantâneo congelado (alemão e português vêm das traduções, com as seções reconstruídas a partir dos títulos traduzidos) e seus próprios arquivos de dados em `analysis/wordlists/`: `tags.<lang>.json` (palavras das etiquetas), `lang.<lang>.json` (títulos de seção e palavras do título) e `wording.<lang>.json` (palavras de negação, atenuação, enchimento e stop words). As listas em alemão e português são listas iniciais, ainda não testadas no corpus real; as avaliações por idioma aguardam os casos traduzidos.
+- **Verificação da etiquetagem por idioma (2026-11-01).** `analysis/codex_tags.py N LANG` repete o piloto de etiquetagem nas traduções para alemão ou português dos mesmos 300 artigos. O Codex esgotou o orçamento, então o Haiku (um modelo mais barato) etiquetou no lugar. Contra o marcador por regras, a concordância do tipo é 0,72 nos dois idiomas (inglês: 0,75); modalidade e região são quase tão boas quanto em inglês. As listas de sexo, único-ou-múltiplo e textura são fracas e serão as próximas a corrigir. O Haiku lendo a tradução concorda com o Codex lendo o inglês em 0,89 no tipo; as traduções, portanto, mantêm o conteúdo.
 - **Os dados ficam locais.** A cópia, as marcas e os resultados ficam em `data/analysis/`, que o git ignora como o resto de `data/`.
 
 ## Functions
