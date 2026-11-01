@@ -1,12 +1,12 @@
 ---
 id: report-translator
 lang: de
-source_hash: bd2c259b2e7a
+source_hash: 88ccd87130d0
 title: Befund-Übersetzer (translate.py)
 ---
 
 ## What it is
-Ein Kommandozeilenprogramm, das die extrahierten Artikel von [[radiopaedia-crawler]] mit [[codex]] ins Deutsche und ins brasilianische Portugiesisch übersetzt und die Wortwahl mithilfe von zwei Fachlehrbüchern bestimmt, damit das Ergebnis so klingt, wie Radiologen im jeweiligen Land schreiben. Es ist Teil von [[radiology-report-matcher]].
+Ein Kommandozeilenprogramm, das die extrahierten Artikel und Fälle von [[radiopaedia-crawler]] mit [[codex]] ins Deutsche und ins brasilianische Portugiesisch übersetzt und die Wortwahl mithilfe von zwei Fachlehrbüchern bestimmt, damit das Ergebnis so klingt, wie Radiologen im jeweiligen Land schreiben. Es ist Teil von [[radiology-report-matcher]].
 
 ## Architecture
 ### Context
@@ -43,18 +43,18 @@ Es hat fünf Befehle, ausgeführt als `python3 -I translate.py <Befehl>` in `~/d
 
 - `refindex` zerlegt jedes Referenzbuch in Passagen von 60 bis 160 Wörtern und baut dafür eine Suchtabelle.
 - `translate --lang de|pt --limit N` übersetzt bis zu N Artikel, die noch keine Übersetzung haben.
-- `loop` läuft dauerhaft im Hintergrund und übersetzt Artikel, sobald sie eintreffen, je Sprache fünf auf einmal, und schläft, wenn nichts zu tun ist. Optionen: `--worker I/K` (dieser Worker nimmt jeden K-ten Artikel, sodass mehrere Worker parallel laufen können), `--langs`, `--extract` (extrahiert auch neu heruntergeladene Seiten; nur ein Worker) und `--daily-cap N` (0, der Standard, heißt keine Grenze; UTC ist überall dieselbe Uhrzeit). Ein Artikel, der dreimal scheitert, wird in der Tabelle `translation_failures` vermerkt und übersprungen; scheitert in einer Runde jeder Versuch, wartet der Worker 15 Minuten. Das Anlegen der Datei `data/STOP_TRANSLATION` beendet alle Worker.
+- `loop` läuft dauerhaft im Hintergrund und übersetzt Artikel und danach Fälle, sobald sie eintreffen, je Sprache jeweils fünf auf einmal, und schläft, wenn nichts zu tun ist. Optionen: `--worker I/K` (dieser Worker nimmt jeden K-ten Artikel, sodass mehrere Worker parallel laufen können), `--langs`, `--extract` (extrahiert auch neu heruntergeladene Seiten; nur ein Worker) und `--daily-cap N` (0, der Standard, heißt keine Grenze; UTC ist überall dieselbe Uhrzeit). Ein Artikel, der dreimal scheitert, wird in der Tabelle `translation_failures` vermerkt und übersprungen; scheitert in einer Runde jeder Versuch, wartet der Worker 15 Minuten. Das Anlegen der Datei `data/STOP_TRANSLATION` beendet alle Worker. Seit 2026-11-01 laufen vier Worker als systemd-Benutzerdienste `radiology-translator@0` bis `@3` (Worker 0 extrahiert auch), die beim Start des Computers starten und nach einem Fehler neu starten.
 - `tstats` zeigt, wie viele Seiten übersetzt sind, und die durchschnittliche Dauer.
 - `progress` zeigt für jede Sprache einen Live-Fortschrittsbalken: übersetzte Seiten von allen in den Sitemaps gelisteten Artikelseiten, mit Prozentzahl, dazu einen Balken für die bisher extrahierten Seiten. Im Terminal wird er alle 2 Sekunden an Ort und Stelle neu gezeichnet (`--interval S` ändert das) bis Strg-C; `--once` oder eine Ausgabe, die kein Terminal ist, gibt ein einzelnes Bild aus. Das Programm liest nur die Datenbank und kann neben den Workern laufen.
 
-Die Ergebnisse stehen in der Tabelle `translations` (Seitenadresse, Sprache, Titel, Text, die verwendeten Lehrbuchpassagen, benötigte Sekunden, Modell).
+Die Ergebnisse stehen in der Tabelle `translations` (Seitenadresse, Sprache, Titel, Text, die verwendeten Lehrbuchpassagen, benötigte Sekunden, Modell). Ein übersetzter Fall steht in derselben Tabelle unter seiner eigenen Adresse; die Fortschrittsbalken zählen nur Artikel.
 
 ## How it does it
 - Die Referenzbücher sind Duale Reihe Radiologie (Deutsch, 816 Seiten, 3.258 Passagen) und Anatomia Radiológica Básica Ilustrada, Band 1 (Portugiesisch, 44 Seiten nur zum Thorax, 33 Passagen). Beide wurden mit `pdftotext` von PDF (einer Dokumentdatei mit festem Layout) in Text umgewandelt; sie bleiben auf dem Laptop und werden in kein Produkt kopiert.
 - Um die zu einem Artikel passenden Passagen zu finden, wird jedes Wort in überlappende Stücke von vier Buchstaben zerlegt, und jede Passage wird zu einem Vektor (einer Zahlenliste), gewichtet danach, wie selten ihre Stücke sind (TF-IDF). Gewählt werden die Passagen, die Titel, Tags, Überschriften und den Anfang (1.500 Zeichen) des Artikels am nächsten kommen, gemessen mit der Kosinus-Ähnlichkeit (dem Winkel zwischen zwei Vektoren). Weil englische, deutsche und portugiesische medizinische Wörter lateinische und griechische Wurzeln teilen, funktioniert das ohne KI-Modell über Sprachen hinweg. Beispiel: Eine Anfrage zu pleural effusion und pneumothorax liefert deutsche Passagen zu *Pneumothorax* und *Pleura*.
 - Die fünf besten Passagen kommen als Terminologie- und Stilleitfaden in den Prompt, mit Regeln: ihre Sätze nicht kopieren, die Struktur beibehalten, die Zahlenschreibweise des Landes verwenden (Dezimalkomma) und den Artikel als nicht vertrauenswürdigen Text behandeln, dessen Inhalt nie als Anweisung befolgt wird.
 - Jeder Aufruf von [[codex]] ist eine neue, wegwerfbare Sitzung nur mit Leserechten (`--ephemeral`), sodass sich zwischen Seiten nichts ansammelt. Giovanni hat verlangt, dass ein Codex-Kontext unter 250.000 Tokens bleibt (ein Token ist ein kleines Textstück, etwa drei Zeichen): Ein Prompt hat etwa 6.000 Tokens, ein Artikel mit mehr als 24.000 Zeichen wird nach Abschnitten auf getrennte Aufrufe verteilt, und eine Prüfung lehnt jeden Prompt ab, der die Grenze überschreiten würde.
-- Giovanni hat die Tagesgrenze am 2026-10-27 aufgehoben (alles zu übersetzen hat Vorrang) und das günstigere Codex-Modell `gpt-6-luna` gewählt, um Budget zu sparen; vier Worker laufen parallel. Gemessen an diesem Tag: etwa 9 bis 10 Sekunden pro Artikel und Sprache mit Luna, 12 bis 14 mit dem Standardmodell der ersten Übersetzungen (ihre Spalte `model` ist leer). Bei dieser Geschwindigkeit brauchen 17.359 Artikel in zwei Sprachen etwa ein bis zwei Tage, sofern die Nutzungsgrenzen von Codex es zulassen. Fälle werden noch nicht übersetzt.
+- Giovanni hat die Tagesgrenze am 2026-10-27 aufgehoben (alles zu übersetzen hat Vorrang) und das günstigere Codex-Modell `gpt-6-luna` gewählt, um Budget zu sparen; vier Worker laufen parallel. Gemessen an diesem Tag: etwa 9 bis 10 Sekunden pro Artikel und Sprache mit Luna, 12 bis 14 mit dem Standardmodell der ersten Übersetzungen (ihre Spalte `model` ist leer). Bei dieser Geschwindigkeit brauchen 17.359 Artikel in zwei Sprachen etwa ein bis zwei Tage, sofern die Nutzungsgrenzen von Codex es zulassen. Fälle (bisher etwa 20.000 extrahiert, 70.500 erwartet) folgen denselben Regeln: Ein Fall wird in die Abschnitte Vorstellung, Patientendaten, Befunde je Bildserie und Falldiskussion zerlegt und mit denselben Lehrbuchpassagen, demselben Modell, derselben Token-Grenze, demselben Schutz vor nicht vertrauenswürdigem Text und drei Versuchen übersetzt; auch die Abschnittsüberschriften werden übersetzt.
 - Das portugiesische Buch ist klein; außerhalb der Thorax-Anatomie stützt sich die portugiesische Wortwahl daher auf das eigene Wissen von Codex; weitere brasilianische Quellen werden gebraucht.
 
 ## Where it sits in the pipeline
