@@ -22,7 +22,7 @@ defmodule Wiki.Content.Stale do
   # The stamp is written to a temporary file and renamed, so a reader never sees half a number.
   def mark_published(time \\ System.os_time(:second)) do
     File.mkdir_p!(state_dir())
-    tmp = last_publish_file() <> ".tmp#{System.unique_integer([:positive])}"
+    tmp = last_publish_file() <> ".tmp#{System.pid()}.#{System.unique_integer([:positive])}"
     File.write!(tmp, Integer.to_string(time))
     File.rename!(tmp, last_publish_file())
   end
@@ -347,7 +347,7 @@ defmodule Wiki.Content.Stale do
     else
       # If the state cannot be written the message is still shown (it may then repeat): never skip an obligation.
       with :ok <- File.mkdir_p(state_dir()) do
-        tmp = blocked_file() <> ".tmp#{System.unique_integer([:positive])}"
+        tmp = blocked_file() <> ".tmp#{System.pid()}.#{System.unique_integer([:positive])}"
 
         with :ok <- File.write(tmp, Enum.join(Enum.take([key | seen], 200), "\n")),
              do: File.rename(tmp, blocked_file())

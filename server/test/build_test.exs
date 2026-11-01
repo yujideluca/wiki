@@ -348,4 +348,51 @@ defmodule Wiki.Content.BuildTest do
     System.delete_env("WIKI_ROOT")
     System.delete_env("WIKI_STATE_DIR")
   end
+
+  # REQ ST-6
+  test "local sources follow the selected wiki worktree instead of the main checkout", %{dir: dir} do
+    dev = Path.join(dir, "source-root")
+    isolated = Path.join(dir, "isolated-wiki")
+    File.mkdir_p!(Path.join(dev, "wiki"))
+    File.mkdir_p!(Path.join(isolated, "docs"))
+    File.write!(Path.join(isolated, "docs/isolation-only.md"), "New source in this worktree.")
+    old = Map.new(["WIKI_ROOT", "WIKI_DEV_ROOT"], &{&1, System.get_env(&1)})
+    on_exit(fn ->
+      for {key, value} <- old do
+        if is_nil(value), do: System.delete_env(key), else: System.put_env(key, value)
+      end
+    end)
+    System.put_env("WIKI_ROOT", isolated)
+    System.put_env("WIKI_DEV_ROOT", dev)
+    assert {^dev, ^isolated, "docs/isolation-only.md"} = Wiki.Content.Sources.resolve("wiki:docs/isolation-only.md")
+    assert Wiki.Content.Sources.exists?("wiki:docs/isolation-only.md")
+    refute File.exists?(Path.join(dev, "wiki/docs/isolation-only.md"))
+  end
+
+  # REQ UP-7
+  test "independent runtime processes can publish stamps concurrently without sharing temporary files", %{dir: dir} do
+    state = Path.join(dir, "concurrent-stamps")
+    File.mkdir_p!(state)
+    beam_dir = Application.app_dir(:wiki, "ebin")
+    fixture = Path.join(__DIR__, "support/stamp_writer.exs")
+    elixir = System.find_executable("elixir")
+
+    workers = for name <- ["a", "b"] do
+      Task.async(fn ->
+        System.cmd(elixir, ["--erl", "+S 1:1", "-pa", beam_dir, fixture, state, name], stderr_to_stdout: true)
+      end)
+    end
+
+    ready = Enum.any?(1..500, fn _ ->
+      Process.sleep(10)
+      File.exists?(Path.join(state, "a.ready")) and File.exists?(Path.join(state, "b.ready"))
+    end)
+    assert ready, "both independent processes must reach the shared start barrier"
+    File.touch!(Path.join(state, "go"))
+    results = Enum.map(workers, &Task.await(&1, 30_000))
+    for {output, status} <- results, do: assert(status == 0, output)
+    assert {time, ""} = state |> Path.join("last_publish") |> File.read!() |> Integer.parse()
+    assert time > 0
+    assert Path.wildcard(Path.join(state, "last_publish.tmp*")) == []
+  end
 end

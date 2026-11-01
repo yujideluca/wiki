@@ -11,14 +11,19 @@ defmodule Wiki.Content.Sources do
   def dev_root, do: System.get_env("WIKI_DEV_ROOT") || Path.expand("~/dev")
   def home_root, do: System.get_env("WIKI_HOME_ROOT") || Path.expand("~")
 
+  # An isolated publication must validate the wiki sources it will actually publish.
+  # Other repositories still resolve through the declared development root.
+  defp repo_root("wiki"), do: System.get_env("WIKI_ROOT") || Path.join(dev_root(), "wiki")
+  defp repo_root(repo), do: Path.join(dev_root(), repo)
+
   @doc "Splits `repo:path` into `{root_dir, repo_dir, relative_path}`; nil when malformed."
   def resolve(source) do
     case String.split(source, ":", parts: 2) do
       ["home", path] when path != "" -> {home_root(), home_root(), path}
       [repo, path] when repo != "" and path != "" ->
-        if String.contains?(repo, "/"), do: nil, else: {dev_root(), Path.join(dev_root(), repo), path}
+        if String.contains?(repo, "/"), do: nil, else: {dev_root(), repo_root(repo), path}
       [repo] when repo != "" and repo != "home" ->
-        if String.contains?(repo, "/"), do: nil, else: {dev_root(), Path.join(dev_root(), repo), "."}
+        if String.contains?(repo, "/"), do: nil, else: {dev_root(), repo_root(repo), "."}
       _ -> nil
     end
   end

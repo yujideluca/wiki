@@ -38,7 +38,7 @@ Source: G = stated by Giovanni, D = derived by Claude Code and accepted (design 
 | ST-3 | `wiki stale` prints for each page the source and both times, and exits 1 when it lists a page and 0 when it lists none | D |
 | ST-4 | A page that names its own file as a source is never listed because of it | D |
 | ST-5 | A source that is a page of the wiki repository counts as changed only when more than its `reviewed` or `since` line changed, and a source whose text was changed by the very commit that last set the page's `reviewed` line is covered; any other source commit after the review minute keeps the page stale (no grace period) | D |
-| ST-6 | `wiki publish` refuses to push a commit whose `reviewed` line is behind a source that already existed, and names the page and source | G |
+| ST-6 | `wiki publish` refuses to push a commit whose `reviewed` line is behind a source that already existed, and names the page and source; local `wiki:` sources resolve against the selected `WIKI_ROOT`, including new files present only in its isolated worktree | G |
 | LG-1 | Every English page has German and Brazilian Portuguese versions made from its current English text | G |
 | LG-2 | The interface is in English by default and switchable to German and Brazilian Portuguese | G |
 | BU-1 | The build writes graph.json (nodes, feeds and mentions edges) and one article per page per language | D |

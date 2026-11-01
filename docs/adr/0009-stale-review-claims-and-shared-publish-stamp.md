@@ -12,11 +12,10 @@ and published them with `wiki publish`; a second publish at 20:09 UTC added only
 reported "no stale pages" before the second commit and did not run `wiki stale` again. Afterwards both pages were
 listed, and so were pages of other work. Three separate gaps explain how this passed the workflow:
 
-1. **A page can never be newer than its own commit.** `reviewed` is typed before the commit that carries it, so a
-   source inside the wiki repository is always "changed after the review" by the minutes between typing and
-   committing. This hit (a) a page that listed its own file as a source, which can never be satisfied, and (b) two
-   pages that list each other, and (c) any later commit that touched only `since:` or `reviewed:`, which says
-   nothing about what the page describes.
+1. **Commit time can follow a valid review.** `reviewed` is typed before the commit that carries it. If committing
+   falls in a later minute, a wiki source can appear newer even when its staged text was reviewed. Self-sources and
+   reciprocal page references amplified this problem. Later commits touching only `since:` or `reviewed:` also
+   counted as source changes despite not changing what the page describes.
 2. **Nothing checked the claim.** `wiki publish` ran `wiki check` (format) but never asked whether a page whose
    `reviewed` line it was committing was actually up to date. The Stop hook looks at code commits in other
    repositories, not at pages, so a wiki-only session was never questioned.
@@ -50,6 +49,12 @@ listed, and so were pages of other work. Three separate gaps explain how this pa
   history; its newest change counts only if it is not later than the commit.
 
 ## Consequences
+
+- Local `wiki:` sources resolve through `WIKI_ROOT`, so an isolated publication checks its own sources, including
+  new files not yet present in the primary checkout. Retain valid source references rather than removing them to pass.
+- Temporary state paths include the operating-system process identity as well as the runtime counter; a counter
+  unique only inside one runtime cannot protect independent wiki invocations from collisions. A two-process test
+  reproduced the collision before this correction.
 
 - A page checked and found right can be published in the same commit as the sources it describes.
 - A metadata-only commit does not stale a neighbour; a text change still does.

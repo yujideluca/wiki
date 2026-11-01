@@ -1,6 +1,6 @@
 # Automated bug-finding tests: wiki
 
-Last reviewed: c25b6ec 2026-10-24
+Last reviewed: a4ceb85 2026-11-01 (staleness/publication scope; the older sections retain their dated review scope)
 Created by the skill `gerar-teste-automatizado` (create mode) in the first maintenance review. Update mode starts from the commit above.
 
 ## Analysis summary
@@ -44,3 +44,26 @@ The scan is a list of patterns: unknown token formats and names written in prose
 ### Connected pages (AR-2), 2026-10-27
 
 `frontend/tests/ArticleStepsTests.elm` checks a full long title and real page link, with duplicate edges producing one row, on desktop and phone in all three languages. The new check failed against the previous circular graph (no connected-pages list), then passed with the list. Visual checks cover wrapping and dense real pages.
+
+## Staleness and publication audit — 2026-11-01
+
+Update scope: stale-source detection, review claims, shared publication/hook state and isolated worktree source resolution. The router, privacy boundary and Elm interface were regression-tested through the gate, not independently re-audited. Findings and attribution: `docs/2026-11-01-wiki-stale-audit.md`; structural choices: ADR-0009.
+
+| Requirement | Failure scenario | Expected result | Priority |
+|---|---|---|---|
+| ST-4, ST-5 | Self-source, date-only change, same-commit source/review; separate later source change | Ignore false stale cases; retain genuine later changes without a grace period | High |
+| ST-6 | False review claim, followed by a newer source commit | Refuse publication based on source history at the claimed commit | High |
+| ST-6 | New source exists only in the selected wiki worktree | Validate that source through `WIKI_ROOT`, preserving the source reference | High |
+| UP-7 | Unrelated publish, uncovered files, linked worktree, same-second change | Preserve the unfinished obligation | High |
+| UP-7 | Missing, malformed, zero, negative or future state | Diagnose safely or derive real obligations; never erase them during recovery | High |
+| UP-7 | Two independent runtimes write 20,000 stamps each | Both exit normally; final stamp parses; no temporary files remain | High |
+
+Cases live in `server/test/stale_test.exs` and `server/test/build_test.exs`; `server/test/support/stamp_writer.exs` runs the independent writer fixture. The writer workers use one scheduler each to bound resources; they load the real compiled module, not a mocked writer. The source-resolution test uses a file absent from the primary checkout.
+
+Observed before the final corrections: the two new integration tests failed; a real two-process reproducer raised `File.RenameError`. Both targeted tests passed after the corrections. A controlled mutation removing process identity from the temporary name made the writer test fail again; the correction was restored. Coverage instrumentation initially exposed a fixture portability error (`:code.which` returned `:cover_compiled`); the fixture now uses the application build directory.
+
+Observed final backend run: `mix test --cover` ran **95 tests, 0 failures**. Aggregate line coverage was **88.46%**, below Mix's unchanged default **90%** threshold, so that measurement command exited 3. This is a coverage gap, not a passing measurement. No threshold or project gate was weakened. Module figures: stale detector 95.17%, source resolver 76.47%, command interface 52%, Git helper 57.69%. Independent child-process execution is not merged into the parent's coverage data; branch coverage was not measured. The standard quality gate uses `mix test` rather than a coverage floor.
+
+Commands: `cd server && mix test test/build_test.exs`, `cd server && mix test --cover`, and the production `tools/pipeline-check.sh`. Traceability covers 75 requirements; the generated matrix must be included with the commit.
+
+Maintenance proposals, not yet created as issues: P2 expand command-interface/Git recovery coverage toward the existing measurement threshold; P3 review upgrading the pinned `pipeline-check` v0.4.0 to available v0.5.0. Existing privacy recommendations above are historical; the current gate checks the privacy-pattern copy against workflow-memory's shared list. No dependency upgrade, gate-limit change or unrelated privacy redesign was performed here.
