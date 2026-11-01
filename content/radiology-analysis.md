@@ -9,7 +9,7 @@ location: radiology-crawler:analysis
 fed_by: [radiopaedia-crawler]
 feeds: []
 sources: [radiology-crawler:analysis/__init__.py, radiology-crawler:analysis/corpus.py, radiology-crawler:analysis/hardware.py, radiology-crawler:analysis/harness.py, radiology-crawler:analysis/tagger.py, radiology-crawler:analysis/filters.py, radiology-crawler:analysis/wording.py, radiology-crawler:analysis/pipeline.py, radiology-crawler:analysis/v1_model.py, radiology-crawler:analysis/codex_tags.py, radiology-crawler:analysis/haiku_batches.py, radiology-crawler:analysis/tag_agreement.py, radiology-crawler:analysis/filler_test.py, radiology-crawler:analysis/sanity.py, radiology-crawler:tools/analysis_status.py, radiology-crawler:docs/analysis-status.json, radiology-crawler:AGENTS.md]
-reviewed: 2026-11-01T18:11Z
+reviewed: 2026-11-01T18:38Z
 ---
 
 ## What it is
