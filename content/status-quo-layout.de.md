@@ -1,7 +1,7 @@
 ---
 id: status-quo-layout
 lang: de
-source_hash: 5b7adac2c681
+source_hash: a4f9b65399d4
 title: Status Quo — Layoutentwurf im Terminalstil
 ---
 
@@ -12,6 +12,9 @@ Dies ist der vorgeschlagene Aufbau für [[status-quo-design]], ein Desktop-Panel
 Die Übersicht zeigt oben die Nutzung im Fünfstunden- und Wochenfenster, darunter Sitzungen, Aktivitäten in den Quellcodearchiven und Gedächtniseinträge. Ein schmales Panel ordnet die beiden Nutzungsanzeigen untereinander an; ein breiteres stellt sie nebeneinander. Widgets, also eigenständige Anzeigeelemente, lassen sich ausblenden, vergrößern, verkleinern, als eigenes Fenster lösen und umordnen. Neben Ziehgriffen gibt es Tastaturbefehle zum Verschieben nach oben und unten. Die Abbildung zeigt die ausführliche Darstellung; der Kompaktmodus behält Kontingente und Quellenzustand bei und klappt Einzelheiten ein.
 
 ## How it does it
+### Unabhängige Widgets im Tray
+Die genehmigte visuelle Anordnung bleibt ein Entwurf, keine feste Zusammenfassung von Funktionen. Jede Kontingentanzeige, jedes Token-Diagramm, jede Sitzungsliste sowie der GitHub- und Gedächtnis-Feed ist ein unabhängig entfernbares und austauschbares Widget. Ein nah beieinander gezeichnetes Diagramm und eine Anzeige werden dadurch nicht zu einer Komponente. Der Widget-Katalog des Trays stellt entfernte Widgets wieder her oder ersetzt sie durch andere kompatible Arten. Jede Instanz behält eigene Einstellungen. Im laufenden Layout macht der Bearbeitungsmodus diese Grenzen sichtbar; weitere visuelle Verfeinerung folgt nach dem ersten lauffähigen Stand.
+
 ### Übersichtsreiter — breites Panel
 ```text
 ┌─ STATUS QUO ────────────────────────────────────────────────────────┐

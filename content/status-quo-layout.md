@@ -9,8 +9,8 @@ since: 2026-11-01
 location: wiki:content/status-quo-layout.md
 fed_by: []
 feeds: []
-sources: [wiki:content/status-quo-design.md, wiki:content/status-quo-layout.md]
-reviewed: 2026-11-01T20:06Z
+sources: [wiki:content/status-quo-design.md]
+reviewed: 2026-11-01T22:17Z
 ---
 
 ## What it is
@@ -20,6 +20,9 @@ This is the proposed layout for [[status-quo-design]], a desktop panel showing a
 The overview keeps five-hour and weekly usage at the top, then sessions, repository activity, and memory. A narrow panel stacks the two usage widgets vertically; a wider one puts them side by side. Widgets can be hidden, resized, detached, and reordered. Keyboard move-up/move-down actions accompany drag handles. The illustration shows the expanded form; compact mode retains quotas and source health while collapsing details.
 
 ## How it does it
+### Independent widgets inside the tray
+The approved visual arrangement remains a mockup, not a fixed grouping of functionality. Each account meter, token graph, sessions list, GitHub feed, and memory feed is an independently removable and replaceable widget. A graph and a meter drawn close together do not become one component. The tray's add-widget catalog can restore a removed widget or replace it with another compatible type. Each instance keeps independent settings. The running layout will make these separate boundaries visible in edit mode; further visual refinement happens after it runs.
+
 ### Overview tab — wide panel
 ```text
 ┌─ STATUS QUO ────────────────────────────────────────────────────────┐

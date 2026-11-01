@@ -1,7 +1,7 @@
 ---
 id: status-quo-design
 lang: pt-BR
-source_hash: 80072aaba13c
+source_hash: 5cc6d9d8ca08
 title: Status Quo — proposta de design e escopo de entrega
 ---
 
@@ -11,7 +11,7 @@ Status Quo é um painel de desktop proposto para que Giovanni veja, em um só lu
 O primeiro invólucro de ambiente será para KDE Plasma, a interface de desktop que gerencia painéis e janelas no notebook de Giovanni. Um invólucro é a pequena parte específica do ambiente ao redor de um componente reutilizável. Toda a lógica de aplicação e todo o código de interface escritos serão em Rust. Status Quo continua sendo um painel de desktop independente, sem exigir um applet nativo do Plasma escrito em outra linguagem de interface. A incorporação ao painel nativo do KDE fica para um invólucro futuro; o primeiro invólucro de desktop não promete essa função.
 
 ## What it does
-O produto acordado contém cinco tipos de widget: uso do Claude, uso do Codex, sessões agrupadas por projeto, atividade recente do GitHub e mudanças no workflow-memory. Um widget é um componente de exibição autocontido que pode funcionar no painel do Status Quo ou em outro hospedeiro compatível. O próprio painel também é reutilizável: organiza widgets sem conhecer a forma como seus dados são coletados.
+Cada funcionalidade de exibição é seu próprio widget removível e intercambiável dentro da bandeja de widgets. Os tipos iniciais abrangem medidores de cota, gráficos de tokens, sessões agrupadas por projeto, atividade recente do GitHub e mudanças no workflow-memory. Os medidores e gráficos de Claude e Codex são instâncias configuradas de forma independente, totalizando sete instâncias iniciais. Um widget é um componente de exibição autocontido que pode funcionar na bandeja do Status Quo ou em outro hospedeiro compatível. A própria bandeja é reutilizável: organiza widgets registrados sem conhecer a forma como seus dados são coletados.
 
 ### Accepted behavior
 - Exibir a porcentagem **usada**, com rótulos explícitos, dos limites de cinco horas e semanal de cada assistente. Mostrar a hora de reinício e os limites separados por modelo quando a fonte os fornecer. Nunca calcular porcentagens da conta a partir dos totais locais de tokens.
@@ -32,6 +32,13 @@ A aba de personalização controla cores globais e por widget, destaque, tamanho
 Os widgets podem ser reordenados por arraste ou controles de teclado, redimensionados, ocultados e destacados em janelas próprias. Salvar geometria do painel, ordem e tamanho dos widgets e associação com o monitor. Recuperar a posição visível após remover um monitor ou mudar a resolução. Ficar atrás das janelas normais de aplicativos por padrão; oferecer modo de janela normal e sempre no topo quando suportados. A navegação começa habilitada. Mover e redimensionar exigem modo de edição para que o uso normal não altere o layout acidentalmente.
 
 ## How it does it
+### Contrato da bandeja de widgets
+A bandeja é um hospedeiro genérico, não um painel com posições permanentes para cada provedor. O controle de adicionar widget lista os tipos compatíveis registrados. Cada instância tem identidade estável, tipo/versão, seleção de provedor ou fonte, configuração, posição e estado próprios. É possível adicionar, remover, substituir, reorganizar, ocultar, redimensionar ou destacar qualquer instância sem remover outros widgets nem reescrever a bandeja. Um novo tipo compatível exige registro pelo contrato, não alterações na lógica de disposição. O registro inicial usa componentes Rust confiáveis distribuídos com o aplicativo; plugins executáveis arbitrários baixados continuam fora do escopo.
+
+Medidores de cota e gráficos de tokens são widgets separados, mesmo quando o layout padrão os coloca próximos. Remover um gráfico do Claude deve manter funcionando o medidor do Claude e os outros widgets; substituir a atividade do GitHub por outro widget compatível deve persistir após reiniciar. Adaptadores de dados compartilhados podem atender várias instâncias, mas remover um widget não apaga o histórico da fonte nem as configurações das demais instâncias. Remover todos os widgets deixa uma bandeja vazia com a ação de adicionar. Configurações da bandeja, catálogo de widgets e diagnóstico das fontes são controles do hospedeiro; todas as exibições de dados pertencem a widgets removíveis.
+
+A aceitação inclui remover e restaurar cada widget inicial de forma independente, substituir um widget por outro tipo registrado, executar duas instâncias do mesmo tipo configuradas separadamente e restaurar a disposição exata após reiniciar. Demonstrar que o mesmo widget pode passar para outro hospedeiro compatível mantendo contrato de dados e configuração da instância. Esta é uma exigência explícita de Giovanni, não uma expansão futura opcional.
+
 ### Encapsulation and dependency direction
 Usar um workspace Rust, um repositório com pacotes que podem ser compilados separadamente. Os nomes propostos dos pacotes são escolhas de implementação, não uma promessa pública de compatibilidade:
 

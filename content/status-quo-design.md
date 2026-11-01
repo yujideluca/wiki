@@ -9,9 +9,9 @@ since: 2026-11-01
 location: wiki:content/status-quo-design.md
 fed_by: []
 feeds: []
-sources: [wiki:content/status-quo-design.md, wiki:content/status-quo-layout.md, project-template:CLAUDE.md, project-template:pipeline-check.toml]
+sources: [project-template:CLAUDE.md, project-template:pipeline-check.toml]
 memory: [#f1e117, #d975f2, #63efec, #c1f1f8]
-reviewed: 2026-11-01T20:06Z
+reviewed: 2026-11-01T22:17Z
 ---
 
 ## What it is
@@ -20,7 +20,7 @@ Status Quo is a proposed desktop panel that lets Giovanni see assistant usage, o
 The first environment wrapper targets KDE Plasma, the desktop shell that manages panels and windows on Giovanni's laptop. A wrapper is the small environment-specific part around a reusable component. All authored application logic and interface code will be Rust. Status Quo remains an independent desktop panel, rather than requiring a native Plasma applet written in another interface language. Support for embedding in the native KDE panel is a future wrapper, not a claim that the first desktop wrapper provides it.
 
 ## What it does
-The agreed product contains five widget types: Claude usage, Codex usage, sessions grouped by project, recent GitHub activity, and workflow-memory changes. A widget is a self-contained display component that can run in the Status Quo panel or in another compatible host. The panel is itself reusable: it arranges widgets without knowing how their data is collected.
+Every display functionality is its own removable and interchangeable widget inside the widget tray. Initial widget types cover account usage meters, token graphs, sessions grouped by project, recent GitHub activity, and workflow-memory changes. Claude and Codex meters and graphs are independently configured instances, giving seven initial widget instances. A widget is a self-contained display component that can run in the Status Quo tray or in another compatible host. The tray is itself reusable: it arranges registered widgets without knowing how their data is collected.
 
 ### Accepted behavior
 - Show the percentage **used**, with explicit labels, for each assistant's five-hour and weekly limits. Display the reset time and separate model limits when the source provides them. Never derive account percentages from local token totals.
@@ -41,6 +41,13 @@ The customization tab controls global and per-widget colors, accent, text size, 
 Widgets can be reordered by dragging or keyboard controls, resized, hidden, and detached into their own windows. Save panel geometry, widget order and size, and monitor association. Recover on-screen after monitor removal or resolution changes. Default to behind normal application windows; offer normal-window and always-on-top modes when supported. Default navigation is enabled. Moving and resizing require edit mode so normal use does not accidentally change the layout.
 
 ## How it does it
+### Widget tray contract
+The tray is a generic host, not a dashboard with permanent provider slots. An add-widget control lists registered compatible widget types. Each instance has its own stable identity, type/version, provider or source selection, configuration, layout position, and state. Users can add, remove, replace, reorder, hide, resize, or detach any instance without removing unrelated widgets or rewriting the tray. Adding a different compatible widget type requires registration through the contract, not changes to the tray's layout logic. Initial registration uses trusted Rust components shipped with the application; arbitrary downloaded executable plugins remain outside scope.
+
+Account meters and token graphs are separate widgets even when the default layout places them next to each other. Removing a Claude graph must leave the Claude account meter and other widgets working; replacing GitHub activity with another compatible widget must persist after restart. Shared data adapters can serve several instances, but a widget's removal does not erase source history or other instances' settings. Removing every widget leaves an empty tray with an add-widget action. Tray settings, the widget catalog, and source diagnostics are host controls; all data displays belong to removable widgets.
+
+Acceptance includes removing and restoring each initial widget independently, replacing one widget with a different registered type, running two independently configured instances of one type, and restoring the exact arrangement after restart. Prove that the same widget can move to a different compatible host while keeping its data contract and instance configuration. This clarification is Giovanni's explicit requirement, not an optional later expansion.
+
 ### Encapsulation and dependency direction
 Use a Rust workspace, a repository containing separately buildable packages. Proposed package names are builder choices, not a public compatibility promise:
 

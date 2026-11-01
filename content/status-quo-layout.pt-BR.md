@@ -1,7 +1,7 @@
 ---
 id: status-quo-layout
 lang: pt-BR
-source_hash: 5b7adac2c681
+source_hash: a4f9b65399d4
 title: Status Quo — esboço do layout em estilo de terminal
 ---
 
@@ -12,6 +12,9 @@ Este é o layout proposto para [[status-quo-design]], um painel de desktop que m
 A visão geral mantém o uso de cinco horas e semanal no topo, seguido por sessões, atividade dos repositórios e memória. Um painel estreito empilha os dois widgets de uso; um mais largo os coloca lado a lado. Widgets, componentes independentes de exibição, podem ser ocultados, redimensionados, destacados e reorganizados. Comandos de teclado para mover para cima e para baixo acompanham as alças de arrastar. A ilustração mostra a forma expandida; o modo compacto mantém cotas e estado das fontes enquanto recolhe os detalhes.
 
 ## How it does it
+### Widgets independentes dentro da bandeja
+A disposição visual aprovada continua sendo um esboço, não um agrupamento fixo de funcionalidades. Cada medidor de cota, gráfico de tokens, lista de sessões, feed do GitHub e feed da memória é um widget removível e substituível de forma independente. Um gráfico e um medidor desenhados próximos não se tornam um único componente. O catálogo de widgets da bandeja permite restaurar um widget removido ou substituí-lo por outro tipo compatível. Cada instância mantém suas próprias configurações. O layout em funcionamento deixará esses limites visíveis no modo de edição; o refinamento visual continuará depois que ele estiver rodando.
+
 ### Aba de visão geral — painel largo
 ```text
 ┌─ STATUS QUO ────────────────────────────────────────────────────────┐

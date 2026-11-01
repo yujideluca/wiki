@@ -1,7 +1,7 @@
 ---
 id: status-quo-design
 lang: de
-source_hash: 80072aaba13c
+source_hash: 5cc6d9d8ca08
 title: Status Quo — vorgeschlagener Entwurf und Lieferumfang
 ---
 
@@ -11,7 +11,7 @@ Status Quo ist ein vorgeschlagenes Desktop-Panel, in dem Giovanni die Nutzung de
 Die erste Umgebungshülle richtet sich an KDE Plasma, die Desktop-Oberfläche, die Panels und Fenster auf Giovannis Laptop verwaltet. Eine Hülle ist der kleine, umgebungsspezifische Teil um eine wiederverwendbare Komponente. Sämtliche selbst geschriebene Anwendungslogik und der gesamte Oberflächencode werden in Rust erstellt. Status Quo bleibt ein eigenständiges Desktop-Panel und setzt kein natives Plasma-Applet in einer anderen Oberflächensprache voraus. Die Einbettung in das native KDE-Panel bleibt einer künftigen Hülle vorbehalten; die erste Desktop-Hülle verspricht diese Funktion nicht.
 
 ## What it does
-Das vereinbarte Produkt enthält fünf Widget-Arten: Claude-Nutzung, Codex-Nutzung, nach Projekt gruppierte Sitzungen, neue GitHub-Aktivitäten und Änderungen in workflow-memory. Ein Widget ist eine abgeschlossene Anzeigekomponente, die im Status-Quo-Panel oder einem anderen kompatiblen Host laufen kann. Auch das Panel selbst ist wiederverwendbar: Es ordnet Widgets an, ohne zu wissen, wie ihre Daten gesammelt werden.
+Jede Anzeigefunktion ist ein eigenes entfernbares und austauschbares Widget im Widget-Tray, dem gemeinsamen Anzeigebereich. Die ersten Widget-Arten umfassen Kontingentanzeigen, Token-Diagramme, nach Projekt gruppierte Sitzungen, neue GitHub-Aktivitäten und Änderungen in workflow-memory. Anzeigen und Diagramme für Claude und Codex sind unabhängig konfigurierte Instanzen; damit gibt es anfangs sieben Widget-Instanzen. Ein Widget ist eine abgeschlossene Anzeigekomponente, die im Status-Quo-Tray oder einem anderen kompatiblen Host laufen kann. Auch das Tray selbst ist wiederverwendbar: Es ordnet registrierte Widgets an, ohne zu wissen, wie ihre Daten gesammelt werden.
 
 ### Accepted behavior
 - Den Anteil **verbraucht** mit ausdrücklicher Beschriftung für das Fünfstunden- und Wochenlimit jedes Assistenten anzeigen. Rücksetzzeit und getrennte Modelllimits anzeigen, wenn die Quelle sie liefert. Kontoprozente niemals aus lokalen Token-Summen ableiten.
@@ -32,6 +32,13 @@ Der Anpassungsreiter steuert globale und Widget-spezifische Farben, Akzent, Text
 Widgets lassen sich durch Ziehen oder Tastatursteuerung umordnen, skalieren, ausblenden und in eigene Fenster ablösen. Panel-Geometrie, Widget-Reihenfolge und -Größe sowie Monitorzuordnung speichern. Nach Monitorentfernung oder Auflösungswechsel wieder sichtbar auf dem Bildschirm platzieren. Standardmäßig hinter normalen Anwendungsfenstern liegen; soweit unterstützt normalen Fenstermodus und immer im Vordergrund anbieten. Navigation ist standardmäßig aktiviert. Verschieben und Skalieren benötigen den Bearbeitungsmodus, damit normale Nutzung nicht versehentlich das Layout verändert.
 
 ## How it does it
+### Vertrag des Widget-Trays
+Das Tray ist ein allgemeiner Host, kein Dashboard mit festen Anbieterplätzen. Über „Widget hinzufügen“ werden registrierte kompatible Widget-Arten angeboten. Jede Instanz hat eine eigene dauerhafte Identität, Art/Version, Anbieter- oder Quellenauswahl, Konfiguration, Position und Zustand. Jede Instanz lässt sich hinzufügen, entfernen, ersetzen, umordnen, ausblenden, skalieren oder als Fenster lösen, ohne andere Widgets zu entfernen oder das Tray umzuschreiben. Eine weitere kompatible Widget-Art wird über den Vertrag registriert; die Anordnungslogik bleibt gleich. Anfangs werden vertrauenswürdige Rust-Komponenten mit der Anwendung ausgeliefert; beliebig heruntergeladene ausführbare Erweiterungen bleiben außerhalb des Umfangs.
+
+Kontingentanzeige und Token-Diagramm sind getrennte Widgets, auch wenn das Standardlayout sie nebeneinander zeigt. Das Entfernen eines Claude-Diagramms darf weder die Claude-Kontingentanzeige noch andere Widgets stören; der Austausch der GitHub-Aktivität gegen ein anderes kompatibles Widget bleibt nach einem Neustart erhalten. Gemeinsame Datenadapter können mehrere Instanzen bedienen, doch das Entfernen eines Widgets löscht weder Quellenhistorie noch Einstellungen anderer Instanzen. Ohne Widgets bleibt ein leeres Tray mit einer Hinzufügen-Aktion. Tray-Einstellungen, Widget-Katalog und Quellendiagnose sind Host-Bedienelemente; alle Datenanzeigen gehören zu entfernbaren Widgets.
+
+Die Abnahme umfasst unabhängiges Entfernen und Wiederherstellen jedes anfänglichen Widgets, Austausch gegen eine andere registrierte Art, zwei unabhängig konfigurierte Instanzen einer Art und vollständige Wiederherstellung der Anordnung nach Neustart. Dasselbe Widget muss in einem anderen kompatiblen Host mit gleichem Datenvertrag und gleicher Instanzkonfiguration laufen. Diese Klarstellung ist Giovannis ausdrückliche Anforderung, keine optionale spätere Erweiterung.
+
 ### Encapsulation and dependency direction
 Einen Rust-Workspace verwenden, also ein Repository mit separat baubaren Paketen. Die vorgeschlagenen Paketnamen sind Umsetzungsentscheidungen, kein öffentliches Kompatibilitätsversprechen:
 
