@@ -1,7 +1,7 @@
 ---
 id: glossary
 lang: pt-BR
-source_hash: a31fdfea6dac
+source_hash: 4dc9c7b85973
 title: Glossário
 ---
 
@@ -121,3 +121,4 @@ Todo leitor do wiki, sobretudo o [[giovanni]] e quem é novo no sistema.
 
 - **Reconstrução da máquina**: registrar a configuração de um computador para reconstruí-la após reinstalar; veja [[machine-bootstrap]].
 - **Progresso de tarefas do Codex**: linha fixa do terminal com etapas concluídas e tempo restante estimado; veja [[codex-pbar]].
+- **Status Quo**: painel de desktop reutilizável proposto para o uso dos assistentes e o trabalho atual; escopo e limites dos invólucros por ambiente estão em [[status-quo-design]], e o layout em estilo de terminal está em [[status-quo-layout]].

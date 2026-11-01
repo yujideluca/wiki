@@ -1,7 +1,7 @@
 ---
 id: glossary
 lang: de
-source_hash: a31fdfea6dac
+source_hash: 4dc9c7b85973
 title: Glossar
 ---
 
@@ -121,3 +121,4 @@ Jeder Leser des Wikis, vor allem [[giovanni]] und alle, die neu im System sind.
 
 - **Maschineneinrichtung wiederherstellen**: die Einrichtung eines Computers aufzeichnen, um sie nach einer Neuinstallation wieder aufzubauen; siehe [[machine-bootstrap]].
 - **Codex-Aufgabenfortschritt**: feste Terminalzeile mit erledigten Schritten und geschätzter Restzeit; siehe [[codex-pbar]].
+- **Status Quo**: ein vorgeschlagenes wiederverwendbares Desktop-Panel für Assistentennutzung und laufende Arbeit; Umfang und Grenzen der Umgebungswrapper stehen in [[status-quo-design]], die Anordnung im Terminalstil in [[status-quo-layout]].

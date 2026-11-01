@@ -7,7 +7,7 @@ project: none
 status: active
 fed_by: []
 feeds: []
-reviewed: 2026-10-24T21:57Z
+reviewed: 2026-11-01T20:02Z
 ---
 
 ## What it is
@@ -108,6 +108,7 @@ Every reader of the wiki, above all [[giovanni]] and anyone new to the system.
 - **SSH** (Secure Shell): an encrypted way to log in to another computer ([SSH](https://en.wikipedia.org/wiki/Secure_Shell)); see [[remote-terminal]].
 - **Stale**: out of date. A page with sources is stale when one of them changed after the page's `reviewed` time; a page without sources is shown as "may be stale" 30 days after that time. See [[wiki-stale]].
 - **Status line**: the single line at the bottom of the Claude Code terminal; see [[pbar]].
+- **Status Quo**: a proposed reusable desktop panel for assistant usage and current work; its scope and wrapper boundaries are in [[status-quo-design]], and its terminal-style layout is in [[status-quo-layout]].
 - **sudo**: the command that runs another command with administrator rights.
 - **SVG** (Scalable Vector Graphics): a format for drawings made of shapes, used by the map ([SVG](https://en.wikipedia.org/wiki/Scalable_Vector_Graphics)).
 - **Tailnet**: the private network that Tailscale builds between your devices; see [[tailscale]].
