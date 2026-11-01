@@ -5,6 +5,7 @@ aliases: [Status Quo mockup]
 kind: reference
 project: none
 status: planned
+since: 2026-11-01
 location: wiki:content/status-quo-layout.md
 fed_by: []
 feeds: []

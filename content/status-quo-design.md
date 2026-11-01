@@ -5,6 +5,7 @@ aliases: [Status Quo, widget host]
 kind: reference
 project: none
 status: planned
+since: 2026-11-01
 location: wiki:content/status-quo-design.md
 fed_by: []
 feeds: []
