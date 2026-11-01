@@ -8,7 +8,7 @@ status: active
 location: wiki:server/lib/wiki/content/stale.ex
 fed_by: [claude-code-settings]
 feeds: [claude-code]
-sources: [wiki:server/lib/wiki/content/stale.ex, wiki:docs/adr/0009-stale-review-claims-and-shared-publish-stamp.md]
+sources: [wiki:server/lib/wiki/content/stale.ex]
 reviewed: 2026-11-01T22:29Z
 ---
 

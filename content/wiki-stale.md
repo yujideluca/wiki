@@ -8,7 +8,7 @@ status: active
 location: wiki:server/lib/wiki/content/stale.ex
 fed_by: []
 feeds: [wiki-cli]
-sources: [wiki:server/lib/wiki/content/stale.ex, wiki:server/lib/wiki/content/sources.ex, wiki:server/lib/wiki/content/page.ex, wiki:docs/adr/0006-review-time-in-the-page.md, wiki:docs/adr/0009-stale-review-claims-and-shared-publish-stamp.md]
+sources: [wiki:server/lib/wiki/content/stale.ex, wiki:server/lib/wiki/content/sources.ex, wiki:server/lib/wiki/content/page.ex, wiki:docs/adr/0006-review-time-in-the-page.md]
 reviewed: 2026-11-01T22:29Z
 ---
 
