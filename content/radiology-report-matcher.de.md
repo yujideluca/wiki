@@ -1,7 +1,7 @@
 ---
 id: radiology-report-matcher
 lang: de
-source_hash: 0860663a251d
+source_hash: 8d35e0c747f1
 title: Radiology Report Matcher (geplante Website)
 ---
 
@@ -77,18 +77,19 @@ Wie dieses Projekt dem Goldenen Weg von [[project-template]] folgt.
 4. **Höfliche und rechtmäßige Sammlung**: Der Crawler befolgt `robots.txt`; heruntergeladene Seiten, Datenbanken und Lehrbücher gelangen nie in Git.
 5. **Codex-Nutzung ist begrenzt**: neue Sitzungen unter 250.000 Tokens, das günstigere Modell für Übersetzungen.
 6. **Entscheidungen stehen dort, wo der Code ist**: ein Entscheidungsprotokoll in `DESIGN.md` und ein Architecture Decision Record (ADR) für strukturelle Entscheidungen.
+7. **Jede Abhängigkeit deklarieren (2026-11-01)**: Ein Fremdpaket, das der Code importiert (ein Paket, das nicht mit Python mitgeliefert wird, etwa NumPy), muss im selben Commit in `requirements.txt` stehen. CI (Continuous Integration, automatische Prüfungen bei jedem Push) installiert Pakete nur aus dieser Datei. Ein Paket, das nur hinter einem Ersatzweg genutzt wird, etwa CuPy (die GPU-Bibliothek), steht stattdessen in `requirements-optional.txt`.
 
 ### Decisions
 Vier Architecture Decision Records (ADRs, kurze Notizen, die die Gründe einer Entscheidung festhalten) in `docs/adr/`: Entscheidungen festhalten (0001), der Stack und die Regel für die Mathematik (0002), das Wartungsprogramm misst und der Review-Skill urteilt (0003), dazu die leere Vorlage (0000).
 
 ### Requirements
-Vierunddreißig Anforderungen in `docs/REQUIREMENTS.md` (2026-11-01): sieben für den Crawler (Präfix CW), sieben für den Übersetzer (TL), drei für die Planwebsite (WS) und siebzehn für die statistische Analyse (AN). Jede hat einen Test mit dem Tag `REQ <ID>`; der Rückverfolgbarkeitsschritt schlägt fehl, wenn eine keinen hat.
+Fünfunddreißig Anforderungen in `docs/REQUIREMENTS.md` (2026-11-01): sieben für den Crawler (Präfix CW), sieben für den Übersetzer (TL), drei für die Planwebsite (WS), siebzehn für die statistische Analyse (AN) und eine für Abhängigkeiten (DP). Das Rückverfolgbarkeitswerkzeug liest nur zweibuchstabige Präfixe; ein längeres wird stillschweigend ignoriert. Jede hat einen Test mit dem Tag `REQ <ID>`; der Rückverfolgbarkeitsschritt schlägt fehl, wenn eine keinen hat.
 
 ### Quality gate
-`tools/quality_gate.sh` hat drei Schritte: den Code kompilieren und die 59 Tests ausführen; Rückverfolgbarkeit der Anforderungen; die Fitnessfunktionen von `pipeline-check` (dem Wartungsprogramm, siehe [[pipeline-check]]): Architekturregel, Lint der Shell-Skripte, eine Grenze von 800 Zeilen pro Python-Datei und die Dauer des Tors.
+`tools/quality_gate.sh` hat vier Schritte: (0) `tools/check_dependencies.py` schlägt fehl, wenn der Code ein Fremdpaket importiert, das weder in `requirements.txt` noch in `requirements-optional.txt` steht, oder wenn ein Workflow Pakete von woanders installiert; (1) den Code kompilieren und die 64 Tests ausführen; (2) Rückverfolgbarkeit der Anforderungen; (3) die Fitnessfunktionen von `pipeline-check` (dem Wartungsprogramm, siehe [[pipeline-check]]): Architekturregel, Lint der Shell-Skripte, eine Grenze von 800 Zeilen pro Python-Datei und die Dauer des Tors.
 
 ### Continuous integration
-Continuous Integration (CI) bedeutet automatische Prüfungen bei jedem Push. Der Workflow `quality-gate.yml` führt das Tor auf GitHub aus; eine lokale Prüfung vor dem Push führt es aus, bevor `main` hochgeladen wird. Am 2026-10-27 scheiterte der erste Lauf, weil eine frische Kopie des Repositorys keinen Ordner `data/` hat und die Log-Funktion des Crawlers einen voraussetzte; die Korrektur bestand.
+Continuous Integration (CI) bedeutet automatische Prüfungen bei jedem Push. Der Workflow `quality-gate.yml` führt das Tor auf GitHub aus; eine lokale Prüfung vor dem Push führt es aus, bevor `main` hochgeladen wird. Am 2026-10-27 scheiterte der erste Lauf, weil eine frische Kopie des Repositorys keinen Ordner `data/` hat und die Log-Funktion des Crawlers einen voraussetzte; die Korrektur bestand. Am 2026-11-01 scheiterte Lauf 41335076862, weil der Analysecode NumPy importierte, `requirements.txt` es aber nicht aufführte: Der Laptop bestand, weil das Tor seinen eigenen Bibliotheksordner (`~/.local/share/claude-workflow/pylibs`) zum Suchpfad hinzufügte. Das Tor fügt diesen Ordner jetzt nur noch hinzu, wenn die Variable `CI` nicht `true` ist, und Schritt 0 verhindert die Lücke. Ein Lauf in einer sauberen Python-3.12-Umgebung, in der nur `requirements.txt` installiert war, bestand.
 
 ### Maintenance
 Technische Schulden werden als GitHub-Issues mit dem Label `debt` und den Prioritäten P1 bis P3 nach der [[maintenance-policy]] geführt; die Labels existieren. Ein monatlicher Review ist geplant.

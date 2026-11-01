@@ -1,7 +1,7 @@
 ---
 id: radiology-report-matcher
 lang: pt-BR
-source_hash: 0860663a251d
+source_hash: 8d35e0c747f1
 title: Radiology Report Matcher (site planejado)
 ---
 
@@ -77,18 +77,19 @@ Como este projeto segue o caminho dourado do [[project-template]].
 4. **Coleta educada e legal**: o rastreador obedece ao `robots.txt`; páginas baixadas, bancos de dados e livros-texto nunca entram no git.
 5. **O uso do Codex é limitado**: sessões novas abaixo de 250.000 tokens, o modelo mais barato nas traduções.
 6. **As decisões ficam onde está o código**: um registro de decisões em `DESIGN.md` e um registro de decisão de arquitetura (ADR) para as estruturais.
+7. **Declarar toda dependência (2026-11-01)**: um pacote de terceiros que o código importa (um pacote que não vem com o Python, como o NumPy) precisa estar em `requirements.txt` no mesmo commit. A CI (integração contínua, verificações automáticas a cada push) instala pacotes só a partir desse arquivo. Um pacote usado apenas atrás de um caminho alternativo, como o CuPy (a biblioteca de GPU), fica em `requirements-optional.txt`.
 
 ### Decisions
 Quatro registros de decisão de arquitetura (ADRs, notas curtas que guardam os motivos de uma decisão) em `docs/adr/`: registrar decisões (0001), a stack e a regra para a matemática (0002), o programa de manutenção mede e a skill de revisão julga (0003), além do modelo em branco (0000).
 
 ### Requirements
-Trinta e quatro requisitos em `docs/REQUIREMENTS.md` (2026-11-01): sete para o rastreador (prefixo CW), sete para o tradutor (TL), três para o site de plano (WS) e dezessete para a análise estatística (AN). Cada um tem um teste com a marca `REQ <ID>`; a etapa de rastreabilidade falha quando algum não tem.
+Trinta e cinco requisitos em `docs/REQUIREMENTS.md` (2026-11-01): sete para o rastreador (prefixo CW), sete para o tradutor (TL), três para o site de plano (WS), dezessete para a análise estatística (AN) e um para dependências (DP). A ferramenta de rastreabilidade lê só prefixos de duas letras; um prefixo mais longo é ignorado em silêncio. Cada um tem um teste com a marca `REQ <ID>`; a etapa de rastreabilidade falha quando algum não tem.
 
 ### Quality gate
-`tools/quality_gate.sh` tem três etapas: compilar o código e rodar os 59 testes; rastreabilidade dos requisitos; as funções de aptidão do `pipeline-check` (o programa de manutenção, veja [[pipeline-check]]): regra de arquitetura, lint dos scripts de shell, limite de 800 linhas por arquivo Python e tempo do portão.
+`tools/quality_gate.sh` tem quatro etapas: (0) `tools/check_dependencies.py` falha quando o código importa um pacote de terceiros que não está nem em `requirements.txt` nem em `requirements-optional.txt`, ou quando um workflow instala pacotes de outro lugar; (1) compilar o código e rodar os 64 testes; (2) rastreabilidade dos requisitos; (3) as funções de aptidão do `pipeline-check` (o programa de manutenção, veja [[pipeline-check]]): regra de arquitetura, lint dos scripts de shell, limite de 800 linhas por arquivo Python e tempo do portão.
 
 ### Continuous integration
-Integração contínua (CI) significa verificações automáticas a cada push. O workflow `quality-gate.yml` roda o portão no GitHub; uma verificação local antes do push o roda antes de `main` ser enviada. Em 2026-10-27 a primeira execução falhou porque uma cópia nova do repositório não tem a pasta `data/` e a função de log do rastreador supunha que existia; a correção passou.
+Integração contínua (CI) significa verificações automáticas a cada push. O workflow `quality-gate.yml` roda o portão no GitHub; uma verificação local antes do push o roda antes de `main` ser enviada. Em 2026-10-27 a primeira execução falhou porque uma cópia nova do repositório não tem a pasta `data/` e a função de log do rastreador supunha que existia; a correção passou. Em 2026-11-01 a execução 41335076862 falhou porque o código de análise importava o NumPy e o `requirements.txt` não o listava: o laptop passou porque o portão punha a própria pasta de bibliotecas (`~/.local/share/claude-workflow/pylibs`) no caminho de busca. O portão agora põe essa pasta só quando a variável `CI` não é `true`, e a etapa 0 evita a lacuna. Uma execução em um ambiente Python 3.12 limpo, com apenas `requirements.txt` instalado, passou.
 
 ### Maintenance
 A dívida técnica é registrada como issues do GitHub com o rótulo `debt` e prioridades P1 a P3, conforme a [[maintenance-policy]]; os rótulos existem. Uma revisão mensal está planejada.

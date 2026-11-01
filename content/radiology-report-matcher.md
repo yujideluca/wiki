@@ -8,8 +8,8 @@ status: active
 location: radiology-crawler:
 fed_by: []
 feeds: []
-sources: [radiology-crawler:DESIGN.md, radiology-crawler:CLAUDE.md, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/adr/0002-technology-and-languages.md, radiology-crawler:tools/quality_gate.sh, radiology-crawler:.github/workflows/quality-gate.yml, radiology-crawler:site_src/build.py, radiology-crawler:run_all.sh, radiology-crawler:docs/modelling-directives.md, radiology-crawler:docs/analysis-status.json, radiology-crawler:AGENTS.md, radiology-crawler:analysis/__init__.py]
-reviewed: 2026-11-01T18:11Z
+sources: [radiology-crawler:DESIGN.md, radiology-crawler:CLAUDE.md, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/adr/0002-technology-and-languages.md, radiology-crawler:tools/quality_gate.sh, radiology-crawler:tools/check_dependencies.py, radiology-crawler:requirements.txt, radiology-crawler:requirements-optional.txt, radiology-crawler:.github/workflows/quality-gate.yml, radiology-crawler:site_src/build.py, radiology-crawler:run_all.sh, radiology-crawler:docs/modelling-directives.md, radiology-crawler:docs/analysis-status.json, radiology-crawler:AGENTS.md, radiology-crawler:analysis/__init__.py]
+reviewed: 2026-11-01T18:37Z
 ---
 
 ## What it is
@@ -84,18 +84,19 @@ How this project follows the golden path of [[project-template]].
 4. **Polite and lawful collection**: the crawler obeys `robots.txt`; downloaded pages, databases and textbooks never enter git.
 5. **Codex use is bounded**: fresh sessions under 250,000 tokens, the cheaper model for translations.
 6. **Decisions are written where the code is**: a decision log in `DESIGN.md` and an architecture decision record (ADR) for structural ones.
+7. **Declare every dependency (2026-11-01)**: a third-party package the code imports (a package that does not ship with Python, such as NumPy) must be listed in `requirements.txt` in the same commit. CI (continuous integration, automatic checks on every push) installs packages only from that file. A package used only behind a fallback, such as CuPy (the GPU library), is listed in `requirements-optional.txt` instead.
 
 ### Decisions
 Four architecture decision records (ADRs, short notes that keep the reasons for a decision) in `docs/adr/`: record decisions (0001), the stack and the rule for the math (0002), the maintenance program measures and the review skill judges (0003), plus the blank template (0000).
 
 ### Requirements
-Thirty-four requirements in `docs/REQUIREMENTS.md` (2026-11-01): seven for the crawler (prefix CW), seven for the translator (TL), three for the plan site (WS) and seventeen for the statistical analysis (AN). Each has a test tagged `REQ <ID>`; the traceability step fails when one has none.
+Thirty-five requirements in `docs/REQUIREMENTS.md` (2026-11-01): seven for the crawler (prefix CW), seven for the translator (TL), three for the plan site (WS), seventeen for the statistical analysis (AN) and one for dependencies (DP). The traceability tool reads only two-letter prefixes, so a longer one is silently ignored. Each has a test tagged `REQ <ID>`; the traceability step fails when one has none.
 
 ### Quality gate
-`tools/quality_gate.sh` has three steps: compile the code and run the 59 tests; requirement traceability; the fitness functions of `pipeline-check` (the maintenance program, see [[pipeline-check]]): architecture rule, shell-script lint, a limit of 800 lines per Python file, and gate time.
+`tools/quality_gate.sh` has four steps: (0) `tools/check_dependencies.py` fails when the code imports a third-party package that is in neither `requirements.txt` nor `requirements-optional.txt`, or when a workflow installs packages from anywhere else; (1) compile the code and run the 64 tests; (2) requirement traceability; (3) the fitness functions of `pipeline-check` (the maintenance program, see [[pipeline-check]]): architecture rule, shell-script lint, a limit of 800 lines per Python file, and gate time.
 
 ### Continuous integration
-Continuous integration (CI) means automatic checks on every push. The workflow `quality-gate.yml` runs the gate on GitHub; a local pre-push check runs it before `main` is pushed. On 2026-10-27 the first run failed because a fresh copy of the repository has no `data/` folder and the crawler's log function assumed one; the fix passed.
+Continuous integration (CI) means automatic checks on every push. The workflow `quality-gate.yml` runs the gate on GitHub; a local pre-push check runs it before `main` is pushed. On 2026-10-27 the first run failed because a fresh copy of the repository has no `data/` folder and the crawler's log function assumed one; the fix passed. On 2026-11-01 run 41335076862 failed because the analysis code imported NumPy while `requirements.txt` did not list it: the laptop passed because the gate added its own library folder (`~/.local/share/claude-workflow/pylibs`) to the search path. The gate now adds that folder only when the `CI` variable is not `true`, and step 0 above prevents the gap. A run on a clean Python 3.12 environment with only `requirements.txt` installed passed.
 
 ### Maintenance
 Technical debt is tracked as GitHub issues labelled `debt` with priorities P1 to P3 under the [[maintenance-policy]]; the labels exist. A monthly review is planned.
