@@ -1,7 +1,7 @@
 ---
 id: wiki
 lang: de
-source_hash: cd94dada8617
+source_hash: 6c9fa192de97
 title: Wiki (diese Seite)
 ---
 
@@ -92,7 +92,7 @@ Wie dieses Projekt dem Goldenen Weg von [[project-template]] folgt.
 Die Entwurfsdatei `DESIGN.md` enthält die C4-Diagramme und ein Entscheidungsprotokoll, neueste zuerst, jede Zeile mit ihrer Wartungsart. Architekturentscheidungsprotokolle (kurze Notizen, die die Gründe einer Entscheidung bewahren) in `docs/adr/`: 0002 Elm-Frontend und Elixir-Backend; 0003 ein Anmeldetor mit Tarnseite für alle anderen; 0004 Seiten als Markdown mit Kopfzeile, vor dem Veröffentlichen geprüft; 0005 ein Programm misst und ein Skill urteilt; 0006 die Prüfzeit steht in der Seite; 0007 der Flussdiagramm-Abschnitt. Siehe auch die [[monthly-architecture-review]].
 
 ### Anforderungen
-71 Anforderungen in `docs/REQUIREMENTS.md`, gruppiert durch ein Zwei-Buchstaben-Präfix (Anmeldung AU, Tarnseite DC, Inhalt CO, Flussdiagramme FL, Projektseiten PJ, Karte MP, Handy-Layout MB und weitere). Jede hat einen Test mit dem Tag `REQ <ID>`, und die Rückverfolgbarkeitsprüfung ([[check-traceability]]) schlägt fehl, wenn eine keinen hat.
+75 Anforderungen in `docs/REQUIREMENTS.md`, gruppiert durch ein Zwei-Buchstaben-Präfix (Anmeldung AU, Tarnseite DC, Inhalt CO, Flussdiagramme FL, Projektseiten PJ, Karte MP, Handy-Layout MB und weitere). Jede hat einen Test mit dem Tag `REQ <ID>`, und die Rückverfolgbarkeitsprüfung ([[check-traceability]]) schlägt fehl, wenn eine keinen hat.
 
 ### Quality Gate
 [[wiki-quality-gate]] ist ein Skript mit fünf Schritten: die Elixir-Tests; die Elm-Tests und der optimierte Build; die Rückverfolgbarkeit der Anforderungen; die Inhaltsregeln (`wiki check`); die Fitnessfunktionen (größte Datei, Gate-Dauer, Bundle-Größe).
@@ -102,3 +102,6 @@ Kontinuierliche Integration (CI) heißt automatische Prüfungen bei jedem Push. 
 
 ### Wartung
 Technische Schulden werden als GitHub-Issues mit dem Label `debt` (P1 bis P3) nach der [[maintenance-policy]] geführt. Die [[monthly-architecture-review]] prüft das Projekt jeden Monat; die nächste ist am 22.11.2026 fällig.
+
+## Notes
+Die Veraltungsprüfung vom 2026-11-01 steht in `docs/2026-11-01-wiki-stale-audit.md` und Architekturentscheid 0009. Veröffentlichungen prüfen nun Prüfungsangaben; eine Sitzung kann offene Dokumentation einer anderen nicht durch bloßes Veröffentlichen beseitigen. Lokale `wiki:`-Quellen folgen `WIKI_ROOT`; unabhängige Prozesse nutzen getrennte temporäre Zustandspfade. Das Standard-Gate bestand mit 95 Backend- und 89 Oberflächentests. Eine getrennte Zeilenabdeckungsmessung ergab 88,46%, unter ihrer unveränderten 90%-Schwelle; diese Lücke und das Werkzeug-Upgrade sind Wartungsvorschläge, keine still geänderten Grenzen.

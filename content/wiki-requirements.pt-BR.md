@@ -1,7 +1,7 @@
 ---
 id: wiki-requirements
 lang: pt-BR
-source_hash: bcd517aa3b32
+source_hash: ec2f00d589fa
 title: Requisitos do wiki
 ---
 
@@ -19,3 +19,6 @@ Ao lado do documento de design `docs/2026-10-22-wiki-design.md`.
 
 ## Who receives its output
 O [[check-traceability]] e o [[wiki-quality-gate]].
+
+## Notes
+O relatório atual de rastreabilidade cobre 75 requisitos. A família de fluxogramas é `FL`; a de arquitetura e práticas é `PJ`. A auditoria adicionou `ST-4` a `ST-6` para fontes próprias, semântica exata de revisão e validação da publicação, além de `UP-7` para preservar pendências com estado corrompido, publicações concorrentes e cópias vinculadas. Os testes incluem processos independentes e uma fonte existente apenas na cópia selecionada da wiki.

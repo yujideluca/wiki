@@ -1,7 +1,7 @@
 ---
 id: wiki-cli
 lang: pt-BR
-source_hash: 5685e2df3650
+source_hash: 0d4eaa832d1e
 title: wiki (comando)
 ---
 
@@ -62,3 +62,6 @@ O [[github]] (o commit) e o site no ar (pelo [[wiki-site]]).
 - `wiki publish -m "msg" [--co-author "Name <email>"]`: check --local, build, commit só de content/ (com a linha de coautor só se informada), push
 - `wiki hook-stop`: o hook Stop do Claude Code
 - `wiki help`, `wiki --help`, `wiki -h`: imprimem o uso e não fazem mais nada. Uma opção que o comando não conhece (por exemplo o erro de digitação `--co-autor`) também imprime o uso e não executa nada, com código de saída 2; antes de 2026-10-26 essa opção era ignorada, então `wiki publish --help` executava uma publicação de verdade.
+
+## Notes
+Antes do envio, a publicação valida cada nova declaração `reviewed` pelo histórico das fontes no commit de documentação. Declaração falsa é recusada com página e fonte identificadas. A marca de publicação compartilhada só avança quando isso não esconde documentação pendente. Estado ausente ou corrompido recebe tratamento explícito. `WIKI_ROOT` também seleciona fontes locais `wiki:`, permitindo que uma cópia isolada verifique seus próprios arquivos novos. Regras exatas: [[wiki-stale]] e [[wiki-hook-stop]]. Claude Code e Codex usam o comando.

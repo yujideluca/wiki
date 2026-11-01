@@ -1,7 +1,7 @@
 ---
 id: wiki-cli
 lang: de
-source_hash: 5685e2df3650
+source_hash: 0d4eaa832d1e
 title: wiki (Befehl)
 ---
 
@@ -62,3 +62,6 @@ Aufgerufen bei [[end-of-task]], vor `mem use`.
 - `wiki publish -m "msg" [--co-author "Name <email>"]`: check --local, build, nur content/ committen (die Co-Autor-Zeile nur, wenn angegeben), pushen
 - `wiki hook-stop`: der Stop-Hook von Claude Code
 - `wiki help`, `wiki --help`, `wiki -h`: geben die Verwendung aus und tun sonst nichts. Eine Option, die der Befehl nicht kennt (zum Beispiel der Tippfehler `--co-autor`), gibt ebenfalls die Verwendung aus und führt nichts aus, mit Exit-Code 2; vor dem 2026-10-26 wurde so eine Option ignoriert, sodass `wiki publish --help` ein echtes Publish ausführte.
+
+## Notes
+Vor dem Hochladen prüft die Veröffentlichung jede neue `reviewed`-Angabe anhand des Quellenverlaufs zum Dokumentations-Commit. Eine falsche Angabe wird mit Seite und Quelle abgewiesen. Die gemeinsame Veröffentlichungsmarke rückt nur vor, wenn dadurch keine offene Dokumentationsarbeit verborgen wird. Fehlender oder beschädigter Zustand wird ausdrücklich behandelt. `WIKI_ROOT` wählt auch lokale `wiki:`-Quellen, damit isolierte Arbeitskopien ihre eigenen neuen Dateien prüfen. Genaue Regeln: [[wiki-stale]] und [[wiki-hook-stop]]. Claude Code und Codex nutzen den Befehl.

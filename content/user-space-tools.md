@@ -9,7 +9,7 @@ location: home:.local/bin
 fed_by: []
 feeds: [claude-assistant]
 sources: [home:.local/bin]
-reviewed: 2026-11-01T22:25Z
+reviewed: 2026-11-01T22:54Z
 ---
 
 ## What it is

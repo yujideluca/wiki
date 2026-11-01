@@ -10,7 +10,7 @@ fed_by: [claude-code, project-template]
 feeds: []
 sources: [wiki:docs/2026-10-22-wiki-design.md, wiki:DESIGN.md]
 memory: [#f1e117]
-reviewed: 2026-10-27T02:31Z
+reviewed: 2026-11-01T22:54Z
 ---
 
 ## What it is
@@ -100,7 +100,7 @@ How this project follows the golden path of [[project-template]].
 The design file `DESIGN.md` keeps the C4 diagrams and a decision log, newest first, each row with its maintenance type. Architecture decision records (ADRs, short notes that keep the reasons for a decision) in `docs/adr/`: 0002 Elm front end and Elixir back end; 0003 one login gate with a decoy page for everyone else; 0004 pages as Markdown with a header, checked before publishing; 0005 a program measures and a skill judges; 0006 the review time is kept in the page; 0007 the flowchart section. See also the [[monthly-architecture-review]].
 
 ### Requirements
-71 requirements in `docs/REQUIREMENTS.md`, grouped by a two-letter prefix (login AU, decoy DC, content CO, flowcharts FL, project pages PJ, map MP, phone layout MB and more). Each one has a test tagged `REQ <ID>`, and the traceability check ([[check-traceability]]) fails when one has none.
+75 requirements in `docs/REQUIREMENTS.md`, grouped by a two-letter prefix (login AU, decoy DC, content CO, flowcharts FL, project pages PJ, map MP, phone layout MB and more). Each one has a test tagged `REQ <ID>`, and the traceability check ([[check-traceability]]) fails when one has none.
 
 ### Quality gate
 [[wiki-quality-gate]] is one script, five steps: the Elixir tests; the Elm tests and the optimized build; requirement traceability; the content rules (`wiki check`); the fitness functions (largest file, gate time, bundle size).
@@ -110,3 +110,6 @@ Continuous integration (CI) means automatic checks on every push. The workflow `
 
 ### Maintenance
 Technical debt is tracked as GitHub issues labelled `debt` (P1 to P3) under the [[maintenance-policy]]. The [[monthly-architecture-review]] checks the project every month; the next is due 2026-11-22.
+
+## Notes
+The 2026-11-01 staleness audit is recorded in `docs/2026-11-01-wiki-stale-audit.md` and architecture decision record 0009. Publication now checks review claims; one session cannot clear another's pending documentation merely by publishing. Local `wiki:` sources follow `WIKI_ROOT`, and independent processes use distinct temporary state paths. The standard gate passed 95 backend tests and 89 interface tests. Separate line-coverage measurement found 88.46%, below its unchanged 90% measurement threshold; that gap and the pinned-tool upgrade are maintenance proposals, not silently changed limits.

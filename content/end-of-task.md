@@ -8,7 +8,7 @@ status: active
 fed_by: []
 feeds: []
 sources: [home:.claude/CLAUDE.md, wiki:server/lib/wiki/cli.ex]
-reviewed: 2026-10-26T18:38Z
+reviewed: 2026-11-01T22:54Z
 ---
 
 ## What it is
@@ -63,3 +63,6 @@ The wiki content ([[wiki-content]]), [[github]] (where the wiki is stored) and t
 5. The live site serves the new data at once ([[wiki-site]], [[wiki-router]]).
 6. `mem use REF… --note "how"` reports the memory entries that were used ([[mem-use]]).
 7. When the turn ends, [[wiki-hook-stop]] confirms nothing was forgotten and [[hook-stop]] uploads the memory events.
+
+## Notes
+The final check runs after the last commit and installation, not only before publication. Verify the actual remote revision, the primary checkout, the installed command and the served pages, then run `wiki stale` for the affected pages. If installation changed a documented tool location, compare that source again and publish the recorded review afterwards. Both Claude Code and Codex follow this sequence. Publishing validates newly claimed reviews before pushing and preserves other sessions' unfinished obligations ([[wiki-stale]], [[wiki-hook-stop]]).

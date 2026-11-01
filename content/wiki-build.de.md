@@ -1,7 +1,7 @@
 ---
 id: wiki-build
 lang: de
-source_hash: 61aa08453346
+source_hash: 6dabe65a53ae
 title: wiki build (Inhalt → Daten)
 ---
 
@@ -19,3 +19,6 @@ Der zweite Schritt von `wiki publish`, nach [[wiki-check]].
 
 ## Who receives its output
 Die [[wiki-site]].
+
+## Notes
+Bei der Prüfung vom 2026-11-01 erhielt der Quellenverlaufshelfer Abfragen für Arbeitskopien und Commit-Verläufe; das Ausgabeformat des Builders blieb gleich. Ein ausdrückliches Kopffeld `since` hat Vorrang vor dem Quellenverlauf. Ohne dieses Feld gilt das früheste Erstellungsdatum der Quellen, danach das der Seite selbst. Ein neuer Entwurf, der eine ältere Vorlage zitiert, braucht daher ein ausdrückliches Erstellungsdatum.

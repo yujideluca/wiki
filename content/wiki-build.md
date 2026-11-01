@@ -9,7 +9,7 @@ location: wiki:server/lib/wiki/content/build.ex
 fed_by: [wiki-content]
 feeds: [wiki-cli, wiki-site]
 sources: [wiki:server/lib/wiki/content/build.ex, wiki:server/lib/wiki/content/git.ex]
-reviewed: 2026-10-25T07:34Z
+reviewed: 2026-11-01T22:54Z
 ---
 
 ## What it is
@@ -26,3 +26,6 @@ The second step of `wiki publish`, after [[wiki-check]].
 
 ## Who receives its output
 The [[wiki-site]].
+
+## Notes
+The source-history helper gained worktree and commit-history queries during the 2026-11-01 audit; the builder's output format did not change. An explicit `since` header takes precedence over source history. Without that header, the earliest source creation date is used, then the page's own creation date. This matters for a new design that cites an older template: its creation date should be explicit.

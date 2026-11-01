@@ -1,7 +1,7 @@
 ---
 id: wiki-build
 lang: pt-BR
-source_hash: 61aa08453346
+source_hash: 6dabe65a53ae
 title: wiki build (conteúdo → dados)
 ---
 
@@ -19,3 +19,6 @@ O segundo passo de `wiki publish`, depois do [[wiki-check]].
 
 ## Who receives its output
 O [[wiki-site]].
+
+## Notes
+Na auditoria de 2026-11-01, o auxiliar de histórico ganhou consultas para cópias de trabalho e commits; o formato de saída do construtor não mudou. Um campo `since` explícito tem prioridade sobre o histórico das fontes. Sem ele, usa-se a data de criação mais antiga das fontes e, depois, a da própria página. Um design novo que cita um modelo antigo precisa, portanto, declarar sua data.

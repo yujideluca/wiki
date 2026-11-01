@@ -1,7 +1,7 @@
 ---
 id: end-of-task
 lang: de
-source_hash: 5521ba05f6ea
+source_hash: 8bc9d221021c
 title: Ende einer Aufgabe (Wiki-Aktualisierungskette)
 ---
 
@@ -57,3 +57,6 @@ Der Wiki-Inhalt ([[wiki-content]]), [[github]] (wo das Wiki gespeichert ist) und
 5. Die Live-Seite liefert die neuen Daten sofort aus ([[wiki-site]], [[wiki-router]]).
 6. `mem use REF… --note "how"` meldet die verwendeten Gedächtniseinträge ([[mem-use]]).
 7. Wenn der Durchgang endet, bestätigt [[wiki-hook-stop]], dass nichts vergessen wurde, und [[hook-stop]] lädt die Gedächtnisereignisse hoch.
+
+## Notes
+Die Abschlussprüfung erfolgt nach dem letzten Commit und der Installation, nicht nur vor dem Veröffentlichen. Tatsächliche Remote-Revision, Hauptarbeitskopie, installierten Befehl und ausgelieferte Seiten prüfen; danach `wiki stale` für die betroffenen Seiten ausführen. Hat die Installation einen dokumentierten Werkzeugpfad geändert, die Quelle erneut vergleichen und die Prüfung anschließend veröffentlichen. Claude Code und Codex folgen derselben Folge. Neue Prüfungsangaben werden vor dem Hochladen geprüft; offene Aufgaben anderer Sitzungen bleiben erhalten ([[wiki-stale]], [[wiki-hook-stop]]).

@@ -1,7 +1,7 @@
 ---
 id: end-of-task
 lang: pt-BR
-source_hash: 5521ba05f6ea
+source_hash: 8bc9d221021c
 title: Fim de uma tarefa (cadeia de atualização do wiki)
 ---
 
@@ -57,3 +57,6 @@ O conteúdo do wiki ([[wiki-content]]), o [[github]] (onde o wiki é guardado) e
 5. O site no ar serve os novos dados na hora ([[wiki-site]], [[wiki-router]]).
 6. `mem use REF… --note "how"` informa as entradas de memória usadas ([[mem-use]]).
 7. Quando a rodada termina, [[wiki-hook-stop]] confirma que nada foi esquecido e [[hook-stop]] envia os eventos de memória.
+
+## Notes
+A verificação final ocorre depois do último commit e da instalação, não apenas antes da publicação. Conferir a revisão remota real, a cópia principal, o comando instalado e as páginas servidas; então rodar `wiki stale` para as páginas afetadas. Se a instalação alterou um caminho documentado de ferramenta, comparar novamente essa fonte e publicar a revisão depois. Claude Code e Codex seguem a mesma sequência. A publicação valida novas declarações de revisão antes do envio e preserva pendências de outras sessões ([[wiki-stale]], [[wiki-hook-stop]]).
