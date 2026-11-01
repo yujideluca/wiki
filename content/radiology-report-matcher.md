@@ -9,7 +9,7 @@ location: radiology-crawler:
 fed_by: []
 feeds: []
 sources: [radiology-crawler:DESIGN.md, radiology-crawler:CLAUDE.md, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/adr/0002-technology-and-languages.md, radiology-crawler:tools/quality_gate.sh, radiology-crawler:tools/check_dependencies.py, radiology-crawler:requirements.txt, radiology-crawler:requirements-optional.txt, radiology-crawler:.github/workflows/quality-gate.yml, radiology-crawler:site_src/build.py, radiology-crawler:run_all.sh, radiology-crawler:docs/modelling-directives.md, radiology-crawler:docs/analysis-status.json, radiology-crawler:AGENTS.md, radiology-crawler:analysis/__init__.py]
-reviewed: 2026-11-01T18:37Z
+reviewed: 2026-11-01T18:54Z
 ---
 
 ## What it is
@@ -85,6 +85,7 @@ How this project follows the golden path of [[project-template]].
 5. **Codex use is bounded**: fresh sessions under 250,000 tokens, the cheaper model for translations.
 6. **Decisions are written where the code is**: a decision log in `DESIGN.md` and an architecture decision record (ADR) for structural ones.
 7. **Declare every dependency (2026-11-01)**: a third-party package the code imports (a package that does not ship with Python, such as NumPy) must be listed in `requirements.txt` in the same commit. CI (continuous integration, automatic checks on every push) installs packages only from that file. A package used only behind a fallback, such as CuPy (the GPU library), is listed in `requirements-optional.txt` instead.
+8. **One model set per language (2026-11-01)**: every identification model (the word-list tagger, the filters, the wording layer and model versions 1 to 4) is built, tuned and scored separately for English, German and Brazilian Portuguese, on that language's own pages and cases (German and Portuguese are the translations). When a user types a report, a fast language check comes first and sends it to that language's models. The routing pipeline is designed only after all the per-language models are tested.
 
 ### Decisions
 Four architecture decision records (ADRs, short notes that keep the reasons for a decision) in `docs/adr/`: record decisions (0001), the stack and the rule for the math (0002), the maintenance program measures and the review skill judges (0003), plus the blank template (0000).

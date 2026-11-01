@@ -1,7 +1,7 @@
 ---
 id: radiology-report-matcher
 lang: pt-BR
-source_hash: 8d35e0c747f1
+source_hash: 9fff9bd66888
 title: Radiology Report Matcher (site planejado)
 ---
 
@@ -78,6 +78,7 @@ Como este projeto segue o caminho dourado do [[project-template]].
 5. **O uso do Codex é limitado**: sessões novas abaixo de 250.000 tokens, o modelo mais barato nas traduções.
 6. **As decisões ficam onde está o código**: um registro de decisões em `DESIGN.md` e um registro de decisão de arquitetura (ADR) para as estruturais.
 7. **Declarar toda dependência (2026-11-01)**: um pacote de terceiros que o código importa (um pacote que não vem com o Python, como o NumPy) precisa estar em `requirements.txt` no mesmo commit. A CI (integração contínua, verificações automáticas a cada push) instala pacotes só a partir desse arquivo. Um pacote usado apenas atrás de um caminho alternativo, como o CuPy (a biblioteca de GPU), fica em `requirements-optional.txt`.
+8. **Um conjunto de modelos por idioma (2026-11-01)**: cada modelo de identificação (o marcador por listas de palavras, os filtros, a camada de redação e as versões 1 a 4) é construído, ajustado e avaliado separadamente para inglês, alemão e português do Brasil, nas páginas e casos próprios de cada idioma (alemão e português são as traduções). Quando alguém digita um laudo, primeiro vem uma checagem rápida do idioma, que o envia aos modelos desse idioma. O pipeline de roteamento só é desenhado depois que todos os modelos por idioma forem testados.
 
 ### Decisions
 Quatro registros de decisão de arquitetura (ADRs, notas curtas que guardam os motivos de uma decisão) em `docs/adr/`: registrar decisões (0001), a stack e a regra para a matemática (0002), o programa de manutenção mede e a skill de revisão julga (0003), além do modelo em branco (0000).
