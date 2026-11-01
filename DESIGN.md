@@ -135,3 +135,7 @@ Giovanni requires the full skill description and instructions on every skill pag
 ### 2026-10-25: remove duplicate skill steps (AR-1)
 
 Skill pages render their Steps section only through the existing interactive box; the second plain-text rendering is removed. The complete skill sources remain in Notes. Regression tests cover both layouts and all three languages, switching to the next step, and preservation of other page kinds.
+
+### 2026-11-01: review claims are checked when published; wiki sources follow commit order (ST-4, ST-5, ST-6, UP-7)
+
+Type: corrective. Two Status Quo pages were published with a `reviewed` time before their own commit and were later listed as stale, and the session that wrote them reported "no stale pages" before a second metadata commit. Root causes: a page can never be newer than the commit that carries it, nothing checked a review claim at publish, and one shared publish stamp let any publish hide other sessions' unreviewed code. Decision and consequences: `docs/adr/0009-stale-review-claims-and-shared-publish-stamp.md`.

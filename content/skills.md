@@ -9,7 +9,7 @@ location: home:.claude/skills
 fed_by: []
 feeds: []
 sources: [home:.claude/skills]
-reviewed: 2026-10-26T06:19Z
+reviewed: 2026-11-01T22:25Z
 ---
 
 ## What it is

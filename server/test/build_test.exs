@@ -126,6 +126,61 @@ defmodule Wiki.Content.BuildTest do
       assert Stale.hook_message(store, %{"session_id" => "third"}) == nil
     end
 
+    # REQ UP-7
+    test "a publish by another session does not hide changes that no page review covers", %{content: c, repo: repo} do
+      Stale.mark_published(System.os_time(:second) - 3600)
+      File.write!(Path.join(repo, "lib/x.ex"), "2")
+      commit_all(repo, "change", DateTime.utc_now() |> DateTime.to_iso8601())
+      store = Store.load(c)
+
+      Stale.record_publish(store)
+      assert Stale.hook_message(store, %{"session_id" => "later"}) =~ "update pages a", "the change is still unreviewed"
+
+      write_page(c, "a", base_header("a", feeds: ["b"], sources: ["r1:lib/x.ex"], reviewed: "2999-01-01T00:00Z"))
+      store = Store.load(c)
+      Stale.record_publish(store)
+      assert Stale.hook_message(store, %{"session_id" => "later2"}) == nil
+    end
+
+    # REQ UP-7
+    test "an unrelated publish does not erase uncovered new files", %{content: c, repo: repo} do
+      Stale.mark_published(System.os_time(:second) - 3600)
+      File.write!(Path.join(repo, "NEW.md"), "new")
+      commit_all(repo, "new file", DateTime.utc_now() |> DateTime.to_iso8601())
+      store = Store.load(c)
+
+      Stale.record_publish(store)
+      assert Stale.hook_message(store, %{"session_id" => "later"}) =~ "new files no page covers: NEW.md"
+    end
+
+    # REQ UP-7
+    test "a missing stamp is silent, a malformed one is reported visibly and never crashes", %{content: c} do
+      store = Store.load(c)
+      assert Stale.hook_message(store, %{"session_id" => "s"}) == nil
+
+      File.mkdir_p!(Stale.state_dir())
+      for bad <- ["", "0", "-5", "12abc", "1793\n564", <<255, 254, 0>>, "99999999999999", "1.5"] do
+        File.write!(Path.join(Stale.state_dir(), "last_publish"), bad)
+        assert {:invalid, _} = Stale.last_published()
+        msg = Stale.hook_message(store, %{"session_id" => "bad-#{:erlang.phash2(bad)}"})
+        assert msg =~ "publish stamp", "malformed stamp #{inspect(bad)} must be reported"
+        assert Stale.hook_message(store, %{"session_id" => "bad-#{:erlang.phash2(bad)}"}) == nil, "once per session"
+      end
+
+      File.write!(Path.join(Stale.state_dir(), "last_publish"), "garbage")
+      Stale.record_publish(store)
+      assert is_integer(Stale.last_published()), "a publish rewrites a broken stamp"
+    end
+
+    # REQ UP-7
+    test "malformed once-per-session state does not crash or hide the message", %{content: c, repo: repo} do
+      Stale.mark_published(System.os_time(:second) - 60)
+      File.write!(Path.join(repo, "lib/x.ex"), "2")
+      commit_all(repo, "change", DateTime.utc_now() |> DateTime.to_iso8601())
+      File.write!(Path.join(Stale.state_dir(), "hook_blocked"), <<255, 0, 254>> <> "\n\n   \ns 1")
+      assert Stale.hook_message(Store.load(c), %{"session_id" => "s"}) =~ "update pages a"
+    end
+
     # REQ UP-1
     test "ignores data folders listed in _ignore.txt", %{content: c, repo: repo} do
       File.write!(Path.join(c, "_ignore.txt"), "# data\nr1:data\n")

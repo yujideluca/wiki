@@ -8,8 +8,8 @@ status: active
 location: wiki:server/lib/wiki/content/stale.ex
 fed_by: []
 feeds: [wiki-cli]
-sources: [wiki:server/lib/wiki/content/stale.ex, wiki:server/lib/wiki/content/sources.ex, wiki:server/lib/wiki/content/page.ex, wiki:docs/adr/0006-review-time-in-the-page.md]
-reviewed: 2026-10-26T18:31Z
+sources: [wiki:server/lib/wiki/content/stale.ex, wiki:server/lib/wiki/content/sources.ex, wiki:server/lib/wiki/content/page.ex, wiki:docs/adr/0006-review-time-in-the-page.md, wiki:docs/adr/0009-stale-review-claims-and-shared-publish-stamp.md]
+reviewed: 2026-11-01T22:25Z
 ---
 
 ## What it is
@@ -24,6 +24,8 @@ For a source inside a git repository (git is the tool that saves every change as
 The first version compared the last commit time of the source with the last commit time of the page file. On 2026-10-24 one commit rewrote all 154 pages, so that version listed nothing while 38 of the 140 pages with sources had a source change that no one had checked, and it could never list the 34 pages whose sources are outside git. The decision record `docs/adr/0006-review-time-in-the-page.md` explains the change.
 
 The command looks at time, not at what the page says: a change to a source that the page does not describe still lists the page until someone reviews it. A review at a given minute covers that whole minute, so a change in that minute is not seen; nor are edits not yet committed in a repository, or a new file that no page names (the Stop hook watches for new files).
+
+Since 2026-11-01 (ADR-0009, an architecture decision record: a short note that keeps the reasons for a decision) three exact rules cover sources that live in the wiki's own repository, with no grace period. A page that lists its own file as a source is not listed because of it. A source that is itself a wiki page counts as changed only when more than its `reviewed` or `since` lines changed. And because a review time is typed before the commit that carries it, a source whose text was changed by the very commit that last set the page's `reviewed` line is covered; a source changed by any other commit, even one minute after the review, keeps the page listed until it is compared again. `wiki publish` also checks every `reviewed` line it is about to push: if a source that already existed is newer than the review it refuses, names the page and the source, and pushes nothing (requirements ST-4, ST-5 and ST-6).
 
 ## Where it sits in the pipeline
 A manual check, run by Claude at the start and the end of the work of [[skill-wiki-page-writer]], and whenever Giovanni wants to know how far the wiki is behind the code.

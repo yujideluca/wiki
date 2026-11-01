@@ -12,3 +12,6 @@ rewritten: a new decision supersedes it.
 | [0004](0004-content-format.md) | Content as Markdown pages with a header, checked before publishing | accepted |
 | [0005](0005-program-measures-skill-judges.md) | A program measures and blocks, a skill judges and proposes | accepted |
 | [0006](0006-review-time-in-the-page.md) | The page records its review time; stale means a source changed after it | accepted |
+| [0007](0007-flow-chart-section.md) | Flow chart section on big concept pages | accepted |
+| [0008](0008-project-architecture-and-practices.md) | Architecture and practices on project and program pages | accepted |
+| [0009](0009-stale-review-claims-and-shared-publish-stamp.md) | A review claim is checked at publish; wiki sources follow commit order; the publish stamp does not hide unreviewed work | accepted |

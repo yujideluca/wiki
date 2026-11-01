@@ -9,11 +9,11 @@ location: home:.local/bin
 fed_by: []
 feeds: [claude-assistant]
 sources: [home:.local/bin]
-reviewed: 2026-10-27T01:45Z
+reviewed: 2026-11-01T22:25Z
 ---
 
 ## What it is
-"User-space" means installed in the user's own folders instead of the system folders, so no administrator rights are needed. This page covers the extra tools Giovanni's laptop has in `~/.local`: [Node.js](https://nodejs.org/) 22 with npm (JavaScript runtime and its package installer), [uv](https://docs.astral.sh/uv/) (a fast Python package tool), pyright (a Python type checker), kotlin-lsp (a helper that explains Kotlin code to editors), rclone (copies files to cloud storage), a copy of tmux (a terminal that keeps running without a window), shellcheck 0.11.0 (a checker for shell scripts, used by [[pipeline-check]]), [Elm](https://elm-lang.org/) 0.19.1 with elm-test and elm-format, and the scripts `mem`, `tg-send`, `claude-assistant` and `wiki`.
+"User-space" means installed in the user's own folders instead of the system folders, so no administrator rights are needed. This page covers the extra tools Giovanni's laptop has in `~/.local`: [Node.js](https://nodejs.org/) 22 with npm (JavaScript runtime and its package installer), [uv](https://docs.astral.sh/uv/) (a fast Python package tool), pyright (a Python type checker), kotlin-lsp (a helper that explains Kotlin code to editors), rclone (copies files to cloud storage), a copy of tmux (a terminal that keeps running without a window), shellcheck 0.11.0 (a checker for shell scripts, used by [[pipeline-check]]), [Elm](https://elm-lang.org/) 0.19.1 with elm-test and elm-format, and the scripts `mem`, `tg-send`, `claude-assistant` and `wiki`. The same folder also holds the command `claude` (a link to the installed version of Claude Code, which updates itself) and `codex` (a link to the installed Codex command), and three Codex helper scripts: `codex-pbar` and `codex-task-progress` for the terminal footer ([[codex-pbar]]) and `codex-remote-tmux` for the always-on Codex remote session ([[remote-assistant]]).
 
 ## Architecture
 ### Context

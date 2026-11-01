@@ -9,7 +9,7 @@ location: home:.claude
 fed_by: []
 feeds: []
 sources: [home:.claude/settings.json, home:.claude/CLAUDE.md]
-reviewed: 2026-10-25T07:34Z
+reviewed: 2026-11-01T22:25Z
 ---
 
 ## What it is

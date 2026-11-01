@@ -94,7 +94,7 @@ defmodule Wiki.CLI do
          0 <- run(["check"], local: true),
          0 <- run(["build"], []),
          0 <- commit_and_push(msg, co_author) do
-      Stale.mark_published()
+      Stale.record_publish(Store.load(content_dir()))
       IO.puts("wiki published")
       0
     end
@@ -138,10 +138,28 @@ defmodule Wiki.CLI do
   defp commit_and_push(msg, co_author) do
     r = root()
 
-    with 0 <- commit_only_content(r, msg, co_author) do
+    with 0 <- commit_only_content(r, msg, co_author),
+         0 <- verify_claims(r) do
       if System.cmd("git", ["remote"], cd: r, env: Wiki.Content.Git.env()) |> elem(0) |> String.trim() == "",
         do: 0,
         else: sh("git", ["push", "-q"], r)
+    end
+  end
+
+  # Every `reviewed` line in the commits about to be pushed must hold at the time of the commit (ADR-0009): a page
+  # marked as checked while a source is still newer than the mark is refused, and nothing is pushed.
+  def verify_claims(r) do
+    range = if Wiki.Content.Git.cmd(r, ["rev-parse", "--abbrev-ref", "@{u}"]), do: "@{u}..HEAD", else: "HEAD"
+
+    case Stale.claimed(Store.load(content_dir()), range) do
+      [] ->
+        0
+
+      list ->
+        IO.puts("refused: these pages claim a review but a source is newer than the review (nothing was pushed):")
+        Enum.each(list, &IO.puts("  #{&1.id}: #{&1.reason}"))
+        IO.puts("Compare each page with the named source, set `reviewed:` to the UTC time of that comparison, run wiki publish again.")
+        1
     end
   end
 

@@ -9,7 +9,7 @@ location: wiki:content
 fed_by: [claude-code, codex, skill-wiki-page-writer]
 feeds: [wiki-build, wiki-check]
 sources: [wiki:content/_kinds.json, wiki:content/_ignore.txt, wiki:AGENTS.md, wiki:CLAUDE.md]
-reviewed: 2026-10-27T01:03Z
+reviewed: 2026-11-01T22:25Z
 ---
 
 ## What it is
@@ -18,7 +18,7 @@ These are the pages themselves: the source of truth of this wiki. There is one [
 ## What it does
 Each page has a header (`id, title, aliases, kind, project, status, location, fed_by, feeds, sources, memory, since, until, reviewed`) and fixed sections: What it is, What it does, How it does it, Where it sits in the pipeline, Who receives its output, plus optional Steps (for processes and skills), Functions and Notes. The field `reviewed` is required on every page: it says when the page was last compared with its sources, as a date and minute in UTC (Coordinated Universal Time, the same clock time everywhere), for example `2026-10-24T18:30Z`, or as a date alone (the start of that day), and it is never in the future. Only someone who really compared the page with its sources sets it.
 
-The writing rules are these: every page must be understandable by someone who knows nothing about the system; a technical term is defined where it first appears and, when it is complex, links to a definition (an outside source or the [[glossary]]); an acronym is spelled out at its first use on each page; and a skill page carries the skill's own definition in its Steps section, so the page is enough to understand the skill. Pages of kind actor, project, process and skill also carry a `Flow` section right after "What it is": a flowchart written as one line per box and one per arrow, which the wiki draws from top to bottom ([[wiki-flow-view]]).
+The writing rules are these: every page must be understandable by someone who knows nothing about the system; a technical term is defined where it first appears and, when it is complex, links to a definition (an outside source or the [[glossary]]); an acronym is spelled out at its first use on each page; and a skill page carries the skill's own definition in its Steps section, so the page is enough to understand the skill. Pages of kind actor, project, process and skill also carry a `Flow` section right after "What it is": a flowchart written as one line per box and one per arrow, which the wiki draws from top to bottom ([[wiki-flow-view]]). A page of kind program also has an `Architecture` section, and a page of kind project that lives in a repository (not `location: home:...`) has `Architecture` after `Flow` and `Engineering practices` after "Who receives its output". Architecture is two C4 diagrams (a way to draw a system at two zoom levels), `Context` and `Containers`, written in the same line format as the flow; practices has six parts in a fixed order: Principles, Decisions, Requirements, Quality gate, Continuous integration, Maintenance. Translations keep the same boxes, links, arrows and parts.
 
 ## How it does it
 Links between pages are written `[[id]]`. The headers `fed_by` and `feeds` are the pipeline edges (what feeds what) and must agree in both directions. `sources` are written `repo:path`, so that a source changed after the page's `reviewed` time marks the page as stale ([[wiki-stale]]). A translation stores a hash (a short fingerprint) of the English text it was made from, so an outdated translation is detected. Pages say what exists; rules and preferences live in memory and are linked by their `#code`.

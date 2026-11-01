@@ -1,12 +1,12 @@
 ---
 id: claude-plugins
 lang: pt-BR
-source_hash: 6e6c6d8b21d5
+source_hash: de14de0622c6
 title: Plugins do Claude Code
 ---
 
 ## What it is
-Um plugin é um pacote complementar do Claude Code que traz capacidades extras ([documentação de plugins](https://docs.claude.com/en/docs/claude-code/plugins)). Esta página lista os plugins ativados no notebook.
+Um plugin é um pacote complementar do Claude Code que traz capacidades extras ([documentação de plugins](https://docs.claude.com/en/docs/claude-code/plugins)). Esta página lista os plugins instalados no notebook e diz quais estão ligados.
 
 ## What it does
 - pyright-lsp e kotlin-lsp dão ao Claude "inteligência de código" para as linguagens Python e Kotlin (LSP é o Language Server Protocol, um padrão para um editor ou assistente perguntar a uma ferramenta de linguagem sobre erros e definições).
@@ -18,7 +18,7 @@ Um plugin é um pacote complementar do Claude Code que traz capacidades extras (
 - android-test-pilot analisa apps Android e executa testes no aparelho; vem do marketplace `panicgit/android-test-pilot`.
 
 ## How it does it
-Estão instalados em `~/.claude/plugins` (a lista fica em `installed_plugins.json`) e ligados em [[claude-code-settings]].
+Estão instalados em `~/.claude/plugins` (a lista fica em `installed_plugins.json`) e ligados ou desligados em [[claude-code-settings]]. Ligados: pyright-lsp, kotlin-lsp, security-guidance e android-test-pilot. Instalados, mas desligados: session-report, claude-md-management, feature-dev, pr-review-toolkit e claude-code-setup.
 
 ## Where it sits in the pipeline
 Dentro de toda sessão do Claude Code.

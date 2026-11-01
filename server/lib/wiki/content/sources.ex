@@ -42,6 +42,42 @@ defmodule Wiki.Content.Sources do
     end
   end
 
+  @doc "`{unix time, commit}` of the last commit touching a path in a repository, or nil."
+  def last_commit(repo, path) do
+    case Git.cmd(repo, ["log", "-1", "--format=%ct %H", "--", path]) do
+      nil -> nil
+      "" -> nil
+      out -> out |> String.split(" ") |> then(fn [t, h] -> {String.to_integer(t), h} end)
+    end
+  end
+
+  @volatile ~r/^(reviewed|since):/
+
+  @doc """
+  Like `last_commit/2` for a wiki page file, but a commit counts only when it changed something other than the
+  `reviewed` and `since` header lines (dates of when the page was checked or the thing began, not what it says).
+  """
+  def last_substantive_commit(repo, path, limit \\ 60) do
+    case Git.cmd(repo, ["log", "-#{limit}", "--format=%ct %H", "--", path]) do
+      nil -> nil
+      "" -> nil
+      out ->
+        out
+        |> String.split("\n", trim: true)
+        |> Enum.find_value(fn line ->
+          [t, h] = String.split(line, " ")
+          if text_at(repo, h, path) != text_at(repo, h <> "~1", path), do: {String.to_integer(t), h}
+        end)
+    end
+  end
+
+  defp text_at(repo, rev, path) do
+    case Git.cmd(repo, ["show", "#{rev}:#{path}"]) do
+      nil -> nil
+      text -> text |> String.split("\n") |> Enum.reject(&Regex.match?(@volatile, &1)) |> Enum.join("\n")
+    end
+  end
+
   defp modified_at(source) do
     case resolve(source) do
       {_, dir, path} -> newest_mtime(Path.expand(Path.join(dir, path)))
@@ -63,10 +99,20 @@ defmodule Wiki.Content.Sources do
     end
   end
 
+  @doc "The path with symbolic links resolved (the path as given when it cannot be resolved)."
+  def real(path) do
+    path = Path.expand(path)
+
+    case System.cmd("realpath", ["-m", path], stderr_to_stdout: true) do
+      {out, 0} -> String.trim(out)
+      _ -> path
+    end
+  end
+
   @doc "The git repository that holds a source and the path inside it, or nil."
   def git_location(source) do
     with {_, dir, path} <- resolve(source),
-         full = Path.expand(Path.join(dir, path)),
+         full = real(Path.join(dir, path)),
          base = if(File.dir?(full), do: full, else: Path.dirname(full)),
          {top, 0} <- System.cmd("git", ["-C", base, "rev-parse", "--show-toplevel"], env: Wiki.Content.Git.env(), stderr_to_stdout: true) do
       top = String.trim(top)

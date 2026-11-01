@@ -1,7 +1,7 @@
 ---
 id: wiki-stale
 lang: de
-source_hash: 61901bbb2fef
+source_hash: 36716a106fa3
 title: wiki stale (Seiten hinter ihren Quellen)
 ---
 
@@ -17,6 +17,8 @@ Bei einer Quelle in einem git-Repository (git ist das Werkzeug, das jede Änderu
 Die erste Fassung verglich die Zeit des letzten Commits der Quelle mit der des letzten Commits der Seitendatei. Am 2026-10-24 überarbeitete ein Commit alle 154 Seiten, daher listete diese Fassung nichts auf, obwohl bei 38 der 140 Seiten mit Quellen eine Quelländerung niemand geprüft hatte, und sie konnte die 34 Seiten, deren Quellen außerhalb von git liegen, nie auflisten. Die Entscheidungsakte `docs/adr/0006-review-time-in-the-page.md` erklärt die Änderung.
 
 Der Befehl schaut auf die Zeit, nicht darauf, was die Seite sagt: Eine Änderung an einer Quelle, die die Seite nicht beschreibt, lässt die Seite trotzdem aufgelistet, bis jemand sie prüft. Eine Prüfung zu einer bestimmten Minute deckt diese ganze Minute ab, daher wird eine Änderung in dieser Minute nicht gesehen; ebenso wenig noch nicht committete Änderungen in einem Repository und eine neue Datei, die keine Seite nennt (auf neue Dateien achtet der Stop-Hook).
+
+Seit dem 2026-11-01 (ADR-0009, ein Architekturentscheidungs-Eintrag: eine kurze Notiz, die die Gründe einer Entscheidung festhält) gelten drei genaue Regeln, ohne Kulanzfrist, für Quellen im eigenen Repository des Wikis. Eine Seite, die ihre eigene Datei als Quelle nennt, wird deswegen nicht aufgelistet. Eine Quelle, die selbst eine Wiki-Seite ist, gilt nur als geändert, wenn mehr als ihre Zeilen `reviewed` oder `since` geändert wurde. Und weil die Prüfzeit vor dem Commit getippt wird, der sie trägt, ist eine Quelle abgedeckt, deren Text von genau dem Commit geändert wurde, der die Zeile `reviewed` der Seite zuletzt gesetzt hat; eine Quelle, die ein anderer Commit geändert hat, auch eine Minute nach der Prüfung, hält die Seite in der Liste, bis sie wieder verglichen wird. `wiki publish` prüft außerdem jede Zeile `reviewed`, die es hochladen will: ist eine schon vorhandene Quelle neuer als die Prüfung, verweigert es, nennt Seite und Quelle und lädt nichts hoch (Anforderungen ST-4, ST-5 und ST-6).
 
 ## Where it sits in the pipeline
 Eine manuelle Prüfung, die Claude zu Beginn und am Ende der Arbeit von [[skill-wiki-page-writer]] ausführt, und immer dann, wenn Giovanni wissen will, wie weit das Wiki hinter dem Code liegt.

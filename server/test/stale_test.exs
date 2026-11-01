@@ -145,4 +145,102 @@ defmodule Wiki.Content.StaleTest do
     assert out =~ "a: r1:lib/x.ex changed 2026-01-05 10:00 UTC, after the review of 2026-01-02 00:00 UTC"
     refute out =~ "no stale pages"
   end
+
+  # Pages that name other wiki pages as sources live in the wiki repository itself (dev/wiki -> wiki).
+  describe "sources inside the wiki repository (the Status Quo case of 2026-11-01)" do
+    setup %{dir: dir, content: c} do
+      File.ln_s!(Path.join(dir, "wiki"), Path.join(dir, "dev/wiki"))
+      wiki = Path.join(dir, "wiki")
+      init_repo(wiki)
+      {:ok, wiki: wiki, c: c}
+    end
+
+    defp pair(c, reviewed, a_extra \\ [], b_extra \\ [], sections \\ %{}) do
+      write_page(c, "a", base_header("a", Keyword.merge([feeds: ["b"], sources: ["wiki:content/b.md"], reviewed: reviewed], a_extra)))
+      write_page(c, "b", base_header("b", Keyword.merge([fed_by: ["a"], sources: ["wiki:content/a.md"], reviewed: reviewed], b_extra)), sections)
+    end
+
+    # REQ ST-4
+    test "a page that names its own file as a source is never stale because of it", %{c: c, wiki: wiki} do
+      write_page(c, "a", base_header("a", feeds: ["b"], sources: ["wiki:content/a.md"], reviewed: "2026-01-02T00:00Z"))
+      write_page(c, "b", base_header("b", fed_by: ["a"]))
+      commit_all(wiki, "pages", "2026-02-01T10:00:00Z")
+      assert stale_ids(c) == []
+    end
+
+    # REQ ST-5
+    test "a commit that only changes the since or reviewed line of a source page does not make a page stale", %{c: c, wiki: wiki} do
+      pair(c, "2026-01-02T00:00Z")
+      commit_all(wiki, "pages", "2026-01-01T10:00:00Z")
+      assert stale_ids(c) == []
+
+      pair(c, "2026-01-02T00:00Z", [], [since: "2026-01-01", reviewed: "2026-01-03T00:00Z"])
+      commit_all(wiki, "metadata only", "2026-02-01T10:00:00Z")
+      assert stale_ids(c) == [], "metadata-only commit on b must not stale a"
+
+      pair(c, "2026-01-02T00:00Z", [], [since: "2026-01-01", reviewed: "2026-01-03T00:00Z"], %{"what" => "Reworded text."})
+      commit_all(wiki, "real change", "2026-02-02T10:00:00Z")
+      assert stale_ids(c) == ["a"], "a change to b's text still stales a"
+    end
+
+    # REQ ST-5
+    test "two pages that name each other and were reviewed in the same commit stay fresh", %{c: c, wiki: wiki} do
+      pair(c, "2026-03-01T10:00Z")
+      commit_all(wiki, "both written and reviewed", "2026-03-01T10:03:00Z")
+      assert stale_ids(c) == [], "the review minute precedes the commit that carries it"
+
+      pair(c, "2026-03-01T10:00Z", [], [], %{"what" => "Changed later."})
+      commit_all(wiki, "b changed alone", "2026-03-02T10:00:00Z")
+      assert stale_ids(c) == ["a"]
+    end
+
+    # REQ ST-5
+    test "a different source commit after the review minute stays stale even if the review commit follows within minutes", %{c: c, wiki: wiki} do
+      pair(c, "2026-03-01T08:30Z")
+      commit_all(wiki, "both pages", "2026-03-01T09:00:00Z")
+
+      pair(c, "2026-03-01T08:30Z", [], [], %{"what" => "Changed by another session."})
+      commit_all(wiki, "another session edits b", "2026-03-01T10:02:00Z")
+
+      # a's review line is moved to 10:00 and committed 8 minutes later, without reading b's new text
+      pair(c, "2026-03-01T10:00Z", [], [], %{"what" => "Changed by another session."})
+      commit_all(wiki, "a re-stamped", "2026-03-01T10:10:00Z")
+      assert stale_ids(c) == ["a"], "b changed 60 seconds after the review minute and nobody reviewed that text"
+    end
+
+    # REQ ST-6
+    test "claimed/2 lists pages whose reviewed line was changed in the commit and are still stale", %{c: c, wiki: wiki} do
+      repo = Path.join(Path.dirname(wiki), "dev/r1")
+      write_page(c, "a", base_header("a", feeds: ["b"], sources: ["r1:lib/x.ex"], reviewed: "2026-01-02T00:00Z"))
+      write_page(c, "b", base_header("b", fed_by: ["a"], sources: ["r1:lib/x.ex"], reviewed: "2026-01-02T00:00Z"))
+      commit_all(wiki, "pages", "2026-01-03T10:00:00Z")
+      change_source(repo)
+      assert Stale.claimed(Store.load(c), "HEAD") == []
+
+      write_page(c, "a", base_header("a", feeds: ["b"], sources: ["r1:lib/x.ex"], reviewed: "2026-01-04T00:00Z"))
+      write_page(c, "b", base_header("b", fed_by: ["a"], sources: ["r1:lib/x.ex"], reviewed: "2026-01-06T00:00Z"))
+      commit_all(wiki, "claimed reviews", "2026-01-07T10:00:00Z")
+      assert [%{id: "a"}] = Stale.claimed(Store.load(c), "HEAD")
+    end
+
+    # REQ ST-6
+    test "publish's claim check refuses a review that a source already outdates, and passes a true one", %{c: c, wiki: wiki, dir: dir} do
+      System.put_env("WIKI_ROOT", wiki)
+      repo = Path.join(dir, "dev/r1")
+      change_source(repo)
+      write_page(c, "a", base_header("a", feeds: ["b"], sources: ["r1:lib/x.ex"], reviewed: "2026-01-04T00:00Z"))
+      write_page(c, "b", base_header("b", fed_by: ["a"]))
+      commit_all(wiki, "false review", "2026-01-07T10:00:00Z")
+
+      out = ExUnit.CaptureIO.capture_io(fn -> assert Wiki.CLI.verify_claims(wiki) == 1 end)
+      assert out =~ "a: r1:lib/x.ex changed 2026-01-05 10:00 UTC"
+      assert out =~ "nothing was pushed"
+
+      write_page(c, "a", base_header("a", feeds: ["b"], sources: ["r1:lib/x.ex"], reviewed: "2026-01-07T09:00Z"))
+      commit_all(wiki, "true review", "2026-01-07T11:00:00Z")
+      assert ExUnit.CaptureIO.capture_io(fn -> assert Wiki.CLI.verify_claims(wiki) == 0 end) == ""
+    after
+      System.delete_env("WIKI_ROOT")
+    end
+  end
 end

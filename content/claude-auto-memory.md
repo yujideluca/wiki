@@ -9,14 +9,14 @@ location: home:.claude/projects/-home-yuji/memory
 fed_by: []
 feeds: [claude-code]
 sources: [home:.claude/projects/-home-yuji/memory/MEMORY.md]
-reviewed: 2026-10-25T02:07Z
+reviewed: 2026-11-01T22:25Z
 ---
 
 ## What it is
 Claude Code has a small memory of its own, separate from the shared one. It is a folder of short text files, one fact per file, plus an index file called `MEMORY.md`. It is used for chats started in the home folder, and the index is loaded into the start of every such chat. This is the "auto-memory" documented in the [Claude Code memory guide](https://docs.claude.com/en/docs/claude-code/memory).
 
 ## What it does
-It holds notes that only matter on this laptop: how to check on the remote assistant, the German Quiz project, where the user-space tools are installed, the rule that code must be debugged before being reported done, the fact that a certain notice about a German-conversation skill is not meant for Claude Code, and the fact that the desktop's global-shortcut service lives inside the window manager (kwin), so a wrong message sent to it over DBus (the system the desktop programs use to talk to each other) can crash the program that draws the desktop.
+It holds notes that only matter on this laptop: how to check on the remote assistant, the German Quiz project, where the user-space tools are installed, the rule that code must be debugged before being reported done, the fact that a certain notice about a German-conversation skill is not meant for Claude Code, and the fact that the desktop's global-shortcut service lives inside the window manager (kwin), so a wrong message sent to it over DBus (the system the desktop programs use to talk to each other) can crash the program that draws the desktop. It also keeps a note that records why one documentation reminder (from the wiki's Stop hook, [[wiki-hook-stop]]) was not acted on, because the flagged pages belonged to another session's unfinished work, and a note on the planned radiology report matcher site (decisions so far, research still pending).
 
 ## How it does it
 Claude Code writes these files itself, in a fixed format (a small header, the fact, why it matters, how to apply it). Rules that must be shared between all the Claude instances do not belong here; they go into the shared memory [[workflow-memory]] instead.
