@@ -1,0 +1,49 @@
+---
+id: radiology-analysis
+lang: de
+source_hash: 89582657251b
+title: Analysepaket für Radiologie (analysis/)
+---
+
+## What it is
+Der Python-Code, der die vom [[radiopaedia-crawler]] gesammelten Radiopaedia-Artikel und -Fälle untersucht und versucht, die Wörter eines radiologischen Befunds wahrscheinlichen Diagnosen zuzuordnen. Er ist der statistische Teil des [[radiology-report-matcher]]: Er zählt Wörter und rechnet mit den Zahlen, ein Modell der künstlichen Intelligenz ist er nicht. Geplant sind vier konkurrierende Fassungen der Zuordnung, die alle gleich bewertet werden; dieses Paket enthält die gemeinsamen Werkzeuge sowie die Fassungen 1 und 4. Der Ordner ist `analysis/` in `~/dev/radiology-crawler`, dazu ein Helfer außerhalb davon, `tools/analysis_status.py`.
+
+## What it does
+Es liefert die folgenden Bausteine, jeder in einer eigenen Datei. Jeder Baustein hat eine Anforderung (Zeilen AN-1 bis AN-17 in `docs/REQUIREMENTS.md`) und einen damit gekennzeichneten Test.
+
+- Eine eingefrorene Kopie der Artikel, damit alle Fassungen dieselben Daten lesen, während der Crawler weiterschreibt.
+- Eine Hardwareschicht, die alle Prozessor-Threads und, falls vorhanden, eine Grafikkarte (GPU, Graphics Processing Unit) nutzt. Derselbe Code liefert auf dem Prozessor allein dieselbe Rangfolge.
+- Ein Bewertungsgerüst: Von den Fällen jeder Diagnose dient die Hälfte zum Abstimmen eines Modells und die Hälfte zum Testen (fester Zufallswert, damit alle Fassungen dieselben Hälften sehen); eine Rangfolge wird danach bewertet, wie oft die wahre Diagnose unter den ersten 1, 5 und 10 steht.
+- Fassung 4, Giovannis Idee, in Schichten: ein Regel-Tagger, der jedem Artikel dieselben Merkmale zuweist (Patientengruppe, Geschlecht, Bildgebungsverfahren, Körperregion, Textur, Helligkeit, Ränder, Kontrastmittelaufnahme, Seite oder Anzahl, Symptome); Filter, die eine Diagnose nur entfernen, wenn der Artikel eine dem Befund widersprechende Tatsache nennt, bzw. bei den weicheren Schichten nur ihre Punktzahl senken; eine Auswahl der nächsten Frage an die Nutzerin oder den Nutzer im „Akinator“-Stil (wie das Ratespiel: gefragt wird, was die meisten Kandidaten entfernt); und eine letzte Schicht, die die Wortwahl des Befunds bewertet.
+- Fassung 1, Claudes eigenes Modell ohne Vorannahmen: ein geglättetes Wortwahrscheinlichkeitsmodell jedes Artikels, mit der Zahl der auf eine Diagnose verweisenden Artikel als Startgewicht.
+- Tagging durch [[codex]] und durch Haiku (ein kleines Claude-Modell) mit derselben geschlossenen Liste erlaubter Werte sowie ein Vergleich der Tagger.
+- Ein wissenschaftlicher Test der Liste der Füllwörter (Wörter, die Radiologen bei Unsicherheit benutzen und die wenig Information tragen), vor jedem Ergebnis festgelegt in `docs/filler-list-protocol.md`.
+- `tools/analysis_status.py`, die einzige Stelle, die festhält, wo die Analyse steht.
+
+## How it does it
+- **Unbekannt ist nicht „nein“.** Eine Merkmalsschicht, die der Artikel nie erwähnt, wird als unbekannt gespeichert, was etwas anderes ist als ein ausdrückliches „nein“. Nur eine genannte, widersprechende Tatsache entfernt eine Diagnose; fehlende Information tut das nie. Stattdessen fragt die Fragenauswahl nach.
+- **Wortschicht.** Jeder Diagnoseartikel wird mit BM25 (einer Standardformel, die seltenen, informativen Wörtern mehr Gewicht gibt) zu einem gewichteten Beutel aus Wörtern und Wortpaaren; Abschnitte zur Bildgebung zählen voll, der Rest des Artikels ein wenig. Im Befund bekommen Wörter innerhalb einer Verneinung ein negatives Vorzeichen, Wörter nach einer Abschwächung („möglicherweise“) werden gedämpft und Füllwörter entfallen. Die Bewertung ist ein einziges Produkt dünnbesetzter Matrizen (Zahlentabellen, die in einem Zug multipliziert werden), ausgeführt auf dem Prozessor oder der GPU; das Ergebnis nennt die Wörter, die jede Punktzahl bewegt haben.
+- **Tagging durch Modelle.** `analysis/codex_tags.py` schickt einen Artikel pro Aufruf in einer neuen Wegwerf-Sitzung von [[codex]], weit unter 250.000 Tokens (Giovannis Grenze), wobei der Artikel als nicht vertrauenswürdiger Text gekennzeichnet ist. Eine Antwort außerhalb der erlaubten Werte wird abgelehnt, nicht stillschweigend korrigiert. Die Ergebnisse werden zeilenweise je Artikel angehängt, ein Abbruch verliert also nichts, und ein Neustart taggt nur, was fehlt. `analysis/haiku_batches.py` schneidet Stapel zu je 100 Artikeln vom anderen Ende derselben Warteschlange für Haiku-Subagenten und übernimmt nur gültige Antworten.
+- **Statusdatei.** Der Stand der Arbeit ist die Datei `docs/analysis-status.json`; `tools/analysis_status.py set STEP STATUS --note "..."` ändert sie, schreibt die lesbare Kopie `docs/ANALYSIS-STATUS.md` neu und baut die Planwebsite neu, sodass die drei nie voneinander abweichen. Wer die Arbeit fortsetzt, liest sie zuerst. `AGENTS.md` im Repository gibt [[codex]] dieselben Arbeitsnotizen, die `CLAUDE.md` [[claude-code]] gibt.
+- **Daten bleiben lokal.** Kopie, Tags und Ergebnisse liegen in `data/analysis/`, das git wie den Rest von `data/` ignoriert.
+
+## Functions
+- `corpus.make_snapshot`, `corpus.load_snapshot`: schreiben die eingefrorene Artikeldatei mit Anzahl und Prüfsumme; lesen sie zurück und verweigern eine Datei, deren Prüfsumme sich geändert hat.
+- `hardware.detect`, `hardware.array_module`, `hardware.parallel_map`: finden Threads und GPU; liefern CuPy (GPU-Arrays) oder NumPy (Prozessor-Arrays); führen eine Funktion über Elemente auf allen Threads aus.
+- `harness.split_by_diagnosis`, `harness.topk_hit_rates`, `harness.diagnosis_label`, `harness.case_label`: teilen Fälle nach Diagnose; bewerten eine Rangfolge bei den ersten 1, 5 und 10; finden den Artikel eines Falls über genauen Titel oder Synonym (ein Name, den zwei Artikel teilen, ergibt kein Etikett statt einer Vermutung).
+- `tagger.tag_article`, `tagger.tag_all`, `tagger.article_type`, `tagger.coverage`: taggen Artikel mit Wortlisten, die als Daten in `analysis/wordlists/` liegen; nennen den Typ des Artikels; melden, wie oft jede Schicht unbekannt ist.
+- `filters.build`, `filters.FilterModel.apply`, `filters.best_question`: bauen das Filtermodell; wenden die Schichten auf die genannten Tatsachen eines Befunds an; wählen die nächste Frage.
+- `wording.build_index`, `wording.read_report`, `wording.score`: indizieren die Diagnoseartikel; lesen einen Befund mit Verneinung, Abschwächung und Füllwörtern; ordnen die Diagnosen.
+- `pipeline.Engine`: Fassung 4 durchgehend, vom Befundtext zu einer Rangfolge und der nächsten Frage.
+- `v1_model.build`, `v1_model.rank`: Fassung 1.
+- `codex_tags.run_all`, `codex_tags.parse_answer`, `codex_tags.compare`: taggen jeden fehlenden Artikel mit Codex; prüfen eine Antwort; vergleichen zwei Tagger.
+- `haiku_batches.make`, `haiku_batches.merge`: schneiden Stapel für Haiku; übernehmen gültige Antworten.
+- `tag_agreement.agreement`: wie oft die Tagger miteinander übereinstimmen.
+- `filler_test.run`, `filler_test.classify`, `filler_test.holm`: führen den Füllwort-Test aus; stufen ein Wort als Füllwort, informativ oder unentschieden ein; korrigieren für viele gleichzeitige Tests (Holm-Verfahren).
+- `sanity.main`: eine Maschinerie-Prüfung an den bisher heruntergeladenen Fällen; sie ist nicht die eigentliche Auswertung.
+
+## Where it sits in the pipeline
+Nach dem [[radiopaedia-crawler]], der die Artikel und Fälle in der Datenbank liefert. Sie läuft neben dem [[report-translator]] und liest dessen Ausgabe nicht. Sie ist die Grundlage der geplanten numerischen Engine des [[radiology-report-matcher]].
+
+## Who receives its output
+Giovanni, über die Schritt-für-Schritt-Anleitung auf der Startseite der Planwebsite und über `docs/ANALYSIS-STATUS.md`; später die geplante Matching-Engine.

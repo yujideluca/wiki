@@ -7,9 +7,9 @@ project: radiology-report-matcher
 status: active
 location: radiology-crawler:crawl.py
 fed_by: []
-feeds: [report-translator]
+feeds: [report-translator, radiology-analysis]
 sources: [radiology-crawler:crawl.py, radiology-crawler:progress.py, radiology-crawler:run_all.sh]
-reviewed: 2026-10-30T04:25Z
+reviewed: 2026-11-01T18:11Z
 ---
 
 ## What it is
@@ -67,4 +67,4 @@ First step of the data chain of [[radiology-report-matcher]]. It runs in the bac
 The user service `radiology-crawler.service` (systemd, the Linux program that starts background services) runs `python3 -I crawl.py run` whenever the laptop starts. It restarts 10 minutes after a failure and stays stopped after success (everything fetched and extracted) or after code 75 (blocked). The page `plan site` bars say "the crawler is not running" if the numbers are older than a minute. Check it with `systemctl --user status radiology-crawler`.
 
 ## Who receives its output
-[[report-translator]] reads the `articles` table. The planned index builder will read both tables.
+[[report-translator]] reads the `articles` table. [[radiology-analysis]] reads a frozen copy of the articles and, for scoring, the cases. The planned index builder will read both tables.

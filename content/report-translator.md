@@ -9,7 +9,7 @@ location: radiology-crawler:translate.py
 fed_by: [radiopaedia-crawler]
 feeds: []
 sources: [radiology-crawler:translate.py]
-reviewed: 2026-11-01T16:50Z
+reviewed: 2026-11-01T18:11Z
 ---
 
 ## What it is

@@ -1,7 +1,7 @@
 ---
 id: radiopaedia-crawler
 lang: pt-BR
-source_hash: 2b4d39cf3707
+source_hash: b587dfc83926
 title: Rastreador da Radiopaedia (crawl.py)
 ---
 
@@ -60,4 +60,4 @@ Primeiro passo da cadeia de dados do [[radiology-report-matcher]]. Roda em segun
 O serviço de usuário `radiology-crawler.service` (systemd, o programa do Linux que inicia serviços em segundo plano) executa `python3 -I crawl.py run` sempre que o notebook liga. Depois de uma falha ele reinicia em 10 minutos; depois de sucesso (tudo baixado e extraído) ou do código 75 (bloqueado) fica parado. As barras do site do plano dizem "the crawler is not running" se os números tiverem mais de um minuto. Verifique com `systemctl --user status radiology-crawler`.
 
 ## Who receives its output
-O [[report-translator]] lê a tabela `articles`. O construtor de índice planejado lerá as duas tabelas.
+O [[report-translator]] lê a tabela `articles`. O [[radiology-analysis]] lê uma cópia congelada dos artigos e, para a pontuação, os casos. O construtor de índice planejado lerá as duas tabelas.

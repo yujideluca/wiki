@@ -1,7 +1,7 @@
 ---
 id: radiopaedia-crawler
 lang: de
-source_hash: 2b4d39cf3707
+source_hash: b587dfc83926
 title: Radiopaedia-Crawler (crawl.py)
 ---
 
@@ -60,4 +60,4 @@ Erster Schritt der Datenkette von [[radiology-report-matcher]]. Es läuft im Hin
 Der Benutzerdienst `radiology-crawler.service` (systemd, das Linux-Programm, das Hintergrunddienste startet) führt `python3 -I crawl.py run` bei jedem Start des Laptops aus. Nach einem Fehler startet er nach 10 Minuten neu; nach Erfolg (alles geladen und extrahiert) oder nach Code 75 (gesperrt) bleibt er gestoppt. Die Balken der Planungsseite melden „the crawler is not running“, wenn die Zahlen älter als eine Minute sind. Prüfen mit `systemctl --user status radiology-crawler`.
 
 ## Who receives its output
-[[report-translator]] liest die Tabelle `articles`. Die geplante Index-Erstellung liest beide Tabellen.
+[[report-translator]] liest die Tabelle `articles`. [[radiology-analysis]] liest eine eingefrorene Kopie der Artikel und zur Bewertung die Fälle. Die geplante Index-Erstellung liest beide Tabellen.
