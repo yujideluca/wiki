@@ -9,7 +9,7 @@ location: radiology-crawler:analysis
 fed_by: [radiopaedia-crawler]
 feeds: []
 sources: [radiology-crawler:analysis/__init__.py, radiology-crawler:analysis/corpus.py, radiology-crawler:analysis/hardware.py, radiology-crawler:analysis/harness.py, radiology-crawler:analysis/tagger.py, radiology-crawler:analysis/filters.py, radiology-crawler:analysis/wording.py, radiology-crawler:analysis/pipeline.py, radiology-crawler:analysis/v1_model.py, radiology-crawler:analysis/codex_tags.py, radiology-crawler:analysis/haiku_batches.py, radiology-crawler:analysis/tag_agreement.py, radiology-crawler:analysis/filler_test.py, radiology-crawler:analysis/sanity.py, radiology-crawler:tools/analysis_status.py, radiology-crawler:docs/analysis-status.json, radiology-crawler:AGENTS.md]
-reviewed: 2026-11-01T20:25Z
+reviewed: 2026-11-02T14:04Z
 ---
 
 ## What it is
@@ -52,7 +52,10 @@ It provides the pieces below, each in its own file. Each piece has a requirement
 - `sanity.main`: a machinery check on the cases downloaded so far; it is not the real evaluation.
 
 ## Where it sits in the pipeline
-After [[radiopaedia-crawler]], which supplies the articles and cases in the database. It runs next to [[report-translator]] and does not read its output. It is the base for the planned numerical engine of [[radiology-report-matcher]].
+After [[radiopaedia-crawler]], which supplies the articles and cases in the database. It reads the German and Portuguese article translations produced by [[report-translator]] when building those language snapshots. It is the base for the planned numerical engine of [[radiology-report-matcher]].
 
 ## Who receives its output
 Giovanni, through the step-by-step guide on the home page of the plan site and through `docs/ANALYSIS-STATUS.md`; later the planned matching engine.
+
+## Notes
+On 2026-11-02 the case translation pipeline was repaired: old progress writers omitted case counters, and interactive Codex documentation hooks replaced translation output with workflow messages. Calls now ignore interactive configuration (requirement TL-8); four workers keep translating downloaded cases into German and Portuguese. Saved translations were preserved and 93 pending missing-title failures were requeued with their prior counters saved locally. In a 274-second observation, 25 cases downloaded while 60 German and 62 Portuguese translations completed. This is a short observation, not a guarantee of future throughput. Analysis step L1d remains in progress: translated case sets, labels, split and per-language scores are still outstanding. See [[report-translator]] for the recovery details.

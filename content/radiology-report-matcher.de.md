@@ -1,7 +1,7 @@
 ---
 id: radiology-report-matcher
 lang: de
-source_hash: 9fff9bd66888
+source_hash: fdbf1a6b7f52
 title: Radiology Report Matcher (geplante Website)
 ---
 
@@ -84,10 +84,10 @@ Wie dieses Projekt dem Goldenen Weg von [[project-template]] folgt.
 Vier Architecture Decision Records (ADRs, kurze Notizen, die die Gründe einer Entscheidung festhalten) in `docs/adr/`: Entscheidungen festhalten (0001), der Stack und die Regel für die Mathematik (0002), das Wartungsprogramm misst und der Review-Skill urteilt (0003), dazu die leere Vorlage (0000).
 
 ### Requirements
-Fünfunddreißig Anforderungen in `docs/REQUIREMENTS.md` (2026-11-01): sieben für den Crawler (Präfix CW), sieben für den Übersetzer (TL), drei für die Planwebsite (WS), siebzehn für die statistische Analyse (AN) und eine für Abhängigkeiten (DP). Das Rückverfolgbarkeitswerkzeug liest nur zweibuchstabige Präfixe; ein längeres wird stillschweigend ignoriert. Jede hat einen Test mit dem Tag `REQ <ID>`; der Rückverfolgbarkeitsschritt schlägt fehl, wenn eine keinen hat.
+Neununddreißig Anforderungen in `docs/REQUIREMENTS.md` (2026-11-02): sieben für den Crawler (Präfix CW), acht für den Übersetzer (TL), drei für die Planwebsite (WS), siebzehn für die statistische Analyse (AN) eine für Abhängigkeiten (DP) und drei für Modelle je Sprache (LG). Das Rückverfolgbarkeitswerkzeug liest nur zweibuchstabige Präfixe; ein längeres wird stillschweigend ignoriert. Jede hat einen Test mit dem Tag `REQ <ID>`; der Rückverfolgbarkeitsschritt schlägt fehl, wenn eine keinen hat.
 
 ### Quality gate
-`tools/quality_gate.sh` hat vier Schritte: (0) `tools/check_dependencies.py` schlägt fehl, wenn der Code ein Fremdpaket importiert, das weder in `requirements.txt` noch in `requirements-optional.txt` steht, oder wenn ein Workflow Pakete von woanders installiert; (1) den Code kompilieren und die 64 Tests ausführen; (2) Rückverfolgbarkeit der Anforderungen; (3) die Fitnessfunktionen von `pipeline-check` (dem Wartungsprogramm, siehe [[pipeline-check]]): Architekturregel, Lint der Shell-Skripte, eine Grenze von 800 Zeilen pro Python-Datei und die Dauer des Tors.
+`tools/quality_gate.sh` hat vier Schritte: (0) `tools/check_dependencies.py` schlägt fehl, wenn der Code ein Fremdpaket importiert, das weder in `requirements.txt` noch in `requirements-optional.txt` steht, oder wenn ein Workflow Pakete von woanders installiert; (1) den Code kompilieren und die 71 Tests ausführen; (2) Rückverfolgbarkeit der Anforderungen; (3) die Fitnessfunktionen von `pipeline-check` (dem Wartungsprogramm, siehe [[pipeline-check]]): Architekturregel, Lint der Shell-Skripte, eine Grenze von 800 Zeilen pro Python-Datei und die Dauer des Tors.
 
 ### Continuous integration
 Continuous Integration (CI) bedeutet automatische Prüfungen bei jedem Push. Der Workflow `quality-gate.yml` führt das Tor auf GitHub aus; eine lokale Prüfung vor dem Push führt es aus, bevor `main` hochgeladen wird. Am 2026-10-27 scheiterte der erste Lauf, weil eine frische Kopie des Repositorys keinen Ordner `data/` hat und die Log-Funktion des Crawlers einen voraussetzte; die Korrektur bestand. Am 2026-11-01 scheiterte Lauf 41335076862, weil der Analysecode NumPy importierte, `requirements.txt` es aber nicht aufführte: Der Laptop bestand, weil das Tor seinen eigenen Bibliotheksordner (`~/.local/share/claude-workflow/pylibs`) zum Suchpfad hinzufügte. Das Tor fügt diesen Ordner jetzt nur noch hinzu, wenn die Variable `CI` nicht `true` ist, und Schritt 0 verhindert die Lücke. Ein Lauf in einer sauberen Python-3.12-Umgebung, in der nur `requirements.txt` installiert war, bestand.
@@ -112,3 +112,6 @@ Es steht am Anfang der Kette: [[radiopaedia-crawler]] → [[report-translator]] 
 
 ## Who receives its output
 Giovanni, jetzt über die Planwebsite und später über die geplante Website.
+
+## Notes
+Am 02.11.2026 wurde die Fallübersetzung repariert: Alte Fortschrittsprozesse ließen Fallzähler weg, und interaktive Codex-Dokumentations-Hooks ersetzten Übersetzungen durch Arbeitsablaufmeldungen. Aufrufe ignorieren jetzt die interaktive Konfiguration (Anforderung TL-8); vier Arbeiter übersetzen heruntergeladene Fälle weiter ins Deutsche und Portugiesische. Gespeicherte Übersetzungen blieben erhalten; 93 ausstehende Fehler ohne Titel wurden erneut eingereiht und ihre bisherigen Zähler lokal gesichert. In 274 Sekunden wurden 25 Fälle heruntergeladen sowie 60 deutsche und 62 portugiesische Übersetzungen fertig. Diese kurze Beobachtung garantiert keine künftige Geschwindigkeit. Analyseschritt L1d läuft weiter: Übersetzte Fallmengen, Diagnosezuordnungen, Aufteilung und Bewertungen je Sprache stehen noch aus. Einzelheiten der Reparatur stehen unter [[report-translator]].

@@ -9,7 +9,7 @@ location: radiology-crawler:
 fed_by: []
 feeds: []
 sources: [radiology-crawler:DESIGN.md, radiology-crawler:CLAUDE.md, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/adr/0002-technology-and-languages.md, radiology-crawler:tools/quality_gate.sh, radiology-crawler:tools/check_dependencies.py, radiology-crawler:requirements.txt, radiology-crawler:requirements-optional.txt, radiology-crawler:.github/workflows/quality-gate.yml, radiology-crawler:site_src/build.py, radiology-crawler:run_all.sh, radiology-crawler:docs/modelling-directives.md, radiology-crawler:docs/analysis-status.json, radiology-crawler:AGENTS.md, radiology-crawler:analysis/__init__.py]
-reviewed: 2026-11-01T20:25Z
+reviewed: 2026-11-02T14:04Z
 ---
 
 ## What it is
@@ -91,10 +91,10 @@ How this project follows the golden path of [[project-template]].
 Four architecture decision records (ADRs, short notes that keep the reasons for a decision) in `docs/adr/`: record decisions (0001), the stack and the rule for the math (0002), the maintenance program measures and the review skill judges (0003), plus the blank template (0000).
 
 ### Requirements
-Thirty-five requirements in `docs/REQUIREMENTS.md` (2026-11-01): seven for the crawler (prefix CW), seven for the translator (TL), three for the plan site (WS), seventeen for the statistical analysis (AN) and one for dependencies (DP). The traceability tool reads only two-letter prefixes, so a longer one is silently ignored. Each has a test tagged `REQ <ID>`; the traceability step fails when one has none.
+Thirty-nine requirements in `docs/REQUIREMENTS.md` (2026-11-02): seven for the crawler (prefix CW), eight for the translator (TL), three for the plan site (WS), seventeen for the statistical analysis (AN) one for dependencies (DP), and three for per-language models (LG). The traceability tool reads only two-letter prefixes, so a longer one is silently ignored. Each has a test tagged `REQ <ID>`; the traceability step fails when one has none.
 
 ### Quality gate
-`tools/quality_gate.sh` has four steps: (0) `tools/check_dependencies.py` fails when the code imports a third-party package that is in neither `requirements.txt` nor `requirements-optional.txt`, or when a workflow installs packages from anywhere else; (1) compile the code and run the 64 tests; (2) requirement traceability; (3) the fitness functions of `pipeline-check` (the maintenance program, see [[pipeline-check]]): architecture rule, shell-script lint, a limit of 800 lines per Python file, and gate time.
+`tools/quality_gate.sh` has four steps: (0) `tools/check_dependencies.py` fails when the code imports a third-party package that is in neither `requirements.txt` nor `requirements-optional.txt`, or when a workflow installs packages from anywhere else; (1) compile the code and run the 71 tests; (2) requirement traceability; (3) the fitness functions of `pipeline-check` (the maintenance program, see [[pipeline-check]]): architecture rule, shell-script lint, a limit of 800 lines per Python file, and gate time.
 
 ### Continuous integration
 Continuous integration (CI) means automatic checks on every push. The workflow `quality-gate.yml` runs the gate on GitHub; a local pre-push check runs it before `main` is pushed. On 2026-10-27 the first run failed because a fresh copy of the repository has no `data/` folder and the crawler's log function assumed one; the fix passed. On 2026-11-01 run 41335076862 failed because the analysis code imported NumPy while `requirements.txt` did not list it: the laptop passed because the gate added its own library folder (`~/.local/share/claude-workflow/pylibs`) to the search path. The gate now adds that folder only when the `CI` variable is not `true`, and step 0 above prevents the gap. A run on a clean Python 3.12 environment with only `requirements.txt` installed passed.
@@ -119,3 +119,6 @@ It starts the chain: [[radiopaedia-crawler]] → [[report-translator]] → (plan
 
 ## Who receives its output
 Giovanni, through the plan website now and through the planned website later.
+
+## Notes
+On 2026-11-02 the case translation pipeline was repaired: old progress writers omitted case counters, and interactive Codex documentation hooks replaced translation output with workflow messages. Calls now ignore interactive configuration (requirement TL-8); four workers keep translating downloaded cases into German and Portuguese. Saved translations were preserved and 93 pending missing-title failures were requeued with their prior counters saved locally. In a 274-second observation, 25 cases downloaded while 60 German and 62 Portuguese translations completed. This is a short observation, not a guarantee of future throughput. Analysis step L1d remains in progress: translated case sets, labels, split and per-language scores are still outstanding. See [[report-translator]] for the recovery details.

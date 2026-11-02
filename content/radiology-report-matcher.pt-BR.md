@@ -1,7 +1,7 @@
 ---
 id: radiology-report-matcher
 lang: pt-BR
-source_hash: 9fff9bd66888
+source_hash: fdbf1a6b7f52
 title: Radiology Report Matcher (site planejado)
 ---
 
@@ -84,10 +84,10 @@ Como este projeto segue o caminho dourado do [[project-template]].
 Quatro registros de decisão de arquitetura (ADRs, notas curtas que guardam os motivos de uma decisão) em `docs/adr/`: registrar decisões (0001), a stack e a regra para a matemática (0002), o programa de manutenção mede e a skill de revisão julga (0003), além do modelo em branco (0000).
 
 ### Requirements
-Trinta e cinco requisitos em `docs/REQUIREMENTS.md` (2026-11-01): sete para o rastreador (prefixo CW), sete para o tradutor (TL), três para o site de plano (WS), dezessete para a análise estatística (AN) e um para dependências (DP). A ferramenta de rastreabilidade lê só prefixos de duas letras; um prefixo mais longo é ignorado em silêncio. Cada um tem um teste com a marca `REQ <ID>`; a etapa de rastreabilidade falha quando algum não tem.
+Trinta e nove requisitos em `docs/REQUIREMENTS.md` (2026-11-02): sete para o rastreador (prefixo CW), oito para o tradutor (TL), três para o site de plano (WS), dezessete para a análise estatística (AN) um para dependências (DP) e três para modelos por idioma (LG). A ferramenta de rastreabilidade lê só prefixos de duas letras; um prefixo mais longo é ignorado em silêncio. Cada um tem um teste com a marca `REQ <ID>`; a etapa de rastreabilidade falha quando algum não tem.
 
 ### Quality gate
-`tools/quality_gate.sh` tem quatro etapas: (0) `tools/check_dependencies.py` falha quando o código importa um pacote de terceiros que não está nem em `requirements.txt` nem em `requirements-optional.txt`, ou quando um workflow instala pacotes de outro lugar; (1) compilar o código e rodar os 64 testes; (2) rastreabilidade dos requisitos; (3) as funções de aptidão do `pipeline-check` (o programa de manutenção, veja [[pipeline-check]]): regra de arquitetura, lint dos scripts de shell, limite de 800 linhas por arquivo Python e tempo do portão.
+`tools/quality_gate.sh` tem quatro etapas: (0) `tools/check_dependencies.py` falha quando o código importa um pacote de terceiros que não está nem em `requirements.txt` nem em `requirements-optional.txt`, ou quando um workflow instala pacotes de outro lugar; (1) compilar o código e rodar os 71 testes; (2) rastreabilidade dos requisitos; (3) as funções de aptidão do `pipeline-check` (o programa de manutenção, veja [[pipeline-check]]): regra de arquitetura, lint dos scripts de shell, limite de 800 linhas por arquivo Python e tempo do portão.
 
 ### Continuous integration
 Integração contínua (CI) significa verificações automáticas a cada push. O workflow `quality-gate.yml` roda o portão no GitHub; uma verificação local antes do push o roda antes de `main` ser enviada. Em 2026-10-27 a primeira execução falhou porque uma cópia nova do repositório não tem a pasta `data/` e a função de log do rastreador supunha que existia; a correção passou. Em 2026-11-01 a execução 41335076862 falhou porque o código de análise importava o NumPy e o `requirements.txt` não o listava: o laptop passou porque o portão punha a própria pasta de bibliotecas (`~/.local/share/claude-workflow/pylibs`) no caminho de busca. O portão agora põe essa pasta só quando a variável `CI` não é `true`, e a etapa 0 evita a lacuna. Uma execução em um ambiente Python 3.12 limpo, com apenas `requirements.txt` instalado, passou.
@@ -112,3 +112,6 @@ Ele inicia a cadeia: [[radiopaedia-crawler]] → [[report-translator]] → (plan
 
 ## Who receives its output
 Giovanni, agora pelo site de plano e depois pelo site planejado.
+
+## Notes
+Em 02/11/2026 o fluxo de tradução dos casos foi corrigido: processos antigos de progresso omitiam os contadores de casos, e hooks interativos de documentação do Codex substituíam traduções por mensagens do fluxo de trabalho. As chamadas agora ignoram a configuração interativa (requisito TL-8); quatro trabalhadores continuam traduzindo os casos baixados para alemão e português. As traduções salvas foram preservadas; 93 falhas pendentes sem título foram recolocadas na fila e seus contadores anteriores foram guardados localmente. Em 274 segundos, 25 casos foram baixados e 60 traduções em alemão e 62 em português foram concluídas. É uma observação curta, sem garantia da velocidade futura. A etapa de análise L1d continua em andamento: conjuntos de casos traduzidos, rótulos, divisão e pontuações por idioma ainda estão pendentes. Veja os detalhes da recuperação em [[report-translator]].

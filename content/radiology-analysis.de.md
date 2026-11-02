@@ -1,7 +1,7 @@
 ---
 id: radiology-analysis
 lang: de
-source_hash: fff513e234de
+source_hash: e33cc6a7ec9e
 title: Analysepaket für Radiologie (analysis/)
 ---
 
@@ -45,7 +45,10 @@ Es liefert die folgenden Bausteine, jeder in einer eigenen Datei. Jeder Baustein
 - `sanity.main`: eine Maschinerie-Prüfung an den bisher heruntergeladenen Fällen; sie ist nicht die eigentliche Auswertung.
 
 ## Where it sits in the pipeline
-Nach dem [[radiopaedia-crawler]], der die Artikel und Fälle in der Datenbank liefert. Sie läuft neben dem [[report-translator]] und liest dessen Ausgabe nicht. Sie ist die Grundlage der geplanten numerischen Engine des [[radiology-report-matcher]].
+Nach dem [[radiopaedia-crawler]], der die Artikel und Fälle in der Datenbank liefert. Beim Erstellen der Sprachkopien liest sie die deutschen und portugiesischen Artikelübersetzungen von [[report-translator]]. Sie ist die Grundlage der geplanten numerischen Engine des [[radiology-report-matcher]].
 
 ## Who receives its output
 Giovanni, über die Schritt-für-Schritt-Anleitung auf der Startseite der Planwebsite und über `docs/ANALYSIS-STATUS.md`; später die geplante Matching-Engine.
+
+## Notes
+Am 02.11.2026 wurde die Fallübersetzung repariert: Alte Fortschrittsprozesse ließen Fallzähler weg, und interaktive Codex-Dokumentations-Hooks ersetzten Übersetzungen durch Arbeitsablaufmeldungen. Aufrufe ignorieren jetzt die interaktive Konfiguration (Anforderung TL-8); vier Arbeiter übersetzen heruntergeladene Fälle weiter ins Deutsche und Portugiesische. Gespeicherte Übersetzungen blieben erhalten; 93 ausstehende Fehler ohne Titel wurden erneut eingereiht und ihre bisherigen Zähler lokal gesichert. In 274 Sekunden wurden 25 Fälle heruntergeladen sowie 60 deutsche und 62 portugiesische Übersetzungen fertig. Diese kurze Beobachtung garantiert keine künftige Geschwindigkeit. Analyseschritt L1d läuft weiter: Übersetzte Fallmengen, Diagnosezuordnungen, Aufteilung und Bewertungen je Sprache stehen noch aus. Einzelheiten der Reparatur stehen unter [[report-translator]].

@@ -1,7 +1,7 @@
 ---
 id: radiology-analysis
 lang: pt-BR
-source_hash: fff513e234de
+source_hash: e33cc6a7ec9e
 title: Pacote de análise de radiologia (analysis/)
 ---
 
@@ -45,7 +45,10 @@ Fornece as peças abaixo, cada uma em seu arquivo. Cada peça tem um requisito (
 - `sanity.main`: uma verificação da maquinaria nos casos baixados até agora; não é a avaliação de verdade.
 
 ## Where it sits in the pipeline
-Depois do [[radiopaedia-crawler]], que fornece os artigos e casos no banco de dados. Roda ao lado do [[report-translator]] e não lê a saída dele. É a base do motor numérico planejado do [[radiology-report-matcher]].
+Depois do [[radiopaedia-crawler]], que fornece os artigos e casos no banco de dados. Lê as traduções de artigos em alemão e português produzidas pelo [[report-translator]] ao criar as cópias fixas desses idiomas. É a base do motor numérico planejado do [[radiology-report-matcher]].
 
 ## Who receives its output
 Giovanni, pelo guia passo a passo da página inicial do site de plano e por `docs/ANALYSIS-STATUS.md`; mais tarde o motor de correspondência planejado.
+
+## Notes
+Em 02/11/2026 o fluxo de tradução dos casos foi corrigido: processos antigos de progresso omitiam os contadores de casos, e hooks interativos de documentação do Codex substituíam traduções por mensagens do fluxo de trabalho. As chamadas agora ignoram a configuração interativa (requisito TL-8); quatro trabalhadores continuam traduzindo os casos baixados para alemão e português. As traduções salvas foram preservadas; 93 falhas pendentes sem título foram recolocadas na fila e seus contadores anteriores foram guardados localmente. Em 274 segundos, 25 casos foram baixados e 60 traduções em alemão e 62 em português foram concluídas. É uma observação curta, sem garantia da velocidade futura. A etapa de análise L1d continua em andamento: conjuntos de casos traduzidos, rótulos, divisão e pontuações por idioma ainda estão pendentes. Veja os detalhes da recuperação em [[report-translator]].
