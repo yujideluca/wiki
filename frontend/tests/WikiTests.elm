@@ -91,7 +91,7 @@ phoneArticle =
 
 look : MapView.Look
 look =
-    { active = False, offset = ( 0, 0 ), dim = False, label = True, radiusScale = 1, labelSize = 12, squash = 1, tilt = 0 }
+    { active = False, offset = ( 0, 0 ), dim = False, label = True, radiusScale = 1, labelSize = 12, squash = 1, tilt = 0, rest = { radiusScale = 1, squash = 1, tilt = 0 }, labelHit = True }
 
 
 lens : Lens.Lens
@@ -565,13 +565,63 @@ suite =
                         |> Expect.all
                             [ Query.find [ Selector.attribute (Html.Attributes.attribute "data-id" "mem") ]
                                 >> Query.has [ Selector.attribute (Svg.Attributes.transform "translate(100,100)") ]
-                            , Query.find [ Selector.attribute (Svg.Attributes.pointerEvents "none") ]
+                            , Query.find [ Selector.attribute (Svg.Attributes.transform "translate(30,0)") ]
                                 >> Expect.all
-                                    [ Query.has [ Selector.attribute (Svg.Attributes.transform "translate(30,0)") ]
+                                    [ Query.has [ Selector.attribute (Svg.Attributes.pointerEvents "none") ]
                                     , Query.has [ Selector.class "dot" ]
                                     ]
                             , Query.has [ Selector.class "hit" ]
                             ]
+            ]
+
+        -- REQ DY-7
+        , describe "hover stays put: labels and hit disc"
+            [ test "a displaced label does not answer the pointer, a label at rest does" <|
+                \_ ->
+                    let
+                        labelEvents off =
+                            MapView.node En graph ( 100, 100 ) { look | offset = off } (mkNode "mem" "mem" "p" [] [])
+                                |> (\n -> Svg.svg [] [ n ])
+                                |> Query.fromHtml
+                                |> Query.find [ Selector.all [ Selector.tag "text", Selector.class "label" ] ]
+                                |> Query.has [ Selector.attribute (Svg.Attributes.pointerEvents (if off == ( 0, 0 ) then "all" else "none")) ]
+                    in
+                    Expect.all [ \_ -> labelEvents ( 0, 0 ), \_ -> labelEvents ( 9, -4 ) ] ()
+            , test "while another dot is lit, a label at rest does not answer the pointer either" <|
+                \_ ->
+                    MapView.node En graph ( 100, 100 ) { look | labelHit = False } (mkNode "mem" "mem" "p" [] [])
+                        |> (\n -> Svg.svg [] [ n ])
+                        |> Query.fromHtml
+                        |> Query.find [ Selector.all [ Selector.tag "text", Selector.class "label" ] ]
+                        |> Query.has [ Selector.attribute (Svg.Attributes.pointerEvents "none") ]
+            , test "a dot's label is decided at its resting place, even if the pull has drawn it towards the border" <|
+                \_ ->
+                    let
+                        wide =
+                            { cx = 400, cy = 250, hw = 400, hh = 250, strength = 1.2 }
+
+                        labelled displaced =
+                            MapView.map En graph (Dict.fromList [ ( "mem", displaced ) ]) (Dict.fromList [ ( "mem", ( 400, 250 ) ) ]) (Zoom.init { width = 800, height = 500 }) wide 800 500 Nothing Nothing Nothing
+                                |> Query.fromHtml
+                                |> Query.find [ Selector.attribute (Html.Attributes.attribute "data-id" "mem") ]
+                                |> Query.findAll [ Selector.all [ Selector.tag "text", Selector.class "label" ] ]
+                                |> Query.count (Expect.equal 1)
+                    in
+                    Expect.all [ \_ -> labelled ( 400, 250 ), \_ -> labelled ( 770, 250 ) ] ()
+            , test "the hit disc is flattened like the resting dot and does not grow when the dot is lit" <|
+                \_ ->
+                    let
+                        hitOf active =
+                            MapView.node En graph ( 100, 100 ) { look | active = active, squash = 0.2, rest = { radiusScale = 1, squash = 0.5, tilt = 30 } } (mkNode "mem" "mem" "p" [] [])
+                                |> (\n -> Svg.svg [] [ n ])
+                                |> Query.fromHtml
+                                |> Query.find [ Selector.class "hit" ]
+                    in
+                    Expect.all
+                        [ \_ -> hitOf False |> Query.has [ Selector.attribute (Svg.Attributes.transform "rotate(30) scale(1,0.5)") ]
+                        , \_ -> hitOf True |> Query.has [ Selector.attribute (Svg.Attributes.r "12") ]
+                        ]
+                        ()
             ]
 
         -- REQ DY-4

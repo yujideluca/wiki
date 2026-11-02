@@ -88,6 +88,14 @@ map lang graph positions rest zoom lens width height project month active =
         spotsAtRest =
             place rest
 
+        isCoarse from to =
+            case ( Dict.get from spotsAtRest, Dict.get to spotsAtRest ) of
+                ( Just a, Just b ) ->
+                    min a.scale b.scale < 0.86
+
+                _ ->
+                    False
+
         edgeView e =
             case ( Dict.get e.from spots, Dict.get e.to spots ) of
                 ( Just a, Just b ) ->
@@ -96,8 +104,9 @@ map lang graph positions rest zoom lens width height project month active =
                             active == Just e.from || active == Just e.to
 
                         -- far from the middle the dashed "mentions" lines are left out: less detail at the border
+                        -- (judged at the resting places, so the elastic pull cannot make a line flicker in and out)
                         coarse =
-                            e.edgeType /= Feeds && min a.scale b.scale < 0.86
+                            e.edgeType /= Feeds && (isCoarse e.from e.to)
                     in
                     if coarse && not lit then
                         []
@@ -138,15 +147,18 @@ map lang graph positions rest zoom lens width height project month active =
             case Dict.get n.id spots of
                 Just spot ->
                     let
+                        hit =
+                            Dict.get n.id spotsAtRest |> Maybe.withDefault spot
+
                         l =
                             lookAt k spot
 
+                        -- detail (label) follows the resting place, not the pulled drawing, so it cannot switch on and off
+                        lRest =
+                            lookAt k hit
+
                         isActive =
                             active == Just n.id
-                    in
-                    let
-                        hit =
-                            Dict.get n.id spotsAtRest |> Maybe.withDefault spot
                     in
                     [ node lang
                         graph
@@ -154,11 +166,13 @@ map lang graph positions rest zoom lens width height project month active =
                         { active = isActive
                         , offset = ( spot.x - hit.x, spot.y - hit.y )
                         , dim = active /= Nothing && not (Set.member n.id near)
-                        , label = isActive || n.kind == "project" || Set.member n.id near || l.labelled
+                        , label = isActive || n.kind == "project" || Set.member n.id near || lRest.labelled
                         , radiusScale = l.radiusScale
                         , labelSize = l.labelSize
                         , squash = spot.squash
                         , tilt = spot.tilt
+                        , labelHit = active == Nothing || isActive
+                        , rest = { radiusScale = lRest.radiusScale, squash = hit.squash, tilt = hit.tilt }
                         }
                         n
                     ]
@@ -267,6 +281,8 @@ type alias Look =
     , labelSize : Float
     , squash : Float -- short axis over long axis of the dot where the globe turns away (1 facing us)
     , tilt : Float -- direction of the long axis, in degrees
+    , labelHit : Bool -- may the label answer the pointer: only while no dot is lit, or when it is the lit dot's own
+    , rest : { radiusScale : Float, squash : Float, tilt : Float } -- the same three at the resting place, which the invisible hit disc follows
     }
 
 
@@ -291,6 +307,18 @@ node lang graph ( x, y ) look n =
         -- where the globe turns away the round dot is seen at a slant: an ellipse whose short axis points to the middle
         flatten =
             "rotate(" ++ String.fromFloat look.tilt ++ ") scale(1," ++ String.fromFloat look.squash ++ ")"
+
+        -- the invisible disc is the dot's resting shape (flattened like the dot, not growing when lit), plus a margin
+        hitR =
+            (if n.kind == "project" then 11 else 6) * look.rest.radiusScale + 6
+
+        hitFlatten =
+            "rotate(" ++ String.fromFloat look.rest.tilt ++ ") scale(1," ++ String.fromFloat look.rest.squash ++ ")"
+
+        -- a label answers the pointer only if it is at rest and no other dot is lit: a neighbour's label that is pulled, or
+        -- that springs back, would otherwise slide under a still pointer and take the hover from the lit dot (DY-7)
+        labelAtRest =
+            look.labelHit && abs (Tuple.first look.offset) + abs (Tuple.second look.offset) < 0.5
     in
     Svg.g
         [ S.class
@@ -330,6 +358,13 @@ node lang graph ( x, y ) look n =
                     [ S.y (String.fromFloat (r + look.labelSize + 2))
                     , S.textAnchor "middle"
                     , S.class "label"
+                    , S.pointerEvents
+                        (if labelAtRest then
+                            "all"
+
+                         else
+                            "none"
+                        )
                     , S.fontSize (String.fromFloat look.labelSize)
                     -- only a drag that starts on the text selects it: no pan, no dot drag, no page opening
                     , SE.stopPropagationOn "mousedown" (D.succeed ( NoOp, True ))
@@ -342,7 +377,7 @@ node lang graph ( x, y ) look n =
             ]
 
         -- A larger invisible disc around the dot, so the pointer reaches a node a few pixels early.
-        , Svg.circle [ S.r (String.fromFloat (r + 6)), S.fill "transparent", S.class "hit" ] []
+        , Svg.circle [ S.r (String.fromFloat hitR), S.fill "transparent", S.class "hit", S.transform hitFlatten ] []
         ]
 
 
