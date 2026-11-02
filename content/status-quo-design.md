@@ -9,9 +9,9 @@ since: 2026-11-01
 location: wiki:content/status-quo-design.md
 fed_by: []
 feeds: []
-sources: [project-template:CLAUDE.md, project-template:pipeline-check.toml]
+sources: [project-template:CLAUDE.md, project-template:pipeline-check.toml, status-quo:README.md, status-quo:DESIGN.md, status-quo:Cargo.toml, status-quo:Cargo.lock, status-quo:.cargo/config.toml, status-quo:.gitignore, status-quo:crates/collector/Cargo.toml, status-quo:crates/collector/src/events.rs]
 memory: [#f1e117, #d975f2, #63efec, #c1f1f8]
-reviewed: 2026-11-02T12:56Z
+reviewed: 2026-11-02T13:00Z
 ---
 
 ## What it is

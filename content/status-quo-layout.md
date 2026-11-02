@@ -10,7 +10,7 @@ location: wiki:content/status-quo-layout.md
 fed_by: []
 feeds: []
 sources: [wiki:content/status-quo-design.md]
-reviewed: 2026-11-02T12:35Z
+reviewed: 2026-11-02T13:00Z
 ---
 
 ## What it is
