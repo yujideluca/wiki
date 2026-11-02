@@ -9,17 +9,17 @@ location: QuizApp:core/src/main/java/dev/yuji/quiz/content/ContentPack.kt
 fed_by: [content-manifest]
 feeds: [question-pool-updater]
 sources: [QuizApp:core/src/main/java/dev/yuji/quiz/content/ContentPack.kt, QuizApp:app/src/main/assets/content.json, QuizApp:docs/adr/0012-downloadable-question-pool.md, QuizApp:tools/mutation_check.py, QuizApp:core/src/test/java/dev/yuji/quiz/content/ContentPackTest.kt]
-reviewed: 2026-10-25T21:20Z
+reviewed: 2026-11-02T16:09Z
 ---
 
 ## What it is
 The question pack (code name `ContentPack`) is the question pool of [[quizapp]] seen as one versioned package: seven files (`vocab/*.json` and `i18n/*.json`) described by a manifest, `content.json` (decision ADR-0012, 2026-10-22; an ADR is an architecture decision record, a short note that keeps the reasons for a decision). Because it is a package, it can be replaced without releasing a new app.
 
 ## What it does
-The manifest says the file format (`schema`, currently 1, equal to `CONTENT_SCHEMA`), the pool version (`contentVersion`, which rises by one whenever any file changes) and the SHA-256 of every file (SHA-256, Secure Hash Algorithm 256, a fingerprint of the file's content). The function `validateContentPack` accepts a pack only when every file is listed, matches its fingerprint and can be parsed, and every mode still has at least one question. `shouldDownloadContent` decides whether a pack found on the feed is worth downloading.
+The manifest says the file format (`schema`, currently 1, equal to `CONTENT_SCHEMA`), the pool version (`contentVersion`, which rises whenever any file changes (QP-4; the committed pack has version 4)) and the SHA-256 of every file (SHA-256, Secure Hash Algorithm 256, a fingerprint of the file's content). The function `validateContentPack` accepts a pack only when every file is listed, matches its fingerprint and can be parsed, and every mode still has at least one question. `shouldDownloadContent` decides whether a pack found on the feed is worth downloading.
 
 ## How it does it
-It is pure Kotlin in [[quizapp-core]], tested by `ContentPackTest` and by four mutants in the [[mutation-check]] (requirements QP-1 to QP-4). The pack built into the app is `assets/content.json`, maintained by [[content-manifest]]. A new mode or a new field in the files is not a pool change: it needs an app release and a higher schema, which older apps ignore.
+It is pure Kotlin in [[quizapp-core]], tested by `ContentPackTest` and by five mutants in the [[mutation-check]] (requirements QP-1 to QP-4): four planted in `ContentPack.kt` (a same-version pack downloaded again, an outdated pack preferred to the built-in one, checksums not compared, a pack that empties a mode accepted) and one in the app's `ContentStore.kt` (an outdated or unreadable downloaded pack kept on disk). All five are in `tools/mutation_check.py`; the web-twin fault changed there on 2026-11-02 does not concern the pack. The pack built into the app is `assets/content.json`, maintained by [[content-manifest]]. A new mode or a new field in the files is not a pool change: it needs an app release and a higher schema, which older apps ignore.
 
 ## Where it sits in the pipeline
 Between the content build ([[build-vocab]], [[content-manifest]]) and the app's [[question-pool-updater]].
