@@ -1,12 +1,12 @@
 ---
 id: checks-status-quo
 lang: de
-source_hash: e28d13b9f281
+source_hash: 8f0a0f06e4ce
 title: status-quo: Prüfer und Regeln
 ---
 
 ## What it is
-Dies sind die Prüfer des Repositorys `status-quo` (siehe [[status-quo-design]] und [[status-quo-layout]]), eines Rust-Workspaces, der aus [[project-template]] gestartet wurde. Es hat einen lokalen Commit und noch kein GitHub-Repository; sein Lauf der kontinuierlichen Integration und sein Branch-Schutz wurden daher noch nie beobachtet.
+Dies sind die Prüfer des Repositorys `status-quo` (siehe [[status-quo-design]] und [[status-quo-layout]]), eines Rust-Workspaces, der aus [[project-template]] gestartet wurde. Es liegt im privaten GitHub-Repository `yujideluca/status-quo`. Der Lauf der kontinuierlichen Integration beim ersten Commit bestand am 2026-11-02; Branch-Schutz lässt sich bei einem privaten Repository im kostenlosen Tarif nicht aktivieren, daher schlägt die Prüfung `protecao-de-branch` weiter fehl.
 
 ## What it does
 Das Gate (`tools/quality_gate.sh`) führt fünf Schritte nacheinander aus: Rust-Formatierung (`cargo fmt --check`), Compiler-Diagnose ohne zugelassene Warnungen (clippy) samt der gesamten Testsuite, eine projekteigene Grenzprüfung (`tools/rust_architecture.rs`), Anforderungs-Rückverfolgbarkeit und die Fitness-Obergrenze für die Gate-Dauer (1200 Sekunden). Am 2026-11-02 bestanden alle fünf.

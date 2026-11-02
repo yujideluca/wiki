@@ -1,7 +1,7 @@
 ---
 id: status-quo-design
 lang: pt-BR
-source_hash: 0b475e206e44
+source_hash: 968888cc5191
 title: Status Quo — proposta de design e escopo de entrega
 ---
 
@@ -102,7 +102,7 @@ Sem envio de prompts, gerenciamento de contas, compras, edições de memória, p
 Giovanni revisa este design e [[status-quo-layout]] uma vez antes da implementação. Quem implementar usa a base aprovada para produzir os requisitos do projeto e concluir todos os escopos de entrega. Autores de invólucros futuros usam o contrato documentado em vez de duplicar coletores.
 
 ## Notes
-**Estado atual (2026-11-02).** O workspace Rust em `~/dev/status-quo` compila e seu portão automático passa: formatação, verificação do compilador sem avisos, testes, verificação dos limites de dependência e uma verificação de que cada um dos seus 25 requisitos tem teste. Uma versão release iniciada à mão mostrou medidores de uso do Claude e do Codex ao vivo, gráficos de tokens, sessões, atividade do GitHub e entradas do workflow-memory. Ainda falta: a instalação (ela altera os arquivos de hooks dos assistentes, então Giovanni a executa), a prova de que a janela fica atrás das outras, o início no login e a verificação de 100 ms de interação. A verificação de recursos de cinco minutos passa em memória (115 MiB de 200 MiB), mas falha em CPU ociosa (2,05% de um núcleo contra 1%); a causa ainda está em aberto. O projeto ainda não tem commits nem repositório no GitHub.
+**Estado atual (2026-11-02).** O workspace Rust em `~/dev/status-quo` compila e seu portão automático passa: formatação, verificação do compilador sem avisos, testes, verificação dos limites de dependência e uma verificação de que cada um dos seus 25 requisitos tem teste. Uma versão release iniciada à mão mostrou medidores de uso do Claude e do Codex ao vivo, gráficos de tokens, sessões, atividade do GitHub e entradas do workflow-memory. Ainda falta: a instalação (ela altera os arquivos de hooks dos assistentes, então Giovanni a executa), a prova de que a janela fica atrás das outras, o início no login e a verificação de 100 ms de interação. A verificação de recursos de cinco minutos passa em memória (115 MiB de 200 MiB), mas falha em CPU ociosa (2,05% de um núcleo contra 1%); a causa ainda está em aberto. O código está no repositório privado `yujideluca/status-quo`; o gate passou na execução de CI do primeiro commit (2026-11-02). A proteção de branch não pode ser ativada enquanto o repositório é privado no plano gratuito do GitHub.
 
 Esta página também registra as escolhas de Giovanni na conversa do Status Quo de 2026-11-01. Os limites de recursos são recomendações do construtor que Giovanni aprovou com o design.
 

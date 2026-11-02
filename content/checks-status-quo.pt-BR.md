@@ -1,12 +1,12 @@
 ---
 id: checks-status-quo
 lang: pt-BR
-source_hash: e28d13b9f281
+source_hash: 8f0a0f06e4ce
 title: status-quo: verificadores e regras
 ---
 
 ## What it is
-Estes são os verificadores do repositório `status-quo` (veja [[status-quo-design]] e [[status-quo-layout]]), um workspace Rust iniciado a partir de [[project-template]]. Ele tem um commit local e ainda nenhum repositório no GitHub; por isso sua execução de integração contínua e sua proteção de branch nunca foram observadas.
+Estes são os verificadores do repositório `status-quo` (veja [[status-quo-design]] e [[status-quo-layout]]), um workspace Rust iniciado a partir de [[project-template]]. Ele está no repositório privado `yujideluca/status-quo` no GitHub. A execução de integração contínua do primeiro commit passou em 2026-11-02; a proteção de branch não pode ser ativada em repositório privado no plano gratuito, então a verificação `protecao-de-branch` continua falhando.
 
 ## What it does
 O gate (`tools/quality_gate.sh`) executa cinco etapas em ordem: formatação Rust (`cargo fmt --check`), diagnósticos do compilador sem avisos permitidos (clippy) junto com toda a suíte de testes, uma verificação de fronteiras própria do projeto (`tools/rust_architecture.rs`), rastreabilidade de requisitos e o limite de fitness para a duração do gate (1200 segundos). Em 2026-11-02 as cinco passaram.

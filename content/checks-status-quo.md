@@ -8,11 +8,11 @@ status: active
 fed_by: []
 feeds: []
 sources: [status-quo:tools/quality_gate.sh, status-quo:pipeline-check.toml, status-quo:CLAUDE.md, status-quo:docs/REQUIREMENTS.md, status-quo:.github/workflows/quality-gate.yml, status-quo:tools/rust_architecture.rs]
-reviewed: 2026-11-02T12:47Z
+reviewed: 2026-11-02T12:56Z
 ---
 
 ## What it is
-These are the checkers of the repository `status-quo` (see [[status-quo-design]] and [[status-quo-layout]]), a Rust workspace started from [[project-template]]. It has one local commit and no GitHub repository yet, so its continuous-integration run and branch protection have never been observed.
+These are the checkers of the repository `status-quo` (see [[status-quo-design]] and [[status-quo-layout]]), a Rust workspace started from [[project-template]]. It lives in the private GitHub repository `yujideluca/status-quo`. The continuous-integration run on its first commit passed on 2026-11-02; branch protection cannot be enabled on a private repository on the free plan, so the `protecao-de-branch` check keeps failing.
 
 ## What it does
 The gate (`tools/quality_gate.sh`) runs five steps in order: Rust formatting (`cargo fmt --check`), compiler diagnostics with warnings denied (clippy) plus the whole test suite, a project-specific boundary check (`tools/rust_architecture.rs`), requirement traceability, and the fitness limit on gate duration (1200 seconds). On 2026-11-02 all five passed.

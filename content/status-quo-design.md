@@ -11,7 +11,7 @@ fed_by: []
 feeds: []
 sources: [project-template:CLAUDE.md, project-template:pipeline-check.toml]
 memory: [#f1e117, #d975f2, #63efec, #c1f1f8]
-reviewed: 2026-11-02T12:32Z
+reviewed: 2026-11-02T12:56Z
 ---
 
 ## What it is
@@ -111,7 +111,7 @@ No sending prompts, account management, purchases, memory edits, arbitrary third
 Giovanni reviews this design and [[status-quo-layout]] once before implementation. A builder uses the approved baseline to produce the project requirements and complete every delivery scope. Future wrapper authors use the documented contract rather than duplicating collectors.
 
 ## Notes
-**Current state (2026-11-02).** The Rust workspace in `~/dev/status-quo` builds and its automated gate passes: formatting, warning-free compiler checks, tests, dependency-boundary checks and a check that every one of its 25 requirements has a test. A hand-started release build showed live Claude and Codex usage meters, token graphs, sessions, GitHub activity and workflow-memory entries. Not yet done: installation (it edits the assistant hook files, so Giovanni runs it), proof of window stacking behind other windows, login startup, and the 100 ms interaction check. The five-minute resource check passes on memory (115 MiB against 200 MiB) but misses on idle CPU (2.05% of one core against 1%); the cause is still open. The project has no commits or GitHub repository yet.
+**Current state (2026-11-02).** The Rust workspace in `~/dev/status-quo` builds and its automated gate passes: formatting, warning-free compiler checks, tests, dependency-boundary checks and a check that every one of its 25 requirements has a test. A hand-started release build showed live Claude and Codex usage meters, token graphs, sessions, GitHub activity and workflow-memory entries. Not yet done: installation (it edits the assistant hook files, so Giovanni runs it), proof of window stacking behind other windows, login startup, and the 100 ms interaction check. The five-minute resource check passes on memory (115 MiB against 200 MiB) but misses on idle CPU (2.05% of one core against 1%); the cause is still open. The code is in the private repository `yujideluca/status-quo`; the gate passed in its CI run on the first commit (2026-11-02). Branch protection cannot be enabled while the repository is private on the free GitHub plan.
 
 This page also records Giovanni's choices from the Status Quo conversation of 2026-11-01. Resource thresholds are builder recommendations that Giovanni approved with the design.
 

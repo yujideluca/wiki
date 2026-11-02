@@ -1,7 +1,7 @@
 ---
 id: status-quo-design
 lang: de
-source_hash: 0b475e206e44
+source_hash: 968888cc5191
 title: Status Quo — vorgeschlagener Entwurf und Lieferumfang
 ---
 
@@ -102,7 +102,7 @@ Kein Senden von Prompts, Kontoverwaltung, Käufe, Gedächtnisänderungen, belieb
 Giovanni prüft diesen Entwurf und [[status-quo-layout]] einmal vor der Umsetzung. Die umsetzende Person nutzt die freigegebene Grundlage, um Projektanforderungen zu erstellen und jeden Lieferumfang abzuschließen. Künftige Hüllenautoren nutzen den dokumentierten Vertrag, statt Collector zu duplizieren.
 
 ## Notes
-**Aktueller Stand (2026-11-02).** Der Rust-Workspace in `~/dev/status-quo` lässt sich bauen, und sein automatisches Prüftor besteht: Formatierung, warnungsfreie Compilerprüfung, Tests, Prüfung der Abhängigkeitsgrenzen und eine Prüfung, dass jede seiner 25 Anforderungen einen Test hat. Ein von Hand gestarteter Release-Build zeigte Live-Kontingentanzeigen für Claude und Codex, Token-Diagramme, Sitzungen, GitHub-Aktivität und Einträge aus workflow-memory. Noch offen: die Installation (sie ändert die Hook-Dateien der Assistenten, daher führt Giovanni sie selbst aus), der Nachweis, dass das Fenster hinter anderen Fenstern bleibt, der Start beim Login und die 100-ms-Prüfung der Bedienung. Die Fünf-Minuten-Ressourcenprüfung besteht beim Speicher (115 MiB von 200 MiB), verfehlt aber die Leerlauf-CPU (2,05 % eines Kerns statt 1 %); die Ursache ist noch offen. Das Projekt hat noch keine Commits und kein GitHub-Repository.
+**Aktueller Stand (2026-11-02).** Der Rust-Workspace in `~/dev/status-quo` lässt sich bauen, und sein automatisches Prüftor besteht: Formatierung, warnungsfreie Compilerprüfung, Tests, Prüfung der Abhängigkeitsgrenzen und eine Prüfung, dass jede seiner 25 Anforderungen einen Test hat. Ein von Hand gestarteter Release-Build zeigte Live-Kontingentanzeigen für Claude und Codex, Token-Diagramme, Sitzungen, GitHub-Aktivität und Einträge aus workflow-memory. Noch offen: die Installation (sie ändert die Hook-Dateien der Assistenten, daher führt Giovanni sie selbst aus), der Nachweis, dass das Fenster hinter anderen Fenstern bleibt, der Start beim Login und die 100-ms-Prüfung der Bedienung. Die Fünf-Minuten-Ressourcenprüfung besteht beim Speicher (115 MiB von 200 MiB), verfehlt aber die Leerlauf-CPU (2,05 % eines Kerns statt 1 %); die Ursache ist noch offen. Der Code liegt im privaten Repository `yujideluca/status-quo`; das Gate bestand im CI-Lauf des ersten Commits (2026-11-02). Branch-Schutz lässt sich bei einem privaten Repository im kostenlosen GitHub-Tarif nicht aktivieren.
 
 Diese Seite hält außerdem Giovannis Entscheidungen aus dem Status-Quo-Gespräch vom 2026-11-01 fest. Die Ressourcengrenzen sind Empfehlungen des Umsetzers, die Giovanni mit dem Entwurf freigegeben hat.
 
