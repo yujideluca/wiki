@@ -7,7 +7,7 @@ project: none
 status: active
 fed_by: []
 feeds: []
-sources: [status-quo:tools/quality_gate.sh, status-quo:pipeline-check.toml, status-quo:CLAUDE.md, status-quo:docs/REQUIREMENTS.md, status-quo:.github/workflows/quality-gate.yml, status-quo:tools/rust_architecture.rs, status-quo:docs/TESTES-AUTOMATIZADOS.md, status-quo:docs/TRACEABILITY.md, status-quo:docs/MAINTENANCE.md, status-quo:crates/widgets/tests/models.rs]
+sources: [status-quo:tools/quality_gate.sh, status-quo:pipeline-check.toml, status-quo:CLAUDE.md, status-quo:docs/REQUIREMENTS.md, status-quo:.github/workflows/quality-gate.yml, status-quo:tools/rust_architecture.rs, status-quo:docs/TESTES-AUTOMATIZADOS.md, status-quo:docs/TRACEABILITY.md, status-quo:docs/MAINTENANCE.md, status-quo:crates/widgets/tests/models.rs, status-quo:tools/ui_e2e.sh, status-quo:crates/desktop/tests/desktop_e2e.rs, status-quo:crates/desktop/tests/e2e/manual-baseline.json]
 reviewed: 2026-11-02T16:22Z
 ---
 
@@ -16,6 +16,8 @@ These are the checkers of the repository `status-quo` (see [[status-quo-design]]
 
 ## What it does
 The gate (`tools/quality_gate.sh`) runs five steps in order: Rust formatting (`cargo fmt --check`), compiler diagnostics with warnings denied (clippy) plus the whole test suite, a project-specific boundary check (`tools/rust_architecture.rs`), requirement traceability, and the fitness limit on gate duration (1200 seconds). On 2026-11-02 all five passed.
+
+An optional sixth step runs only when the variable `STATUS_QUO_E2E=1` is set: `tools/ui_e2e.sh`, the desktop end-to-end test of the real tray (it pauses the live tray, drives a private copy with a virtual mouse and writes `build/e2e/report.json`). It is optional because it needs a Wayland session, a writable `/dev/uinput` and `spectacle`, so a normal run and the continuous integration (CI) run (which has no desktop) leave it out; the script itself skips with a stated reason when a need is missing. The test is not part of the five-step definition of passing: it complements the gate by checking what no unit test can, and `docs/MAINTENANCE.md` section 7 asks for it before closing a major tray update and before a release. A real run on 2026-11-02 passed 22 checks. Its idle CPU gate is a 2% ceiling, while the 1% target of SQ-23 (the idle-cost requirement) is recorded as data and still missed (1.30% of one core). Details: [[status-quo]].
 
 The boundary check exists because the shared checker (`pipeline-check` v0.4.0) only scans Java and Kotlin. It rejects graphical, file, process or network dependencies in the three portable packages, allows only the egui interface library in the reusable tray, and has its own self-tests that plant defects and require them to be rejected. All 29 requirements (SQ group; SQ-29 is in the uncommitted working tree at review time) in `docs/REQUIREMENTS.md` have a test tagged with a standalone `// REQ SQ-n` comment; the scan covers `.rs` files under `crates` and `tools`. The wording of SQ-29 was replaced on 2026-11-02 (Edit tray as a free canvas, decision ADR-0005 (architecture decision record), see [[status-quo]]); its tag is in `crates/core/tests/behavior.rs`, `crates/tray/src/layout.rs` and `crates/tray/tests/layout.rs`, and `docs/TRACEABILITY.md` lists `behavior.rs, layout.rs` for it. The gate was not run for this page update. A tag proves a test exists, not that the real desktop behaves correctly, so window stacking, login startup and the resource limits need separate observation (idle CPU is currently 2.05% of one core against a 1% target).
 

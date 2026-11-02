@@ -1,7 +1,7 @@
 ---
 id: checks-status-quo
 lang: pt-BR
-source_hash: 56febfc9750f
+source_hash: 4aabc030f0c3
 title: status-quo: verificadores e regras
 ---
 
@@ -10,6 +10,8 @@ Estes são os verificadores do repositório `status-quo` (veja [[status-quo-desi
 
 ## What it does
 O gate (`tools/quality_gate.sh`) executa cinco etapas em ordem: formatação Rust (`cargo fmt --check`), diagnósticos do compilador sem avisos permitidos (clippy) junto com toda a suíte de testes, uma verificação de fronteiras própria do projeto (`tools/rust_architecture.rs`), rastreabilidade de requisitos e o limite de fitness para a duração do gate (1200 segundos). Em 2026-11-02 as cinco passaram.
+
+Uma sexta etapa opcional só roda quando a variável `STATUS_QUO_E2E=1` está definida: `tools/ui_e2e.sh`, o teste de ponta a ponta no desktop da bandeja real (pausa a bandeja ativa, controla uma cópia privada com um mouse virtual e escreve `build/e2e/report.json`). É opcional porque exige uma sessão Wayland, `/dev/uinput` com permissão de escrita e `spectacle`; por isso uma execução normal e a da integração contínua (CI, sem desktop) a deixam de fora, e o próprio script se pula com o motivo quando algo falta. O teste não faz parte da definição de passar em cinco etapas: complementa o gate verificando o que nenhum teste unitário consegue, e a seção 7 de `docs/MAINTENANCE.md` o pede antes de encerrar uma atualização grande da bandeja e antes de um release. Uma execução real em 2026-11-02 passou em 22 verificações. Sua verificação de CPU em repouso é um teto de 2%, enquanto a meta de 1% do SQ-23 (o requisito de custo em repouso) é registrada como dado e continua não atingida (1,30% de um núcleo). Detalhes: [[status-quo]].
 
 A verificação de fronteiras existe porque o verificador compartilhado (`pipeline-check` v0.4.0) só examina Java e Kotlin. Ela rejeita dependências gráficas, de arquivo, de processo ou de rede nos três pacotes portáteis, permite apenas a biblioteca de interface egui na bandeja reutilizável e tem autotestes próprios que plantam defeitos e exigem que sejam rejeitados. Todos os 29 requisitos (grupo SQ; SQ-29 está na árvore de trabalho não commitada no momento da revisão) em `docs/REQUIREMENTS.md` têm um teste marcado com um comentário isolado `// REQ SQ-n`; a varredura cobre arquivos `.rs` em `crates` e `tools`. O texto do SQ-29 foi substituído em 2026-11-02 (Edit tray como tela livre, decisão ADR-0005 (registro de decisão de arquitetura), veja [[status-quo]]); sua marca está em `crates/core/tests/behavior.rs`, `crates/tray/src/layout.rs` e `crates/tray/tests/layout.rs`, e `docs/TRACEABILITY.md` lista `behavior.rs, layout.rs` para ele. O gate não foi executado para esta atualização da página. Uma marca prova que existe um teste, não que o desktop real se comporta corretamente; empilhamento de janelas, início no login e limites de recursos exigem observação separada (a CPU ociosa está em 2,05% de um núcleo contra uma meta de 1%).
 
