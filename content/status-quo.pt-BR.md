@@ -1,7 +1,7 @@
 ---
 id: status-quo
 lang: pt-BR
-source_hash: 9201efe6e805
+source_hash: 69e8fcb08ebc
 title: Bandeja de widgets de desktop Status Quo
 ---
 
@@ -82,7 +82,9 @@ O código é um workspace Rust de nove pacotes. `sq-core`, `sq-contract` e `sq-w
 
 **Hooks.** O instalador adiciona entradas do Status Quo em `~/.claude/settings.json` e `~/.codex/hooks.json` e mantém todos os hooks existentes. Ele foi executado em 2026-11-02.
 
-**Camada de compatibilidade.** `crates/desktop/src/host/` é o único código que sabe como a bandeja é colocada em um desktop Linux específico, e ele escolhe em tempo de execução, de modo que um programa funciona em várias distribuições (decisão em `docs/adr/0004-host-compatibility-layer.md`). Layer-shell, um protocolo do Wayland que permite a um programa desenhar na camada do desktop, é usado quando o compositor o oferece (KDE Plasma, Hyprland, sway); a bandeja então não tem moldura, fica ancorada a uma borda ou canto (`STATUS_QUO_ANCHOR`, padrão canto superior direito) e só desenha quando algo muda. Numa sessão X11 usa uma janela sem moldura com dicas do gerenciador de janelas para ficar embaixo, fora da barra de tarefas e do pager; pedir todas as áreas de trabalho é só uma tentativa, porque a compatibilidade X11 do KDE a ignora. Em qualquer outro lugar, por exemplo GNOME no Wayland, volta para uma janela comum e avisa. `STATUS_QUO_HOST=layer-shell|x11|window` força uma escolha quando ela é possível. Nesses dois hosts a bandeja é nua: não tem fundo nem título próprio, só os widgets e os dois botões pequenos Add widget e Customize ficam visíveis (o status de conexão aparece apenas quando desconectado), e as linhas de widgets são escaladas para preencher exatamente o espaço da bandeja, com espaços iguais. Personalização e capturas de tela usam a janela comum porque o host layer-shell ainda não tem entrada de teclado.
+**Camada de compatibilidade.** `crates/desktop/src/host/` é o único código que sabe como a bandeja é colocada em um desktop Linux específico, e ele escolhe em tempo de execução, de modo que um programa funciona em várias distribuições (decisão em `docs/adr/0004-host-compatibility-layer.md`). Layer-shell, um protocolo do Wayland que permite a um programa desenhar na camada do desktop, é usado quando o compositor o oferece (KDE Plasma, Hyprland, sway); a bandeja então não tem moldura, fica ancorada a uma borda ou canto (`STATUS_QUO_ANCHOR`, padrão canto superior direito) e só desenha quando algo muda. Numa sessão X11 usa uma janela sem moldura com dicas do gerenciador de janelas para ficar embaixo, fora da barra de tarefas e do pager; pedir todas as áreas de trabalho é só uma tentativa, porque a compatibilidade X11 do KDE a ignora. Em qualquer outro lugar, por exemplo GNOME no Wayland, volta para uma janela comum e avisa. `STATUS_QUO_HOST=layer-shell|x11|window` força uma escolha quando ela é possível. Nesses dois hosts a bandeja é nua: não tem fundo nem título próprio, só os widgets e os três botões pequenos Add widget, Edit tray e Customize ficam visíveis (o status de conexão aparece apenas quando desconectado), e as linhas de widgets são escaladas para preencher exatamente o espaço da bandeja, com espaços iguais. Personalização e capturas de tela usam a janela comum porque o host layer-shell ainda não tem entrada de teclado.
+
+**Edit tray (requisito SQ-29).** O botão Edit tray transforma a bandeja num editor direto que usa só o ponteiro. Arrastar a borda inferior de um widget define sua altura (100 a 1400 pixels); arrastar uma borda lateral define a largura, uma ou duas colunas (uma borda arrastada além de três quartos da largura da bandeja significa duas colunas); arrastar o corpo de um widget e soltá-lo sobre outro o move para aquela posição. Tudo acontece numa cópia de rascunho: Done a salva pelo mesmo caminho validado de configuração do Customize, e Cancel a descarta. Os testes conduzem eventos reais de ponteiro pela bandeja; um arraste no compositor real do desktop ainda não foi observado.
 
 ## Where it sits in the pipeline
 Roda no laptop ao lado de [[claude-code]] e [[codex]]. Suas verificações estão em [[checks-status-quo]], e ele segue [[project-template]] e [[pipeline-check]].
@@ -104,7 +106,7 @@ Como este projeto segue o caminho dourado de [[project-template]].
 O `DESIGN.md` contém o diagrama de arquitetura e um registro de decisões datado, com o tipo de cada decisão. Três ADRs (registros de decisão de arquitetura, notas curtas que guardam os motivos de uma decisão) estão em `docs/adr/`: 0001 registrar decisões, 0002 widgets Rust portáteis, 0003 o programa mede e a skill julga.
 
 ### Requirements
-25 requisitos (prefixo SQ) em `docs/REQUIREMENTS.md`, todos cobertos por testes marcados em 2026-11-02. Uma marca prova que existe um teste, não que o desktop real se comporta corretamente.
+29 requisitos (prefixo SQ) em `docs/REQUIREMENTS.md`, todos cobertos por testes marcados em 2026-11-02. Uma marca prova que existe um teste, não que o desktop real se comporta corretamente.
 
 ### Quality gate
 Cinco etapas: formatação, diagnósticos do compilador sem avisos permitidos junto com todos os testes, a verificação de fronteiras Rust, rastreabilidade de requisitos e o limite de 1200 segundos para a duração do gate. `tools/resource_check.rs` mede os processos reais por cinco minutos. A primeira observação atendeu à meta de memória (115 MiB de 200 MiB) e não atendeu à de CPU ociosa (2,05% de um núcleo contra 1%).

@@ -1,7 +1,7 @@
 ---
 id: status-quo
 lang: de
-source_hash: 9201efe6e805
+source_hash: 69e8fcb08ebc
 title: Status-Quo-Desktop-Widget-Tray
 ---
 
@@ -82,7 +82,9 @@ Der Code ist ein Rust-Workspace aus neun Paketen. `sq-core`, `sq-contract` und `
 
 **Hooks.** Der Installer trägt Status-Quo-Einträge in `~/.claude/settings.json` und `~/.codex/hooks.json` ein und behält jeden bestehenden Hook. Er wurde am 2026-11-02 ausgeführt.
 
-**Kompatibilitätsschicht.** `crates/desktop/src/host/` ist der einzige Code, der weiß, wie das Tray auf einem bestimmten Linux-Desktop platziert wird, und er wählt zur Laufzeit, sodass ein Programm über Distributionen hinweg funktioniert (Entscheidung in `docs/adr/0004-host-compatibility-layer.md`). Layer-Shell, ein Wayland-Protokoll, mit dem ein Programm auf die Desktop-Ebene zeichnet, wird genutzt, wenn der Compositor es anbietet (KDE Plasma, Hyprland, sway); das Tray hat dann keinen Rahmen, ist an einer Kante oder Ecke verankert (`STATUS_QUO_ANCHOR`, Standard oben rechts) und zeichnet nur bei Änderungen. In einer X11-Sitzung nutzt es ein rahmenloses Fenster mit Fenstermanager-Hinweisen für „unten“, ohne Taskleiste und ohne Pager; „alle Arbeitsflächen“ ist nur ein Versuch, weil KDEs X11-Kompatibilität es ignoriert. Überall sonst, zum Beispiel GNOME unter Wayland, fällt es auf ein normales Fenster zurück und sagt das. `STATUS_QUO_HOST=layer-shell|x11|window` erzwingt eine Wahl, wenn sie möglich ist. In diesen beiden Hosts ist das Tray nackt: Es hat weder Hintergrund noch Titel, sichtbar sind nur die Widgets und die zwei kleinen Schaltflächen „Add widget“ und „Customize“ (der Verbindungsstatus erscheint nur bei getrennter Verbindung), und die Widget-Zeilen werden so skaliert, dass sie den Tray-Platz mit gleichen Abständen genau ausfüllen. Anpassung und Screenshots nutzen das normale Fenster, weil der Layer-Host noch keine Tastatureingabe hat.
+**Kompatibilitätsschicht.** `crates/desktop/src/host/` ist der einzige Code, der weiß, wie das Tray auf einem bestimmten Linux-Desktop platziert wird, und er wählt zur Laufzeit, sodass ein Programm über Distributionen hinweg funktioniert (Entscheidung in `docs/adr/0004-host-compatibility-layer.md`). Layer-Shell, ein Wayland-Protokoll, mit dem ein Programm auf die Desktop-Ebene zeichnet, wird genutzt, wenn der Compositor es anbietet (KDE Plasma, Hyprland, sway); das Tray hat dann keinen Rahmen, ist an einer Kante oder Ecke verankert (`STATUS_QUO_ANCHOR`, Standard oben rechts) und zeichnet nur bei Änderungen. In einer X11-Sitzung nutzt es ein rahmenloses Fenster mit Fenstermanager-Hinweisen für „unten“, ohne Taskleiste und ohne Pager; „alle Arbeitsflächen“ ist nur ein Versuch, weil KDEs X11-Kompatibilität es ignoriert. Überall sonst, zum Beispiel GNOME unter Wayland, fällt es auf ein normales Fenster zurück und sagt das. `STATUS_QUO_HOST=layer-shell|x11|window` erzwingt eine Wahl, wenn sie möglich ist. In diesen beiden Hosts ist das Tray nackt: Es hat weder Hintergrund noch Titel, sichtbar sind nur die Widgets und die drei kleinen Schaltflächen „Add widget“, „Edit tray“ und „Customize“ (der Verbindungsstatus erscheint nur bei getrennter Verbindung), und die Widget-Zeilen werden so skaliert, dass sie den Tray-Platz mit gleichen Abständen genau ausfüllen. Anpassung und Screenshots nutzen das normale Fenster, weil der Layer-Host noch keine Tastatureingabe hat.
+
+**Edit tray (Anforderung SQ-29).** Die Schaltfläche „Edit tray“ macht das Tray zu einem direkten Editor, der nur mit dem Zeiger arbeitet. Zieht man den unteren Rand eines Widgets, ändert sich seine Höhe (100 bis 1400 Pixel); zieht man einen Seitenrand, ändert sich die Breite, eine oder zwei Spalten (ein Rand, der über drei Viertel der Tray-Breite gezogen wird, bedeutet zwei Spalten); zieht man den Widget-Körper und lässt ihn auf einem anderen Widget los, wandert es an diese Position. Alle Änderungen betreffen eine Entwurfskopie: „Done“ speichert sie über denselben geprüften Konfigurationsweg wie „Customize“, „Cancel“ verwirft sie. Tests steuern echte Zeigerereignisse durch das Tray; ein Ziehen im echten Desktop-Compositor wurde noch nicht beobachtet.
 
 ## Where it sits in the pipeline
 Es läuft auf dem Laptop neben [[claude-code]] und [[codex]]. Seine Prüfungen stehen auf [[checks-status-quo]], und es folgt [[project-template]] und [[pipeline-check]].
@@ -104,7 +106,7 @@ Wie dieses Projekt dem Goldenen Weg von [[project-template]] folgt.
 `DESIGN.md` enthält das Architekturdiagramm und ein datiertes Entscheidungsprotokoll mit dem Typ jeder Entscheidung. Drei ADRs (Architecture Decision Records, kurze Notizen, die die Gründe einer Entscheidung festhalten) liegen in `docs/adr/`: 0001 Entscheidungen festhalten, 0002 portable Rust-Widgets, 0003 das Programm misst und der Skill urteilt.
 
 ### Requirements
-25 Anforderungen (Präfix SQ) in `docs/REQUIREMENTS.md`, am 2026-11-02 alle durch markierte Tests abgedeckt. Eine Markierung belegt, dass ein Test existiert, nicht dass sich der echte Desktop richtig verhält.
+29 Anforderungen (Präfix SQ) in `docs/REQUIREMENTS.md`, am 2026-11-02 alle durch markierte Tests abgedeckt. Eine Markierung belegt, dass ein Test existiert, nicht dass sich der echte Desktop richtig verhält.
 
 ### Quality gate
 Fünf Schritte: Formatierung, Compiler-Diagnose ohne zugelassene Warnungen samt aller Tests, die Rust-Grenzprüfung, Anforderungs-Rückverfolgbarkeit und die Gate-Dauergrenze von 1200 Sekunden. `tools/resource_check.rs` misst die echten Prozesse über fünf Minuten. Die erste Beobachtung erfüllte das Speicherziel (115 MiB von 200 MiB) und verfehlte die Leerlauf-CPU (2,05 % eines Kerns bei 1 %).
