@@ -1,7 +1,7 @@
 ---
 id: checks-status-quo
 lang: de
-source_hash: 594e6c5821e5
+source_hash: 56febfc9750f
 title: status-quo: Prüfer und Regeln
 ---
 
@@ -11,7 +11,7 @@ Dies sind die Prüfer des Repositorys `status-quo` (siehe [[status-quo-design]] 
 ## What it does
 Das Gate (`tools/quality_gate.sh`) führt fünf Schritte nacheinander aus: Rust-Formatierung (`cargo fmt --check`), Compiler-Diagnose ohne zugelassene Warnungen (clippy) samt der gesamten Testsuite, eine projekteigene Grenzprüfung (`tools/rust_architecture.rs`), Anforderungs-Rückverfolgbarkeit und die Fitness-Obergrenze für die Gate-Dauer (1200 Sekunden). Am 2026-11-02 bestanden alle fünf.
 
-Die Grenzprüfung existiert, weil der gemeinsame Prüfer (`pipeline-check` v0.4.0) nur Java und Kotlin untersucht. Sie weist grafische, Datei-, Prozess- oder Netzwerkabhängigkeiten in den drei portablen Paketen zurück, erlaubt im wiederverwendbaren Tray nur die Oberflächenbibliothek egui und hat eigene Selbsttests, die Fehler einpflanzen und deren Zurückweisung verlangen. Alle 29 Anforderungen (Gruppe SQ; SQ-29 liegt zum Zeitpunkt der Prüfung im nicht committeten Arbeitsverzeichnis) in `docs/REQUIREMENTS.md` haben einen Test mit einem eigenständigen Kommentar `// REQ SQ-n`; die Suche deckt `.rs`-Dateien unter `crates` und `tools` ab. Ein Tag belegt, dass ein Test existiert, nicht dass sich der echte Desktop richtig verhält; Fensterstapelung, Start beim Login und die Ressourcengrenzen brauchen daher eigene Beobachtung (die Leerlauf-CPU liegt derzeit bei 2,05 % eines Kerns bei einem Ziel von 1 %).
+Die Grenzprüfung existiert, weil der gemeinsame Prüfer (`pipeline-check` v0.4.0) nur Java und Kotlin untersucht. Sie weist grafische, Datei-, Prozess- oder Netzwerkabhängigkeiten in den drei portablen Paketen zurück, erlaubt im wiederverwendbaren Tray nur die Oberflächenbibliothek egui und hat eigene Selbsttests, die Fehler einpflanzen und deren Zurückweisung verlangen. Alle 29 Anforderungen (Gruppe SQ; SQ-29 liegt zum Zeitpunkt der Prüfung im nicht committeten Arbeitsverzeichnis) in `docs/REQUIREMENTS.md` haben einen Test mit einem eigenständigen Kommentar `// REQ SQ-n`; die Suche deckt `.rs`-Dateien unter `crates` und `tools` ab. Der Wortlaut von SQ-29 wurde am 2026-11-02 ersetzt (Edit tray als freie Leinwand, Entscheidung ADR-0005 (Architecture Decision Record), siehe [[status-quo]]); seine Markierung steht in `crates/core/tests/behavior.rs`, `crates/tray/src/layout.rs` und `crates/tray/tests/layout.rs`, und `docs/TRACEABILITY.md` führt dafür `behavior.rs, layout.rs` auf. Das Gate wurde für diese Seitenaktualisierung nicht ausgeführt. Ein Tag belegt, dass ein Test existiert, nicht dass sich der echte Desktop richtig verhält; Fensterstapelung, Start beim Login und die Ressourcengrenzen brauchen daher eigene Beobachtung (die Leerlauf-CPU liegt derzeit bei 2,05 % eines Kerns bei einem Ziel von 1 %).
 
 ## How it does it
 CI (Continuous Integration) nutzt den Standard-Workflow (`pipeline-check --mode ci`, höchstens 60 Minuten) und ergänzt einen Browser-Build für das Ziel `wasm32`. `pipeline-check.toml` nennt das Projekt, verweist auf das Repository `yujideluca/status-quo`, verlangt die Prüfung `gate` auf `main` und führt `tools/hooks/pre-push` für den Shell-Prüfer auf. Vier ADRs (Architecture Decision Records) existieren, dazu eine leere Vorlage `docs/adr/0000-template.md`: 0001 (Entscheidungen festhalten), 0002 (portable Rust-Widgets), 0003 (das Programm misst, der Skill urteilt) und 0004 (Host-Kompatibilitätsschicht).

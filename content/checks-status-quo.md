@@ -8,7 +8,7 @@ status: active
 fed_by: []
 feeds: []
 sources: [status-quo:tools/quality_gate.sh, status-quo:pipeline-check.toml, status-quo:CLAUDE.md, status-quo:docs/REQUIREMENTS.md, status-quo:.github/workflows/quality-gate.yml, status-quo:tools/rust_architecture.rs, status-quo:docs/TESTES-AUTOMATIZADOS.md, status-quo:docs/TRACEABILITY.md, status-quo:docs/MAINTENANCE.md, status-quo:crates/widgets/tests/models.rs]
-reviewed: 2026-11-02T16:09Z
+reviewed: 2026-11-02T16:22Z
 ---
 
 ## What it is
@@ -17,7 +17,7 @@ These are the checkers of the repository `status-quo` (see [[status-quo-design]]
 ## What it does
 The gate (`tools/quality_gate.sh`) runs five steps in order: Rust formatting (`cargo fmt --check`), compiler diagnostics with warnings denied (clippy) plus the whole test suite, a project-specific boundary check (`tools/rust_architecture.rs`), requirement traceability, and the fitness limit on gate duration (1200 seconds). On 2026-11-02 all five passed.
 
-The boundary check exists because the shared checker (`pipeline-check` v0.4.0) only scans Java and Kotlin. It rejects graphical, file, process or network dependencies in the three portable packages, allows only the egui interface library in the reusable tray, and has its own self-tests that plant defects and require them to be rejected. All 29 requirements (SQ group; SQ-29 is in the uncommitted working tree at review time) in `docs/REQUIREMENTS.md` have a test tagged with a standalone `// REQ SQ-n` comment; the scan covers `.rs` files under `crates` and `tools`. A tag proves a test exists, not that the real desktop behaves correctly, so window stacking, login startup and the resource limits need separate observation (idle CPU is currently 2.05% of one core against a 1% target).
+The boundary check exists because the shared checker (`pipeline-check` v0.4.0) only scans Java and Kotlin. It rejects graphical, file, process or network dependencies in the three portable packages, allows only the egui interface library in the reusable tray, and has its own self-tests that plant defects and require them to be rejected. All 29 requirements (SQ group; SQ-29 is in the uncommitted working tree at review time) in `docs/REQUIREMENTS.md` have a test tagged with a standalone `// REQ SQ-n` comment; the scan covers `.rs` files under `crates` and `tools`. The wording of SQ-29 was replaced on 2026-11-02 (Edit tray as a free canvas, decision ADR-0005 (architecture decision record), see [[status-quo]]); its tag is in `crates/core/tests/behavior.rs`, `crates/tray/src/layout.rs` and `crates/tray/tests/layout.rs`, and `docs/TRACEABILITY.md` lists `behavior.rs, layout.rs` for it. The gate was not run for this page update. A tag proves a test exists, not that the real desktop behaves correctly, so window stacking, login startup and the resource limits need separate observation (idle CPU is currently 2.05% of one core against a 1% target).
 
 ## How it does it
 CI (continuous integration) uses the standard workflow (`pipeline-check --mode ci`, 60 minutes at most) and adds a browser build for the `wasm32` target. `pipeline-check.toml` names the project, points at the repository `yujideluca/status-quo`, requires the check called `gate` on `main`, and lists `tools/hooks/pre-push` for the shell checker. Four ADRs (architecture decision records) exist, plus a blank template `docs/adr/0000-template.md`: 0001 (record decisions), 0002 (portable Rust widgets), 0003 (the program measures, the skill judges) and 0004 (host compatibility layer).
