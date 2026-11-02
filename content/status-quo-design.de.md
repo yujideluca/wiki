@@ -1,12 +1,12 @@
 ---
 id: status-quo-design
 lang: de
-source_hash: 5cc6d9d8ca08
+source_hash: 0b475e206e44
 title: Status Quo — vorgeschlagener Entwurf und Lieferumfang
 ---
 
 ## What it is
-Status Quo ist ein vorgeschlagenes Desktop-Panel, in dem Giovanni die Nutzung der Assistenten, laufende Aufgaben, neue Repository-Aktivitäten und Änderungen am gemeinsamen Gedächtnis an einer Stelle sehen kann. Dies ist der zu prüfende Entwurf, keine Beschreibung installierter Software. [[status-quo-layout]] enthält den zugehörigen Layoutentwurf. Die Umsetzung beginnt erst nach Freigabe dieses Entwurfs.
+Status Quo ist ein vorgeschlagenes Desktop-Panel, in dem Giovanni die Nutzung der Assistenten, laufende Aufgaben, neue Repository-Aktivitäten und Änderungen am gemeinsamen Gedächtnis an einer Stelle sehen kann. Die Software ist gebaut und getestet, aber noch nicht auf dem Laptop installiert oder abgenommen; den aktuellen Stand beschreibt der Abschnitt Notes. [[status-quo-layout]] enthält den zugehörigen Layoutentwurf. Giovanni hat diesen Entwurf am 2026-11-01 freigegeben.
 
 Die erste Umgebungshülle richtet sich an KDE Plasma, die Desktop-Oberfläche, die Panels und Fenster auf Giovannis Laptop verwaltet. Eine Hülle ist der kleine, umgebungsspezifische Teil um eine wiederverwendbare Komponente. Sämtliche selbst geschriebene Anwendungslogik und der gesamte Oberflächencode werden in Rust erstellt. Status Quo bleibt ein eigenständiges Desktop-Panel und setzt kein natives Plasma-Applet in einer anderen Oberflächensprache voraus. Die Einbettung in das native KDE-Panel bleibt einer künftigen Hülle vorbehalten; die erste Desktop-Hülle verspricht diese Funktion nicht.
 
@@ -102,6 +102,8 @@ Kein Senden von Prompts, Kontoverwaltung, Käufe, Gedächtnisänderungen, belieb
 Giovanni prüft diesen Entwurf und [[status-quo-layout]] einmal vor der Umsetzung. Die umsetzende Person nutzt die freigegebene Grundlage, um Projektanforderungen zu erstellen und jeden Lieferumfang abzuschließen. Künftige Hüllenautoren nutzen den dokumentierten Vertrag, statt Collector zu duplizieren.
 
 ## Notes
-Dieser Entwurf hält Giovannis Entscheidungen aus dem Status-Quo-Gespräch vom 2026-11-01 fest. Vorgeschlagene technische Details und Ressourcengrenzen sind Empfehlungen zur Umsetzung, bis der vollständige Entwurf freigegeben ist. Während dieser Entwurfsaufgabe wurden weder Status-Quo-Programm noch Repository, Authentifizierungsadapter oder Live-Sammlung erstellt.
+**Aktueller Stand (2026-11-02).** Der Rust-Workspace in `~/dev/status-quo` lässt sich bauen, und sein automatisches Prüftor besteht: Formatierung, warnungsfreie Compilerprüfung, Tests, Prüfung der Abhängigkeitsgrenzen und eine Prüfung, dass jede seiner 25 Anforderungen einen Test hat. Ein von Hand gestarteter Release-Build zeigte Live-Kontingentanzeigen für Claude und Codex, Token-Diagramme, Sitzungen, GitHub-Aktivität und Einträge aus workflow-memory. Noch offen: die Installation (sie ändert die Hook-Dateien der Assistenten, daher führt Giovanni sie selbst aus), der Nachweis, dass das Fenster hinter anderen Fenstern bleibt, der Start beim Login und die 100-ms-Prüfung der Bedienung. Die Fünf-Minuten-Ressourcenprüfung besteht beim Speicher (115 MiB von 200 MiB), verfehlt aber die Leerlauf-CPU (2,05 % eines Kerns statt 1 %); die Ursache ist noch offen. Das Projekt hat noch keine Commits und kein GitHub-Repository.
+
+Diese Seite hält außerdem Giovannis Entscheidungen aus dem Status-Quo-Gespräch vom 2026-11-01 fest. Die Ressourcengrenzen sind Empfehlungen des Umsetzers, die Giovanni mit dem Entwurf freigegeben hat.
 
 Herangezogene Quellen: [Referenz-Widget](https://github.com/bozdemir/claude-usage-widget/blob/main/README.md), [egui-Architektur](https://github.com/emilk/egui/blob/main/ARCHITECTURE.md) und [KDE-Widget-Einrichtung](https://develop.kde.org/docs/plasma/widget/setup/). Ein natives Applet unterscheidet sich von einem eigenständigen, in den KDE-Desktop integrierten Fenster.

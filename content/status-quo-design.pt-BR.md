@@ -1,12 +1,12 @@
 ---
 id: status-quo-design
 lang: pt-BR
-source_hash: 5cc6d9d8ca08
+source_hash: 0b475e206e44
 title: Status Quo — proposta de design e escopo de entrega
 ---
 
 ## What it is
-Status Quo é um painel de desktop proposto para que Giovanni veja, em um só lugar, o uso dos assistentes, o trabalho em andamento, a atividade recente dos repositórios e as mudanças na memória compartilhada. Este é o design para revisão, não uma descrição de software instalado. A página [[status-quo-layout]] contém o mockup de layout correspondente. A implementação começa somente após a aprovação deste design.
+Status Quo é um painel de desktop proposto para que Giovanni veja, em um só lugar, o uso dos assistentes, o trabalho em andamento, a atividade recente dos repositórios e as mudanças na memória compartilhada. O software está construído e testado, mas ainda não foi instalado nem aceito no laptop; o estado atual está em Notes. A página [[status-quo-layout]] contém o mockup de layout correspondente. Giovanni aprovou este design em 2026-11-01.
 
 O primeiro invólucro de ambiente será para KDE Plasma, a interface de desktop que gerencia painéis e janelas no notebook de Giovanni. Um invólucro é a pequena parte específica do ambiente ao redor de um componente reutilizável. Toda a lógica de aplicação e todo o código de interface escritos serão em Rust. Status Quo continua sendo um painel de desktop independente, sem exigir um applet nativo do Plasma escrito em outra linguagem de interface. A incorporação ao painel nativo do KDE fica para um invólucro futuro; o primeiro invólucro de desktop não promete essa função.
 
@@ -102,6 +102,8 @@ Sem envio de prompts, gerenciamento de contas, compras, edições de memória, p
 Giovanni revisa este design e [[status-quo-layout]] uma vez antes da implementação. Quem implementar usa a base aprovada para produzir os requisitos do projeto e concluir todos os escopos de entrega. Autores de invólucros futuros usam o contrato documentado em vez de duplicar coletores.
 
 ## Notes
-Este rascunho registra as escolhas de Giovanni na conversa do Status Quo de 2026-11-01. Detalhes técnicos e limites de recursos propostos são recomendações de implementação pendentes de aprovação do design completo. Nenhum executável Status Quo, repositório, adaptador de autenticação ou coleta ao vivo foi criado durante esta tarefa de design.
+**Estado atual (2026-11-02).** O workspace Rust em `~/dev/status-quo` compila e seu portão automático passa: formatação, verificação do compilador sem avisos, testes, verificação dos limites de dependência e uma verificação de que cada um dos seus 25 requisitos tem teste. Uma versão release iniciada à mão mostrou medidores de uso do Claude e do Codex ao vivo, gráficos de tokens, sessões, atividade do GitHub e entradas do workflow-memory. Ainda falta: a instalação (ela altera os arquivos de hooks dos assistentes, então Giovanni a executa), a prova de que a janela fica atrás das outras, o início no login e a verificação de 100 ms de interação. A verificação de recursos de cinco minutos passa em memória (115 MiB de 200 MiB), mas falha em CPU ociosa (2,05% de um núcleo contra 1%); a causa ainda está em aberto. O projeto ainda não tem commits nem repositório no GitHub.
+
+Esta página também registra as escolhas de Giovanni na conversa do Status Quo de 2026-11-01. Os limites de recursos são recomendações do construtor que Giovanni aprovou com o design.
 
 Referências consultadas: [widget de referência](https://github.com/bozdemir/claude-usage-widget/blob/main/README.md), [arquitetura do egui](https://github.com/emilk/egui/blob/main/ARCHITECTURE.md) e [configuração de widgets KDE](https://develop.kde.org/docs/plasma/widget/setup/). Um applet nativo é diferente de uma janela independente integrada ao desktop KDE.

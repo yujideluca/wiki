@@ -4,18 +4,18 @@ title: Status Quo — proposed design and delivery scope
 aliases: [Status Quo, widget host]
 kind: reference
 project: none
-status: planned
+status: beta
 since: 2026-11-01
 location: wiki:content/status-quo-design.md
 fed_by: []
 feeds: []
 sources: [project-template:CLAUDE.md, project-template:pipeline-check.toml]
 memory: [#f1e117, #d975f2, #63efec, #c1f1f8]
-reviewed: 2026-11-01T22:17Z
+reviewed: 2026-11-02T12:32Z
 ---
 
 ## What it is
-Status Quo is a proposed desktop panel that lets Giovanni see assistant usage, ongoing work, recent repository activity, and shared-memory changes in one place. This is the design for review, not a description of installed software. The [[status-quo-layout]] page contains the accompanying layout mockup. Implementation starts only after this design is approved.
+Status Quo is a proposed desktop panel that lets Giovanni see assistant usage, ongoing work, recent repository activity, and shared-memory changes in one place. The software is built and tested but not yet installed or accepted on the laptop; see Notes for its current state. The [[status-quo-layout]] page contains the accompanying layout mockup. Giovanni approved this design on 2026-11-01.
 
 The first environment wrapper targets KDE Plasma, the desktop shell that manages panels and windows on Giovanni's laptop. A wrapper is the small environment-specific part around a reusable component. All authored application logic and interface code will be Rust. Status Quo remains an independent desktop panel, rather than requiring a native Plasma applet written in another interface language. Support for embedding in the native KDE panel is a future wrapper, not a claim that the first desktop wrapper provides it.
 
@@ -111,6 +111,8 @@ No sending prompts, account management, purchases, memory edits, arbitrary third
 Giovanni reviews this design and [[status-quo-layout]] once before implementation. A builder uses the approved baseline to produce the project requirements and complete every delivery scope. Future wrapper authors use the documented contract rather than duplicating collectors.
 
 ## Notes
-This draft records Giovanni's choices from the Status Quo conversation of 2026-11-01. Proposed technical details and resource thresholds are builder recommendations pending approval of the full design. No Status Quo executable, repository, authentication adapter, or live collection has been created during this design task.
+**Current state (2026-11-02).** The Rust workspace in `~/dev/status-quo` builds and its automated gate passes: formatting, warning-free compiler checks, tests, dependency-boundary checks and a check that every one of its 25 requirements has a test. A hand-started release build showed live Claude and Codex usage meters, token graphs, sessions, GitHub activity and workflow-memory entries. Not yet done: installation (it edits the assistant hook files, so Giovanni runs it), proof of window stacking behind other windows, login startup, and the 100 ms interaction check. The five-minute resource check passes on memory (115 MiB against 200 MiB) but misses on idle CPU (2.05% of one core against 1%); the cause is still open. The project has no commits or GitHub repository yet.
+
+This page also records Giovanni's choices from the Status Quo conversation of 2026-11-01. Resource thresholds are builder recommendations that Giovanni approved with the design.
 
 References consulted: [reference widget](https://github.com/bozdemir/claude-usage-widget/blob/main/README.md), [egui architecture](https://github.com/emilk/egui/blob/main/ARCHITECTURE.md), and [KDE widget setup](https://develop.kde.org/docs/plasma/widget/setup/). A native applet is distinct from a standalone window integrated with the KDE desktop.
