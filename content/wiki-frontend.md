@@ -9,7 +9,7 @@ location: wiki:frontend
 fed_by: [wiki-article-view, wiki-flow-view, wiki-map-view, wiki-router, wiki-search]
 feeds: [giovanni]
 sources: [wiki:frontend/src/Main.elm, wiki:frontend/src/TopBar.elm, wiki:frontend/src/Lens.elm, wiki:frontend/src/Motion.elm, wiki:frontend/static/style.css, wiki:frontend/static/index.html]
-reviewed: 2026-10-28T17:46Z
+reviewed: 2026-11-02T20:56Z
 ---
 
 ## What it is

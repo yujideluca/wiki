@@ -8,7 +8,7 @@ status: active
 fed_by: []
 feeds: []
 sources: [wiki:tools/quality_gate.sh, wiki:pipeline-check.toml, wiki:CLAUDE.md, wiki:docs/REQUIREMENTS.md, wiki:.github/workflows/quality-gate.yml]
-reviewed: 2026-11-02T10:44Z
+reviewed: 2026-11-02T20:56Z
 ---
 
 ## What it is
