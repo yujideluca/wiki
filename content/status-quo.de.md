@@ -1,7 +1,7 @@
 ---
 id: status-quo
 lang: de
-source_hash: 79d999de962b
+source_hash: 1f216c6275ad
 title: Status-Quo-Desktop-Widget-Tray
 ---
 
@@ -114,4 +114,4 @@ Continuous Integration (CI) bedeutet automatische Prüfungen bei jedem Push. `qu
 Technische Schulden gehören in GitHub-Issues mit dem Label `debt` (P1 bis P3) nach der [[maintenance-policy]], und der [[monthly-architecture-review]] prüft das Projekt. Branch-Schutz lässt sich bei einem privaten Repository im kostenlosen GitHub-Tarif nicht aktivieren.
 
 ## Notes
-Bauen mit `cargo build --release --locked -p status-quo`; der Installer ist `status-quo install`, und `status-quo uninstall` macht ihn rückgängig. Der Zustand liegt in `~/.local/state/status-quo`; `STATUS_QUO_STATE_DIR` leitet ihn für Tests um. Auf dem Laptop noch nicht beobachtet: Fensterstapelung hinter anderen Fenstern, Start beim Login und die 100-ms-Grenze der Bedienung. Die Ursache der verbleibenden Leerlauf-CPU ist offen.
+Bauen mit `cargo build --release --locked -p status-quo`; der Installer ist `status-quo install`, und `status-quo uninstall` macht ihn rückgängig. Der Zustand liegt in `~/.local/state/status-quo`; `STATUS_QUO_STATE_DIR` leitet ihn für Tests um. Auf dem Laptop zeigte ein Testlauf am 2026-11-02 das Panel mit Live-Daten, den Collector mit echten Assistenten-Sitzungen über die Hooks und eine 60-Sekunden-Leerlaufmessung von 1,23 % eines Kerns und 119 MB. Noch nicht beobachtet: Fensterstapelung hinter anderen Fenstern, Start beim Login, die 100-ms-Grenze der Bedienung und der volle Fünf-Minuten-Lauf. Die Ursache der verbleibenden Leerlauf-CPU ist offen.

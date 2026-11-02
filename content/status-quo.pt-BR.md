@@ -1,7 +1,7 @@
 ---
 id: status-quo
 lang: pt-BR
-source_hash: 79d999de962b
+source_hash: 1f216c6275ad
 title: Bandeja de widgets de desktop Status Quo
 ---
 
@@ -114,4 +114,4 @@ Integração contínua (CI) significa verificações automáticas a cada push. O
 A dívida técnica vai para issues do GitHub com o rótulo `debt` (P1 a P3), segundo a [[maintenance-policy]], e a [[monthly-architecture-review]] verifica o projeto. A proteção de branch não pode ser ativada em repositório privado no plano gratuito do GitHub.
 
 ## Notes
-Compile com `cargo build --release --locked -p status-quo`; o instalador é `status-quo install`, e `status-quo uninstall` o desfaz. O estado fica em `~/.local/state/status-quo`; `STATUS_QUO_STATE_DIR` o redireciona para testes. Ainda não observado no laptop: empilhamento da janela atrás das outras, início no login e o limite de 100 ms de interação. A causa do uso ocioso de CPU restante está em aberto.
+Compile com `cargo build --release --locked -p status-quo`; o instalador é `status-quo install`, e `status-quo uninstall` o desfaz. O estado fica em `~/.local/state/status-quo`; `STATUS_QUO_STATE_DIR` o redireciona para testes. No laptop, um teste em 2026-11-02 mostrou o painel aberto com dados reais, o coletor vendo sessões reais dos assistentes pelos hooks e uma medição ociosa de 60 segundos de 1,23% de um núcleo e 119 MB. Ainda não observado: empilhamento da janela atrás das outras, início no login, o limite de 100 ms de interação e a execução completa de cinco minutos. A causa do uso ocioso de CPU restante está em aberto.
