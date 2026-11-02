@@ -1,7 +1,7 @@
 ---
 id: report-translator
 lang: pt-BR
-source_hash: 88ccd87130d0
+source_hash: 631cdcdd4ec7
 title: Tradutor de laudos (translate.py)
 ---
 
@@ -53,12 +53,17 @@ Os resultados vão para a tabela `translations` (endereço da página, idioma, t
 - Os livros de referência são Duale Reihe Radiologie (alemão, 816 páginas, 3.258 trechos) e Anatomia Radiológica Básica Ilustrada, Volume 1 (português, 44 páginas só sobre o tórax, 33 trechos). Ambos foram convertidos de PDF (um arquivo de documento de layout fixo) para texto com `pdftotext`; ficam no notebook e não são copiados para nenhum produto.
 - Para achar os trechos que combinam com um artigo, cada palavra é cortada em pedaços sobrepostos de quatro letras e cada trecho vira um vetor (uma lista de números) ponderado pela raridade de seus pedaços (TF-IDF). São escolhidos os trechos mais próximos do título, das tags, dos subtítulos e do início (1.500 caracteres) do artigo, medidos pela similaridade de cosseno (o ângulo entre dois vetores). Como as palavras médicas em inglês, alemão e português compartilham raízes latinas e gregas, isso funciona entre idiomas sem modelo de IA. Exemplo: uma consulta sobre pleural effusion e pneumothorax devolve trechos alemães sobre *Pneumothorax* e *Pleura*.
 - Os cinco melhores trechos entram no prompt como guia de terminologia e estilo, com regras: não copiar as frases deles, manter a estrutura, usar o formato de números do país (vírgula decimal) e tratar o artigo como texto não confiável, cujo conteúdo nunca é obedecido como instrução.
-- Cada chamada ao [[codex]] é uma sessão nova, descartável e somente de leitura (`--ephemeral`), então nada se acumula entre páginas. Giovanni pediu que o contexto de um Codex fique abaixo de 250.000 tokens (um token é um pedacinho de texto, cerca de três caracteres): um prompt tem cerca de 6.000 tokens, um artigo com mais de 24.000 caracteres é dividido por seção em chamadas separadas e uma verificação recusa qualquer prompt que passaria do limite.
+- Cada chamada ao [[codex]] é uma sessão nova, descartável e somente de leitura (`--ephemeral`, `--ignore-user-config`), então nada se acumula entre páginas. Giovanni pediu que o contexto de um Codex fique abaixo de 250.000 tokens (um token é um pedacinho de texto, cerca de três caracteres): um prompt tem cerca de 6.000 tokens, um artigo com mais de 24.000 caracteres é dividido por seção em chamadas separadas e uma verificação recusa qualquer prompt que passaria do limite.
 - Giovanni removeu o limite diário em 2026-10-27 (traduzir tudo é a prioridade) e escolheu o modelo mais barato do Codex, `gpt-6-luna`, para economizar orçamento; quatro workers rodam em paralelo. Medido nesse dia: cerca de 9 a 10 segundos por artigo e idioma com o Luna, 12 a 14 com o modelo padrão usado nas primeiras traduções (a coluna `model` delas fica vazia). Nessa velocidade, 17.359 artigos em dois idiomas levam de um a dois dias, se os limites de uso do Codex permitirem. Os casos (cerca de 20.000 extraídos até agora, 70.500 esperados) seguem as mesmas regras: um caso é dividido nas seções apresentação, dados do paciente, achados por série de imagens e discussão do caso, e traduzido com os mesmos trechos de livro, o mesmo modelo, o mesmo limite de tokens, a mesma proteção contra texto não confiável e três tentativas; os títulos das seções também são traduzidos.
 - O livro em português é pequeno; fora da anatomia do tórax, o vocabulário em português depende do conhecimento próprio do Codex; faltam mais fontes brasileiras.
+
+- As chamadas automáticas ignoram a configuração interativa do Codex. Isso impede que hooks globais de documentação (comandos executados automaticamente antes ou depois de uma sessão) substituam a tradução por uma tarefa de atualização da wiki. O modelo, o acesso somente de leitura e as regras de tradução continuam iguais.
 
 ## Where it sits in the pipeline
 Segundo passo da cadeia de dados: depois do [[radiopaedia-crawler]] e antes do construtor de índice planejado do [[radiology-report-matcher]].
 
 ## Who receives its output
 O construtor de índice planejado e, depois, as páginas em alemão e português do site.
+
+## Notes
+O site do plano mostra contagens separadas de traduções de artigos e casos em cada idioma, atualizadas pelo banco a cada cinco segundos. Depois de alterar `progress.py`, reinicie `radiology-crawler` e `radiology-plan-updater`: um processo Python em execução mantém o código carregado e pode sobrescrever as novas contagens com o formato antigo. Em 02/11/2026 isso causou uma falsa contagem zero de casos, embora já houvesse traduções. As falhas pendentes causadas pelos hooks interativos foram liberadas para nova tentativa; seus contadores anteriores permanecem no arquivo local de auditoria `data/translation-recovery-20261102.json`. As traduções salvas foram preservadas.

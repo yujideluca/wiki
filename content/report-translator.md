@@ -8,8 +8,8 @@ status: active
 location: radiology-crawler:translate.py
 fed_by: [radiopaedia-crawler]
 feeds: []
-sources: [radiology-crawler:translate.py]
-reviewed: 2026-11-01T18:11Z
+sources: [radiology-crawler:translate.py, radiology-crawler:progress.py, radiology-crawler:site_src/build.py]
+reviewed: 2026-11-02T13:57Z
 ---
 
 ## What it is
@@ -60,8 +60,9 @@ Results go into the table `translations` (page address, language, title, text, t
 - The reference books are Duale Reihe Radiologie (German, 816 pages, 3,258 passages) and Anatomia Radiológica Básica Ilustrada, Volume 1 (Portuguese, 44 pages on the chest only, 33 passages). Both were converted from PDF (a fixed-layout document file) to text with `pdftotext`; they stay on the laptop and are not copied into any product.
 - To find the passages that fit an article, every word is cut into overlapping pieces of four letters and each passage becomes a vector (a list of numbers) weighted by how rare its pieces are (TF-IDF). The passages closest to the article's title, tags, headings and first 1,500 characters, measured by cosine similarity (the angle between two vectors), are chosen. Because English, German and Portuguese medical words share Latin and Greek roots, this works across languages with no AI model. Example: a query about pleural effusion and pneumothorax returns German passages on *Pneumothorax* and *Pleura*.
 - The five best passages go into the prompt as a terminology and style guide, with rules: do not copy their sentences, keep structure, use the country's number style (decimal comma), and treat the article as untrusted text that must never be obeyed as instructions.
-- Each call to [[codex]] is a new, throw-away, read-only session (`--ephemeral`), so nothing builds up between pages. Giovanni asked that a Codex context stay under 250,000 tokens (a token is a small piece of text, roughly three characters): a prompt is about 6,000 tokens, an article longer than 24,000 characters is split by section into separate calls, and a check refuses any prompt that would pass the ceiling.
+- Each call to [[codex]] is a new, throw-away, read-only session (`--ephemeral`, `--ignore-user-config`), so nothing builds up between pages. Giovanni asked that a Codex context stay under 250,000 tokens (a token is a small piece of text, roughly three characters): a prompt is about 6,000 tokens, an article longer than 24,000 characters is split by section into separate calls, and a check refuses any prompt that would pass the ceiling.
 - Giovanni removed the daily cap on 2026-10-27 (translating everything is the priority) and chose Codex's cheaper model `gpt-6-luna` to save budget; four workers run in parallel. Measured that day: about 9 to 10 seconds per article per language with Luna, 12 to 14 with the default model used for the first translations (their `model` column is empty). At that speed 17,359 articles in two languages take roughly one to two days if Codex's usage limits allow. Cases (about 20,000 extracted so far, 70,500 expected) follow the same rules: a case is cut into the sections presentation, patient data, findings per imaging series and case discussion, translated with the same textbook passages, model, token ceiling, untrusted-text guard and three tries, and its section headings are translated too.
+- Automated calls ignore the interactive Codex configuration. This keeps global documentation hooks (commands that run automatically around a session) from replacing the translation with a wiki follow-up. The model, read-only access and translation rules stay the same.
 - The Portuguese book is small, so outside chest anatomy the Portuguese wording relies on Codex's own knowledge; more Brazilian sources are needed.
 
 ## Where it sits in the pipeline
@@ -69,3 +70,6 @@ Second step of the data chain: after [[radiopaedia-crawler]] and before the plan
 
 ## Who receives its output
 The planned index builder and, later, the website's German and Portuguese pages.
+
+## Notes
+The plan site shows separate article and case translation counts for each language, refreshed from the database every five seconds. After changing `progress.py`, restart both `radiology-crawler` and `radiology-plan-updater`: a running Python process retains its loaded code and can otherwise overwrite the new counts with the old format. On 2026-11-02 this caused a false zero case count although translations existed. Pending failures caused by the interactive hooks were reset for retry; their prior counters are retained in the local audit file `data/translation-recovery-20261102.json`. Saved translations were preserved.
