@@ -1,12 +1,12 @@
 ---
 id: status-quo-design
 lang: pt-BR
-source_hash: 968888cc5191
+source_hash: f13ee1396013
 title: Status Quo — proposta de design e escopo de entrega
 ---
 
 ## What it is
-Status Quo é um painel de desktop proposto para que Giovanni veja, em um só lugar, o uso dos assistentes, o trabalho em andamento, a atividade recente dos repositórios e as mudanças na memória compartilhada. O software está construído e testado, mas ainda não foi instalado nem aceito no laptop; o estado atual está em Notes. A página [[status-quo-layout]] contém o mockup de layout correspondente. Giovanni aprovou este design em 2026-11-01.
+Status Quo é um ambiente de widgets de desktop, pequenos painéis desenhados no próprio desktop, para que Giovanni veja, em um só lugar, o uso dos assistentes, o trabalho em andamento, a atividade recente dos repositórios e as mudanças na memória compartilhada. O software está construído, testado e instalado no laptop, mas ainda não foi aceito; o estado atual está em Notes. A página [[status-quo-layout]] contém o mockup de layout correspondente. Giovanni aprovou este design em 2026-11-01.
 
 O primeiro invólucro de ambiente será para KDE Plasma, a interface de desktop que gerencia painéis e janelas no notebook de Giovanni. Um invólucro é a pequena parte específica do ambiente ao redor de um componente reutilizável. Toda a lógica de aplicação e todo o código de interface escritos serão em Rust. Status Quo continua sendo um painel de desktop independente, sem exigir um applet nativo do Plasma escrito em outra linguagem de interface. A incorporação ao painel nativo do KDE fica para um invólucro futuro; o primeiro invólucro de desktop não promete essa função.
 
@@ -102,7 +102,7 @@ Sem envio de prompts, gerenciamento de contas, compras, edições de memória, p
 Giovanni revisa este design e [[status-quo-layout]] uma vez antes da implementação. Quem implementar usa a base aprovada para produzir os requisitos do projeto e concluir todos os escopos de entrega. Autores de invólucros futuros usam o contrato documentado em vez de duplicar coletores.
 
 ## Notes
-**Estado atual (2026-11-02).** O workspace Rust em `~/dev/status-quo` compila e seu portão automático passa: formatação, verificação do compilador sem avisos, testes, verificação dos limites de dependência e uma verificação de que cada um dos seus 25 requisitos tem teste. Uma versão release iniciada à mão mostrou medidores de uso do Claude e do Codex ao vivo, gráficos de tokens, sessões, atividade do GitHub e entradas do workflow-memory. Ainda falta: a instalação (ela altera os arquivos de hooks dos assistentes, então Giovanni a executa), a prova de que a janela fica atrás das outras, o início no login e a verificação de 100 ms de interação. A verificação de recursos de cinco minutos passa em memória (115 MiB de 200 MiB), mas falha em CPU ociosa (2,05% de um núcleo contra 1%); a causa ainda está em aberto. O código está no repositório privado `yujideluca/status-quo`; o gate passou na execução de CI do primeiro commit (2026-11-02). A proteção de branch não pode ser ativada enquanto o repositório é privado no plano gratuito do GitHub.
+**Estado atual (2026-11-02).** O workspace Rust em `~/dev/status-quo` compila e seu portão automático passa: formatação, verificação do compilador sem avisos, testes, verificação dos limites de dependência e uma verificação de que cada um dos seus 27 requisitos tem teste. O programa está instalado como serviços de usuário. No KDE Plasma ele roda como uma superfície layer-shell sem moldura, ancorada no canto superior direito abaixo das janelas normais, escolhida em tempo de execução por uma camada de compatibilidade de host (layer-shell, dicas do X11 ou janela comum; ADR-0004), e mostrou medidores de uso do Claude e do Codex ao vivo, gráficos de tokens, sessões, atividade do GitHub e entradas do workflow-memory; um clique do mouse alterou um widget. Ainda falta: o início no login, a verificação de 100 ms de interação, entrada de teclado no host layer-shell e qualquer desktop além do KDE Plasma. A verificação de cinco minutos da versão anterior em janela passou em memória (115 MiB), mas falhou em CPU ociosa (2,05%); uma amostra de 60 segundos do host layer-shell deu 1,08% de um núcleo e 195 MB no total contra o limite de 200 MiB, e a execução de cinco minutos ainda falta. O código está no repositório privado `yujideluca/status-quo`; o gate passou na execução de CI do primeiro commit (2026-11-02). A proteção de branch não pode ser ativada enquanto o repositório é privado no plano gratuito do GitHub.
 
 Esta página também registra as escolhas de Giovanni na conversa do Status Quo de 2026-11-01. Os limites de recursos são recomendações do construtor que Giovanni aprovou com o design.
 

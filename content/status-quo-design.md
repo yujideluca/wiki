@@ -11,11 +11,11 @@ fed_by: []
 feeds: []
 sources: [project-template:CLAUDE.md, project-template:pipeline-check.toml, status-quo:README.md, status-quo:DESIGN.md, status-quo:Cargo.toml, status-quo:Cargo.lock, status-quo:.cargo/config.toml, status-quo:.gitignore, status-quo:crates/collector/Cargo.toml, status-quo:crates/collector/src/events.rs]
 memory: [#f1e117, #d975f2, #63efec, #c1f1f8]
-reviewed: 2026-11-02T13:00Z
+reviewed: 2026-11-02T13:48Z
 ---
 
 ## What it is
-Status Quo is a proposed desktop panel that lets Giovanni see assistant usage, ongoing work, recent repository activity, and shared-memory changes in one place. The software is built and tested but not yet installed or accepted on the laptop; see Notes for its current state. The [[status-quo-layout]] page contains the accompanying layout mockup. Giovanni approved this design on 2026-11-01.
+Status Quo is a desktop widget environment, small panels drawn on the desktop itself, that lets Giovanni see assistant usage, ongoing work, recent repository activity, and shared-memory changes in one place. The software is built, tested and installed on the laptop but not yet accepted; see Notes for its current state. The [[status-quo-layout]] page contains the accompanying layout mockup. Giovanni approved this design on 2026-11-01.
 
 The first environment wrapper targets KDE Plasma, the desktop shell that manages panels and windows on Giovanni's laptop. A wrapper is the small environment-specific part around a reusable component. All authored application logic and interface code will be Rust. Status Quo remains an independent desktop panel, rather than requiring a native Plasma applet written in another interface language. Support for embedding in the native KDE panel is a future wrapper, not a claim that the first desktop wrapper provides it.
 
@@ -111,7 +111,7 @@ No sending prompts, account management, purchases, memory edits, arbitrary third
 Giovanni reviews this design and [[status-quo-layout]] once before implementation. A builder uses the approved baseline to produce the project requirements and complete every delivery scope. Future wrapper authors use the documented contract rather than duplicating collectors.
 
 ## Notes
-**Current state (2026-11-02).** The Rust workspace in `~/dev/status-quo` builds and its automated gate passes: formatting, warning-free compiler checks, tests, dependency-boundary checks and a check that every one of its 25 requirements has a test. A hand-started release build showed live Claude and Codex usage meters, token graphs, sessions, GitHub activity and workflow-memory entries. Not yet done: installation (it edits the assistant hook files, so Giovanni runs it), proof of window stacking behind other windows, login startup, and the 100 ms interaction check. The five-minute resource check passes on memory (115 MiB against 200 MiB) but misses on idle CPU (2.05% of one core against 1%); the cause is still open. The code is in the private repository `yujideluca/status-quo`; the gate passed in its CI run on the first commit (2026-11-02). Branch protection cannot be enabled while the repository is private on the free GitHub plan.
+**Current state (2026-11-02).** The Rust workspace in `~/dev/status-quo` builds and its automated gate passes: formatting, warning-free compiler checks, tests, dependency-boundary checks and a check that every one of its 27 requirements has a test. The program is installed as user services. On KDE Plasma it runs as a frameless layer-shell surface anchored top-right below normal windows, chosen at run time by a host compatibility layer (layer-shell, X11 hints or a plain window; ADR-0004), and showed live Claude and Codex usage meters, token graphs, sessions, GitHub activity and workflow-memory entries; a mouse click changed a widget. Not yet done: login startup, the 100 ms interaction check, keyboard input in the layer host, and any desktop other than KDE Plasma. The five-minute check of the earlier window build passed on memory (115 MiB) but missed idle CPU (2.05%); a 60-second sample of the layer host gave 1.08% of one core and 195 MB combined against the 200 MiB limit, and the five-minute run is still to do. The code is in the private repository `yujideluca/status-quo`; the gate passed in its CI run on the first commit (2026-11-02). Branch protection cannot be enabled while the repository is private on the free GitHub plan.
 
 This page also records Giovanni's choices from the Status Quo conversation of 2026-11-01. Resource thresholds are builder recommendations that Giovanni approved with the design.
 

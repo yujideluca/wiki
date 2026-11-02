@@ -1,7 +1,7 @@
 ---
 id: status-quo
 lang: pt-BR
-source_hash: 67f16e21f9cf
+source_hash: ddfa9e7fc66f
 title: Bandeja de widgets de desktop Status Quo
 ---
 
@@ -82,7 +82,7 @@ O código é um workspace Rust de nove pacotes. `sq-core`, `sq-contract` e `sq-w
 
 **Hooks.** O instalador adiciona entradas do Status Quo em `~/.claude/settings.json` e `~/.codex/hooks.json` e mantém todos os hooks existentes. Ele foi executado em 2026-11-02.
 
-**Camada de compatibilidade.** `crates/desktop/src/host/` é o único código que sabe como a bandeja é colocada em um desktop Linux específico, e ele escolhe em tempo de execução, de modo que um programa funciona em várias distribuições (decisão em `docs/adr/0003-host-compatibility-layer.md`). Layer-shell, um protocolo do Wayland que permite a um programa desenhar na camada do desktop, é usado quando o compositor o oferece (KDE Plasma, Hyprland, sway); a bandeja então não tem moldura, fica ancorada a uma borda ou canto (`STATUS_QUO_ANCHOR`, padrão canto superior direito) e só desenha quando algo muda. Numa sessão X11 usa uma janela sem moldura com dicas do gerenciador de janelas para ficar embaixo, fora da barra de tarefas e do pager; pedir todas as áreas de trabalho é só uma tentativa, porque a compatibilidade X11 do KDE a ignora. Em qualquer outro lugar, por exemplo GNOME no Wayland, volta para uma janela comum e avisa. `STATUS_QUO_HOST=layer-shell|x11|window` força uma escolha quando ela é possível. Personalização e capturas de tela usam a janela comum porque o host layer-shell ainda não tem entrada de teclado.
+**Camada de compatibilidade.** `crates/desktop/src/host/` é o único código que sabe como a bandeja é colocada em um desktop Linux específico, e ele escolhe em tempo de execução, de modo que um programa funciona em várias distribuições (decisão em `docs/adr/0004-host-compatibility-layer.md`). Layer-shell, um protocolo do Wayland que permite a um programa desenhar na camada do desktop, é usado quando o compositor o oferece (KDE Plasma, Hyprland, sway); a bandeja então não tem moldura, fica ancorada a uma borda ou canto (`STATUS_QUO_ANCHOR`, padrão canto superior direito) e só desenha quando algo muda. Numa sessão X11 usa uma janela sem moldura com dicas do gerenciador de janelas para ficar embaixo, fora da barra de tarefas e do pager; pedir todas as áreas de trabalho é só uma tentativa, porque a compatibilidade X11 do KDE a ignora. Em qualquer outro lugar, por exemplo GNOME no Wayland, volta para uma janela comum e avisa. `STATUS_QUO_HOST=layer-shell|x11|window` força uma escolha quando ela é possível. Personalização e capturas de tela usam a janela comum porque o host layer-shell ainda não tem entrada de teclado.
 
 ## Where it sits in the pipeline
 Roda no laptop ao lado de [[claude-code]] e [[codex]]. Suas verificações estão em [[checks-status-quo]], e ele segue [[project-template]] e [[pipeline-check]].
