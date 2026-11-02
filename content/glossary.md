@@ -28,7 +28,7 @@ Every reader of the wiki, above all [[giovanni]] and anyone new to the system.
 ## Notes
 - **Activity / Android Activity**: one screen-hosting component of an Android app ([documentation](https://developer.android.com/guide/components/activities/intro-activities)).
 - **adb** (Android Debug Bridge): a tool that lets a computer control an Android phone over a cable ([documentation](https://developer.android.com/tools/adb)); see [[skill-adb-android-control]].
-- **ADR** (architecture decision record): a short note that records one important decision, why it was taken and what the alternatives were ([adr.github.io](https://adr.github.io/)); see [[quizapp-adrs]] and [[memory-adrs]].
+- **ADR** (architecture decision record): a short note that records one important decision, why it was taken and what the alternatives were ([adr.github.io](https://adr.github.io/)); see [[adr-explained]], [[quizapp-adrs]] and [[memory-adrs]].
 - **Anki**: a flashcard program that uses spaced repetition ([apps.ankiweb.net](https://apps.ankiweb.net/)).
 - **API** (application programming interface): the way one program offers its functions to other programs, usually over the web.
 - **APK** (Android Package): the file that contains an Android app and is installed on the phone ([APK](https://en.wikipedia.org/wiki/Apk_%28file_format%29)).
@@ -39,7 +39,7 @@ Every reader of the wiki, above all [[giovanni]] and anyone new to the system.
 - **Beta / stable channel**: two streams of versions of the app; the beta is tried first, the stable one is what the user normally runs; see [[release-channels]].
 - **Branch**: a separate line of work in a git repository; `main` is the principal one.
 - **Brief**: the short summary of the memory that every chat starts with; see [[session-brief]].
-- **CI** (continuous integration): automatic checks that run on every change that is uploaded, so a mistake is noticed at once ([CI](https://en.wikipedia.org/wiki/Continuous_integration)); see [[quizapp-ci]].
+- **CI** (continuous integration): automatic checks that run on every change that is uploaded, so a mistake is noticed at once ([CI](https://en.wikipedia.org/wiki/Continuous_integration)); see [[ci-explained]] and [[quizapp-ci]].
 - **CLAUDE.md**: a text file of standing instructions that Claude Code reads automatically at the start of a session; see [[global-claude-md]].
 - **CLI** (command-line interface): a program used by typing commands in a terminal ([CLI](https://en.wikipedia.org/wiki/Command-line_interface)).
 - **Clone**: a full local copy of a repository.

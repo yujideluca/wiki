@@ -1,7 +1,7 @@
 ---
 id: glossary
 lang: de
-source_hash: 4dc9c7b85973
+source_hash: 9e5fd7a26514
 title: Glossar
 ---
 
@@ -23,7 +23,7 @@ Jeder Leser des Wikis, vor allem [[giovanni]] und alle, die neu im System sind.
 ## Notes
 - **Activity / Android-Activity**: eine bildschirmtragende Komponente einer Android-App ([Dokumentation](https://developer.android.com/guide/components/activities/intro-activities)).
 - **adb** (Android Debug Bridge): ein Werkzeug, mit dem ein Computer ein Android-Handy über ein Kabel steuert ([Dokumentation](https://developer.android.com/tools/adb)); siehe [[skill-adb-android-control]].
-- **ADR** (Architecture Decision Record): eine kurze Notiz, die eine wichtige Entscheidung festhält, warum sie getroffen wurde und welche Alternativen es gab ([adr.github.io](https://adr.github.io/)); siehe [[quizapp-adrs]] und [[memory-adrs]].
+- **ADR** (Architecture Decision Record): eine kurze Notiz, die eine wichtige Entscheidung festhält, warum sie getroffen wurde und welche Alternativen es gab ([adr.github.io](https://adr.github.io/)); siehe [[adr-explained]], [[quizapp-adrs]] und [[memory-adrs]].
 - **Anki**: ein Karteikartenprogramm mit Spaced Repetition ([apps.ankiweb.net](https://apps.ankiweb.net/)).
 - **API** (Application Programming Interface): die Art, wie ein Programm seine Funktionen anderen Programmen anbietet, meist über das Web.
 - **APK** (Android Package): die Datei, die eine Android-App enthält und auf dem Handy installiert wird ([APK](https://en.wikipedia.org/wiki/Apk_%28file_format%29)).
@@ -34,7 +34,7 @@ Jeder Leser des Wikis, vor allem [[giovanni]] und alle, die neu im System sind.
 - **Beta / stabiler Kanal**: zwei Ströme von App-Versionen; die Beta wird zuerst ausprobiert, die stabile ist das, was der Nutzer normalerweise benutzt; siehe [[release-channels]].
 - **Branch**: eine eigene Arbeitslinie in einem Git-Repository; `main` ist die Hauptlinie.
 - **Brief**: die kurze Zusammenfassung des Gedächtnisses, mit der jeder Chat beginnt; siehe [[session-brief]].
-- **CI** (Continuous Integration): automatische Prüfungen, die bei jeder hochgeladenen Änderung laufen, sodass ein Fehler sofort auffällt ([CI](https://en.wikipedia.org/wiki/Continuous_integration)); siehe [[quizapp-ci]].
+- **CI** (Continuous Integration): automatische Prüfungen, die bei jeder hochgeladenen Änderung laufen, sodass ein Fehler sofort auffällt ([CI](https://en.wikipedia.org/wiki/Continuous_integration)); siehe [[ci-explained]] und [[quizapp-ci]].
 - **CLAUDE.md**: eine Textdatei mit dauerhaften Anweisungen, die Claude Code zu Beginn einer Sitzung automatisch liest; siehe [[global-claude-md]].
 - **CLI** (Command-Line Interface, Kommandozeilenschnittstelle): ein Programm, das man bedient, indem man Befehle in ein Terminal tippt ([CLI](https://en.wikipedia.org/wiki/Command-line_interface)).
 - **Clone**: eine vollständige lokale Kopie eines Repositorys.
