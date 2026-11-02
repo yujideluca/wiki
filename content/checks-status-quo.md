@@ -7,18 +7,20 @@ project: none
 status: active
 fed_by: []
 feeds: []
-sources: [status-quo:tools/quality_gate.sh, status-quo:pipeline-check.toml, status-quo:CLAUDE.md, status-quo:docs/REQUIREMENTS.md]
-reviewed: 2026-11-02T10:44Z
+sources: [status-quo:tools/quality_gate.sh, status-quo:pipeline-check.toml, status-quo:CLAUDE.md, status-quo:docs/REQUIREMENTS.md, status-quo:.github/workflows/quality-gate.yml, status-quo:tools/rust_architecture.rs]
+reviewed: 2026-11-02T12:47Z
 ---
 
 ## What it is
-These are the checkers of the repository `status-quo` (see [[status-quo-design]] and [[status-quo-layout]]), a Rust workspace started from [[project-template]]. At the time of writing it had no commits, so its checks are partly the template's unfilled placeholders.
+These are the checkers of the repository `status-quo` (see [[status-quo-design]] and [[status-quo-layout]]), a Rust workspace started from [[project-template]]. It has one local commit and no GitHub repository yet, so its continuous-integration run and branch protection have never been observed.
 
 ## What it does
-The gate still holds the template step `echo "TODO: build and run the test suite"`, so no tests run yet; the traceability step and the fitness step are real. It has 25 requirements (SQ group) in `docs/REQUIREMENTS.md`. Its `pipeline-check.toml` still names the project `<project name>` and sets only the gate-duration cap (1200 seconds). Its `CLAUDE.md` principle 2 ('logic is framework-free') still has the placeholder `<name the pure module/package>`. These are gaps to fill, not rules in force.
+The gate (`tools/quality_gate.sh`) runs five steps in order: Rust formatting (`cargo fmt --check`), compiler diagnostics with warnings denied (clippy) plus the whole test suite, a project-specific boundary check (`tools/rust_architecture.rs`), requirement traceability, and the fitness limit on gate duration (1200 seconds). On 2026-11-02 all five passed.
+
+The boundary check exists because the shared checker (`pipeline-check` v0.4.0) only scans Java and Kotlin. It rejects graphical, file, process or network dependencies in the three portable packages, allows only the egui interface library in the reusable tray, and has its own self-tests that plant defects and require them to be rejected. All 25 requirements (SQ group) in `docs/REQUIREMENTS.md` have a test tagged with a standalone `// REQ SQ-n` comment; the scan covers `.rs` files under `crates` and `tools`. A tag proves a test exists, not that the real desktop behaves correctly, so window stacking, login startup and the resource limits need separate observation (idle CPU is currently 2.05% of one core against a 1% target).
 
 ## How it does it
-CI (continuous integration) uses the standard workflow (`pipeline-check --mode ci`, 60 minutes at most). It has no GitHub section in its config. Two ADRs (0001 and 0003) exist.
+CI (continuous integration) uses the standard workflow (`pipeline-check --mode ci`, 60 minutes at most) and adds a browser build for the `wasm32` target. `pipeline-check.toml` names the project, points at the repository `yujideluca/status-quo`, requires the check called `gate` on `main`, and lists `tools/hooks/pre-push` for the shell checker. Three ADRs (architecture decision records) exist: 0001 (record decisions), 0002 (portable Rust widgets) and 0003 (the program measures, the skill judges).
 
 ## Where it sits in the pipeline
 It is a layer-3 page of [[code-security-pipeline]]: the shared ideas are in [[quality-gate-explained]] and the whole list is in [[checker-catalog]].
