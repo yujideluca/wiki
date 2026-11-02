@@ -7,7 +7,7 @@ project: none
 status: active
 location: workflow-memory:
 fed_by: [claude-code, codex]
-feeds: []
+feeds: [status-quo]
 sources: [workflow-memory:README.md, workflow-memory:docs/DESIGN.md]
 reviewed: 2026-10-27T01:34Z
 ---

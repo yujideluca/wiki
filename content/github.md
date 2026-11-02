@@ -6,7 +6,7 @@ kind: external
 project: none
 status: active
 fed_by: [mem-sync, quizapp-ci, quizweb-ci, wiki-cli, wiki-quality-gate]
-feeds: []
+feeds: [status-quo]
 reviewed: 2026-10-22
 ---
 

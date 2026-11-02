@@ -6,7 +6,7 @@ kind: actor
 project: none
 status: active
 fed_by: [codex-skills, giovanni, global-codex-agents]
-feeds: [mem, workflow-memory, wiki-content]
+feeds: [mem, workflow-memory, wiki-content, status-quo]
 reviewed: 2026-10-27T01:02Z
 ---
 

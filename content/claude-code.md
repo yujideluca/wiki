@@ -6,7 +6,7 @@ kind: actor
 project: none
 status: active
 fed_by: [claude-auto-memory, giovanni, global-claude-md, session-brief, wiki-hook-stop]
-feeds: [mem, quizapp, quizweb, wiki, wiki-content, workflow-memory]
+feeds: [mem, quizapp, quizweb, wiki, wiki-content, workflow-memory, status-quo]
 reviewed: 2026-10-22
 ---
 
