@@ -1,7 +1,7 @@
 ---
 id: status-quo
 lang: de
-source_hash: d61c2670ace8
+source_hash: be47bd903679
 title: Status-Quo-Desktop-Widget-Tray
 ---
 
@@ -80,7 +80,7 @@ Der Code ist ein Rust-Workspace aus neun Paketen. `sq-core`, `sq-contract` und `
 
 **Widgets.** `crates/widgets/src/lib.rs` (Paket `sq-widgets`) registriert über `registry()` die fünf eingebauten Widget-Arten `quota`, `tokens`, `sessions`, `activity` und `memory`. Jede Art macht aus einem Schnappschuss des Collectors eine Ansicht, eine Liste einfacher Knoten (Text, Zeilen, Hinweise), die der Tray zeichnet; das Paket kann keine Dateien lesen und keine Programme starten. Bei GitHub-Aktivität und Memory behält eine Ansicht höchstens 100 Einträge. Ein Widget fügt außerdem einen Hinweis hinzu, wenn seine Quelle nicht frisch ist oder fehlerhafte oder zurückgestellte Datensätze hat, und "Waiting for source status", solange noch kein Status vorliegt. Das Sitzungs-Widget zeigt laufende, wartende und blockierte Sitzungen immer, abgeschlossene eine Stunde lang und andere 24 Stunden lang, außer seine Option `history` ist `true`. `format_utc` gibt Zeiten als `YYYY-MM-DD HH:MM UTC` aus, ohne eine Uhr zu lesen. Die Tests in `crates/widgets/tests/models.rs` (Anforderungen SQ-5, SQ-6, SQ-8, SQ-10, SQ-11) prüfen unter anderem, dass ein fehlendes Kontingent nicht als null erscheint, dass Projekte mit gleichem Ordnernamen getrennt bleiben, dass verschachtelte Agenten unter ihrem echten Elternteil bleiben und dass Datumsextreme nicht überlaufen.
 
-**Vertrag.** `crates/contract` legt fest, wie ein Host Widget-Arten registriert und wie Anfragen und Schnappschüsse gerahmt werden. Inkompatible Versionen und zu große Rahmen werden abgewiesen, und ein unabhängiges Beispiel-Widget belegt, dass die Registrierung ohne Änderung am Tray funktioniert (`tests/registry.rs`, `tests/transport.rs`).
+**Vertrag.** `crates/contract` legt fest, wie ein Host Widget-Arten registriert und wie Anfragen und Schnappschüsse gerahmt werden. Inkompatible Versionen und zu große Rahmen werden abgewiesen, und ein unabhängiges Beispiel-Widget belegt, dass die Registrierung ohne Änderung am Tray funktioniert (`crates/contract/tests/registry.rs`; die Rahmengrenzen prüft zusätzlich `crates/collector/tests/transport.rs`).
 
 **Hooks.** Der Installer trägt Status-Quo-Einträge in `~/.claude/settings.json` und `~/.codex/hooks.json` ein und behält jeden bestehenden Hook. Er wurde am 2026-11-02 ausgeführt.
 
@@ -111,10 +111,10 @@ Wie dieses Projekt dem Goldenen Weg von [[project-template]] folgt.
 29 Anforderungen (Präfix SQ) in `docs/REQUIREMENTS.md`, am 2026-11-02 alle durch markierte Tests abgedeckt (SQ-29, dessen Wortlaut am 2026-11-02 für die freie Leinwand ersetzt wurde, liegt zum Zeitpunkt dieser Prüfung im Arbeitsverzeichnis, noch nicht committet). `docs/TRACEABILITY.md` ist die Tabelle, die der Rückverfolgbarkeitsschritt erzeugt: jede Anforderung mit den Testdateien, die ihre Markierung tragen; sie wird nicht von Hand bearbeitet. Eine Markierung belegt, dass ein Test existiert, nicht dass sich der echte Desktop richtig verhält.
 
 ### Quality gate
-Fünf Schritte: Formatierung, Compiler-Diagnose ohne zugelassene Warnungen samt aller Tests, die Rust-Grenzprüfung, Anforderungs-Rückverfolgbarkeit und die Gate-Dauergrenze von 1200 Sekunden. Ein optionaler sechster Schritt, der Desktop-End-to-End-Test, läuft nur, wenn `STATUS_QUO_E2E=1` gesetzt ist ([[checks-status-quo]]). `tools/resource_check.rs` misst die echten Prozesse über fünf Minuten. Die erste Beobachtung erfüllte das Speicherziel (115 MiB von 200 MiB) und verfehlte die Leerlauf-CPU (2,05 % eines Kerns bei 1 %).
+Fünf Schritte: Formatierung, Compiler-Diagnose ohne zugelassene Warnungen samt aller Tests, die Rust-Grenzprüfung (sie testet auch `tools/resource_check.rs` selbst), Anforderungs-Rückverfolgbarkeit (der Schritt schlägt fehl, wenn sich die neu erzeugte `docs/TRACEABILITY.md` von der committeten unterscheidet) und die Gate-Dauergrenze von 1200 Sekunden. Ein optionaler sechster Schritt, der Desktop-End-to-End-Test, läuft nur, wenn `STATUS_QUO_E2E=1` gesetzt ist ([[checks-status-quo]]). `tools/resource_check.rs` misst die echten Prozesse über fünf Minuten. Die erste Beobachtung erfüllte das Speicherziel (115 MiB von 200 MiB) und verfehlte die Leerlauf-CPU (2,05 % eines Kerns bei 1 %).
 
 ### Continuous integration
-Continuous Integration (CI) bedeutet automatische Prüfungen bei jedem Push. `quality-gate.yml` installiert Rust 1.87, führt `pipeline-check --mode ci` aus (festgelegt in `pipeline-check.version`) und baut die Browser-Version. Es bestand beim ersten Commit.
+Continuous Integration (CI) bedeutet automatische Prüfungen bei jedem Push. `quality-gate.yml` installiert Rust 1.87, führt `pipeline-check --mode ci` aus (festgelegt in `pipeline-check.version`, v0.4.0) und baut die Browser-Version. Der Job `gate` bestand bei jedem bisher gepushten Commit, zuletzt bei „Bare desktop-widget tray“ am 2026-11-02 (gelesen mit `gh run list`). Die nicht committeten Änderungen des Arbeitsverzeichnisses sind noch nicht durch CI gelaufen.
 
 ### Maintenance
 `docs/MAINTENANCE.md` nennt die Methode: Schulden sind ein GitHub-Issue mit dem Label `debt` (P1 bis P3), Features `idea`, etwa eine von fünf Sitzungen geht in Schulden oder Vorbeugung, und eine monatliche Prüfung jedes Projekts hält eine Zeile vom Typ Preventive im Entscheidungsprotokoll fest. Sie folgt der Datei der Vorlage und ergänzt, dass die verlangte CI-Prüfung `gate` auf dem genauen Commit bestehen muss, bevor er nach `main` befördert wird. Technische Schulden gehören in GitHub-Issues mit dem Label `debt` nach der [[maintenance-policy]], und der [[monthly-architecture-review]] prüft das Projekt. Branch-Schutz lässt sich bei einem privaten Repository im kostenlosen GitHub-Tarif nicht aktivieren.

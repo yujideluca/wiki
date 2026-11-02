@@ -1,7 +1,7 @@
 ---
 id: status-quo
 lang: pt-BR
-source_hash: d61c2670ace8
+source_hash: be47bd903679
 title: Bandeja de widgets de desktop Status Quo
 ---
 
@@ -80,7 +80,7 @@ O código é um workspace Rust de nove pacotes. `sq-core`, `sq-contract` e `sq-w
 
 **Widgets.** `crates/widgets/src/lib.rs` (pacote `sq-widgets`) registra, por `registry()`, os cinco tipos de widget embutidos: `quota`, `tokens`, `sessions`, `activity` e `memory`. Cada tipo transforma um instantâneo do coletor em uma visão, uma lista de nós simples (texto, linhas, avisos) que a bandeja desenha; o pacote não pode ler arquivos nem iniciar programas. Para atividade do GitHub e memória, uma visão mantém no máximo 100 entradas. Um widget também acrescenta um aviso quando sua fonte não está atualizada ou tem registros malformados ou adiados, e "Waiting for source status" enquanto não há status. O widget de sessões mostra sempre as sessões em execução, em espera e bloqueadas, as concluídas por uma hora e as demais por 24 horas, a menos que sua opção `history` seja `true`. `format_utc` escreve horários como `YYYY-MM-DD HH:MM UTC` sem ler um relógio. Os testes em `crates/widgets/tests/models.rs` (requisitos SQ-5, SQ-6, SQ-8, SQ-10, SQ-11) verificam, entre outras coisas, que uma cota ausente não aparece como zero, que projetos com o mesmo nome de pasta continuam separados, que agentes aninhados ficam sob o pai real e que datas extremas não estouram.
 
-**Contrato.** `crates/contract` define como um host registra tipos de widget e como pedidos e instantâneos são enquadrados. Versões incompatíveis e quadros grandes demais são rejeitados, e um widget de exemplo sem relação com o projeto prova que o registro funciona sem alterar a bandeja (`tests/registry.rs`, `tests/transport.rs`).
+**Contrato.** `crates/contract` define como um host registra tipos de widget e como pedidos e instantâneos são enquadrados. Versões incompatíveis e quadros grandes demais são rejeitados, e um widget de exemplo sem relação com o projeto prova que o registro funciona sem alterar a bandeja (`crates/contract/tests/registry.rs`; os limites de quadro também são exercitados por `crates/collector/tests/transport.rs`).
 
 **Hooks.** O instalador adiciona entradas do Status Quo em `~/.claude/settings.json` e `~/.codex/hooks.json` e mantém todos os hooks existentes. Ele foi executado em 2026-11-02.
 
@@ -111,10 +111,10 @@ O `DESIGN.md` contém o diagrama de arquitetura e um registro de decisões datad
 29 requisitos (prefixo SQ) em `docs/REQUIREMENTS.md`, todos cobertos por testes marcados em 2026-11-02 (SQ-29, cujo texto foi substituído em 2026-11-02 para a tela livre, está na árvore de trabalho, ainda não commitado, no momento desta revisão). `docs/TRACEABILITY.md` é a tabela que a etapa de rastreabilidade gera: cada requisito com os arquivos de teste que levam sua marca; não é editada à mão. Uma marca prova que existe um teste, não que o desktop real se comporta corretamente.
 
 ### Quality gate
-Cinco etapas: formatação, diagnósticos do compilador sem avisos permitidos junto com todos os testes, a verificação de fronteiras Rust, rastreabilidade de requisitos e o limite de 1200 segundos para a duração do gate. Uma sexta etapa opcional, o teste de ponta a ponta no desktop, só roda quando `STATUS_QUO_E2E=1` está definido ([[checks-status-quo]]). `tools/resource_check.rs` mede os processos reais por cinco minutos. A primeira observação atendeu à meta de memória (115 MiB de 200 MiB) e não atendeu à de CPU ociosa (2,05% de um núcleo contra 1%).
+Cinco etapas: formatação, diagnósticos do compilador sem avisos permitidos junto com todos os testes, a verificação de fronteiras Rust (que também autotesta `tools/resource_check.rs`), rastreabilidade de requisitos (a etapa falha quando o `docs/TRACEABILITY.md` regenerado difere do commitado) e o limite de 1200 segundos para a duração do gate. Uma sexta etapa opcional, o teste de ponta a ponta no desktop, só roda quando `STATUS_QUO_E2E=1` está definido ([[checks-status-quo]]). `tools/resource_check.rs` mede os processos reais por cinco minutos. A primeira observação atendeu à meta de memória (115 MiB de 200 MiB) e não atendeu à de CPU ociosa (2,05% de um núcleo contra 1%).
 
 ### Continuous integration
-Integração contínua (CI) significa verificações automáticas a cada push. O `quality-gate.yml` instala o Rust 1.87, executa `pipeline-check --mode ci` fixado em `pipeline-check.version` e compila a versão para navegador. Ele passou no primeiro commit.
+Integração contínua (CI) significa verificações automáticas a cada push. O `quality-gate.yml` instala o Rust 1.87, executa `pipeline-check --mode ci` fixado em `pipeline-check.version` (v0.4.0) e compila a versão para navegador. O job `gate` passou em todos os commits enviados até agora, o último sendo "Bare desktop-widget tray" em 2026-11-02 (lido com `gh run list`). As alterações não commitadas da árvore de trabalho ainda não passaram pelo CI.
 
 ### Maintenance
 `docs/MAINTENANCE.md` descreve o método: dívida é uma issue do GitHub com o rótulo `debt` (P1 a P3), recursos novos usam `idea`, cerca de uma sessão em cinco vai para dívida ou prevenção, e uma revisão mensal de cada projeto registra uma linha do tipo Preventive no registro de decisões. Ele segue o arquivo do modelo e acrescenta que a verificação de CI exigida, `gate`, deve passar no commit exato antes da promoção para `main`. A dívida técnica vai para issues do GitHub com o rótulo `debt`, segundo a [[maintenance-policy]], e a [[monthly-architecture-review]] verifica o projeto. A proteção de branch não pode ser ativada em repositório privado no plano gratuito do GitHub.
