@@ -1,7 +1,7 @@
 ---
 id: status-quo
 lang: de
-source_hash: ddfa9e7fc66f
+source_hash: 9201efe6e805
 title: Status-Quo-Desktop-Widget-Tray
 ---
 
@@ -82,7 +82,7 @@ Der Code ist ein Rust-Workspace aus neun Paketen. `sq-core`, `sq-contract` und `
 
 **Hooks.** Der Installer trägt Status-Quo-Einträge in `~/.claude/settings.json` und `~/.codex/hooks.json` ein und behält jeden bestehenden Hook. Er wurde am 2026-11-02 ausgeführt.
 
-**Kompatibilitätsschicht.** `crates/desktop/src/host/` ist der einzige Code, der weiß, wie das Tray auf einem bestimmten Linux-Desktop platziert wird, und er wählt zur Laufzeit, sodass ein Programm über Distributionen hinweg funktioniert (Entscheidung in `docs/adr/0004-host-compatibility-layer.md`). Layer-Shell, ein Wayland-Protokoll, mit dem ein Programm auf die Desktop-Ebene zeichnet, wird genutzt, wenn der Compositor es anbietet (KDE Plasma, Hyprland, sway); das Tray hat dann keinen Rahmen, ist an einer Kante oder Ecke verankert (`STATUS_QUO_ANCHOR`, Standard oben rechts) und zeichnet nur bei Änderungen. In einer X11-Sitzung nutzt es ein rahmenloses Fenster mit Fenstermanager-Hinweisen für „unten“, ohne Taskleiste und ohne Pager; „alle Arbeitsflächen“ ist nur ein Versuch, weil KDEs X11-Kompatibilität es ignoriert. Überall sonst, zum Beispiel GNOME unter Wayland, fällt es auf ein normales Fenster zurück und sagt das. `STATUS_QUO_HOST=layer-shell|x11|window` erzwingt eine Wahl, wenn sie möglich ist. Anpassung und Screenshots nutzen das normale Fenster, weil der Layer-Host noch keine Tastatureingabe hat.
+**Kompatibilitätsschicht.** `crates/desktop/src/host/` ist der einzige Code, der weiß, wie das Tray auf einem bestimmten Linux-Desktop platziert wird, und er wählt zur Laufzeit, sodass ein Programm über Distributionen hinweg funktioniert (Entscheidung in `docs/adr/0004-host-compatibility-layer.md`). Layer-Shell, ein Wayland-Protokoll, mit dem ein Programm auf die Desktop-Ebene zeichnet, wird genutzt, wenn der Compositor es anbietet (KDE Plasma, Hyprland, sway); das Tray hat dann keinen Rahmen, ist an einer Kante oder Ecke verankert (`STATUS_QUO_ANCHOR`, Standard oben rechts) und zeichnet nur bei Änderungen. In einer X11-Sitzung nutzt es ein rahmenloses Fenster mit Fenstermanager-Hinweisen für „unten“, ohne Taskleiste und ohne Pager; „alle Arbeitsflächen“ ist nur ein Versuch, weil KDEs X11-Kompatibilität es ignoriert. Überall sonst, zum Beispiel GNOME unter Wayland, fällt es auf ein normales Fenster zurück und sagt das. `STATUS_QUO_HOST=layer-shell|x11|window` erzwingt eine Wahl, wenn sie möglich ist. In diesen beiden Hosts ist das Tray nackt: Es hat weder Hintergrund noch Titel, sichtbar sind nur die Widgets und die zwei kleinen Schaltflächen „Add widget“ und „Customize“ (der Verbindungsstatus erscheint nur bei getrennter Verbindung), und die Widget-Zeilen werden so skaliert, dass sie den Tray-Platz mit gleichen Abständen genau ausfüllen. Anpassung und Screenshots nutzen das normale Fenster, weil der Layer-Host noch keine Tastatureingabe hat.
 
 ## Where it sits in the pipeline
 Es läuft auf dem Laptop neben [[claude-code]] und [[codex]]. Seine Prüfungen stehen auf [[checks-status-quo]], und es folgt [[project-template]] und [[pipeline-check]].

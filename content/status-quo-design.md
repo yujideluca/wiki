@@ -11,7 +11,7 @@ fed_by: []
 feeds: []
 sources: [project-template:CLAUDE.md, project-template:pipeline-check.toml, status-quo:README.md, status-quo:DESIGN.md, status-quo:Cargo.toml, status-quo:Cargo.lock, status-quo:.cargo/config.toml, status-quo:.gitignore, status-quo:crates/collector/Cargo.toml, status-quo:crates/collector/src/events.rs]
 memory: [#f1e117, #d975f2, #63efec, #c1f1f8]
-reviewed: 2026-11-02T13:48Z
+reviewed: 2026-11-02T13:59Z
 ---
 
 ## What it is
@@ -111,7 +111,7 @@ No sending prompts, account management, purchases, memory edits, arbitrary third
 Giovanni reviews this design and [[status-quo-layout]] once before implementation. A builder uses the approved baseline to produce the project requirements and complete every delivery scope. Future wrapper authors use the documented contract rather than duplicating collectors.
 
 ## Notes
-**Current state (2026-11-02).** The Rust workspace in `~/dev/status-quo` builds and its automated gate passes: formatting, warning-free compiler checks, tests, dependency-boundary checks and a check that every one of its 27 requirements has a test. The program is installed as user services. On KDE Plasma it runs as a frameless layer-shell surface anchored top-right below normal windows, chosen at run time by a host compatibility layer (layer-shell, X11 hints or a plain window; ADR-0004), and showed live Claude and Codex usage meters, token graphs, sessions, GitHub activity and workflow-memory entries; a mouse click changed a widget. Not yet done: login startup, the 100 ms interaction check, keyboard input in the layer host, and any desktop other than KDE Plasma. The five-minute check of the earlier window build passed on memory (115 MiB) but missed idle CPU (2.05%); a 60-second sample of the layer host gave 1.08% of one core and 195 MB combined against the 200 MiB limit, and the five-minute run is still to do. The code is in the private repository `yujideluca/status-quo`; the gate passed in its CI run on the first commit (2026-11-02). Branch protection cannot be enabled while the repository is private on the free GitHub plan.
+**Current state (2026-11-02).** The Rust workspace in `~/dev/status-quo` builds and its automated gate passes: formatting, warning-free compiler checks, tests, dependency-boundary checks and a check that every one of its 28 requirements has a test. The program is installed as user services. On KDE Plasma it runs as a frameless layer-shell surface anchored top-right below normal windows, chosen at run time by a host compatibility layer (layer-shell, X11 hints or a plain window; ADR-0004), and showed live Claude and Codex usage meters, token graphs, sessions, GitHub activity and workflow-memory entries; a mouse click changed a widget. Not yet done: login startup, the 100 ms interaction check, keyboard input in the layer host, and any desktop other than KDE Plasma. The five-minute check of the earlier window build passed on memory (115 MiB) but missed idle CPU (2.05%); a 60-second sample of the layer host gave 1.08% of one core and 195 MB combined against the 200 MiB limit, and the five-minute run is still to do. The code is in the private repository `yujideluca/status-quo`; the gate passed in its CI run on the first commit (2026-11-02). Branch protection cannot be enabled while the repository is private on the free GitHub plan.
 
 This page also records Giovanni's choices from the Status Quo conversation of 2026-11-01. Resource thresholds are builder recommendations that Giovanni approved with the design.
 
