@@ -1,7 +1,7 @@
 ---
 id: security-layers
 lang: de
-source_hash: 02ba3cf24ef8
+source_hash: e7dfa0bc4a20
 title: Sicherheitsschichten der Code-Pipeline
 ---
 
@@ -43,7 +43,7 @@ Die Schichten, von der spezifischsten zur allgemeinsten:
 6. **Deklarierte Abhängigkeiten**. [[checks-radiology-crawler]] lässt das Gate fehlschlagen, wenn ein Drittanbieter-Import nicht deklariert ist oder CI etwas anderes als `requirements.txt` installiert.
 7. **Shell-Lint und das Gate**: ShellCheck für jedes Shell-Skript ([[checker-catalog]]), dann Branch-Schutz oder der Pre-Push-Hook ([[branch-protection-explained]]). „Niemals Force-Push“ ist eine feste Präferenz im Gedächtnis.
 
-In keiner Repository-Datei gefunden: automatische Prüfung von Abhängigkeiten auf Schwachstellen, Konfiguration des GitHub-Geheimnisscans und Code-Scanning-Workflows. Ob GitHub in seinen Einstellungen etwas davon eingeschaltet hat, wurde nicht geprüft.
+Diese Schalter sind GitHub-Repository-Einstellungen, keine Dateien, die obigen Dateien können sie also nicht zeigen. Am 2026-11-02 von GitHub gelesen: Geheimnisscan und Push-Schutz (GitHub lehnt einen Push mit einem erkannten Geheimnis ab) sind in german-quiz-web, pipeline-check und machine-bootstrap eingeschaltet und in german-quiz, wiki, workflow-memory, remote-terminal und processing-sketches ausgeschaltet. Dependabot-Warnungen (Hinweise auf verwundbare Abhängigkeiten) sind aus, und Code-Scanning ist in jedem lesbaren Repository nicht konfiguriert. Die privaten Repositories codex-pbar, codex-skills und project-template melden keine Sicherheitseinstellungen, und die Repositories radiology-crawler und status-quo wurden unter diesem Namen auf GitHub nicht gefunden. Keine Repository-Datei konfiguriert eines dieser Merkmale (keine `dependabot.yml`, kein Code-Scanning-Workflow).
 
 ## How it does it
 Jede Schicht meldet die Art des Problems und die Stelle (eine Zeilennummer oder einen Dateinamen), nie den Wert, sodass das Protokoll selbst kein Geheimnis preisgeben kann. Die Scanner sind Sicherheitsnetze, keine Garantien: Die Arbeitsregeln besagen weiterhin, dass Claude solche Daten gar nicht erst schreiben darf ([[wiki-check]]).

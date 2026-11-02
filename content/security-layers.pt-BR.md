@@ -1,7 +1,7 @@
 ---
 id: security-layers
 lang: pt-BR
-source_hash: 02ba3cf24ef8
+source_hash: e7dfa0bc4a20
 title: Camadas de segurança do pipeline de código
 ---
 
@@ -43,7 +43,7 @@ As camadas, da mais específica à mais geral:
 6. **Dependências declaradas**. [[checks-radiology-crawler]] faz o gate falhar quando um import de terceiros não está declarado ou quando a CI instala algo que não seja `requirements.txt`.
 7. **Lint de shell e o gate**: ShellCheck em todo script de shell ([[checker-catalog]]), depois a proteção de branch ou o hook de pre-push ([[branch-protection-explained]]). "Nunca force-push" é uma preferência fixa na memória.
 
-Não encontrado em nenhum arquivo de repositório: verificação automática de vulnerabilidades em dependências, configuração de varredura de segredos do GitHub e workflows de varredura de código. Se o GitHub tem algo disso ligado nas suas configurações, não foi verificado.
+Estes interruptores são configurações do repositório no GitHub, não arquivos, então os arquivos acima não podem mostrá-los. Lido do GitHub em 2026-11-02: a varredura de segredos e a proteção de push (o GitHub recusa um push que contenha um segredo reconhecido) estão ligadas em german-quiz-web, pipeline-check e machine-bootstrap, e desligadas em german-quiz, wiki, workflow-memory, remote-terminal e processing-sketches. Os alertas do Dependabot (avisos sobre dependências vulneráveis) estão desligados e a varredura de código não está configurada em todo repositório que pôde ser lido. Os repositórios privados codex-pbar, codex-skills e project-template não informam configurações de segurança, e os repositórios radiology-crawler e status-quo não foram encontrados no GitHub com esse nome. Nenhum arquivo de repositório configura qualquer um desses recursos (sem `dependabot.yml`, sem workflow de varredura de código).
 
 ## How it does it
 Cada camada informa o tipo de problema e o lugar (um número de linha ou um nome de arquivo), nunca o valor, de modo que o próprio log não vaza um segredo. Os scanners são redes de proteção, não garantias: as regras de trabalho continuam dizendo que o Claude não deve escrever esses dados desde o início ([[wiki-check]]).

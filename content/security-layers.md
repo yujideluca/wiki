@@ -8,7 +8,7 @@ status: active
 fed_by: []
 feeds: []
 sources: [workflow-memory:mem/privacy-patterns.tsv, workflow-memory:mem/validate.py, wiki:server/lib/wiki/content/privacy.ex, wiki:docs/adr/0003-login-gate-and-decoy.md, wiki:docs/REQUIREMENTS.md, machine-bootstrap:mb/scan.py, machine-bootstrap:docs/adr/0004-allow-list-and-scanner.md, machine-bootstrap:docs/adr/0005-secrets-passphrase-two-places.md, workflow-memory:.github/workflows/mem.yml, radiology-crawler:tools/check_dependencies.py]
-reviewed: 2026-11-02T10:44Z
+reviewed: 2026-11-02T11:07Z
 ---
 
 ## What it is
@@ -49,7 +49,7 @@ The layers, from the most to the least specific:
 6. **Declared dependencies**. [[checks-radiology-crawler]] fails the gate when a third-party import is not declared or when CI installs anything but `requirements.txt`.
 7. **Shell lint and the gate**: ShellCheck on every shell script ([[checker-catalog]]), then branch protection or the pre-push hook ([[branch-protection-explained]]). "Never force-push" is a standing preference in the memory.
 
-Not found in any repository file: automatic dependency-vulnerability scanning, GitHub secret scanning configuration and code-scanning workflows. Whether GitHub has any of these switched on in its settings was not checked.
+These switches are GitHub repository settings, not files, so the files above cannot show them. Read from GitHub on 2026-11-02: secret scanning and push protection (GitHub refuses a push that contains a recognised secret) are on in german-quiz-web, pipeline-check and machine-bootstrap, and off in german-quiz, wiki, workflow-memory, remote-terminal and processing-sketches. Dependabot alerts (warnings about vulnerable dependencies) are off and code scanning is not configured in every repository that could be read. The private repositories codex-pbar, codex-skills and project-template report no security settings, and the repositories radiology-crawler and status-quo were not found on GitHub under that name. No repository file configures any of these features (no `dependabot.yml`, no code-scanning workflow).
 
 ## How it does it
 Each layer reports the kind of problem and the place (a line number or a file name), never the value, so the log itself cannot leak a secret. The scanners are safety nets, not guarantees: the working rules still say that Claude must not write such data in the first place ([[wiki-check]]).
