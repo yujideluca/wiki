@@ -1,12 +1,12 @@
 ---
 id: status-quo
 lang: de
-source_hash: 1f216c6275ad
+source_hash: 67f16e21f9cf
 title: Status-Quo-Desktop-Widget-Tray
 ---
 
 ## What it is
-Status Quo ist ein in Rust geschriebenes Desktop-Panel, das in einem Fenster zeigt, wie viel von Giovannis Claude- und Codex-Nutzungslimits verbraucht ist, dazu Token-Diagramme, die laufenden Sitzungen der Assistenten, neue GitHub-Aktivitäten und aktuelle Einträge aus workflow-memory. Der Code liegt in `~/dev/status-quo` und im privaten GitHub-Repository `yujideluca/status-quo`. Man beginnt mit seiner `README.md`. Der freigegebene Umfang steht auf [[status-quo-design]], der Layoutentwurf auf [[status-quo-layout]]; diese Seite beschreibt den Code, wie er gebaut ist.
+Status Quo ist eine in Rust geschriebene Desktop-Widget-Umgebung: kleine, immer sichtbare Panels direkt auf dem Desktop, ohne Fensterrahmen, die zeigen, wie viel von Giovannis Claude- und Codex-Nutzungslimits verbraucht ist, dazu Token-Diagramme, die laufenden Sitzungen der Assistenten, neue GitHub-Aktivitäten und aktuelle Einträge aus workflow-memory. Der Code liegt in `~/dev/status-quo` und im privaten GitHub-Repository `yujideluca/status-quo`. Man beginnt mit seiner `README.md`. Der freigegebene Umfang steht auf [[status-quo-design]], der Layoutentwurf auf [[status-quo-layout]]; diese Seite beschreibt den Code, wie er gebaut ist.
 
 Jede Anzeige ist ein eigenes Widget, das entfernt, ersetzt oder in ein anderes Programm verschoben werden kann; auch das Tray, das sie anordnet, ist wiederverwendbar. KDE, die Desktop-Oberfläche des Laptops, ist der erste Host; nichts Portables hängt davon ab.
 
@@ -56,7 +56,7 @@ container wd: Widgets — Anzeigemodelle, die keine Dateien lesen und keine Prog
 container sc: Quellen — lesende Adapter für Konten, Protokolle, GitHub und Gedächtnis
 container cl: Collector — Hintergrundarbeiter und der Socket pro Nutzer
 container tr: Tray — egui-Layout und Anpassung, mit Terminal-Stil
-container dk: Desktop-Hülle — KDE-erster Host, Installer und Hooks
+container dk: Desktop-Hülle — Kompatibilitätsschicht, die Layer-Shell, X11-Hinweise oder ein normales Fenster wählt; Installer und Hooks
 store st: Privater Zustandsordner — Konfiguration, Schnappschuss und Lebenszyklus-Ereignisse
 
 wd -uses-> co
@@ -71,7 +71,7 @@ dk -starts-> cl
 ## What it does
 Das Panel hat fünf anfängliche Widgets, soweit sinnvoll je Assistent angelegt, also standardmäßig sieben: Kontonutzung für Claude und Codex, Token-Verlauf für Claude und Codex, nach Projekt gruppierte Sitzungen, neue GitHub-Aktivität und Einträge aus workflow-memory. Die Nutzung zeigt den verbrauchten Prozentsatz der Fünf-Stunden- und Wochenlimits mit Rücksetzzeiten; ein Prozentsatz wird nie aus lokalen Token-Zahlen abgeleitet. Die Token-Diagramme wechseln zwischen 24 Stunden, 7 Tagen und 30 Tagen sowie zwischen Einzel- und Summenansicht. Fehlende Werte erscheinen als nicht verfügbar, nie als null.
 
-Der Anpassungs-Reiter ändert hellen, dunklen oder Systemmodus, Akzentfarben, Hintergrunddeckkraft, Textgröße sowie Reihenfolge und Größe der Widgets. Änderungen werden zuerst in der Vorschau gezeigt und lassen sich abbrechen. Widgets können hinzugefügt, entfernt, ausgeblendet oder abgelöst werden. Standardmäßig liegt das Panel hinter normalen Fenstern; das wurde auf dem Laptop noch nicht überprüft.
+Der Anpassungs-Reiter ändert hellen, dunklen oder Systemmodus, Akzentfarben, Hintergrunddeckkraft, Textgröße sowie Reihenfolge und Größe der Widgets. Änderungen werden zuerst in der Vorschau gezeigt und lassen sich abbrechen. Widgets können hinzugefügt, entfernt, ausgeblendet oder abgelöst werden. Standardmäßig liegt das Panel hinter normalen Fenstern, verankert in der oberen rechten Ecke; auf dem Laptop war es hinter einem maximierten Browser verborgen und auf einer leeren Arbeitsfläche sichtbar.
 
 ## How it does it
 Der Code ist ein Rust-Workspace aus neun Paketen. `sq-core`, `sq-contract` und `sq-widgets` enthalten die portable Logik und dürfen weder Grafik, Dateien, Prozesse noch Netzwerk nutzen; `tools/rust_architecture.rs` prüft das bei jedem Gate-Lauf, weil der gemeinsame Prüfer nur Java und Kotlin versteht. `sq-sources` liest äußere Daten, `sq-store` schreibt sie atomar, `sq-collector` führt die Arbeiter aus und bedient einen versionierten Socket mit Größenlimit, `sq-tray` ist die wiederverwendbare egui-Oberfläche (egui ist eine Rust-Bibliothek zum Zeichnen von Oberflächen), `status-quo` ist die Linux-Hülle und `sq-web` eine Browser-Vorführung mit erfundenen Daten.
@@ -81,6 +81,8 @@ Der Code ist ein Rust-Workspace aus neun Paketen. `sq-core`, `sq-contract` und `
 **Vertrag.** `crates/contract` legt fest, wie ein Host Widget-Arten registriert und wie Anfragen und Schnappschüsse gerahmt werden. Inkompatible Versionen und zu große Rahmen werden abgewiesen, und ein unabhängiges Beispiel-Widget belegt, dass die Registrierung ohne Änderung am Tray funktioniert (`tests/registry.rs`, `tests/transport.rs`).
 
 **Hooks.** Der Installer trägt Status-Quo-Einträge in `~/.claude/settings.json` und `~/.codex/hooks.json` ein und behält jeden bestehenden Hook. Er wurde am 2026-11-02 ausgeführt.
+
+**Kompatibilitätsschicht.** `crates/desktop/src/host/` ist der einzige Code, der weiß, wie das Tray auf einem bestimmten Linux-Desktop platziert wird, und er wählt zur Laufzeit, sodass ein Programm über Distributionen hinweg funktioniert (Entscheidung in `docs/adr/0003-host-compatibility-layer.md`). Layer-Shell, ein Wayland-Protokoll, mit dem ein Programm auf die Desktop-Ebene zeichnet, wird genutzt, wenn der Compositor es anbietet (KDE Plasma, Hyprland, sway); das Tray hat dann keinen Rahmen, ist an einer Kante oder Ecke verankert (`STATUS_QUO_ANCHOR`, Standard oben rechts) und zeichnet nur bei Änderungen. In einer X11-Sitzung nutzt es ein rahmenloses Fenster mit Fenstermanager-Hinweisen für „unten“, ohne Taskleiste und ohne Pager; „alle Arbeitsflächen“ ist nur ein Versuch, weil KDEs X11-Kompatibilität es ignoriert. Überall sonst, zum Beispiel GNOME unter Wayland, fällt es auf ein normales Fenster zurück und sagt das. `STATUS_QUO_HOST=layer-shell|x11|window` erzwingt eine Wahl, wenn sie möglich ist. Anpassung und Screenshots nutzen das normale Fenster, weil der Layer-Host noch keine Tastatureingabe hat.
 
 ## Where it sits in the pipeline
 Es läuft auf dem Laptop neben [[claude-code]] und [[codex]]. Seine Prüfungen stehen auf [[checks-status-quo]], und es folgt [[project-template]] und [[pipeline-check]].
@@ -114,4 +116,4 @@ Continuous Integration (CI) bedeutet automatische Prüfungen bei jedem Push. `qu
 Technische Schulden gehören in GitHub-Issues mit dem Label `debt` (P1 bis P3) nach der [[maintenance-policy]], und der [[monthly-architecture-review]] prüft das Projekt. Branch-Schutz lässt sich bei einem privaten Repository im kostenlosen GitHub-Tarif nicht aktivieren.
 
 ## Notes
-Bauen mit `cargo build --release --locked -p status-quo`; der Installer ist `status-quo install`, und `status-quo uninstall` macht ihn rückgängig. Der Zustand liegt in `~/.local/state/status-quo`; `STATUS_QUO_STATE_DIR` leitet ihn für Tests um. Auf dem Laptop zeigte ein Testlauf am 2026-11-02 das Panel mit Live-Daten, den Collector mit echten Assistenten-Sitzungen über die Hooks und eine 60-Sekunden-Leerlaufmessung von 1,23 % eines Kerns und 119 MB. Noch nicht beobachtet: Fensterstapelung hinter anderen Fenstern, Start beim Login, die 100-ms-Grenze der Bedienung und der volle Fünf-Minuten-Lauf. Die Ursache der verbleibenden Leerlauf-CPU ist offen.
+Bauen mit `cargo build --release --locked -p status-quo`; der Installer ist `status-quo install`, und `status-quo uninstall` macht ihn rückgängig. Der Zustand liegt in `~/.local/state/status-quo`; `STATUS_QUO_STATE_DIR` leitet ihn für Tests um. Auf dem Laptop zeigten Testläufe am 2026-11-02 den Layer-Shell-Host mit Live-Daten, den Collector mit echten Assistenten-Sitzungen über die Hooks, einen Mausklick, der ein Widget änderte, und eine 60-Sekunden-Leerlaufmessung von 1,08 % eines Kerns und 195 MB zusammen (die Bibliotheken des Grafiktreibers machen den größten Teil der 156 MB des Panels aus). Noch nicht beobachtet: Start beim Login, die 100-ms-Grenze der Bedienung, der volle Fünf-Minuten-Lauf, Tastatureingabe im Layer-Host, GNOME oder ein anderer Desktop als KDE Plasma sowie eine echte X11-Sitzung. Die Ursache der verbleibenden Leerlauf-CPU ist offen.

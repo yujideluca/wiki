@@ -1,12 +1,12 @@
 ---
 id: status-quo
 lang: pt-BR
-source_hash: 1f216c6275ad
+source_hash: 67f16e21f9cf
 title: Bandeja de widgets de desktop Status Quo
 ---
 
 ## What it is
-Status Quo é um painel de desktop escrito em Rust que mostra, em uma só janela, quanto dos limites de uso do Claude e do Codex de Giovanni já foi gasto, gráficos de tokens, as sessões que cada assistente está executando, a atividade recente no GitHub e as entradas recentes do workflow-memory. O código está em `~/dev/status-quo` e no repositório privado `yujideluca/status-quo` no GitHub. Comece pelo `README.md`. O escopo aprovado está em [[status-quo-design]] e o esboço do layout em [[status-quo-layout]]; esta página descreve o código como foi construído.
+Status Quo é um ambiente de widgets de desktop escrito em Rust: pequenos painéis sempre visíveis no próprio desktop, sem moldura de janela, que mostram quanto dos limites de uso do Claude e do Codex de Giovanni já foi gasto, gráficos de tokens, as sessões que cada assistente está executando, a atividade recente no GitHub e as entradas recentes do workflow-memory. O código está em `~/dev/status-quo` e no repositório privado `yujideluca/status-quo` no GitHub. Comece pelo `README.md`. O escopo aprovado está em [[status-quo-design]] e o esboço do layout em [[status-quo-layout]]; esta página descreve o código como foi construído.
 
 Cada exibição é um widget separado que pode ser removido, substituído ou levado para outro programa, e a bandeja que os organiza também é reutilizável. O KDE, o ambiente de desktop do laptop, é o primeiro host; nada portátil depende dele.
 
@@ -56,7 +56,7 @@ container wd: Widgets — modelos de exibição que não podem ler arquivos nem 
 container sc: Fontes — adaptadores somente de leitura para contas, transcrições, GitHub e memória
 container cl: Coletor — trabalhadores em segundo plano e o socket por usuário
 container tr: Bandeja — layout e personalização em egui, com estilo de terminal
-container dk: Invólucro de desktop — host com KDE em primeiro lugar, instalador e hooks
+container dk: Invólucro de desktop — camada de compatibilidade que escolhe layer-shell, dicas do X11 ou uma janela comum; instalador e hooks
 store st: Pasta privada de estado — configuração, instantâneo e eventos de ciclo de vida
 
 wd -uses-> co
@@ -71,7 +71,7 @@ dk -starts-> cl
 ## What it does
 O painel tem cinco widgets iniciais, criados para cada assistente quando faz sentido, o que dá sete por padrão: uso das contas do Claude e do Codex, histórico de tokens do Claude e do Codex, sessões agrupadas por projeto, atividade recente no GitHub e entradas do workflow-memory. O uso mostra o percentual consumido dos limites de cinco horas e semanal, com os horários de reinício; nunca se deriva um percentual de contagens locais de tokens. Os gráficos de tokens alternam entre 24 horas, 7 dias e 30 dias, e entre visão por intervalo e acumulada. Valores ausentes aparecem como indisponíveis, nunca como zero.
 
-A aba de personalização muda o modo claro, escuro ou do sistema, as cores de destaque, a opacidade do fundo, o tamanho do texto e a ordem e o tamanho dos widgets. As mudanças aparecem primeiro em prévia e podem ser canceladas. Widgets podem ser adicionados, removidos, ocultados ou destacados. Por padrão o painel fica atrás das janelas normais; isso ainda não foi verificado no laptop.
+A aba de personalização muda o modo claro, escuro ou do sistema, as cores de destaque, a opacidade do fundo, o tamanho do texto e a ordem e o tamanho dos widgets. As mudanças aparecem primeiro em prévia e podem ser canceladas. Widgets podem ser adicionados, removidos, ocultados ou destacados. Por padrão o painel fica atrás das janelas normais, ancorado no canto superior direito; no laptop ele ficou escondido atrás de um navegador maximizado e visível numa área de trabalho vazia.
 
 ## How it does it
 O código é um workspace Rust de nove pacotes. `sq-core`, `sq-contract` e `sq-widgets` guardam a lógica portátil e não podem usar gráficos, arquivos, processos nem rede; `tools/rust_architecture.rs` verifica isso a cada execução do gate, porque o verificador compartilhado só entende Java e Kotlin. `sq-sources` lê dados externos, `sq-store` os grava de forma atômica, `sq-collector` executa os trabalhadores e serve um socket versionado e com limite de tamanho, `sq-tray` é a interface egui reutilizável (egui é uma biblioteca Rust para desenhar interfaces), `status-quo` é o invólucro para Linux e `sq-web` é uma demonstração no navegador com dados inventados.
@@ -81,6 +81,8 @@ O código é um workspace Rust de nove pacotes. `sq-core`, `sq-contract` e `sq-w
 **Contrato.** `crates/contract` define como um host registra tipos de widget e como pedidos e instantâneos são enquadrados. Versões incompatíveis e quadros grandes demais são rejeitados, e um widget de exemplo sem relação com o projeto prova que o registro funciona sem alterar a bandeja (`tests/registry.rs`, `tests/transport.rs`).
 
 **Hooks.** O instalador adiciona entradas do Status Quo em `~/.claude/settings.json` e `~/.codex/hooks.json` e mantém todos os hooks existentes. Ele foi executado em 2026-11-02.
+
+**Camada de compatibilidade.** `crates/desktop/src/host/` é o único código que sabe como a bandeja é colocada em um desktop Linux específico, e ele escolhe em tempo de execução, de modo que um programa funciona em várias distribuições (decisão em `docs/adr/0003-host-compatibility-layer.md`). Layer-shell, um protocolo do Wayland que permite a um programa desenhar na camada do desktop, é usado quando o compositor o oferece (KDE Plasma, Hyprland, sway); a bandeja então não tem moldura, fica ancorada a uma borda ou canto (`STATUS_QUO_ANCHOR`, padrão canto superior direito) e só desenha quando algo muda. Numa sessão X11 usa uma janela sem moldura com dicas do gerenciador de janelas para ficar embaixo, fora da barra de tarefas e do pager; pedir todas as áreas de trabalho é só uma tentativa, porque a compatibilidade X11 do KDE a ignora. Em qualquer outro lugar, por exemplo GNOME no Wayland, volta para uma janela comum e avisa. `STATUS_QUO_HOST=layer-shell|x11|window` força uma escolha quando ela é possível. Personalização e capturas de tela usam a janela comum porque o host layer-shell ainda não tem entrada de teclado.
 
 ## Where it sits in the pipeline
 Roda no laptop ao lado de [[claude-code]] e [[codex]]. Suas verificações estão em [[checks-status-quo]], e ele segue [[project-template]] e [[pipeline-check]].
@@ -114,4 +116,4 @@ Integração contínua (CI) significa verificações automáticas a cada push. O
 A dívida técnica vai para issues do GitHub com o rótulo `debt` (P1 a P3), segundo a [[maintenance-policy]], e a [[monthly-architecture-review]] verifica o projeto. A proteção de branch não pode ser ativada em repositório privado no plano gratuito do GitHub.
 
 ## Notes
-Compile com `cargo build --release --locked -p status-quo`; o instalador é `status-quo install`, e `status-quo uninstall` o desfaz. O estado fica em `~/.local/state/status-quo`; `STATUS_QUO_STATE_DIR` o redireciona para testes. No laptop, um teste em 2026-11-02 mostrou o painel aberto com dados reais, o coletor vendo sessões reais dos assistentes pelos hooks e uma medição ociosa de 60 segundos de 1,23% de um núcleo e 119 MB. Ainda não observado: empilhamento da janela atrás das outras, início no login, o limite de 100 ms de interação e a execução completa de cinco minutos. A causa do uso ocioso de CPU restante está em aberto.
+Compile com `cargo build --release --locked -p status-quo`; o instalador é `status-quo install`, e `status-quo uninstall` o desfaz. O estado fica em `~/.local/state/status-quo`; `STATUS_QUO_STATE_DIR` o redireciona para testes. No laptop, testes em 2026-11-02 mostraram o host layer-shell com dados reais, o coletor vendo sessões reais dos assistentes pelos hooks, um clique do mouse alterando um widget e uma medição ociosa de 60 segundos de 1,08% de um núcleo e 195 MB no total (as bibliotecas do driver gráfico explicam a maior parte dos 156 MB do painel). Ainda não observado: início no login, o limite de 100 ms de interação, a execução completa de cinco minutos, entrada de teclado no host layer-shell, GNOME ou outro desktop além do KDE Plasma, e uma sessão X11 de verdade. A causa do uso ocioso de CPU restante está em aberto.
