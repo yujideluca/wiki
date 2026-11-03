@@ -1,7 +1,7 @@
 ---
 id: report-translator
 lang: pt-BR
-source_hash: 631cdcdd4ec7
+source_hash: 8c7efd422690
 title: Tradutor de laudos (translate.py)
 ---
 
@@ -67,3 +67,4 @@ O construtor de índice planejado e, depois, as páginas em alemão e português
 
 ## Notes
 O site do plano mostra contagens separadas de traduções de artigos e casos em cada idioma, atualizadas pelo banco a cada cinco segundos. Depois de alterar `progress.py`, reinicie `radiology-crawler` e `radiology-plan-updater`: um processo Python em execução mantém o código carregado e pode sobrescrever as novas contagens com o formato antigo. Em 02/11/2026 isso causou uma falsa contagem zero de casos, embora já houvesse traduções. As falhas pendentes causadas pelos hooks interativos foram liberadas para nova tentativa; seus contadores anteriores permanecem no arquivo local de auditoria `data/translation-recovery-20261102.json`. As traduções salvas foram preservadas.
+- Em 2026-11-03 Giovanni acrescentou um segundo tradutor para alcançar os downloads (cerca de 27.200 casos por idioma ainda sem tradução, com os artigos concluídos). `translate.py loop --backend haiku --worker I/10` chama o Claude Haiku via `claude -p` (sem ferramentas, sem configurações, sem sessão salva), com o mesmo prompt, as mesmas passagens de livro-texto e as mesmas três tentativas. Dez workers assim rodam ao lado dos quatro do Codex. Eles trabalham a partir do fim mais novo da fila, de modo que os dois grupos se encontram no meio, e nunca sobrescrevem uma linha do Codex. Cada linha do Haiku fica marcada `claude-haiku` na coluna `model`, para que os corpora em alemão e português possam ser avaliados com ou sem elas. Medido: cerca de 90 traduções por minuto nos dez workers. O arquivo de parada `data/STOP_TRANSLATION` interrompe os dois grupos.

@@ -9,7 +9,7 @@ location: radiology-crawler:translate.py
 fed_by: [radiopaedia-crawler]
 feeds: []
 sources: [radiology-crawler:translate.py, radiology-crawler:progress.py, radiology-crawler:site_src/build.py]
-reviewed: 2026-11-02T13:57Z
+reviewed: 2026-11-03T13:36Z
 ---
 
 ## What it is
@@ -73,3 +73,4 @@ The planned index builder and, later, the website's German and Portuguese pages.
 
 ## Notes
 The plan site shows separate article and case translation counts for each language, refreshed from the database every five seconds. After changing `progress.py`, restart both `radiology-crawler` and `radiology-plan-updater`: a running Python process retains its loaded code and can otherwise overwrite the new counts with the old format. On 2026-11-02 this caused a false zero case count although translations existed. Pending failures caused by the interactive hooks were reset for retry; their prior counters are retained in the local audit file `data/translation-recovery-20261102.json`. Saved translations were preserved.
+- On 2026-11-03 Giovanni added a second translator to catch up with the downloads (about 27,200 cases per language were still untranslated while articles were done). `translate.py loop --backend haiku --worker I/10` calls Claude Haiku through `claude -p` (no tools, no settings, no saved session) with the same prompt, textbook passages and three tries. Ten such workers run next to the four Codex ones. They work from the newest end of the queue, so the two groups meet in the middle, and they never overwrite a Codex row. Each Haiku row is tagged `claude-haiku` in the `model` column, so the German and Portuguese corpora can be scored with or without them. Measured: about 90 translations a minute across the ten workers. The stop file `data/STOP_TRANSLATION` stops both groups.

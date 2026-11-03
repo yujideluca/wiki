@@ -1,7 +1,7 @@
 ---
 id: report-translator
 lang: de
-source_hash: 631cdcdd4ec7
+source_hash: 8c7efd422690
 title: Befund-Übersetzer (translate.py)
 ---
 
@@ -67,3 +67,4 @@ Die geplante Index-Erstellung und später die deutschen und portugiesischen Seit
 
 ## Notes
 Die Planseite zeigt getrennte Übersetzungszahlen für Artikel und Fälle in jeder Sprache; sie liest die Datenbank alle fünf Sekunden. Nach Änderungen an `progress.py` müssen `radiology-crawler` und `radiology-plan-updater` neu gestartet werden: Ein laufender Python-Prozess behält seinen geladenen Code und kann neue Zahlen sonst mit dem alten Format überschreiben. Am 02.11.2026 führte das zu einer falschen Nullanzeige für Fälle, obwohl Übersetzungen vorhanden waren. Ausstehende Fehler durch interaktive Hooks wurden für einen neuen Versuch zurückgesetzt; ihre bisherigen Zähler bleiben in der lokalen Prüfdatei `data/translation-recovery-20261102.json`. Gespeicherte Übersetzungen blieben erhalten.
+- Am 2026-11-03 hat Giovanni einen zweiten Übersetzer hinzugefügt, um den Downloads hinterherzukommen (etwa 27.200 Fälle pro Sprache waren noch unübersetzt, die Artikel waren fertig). `translate.py loop --backend haiku --worker I/10` ruft Claude Haiku über `claude -p` auf (ohne Werkzeuge, ohne Einstellungen, ohne gespeicherte Sitzung), mit demselben Prompt, denselben Lehrbuchpassagen und denselben drei Versuchen. Zehn solche Worker laufen neben den vier Codex-Workern. Sie arbeiten vom neuesten Ende der Warteschlange aus, sodass sich beide Gruppen in der Mitte treffen, und überschreiben nie eine Codex-Zeile. Jede Haiku-Zeile trägt in der Spalte `model` die Marke `claude-haiku`, damit sich das deutsche und das portugiesische Korpus mit oder ohne sie bewerten lassen. Gemessen: etwa 90 Übersetzungen pro Minute über alle zehn Worker. Die Stoppdatei `data/STOP_TRANSLATION` stoppt beide Gruppen.
