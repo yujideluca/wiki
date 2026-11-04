@@ -9,7 +9,7 @@ location: radiology-crawler:translate.py
 fed_by: [radiopaedia-crawler]
 feeds: []
 sources: [radiology-crawler:translate.py, radiology-crawler:progress.py, radiology-crawler:site_src/build.py]
-reviewed: 2026-11-03T21:17Z
+reviewed: 2026-11-04T23:16Z
 ---
 
 ## What it is
@@ -74,3 +74,4 @@ The planned index builder and, later, the website's German and Portuguese pages.
 ## Notes
 The plan site shows separate article and case translation counts for each language, refreshed from the database every five seconds. After changing `progress.py`, restart both `radiology-crawler` and `radiology-plan-updater`: a running Python process retains its loaded code and can otherwise overwrite the new counts with the old format. On 2026-11-02 this caused a false zero case count although translations existed. Pending failures caused by the interactive hooks were reset for retry; their prior counters are retained in the local audit file `data/translation-recovery-20261102.json`. Saved translations were preserved.
 - On 2026-11-03 Giovanni added a second translator to catch up with the downloads (about 27,200 cases per language were still untranslated while articles were done). `translate.py loop --backend haiku --worker I/5` calls Claude Haiku through `claude -p` (no tools, no settings, no saved session) with the same prompt, textbook passages and three tries. Five such workers (reduced from ten on 2026-11-03 at Giovanni's request) run next to the four Codex ones. They work from the newest end of the queue, so the two groups meet in the middle, and they never overwrite a Codex row. Each Haiku row is tagged `claude-haiku` in the `model` column, so the German and Portuguese corpora can be scored with or without them. Measured: about 90 translations a minute across the ten workers. The stop file `data/STOP_TRANSLATION` stops both groups.
+- On 2026-11-04 the Haiku group was reduced to four workers (`data/shrink_haiku.log`, 06:38 UTC), and the Haiku backend was committed to the repository (commit `ae0a437`). A check that evening found 2,304 case translations (1,152 per language, about 1,150 cases) set aside after three failed tries, most of them from Codex errors. Their failure counters were reset to 0 so the Haiku workers retry them; the earlier table is saved in a local backup file. Within ten minutes about 220 translations were saved. Still open: the systemd services `radiology-translator@0` to `@3` run the Codex backend, so after a restart of the computer only Codex workers start; the Haiku workers were started by hand and run only while their terminal tabs stay open. Switching the services to `--backend haiku` was planned but not done.

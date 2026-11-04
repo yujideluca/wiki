@@ -1,7 +1,7 @@
 ---
 id: radiology-report-matcher
 lang: pt-BR
-source_hash: fdbf1a6b7f52
+source_hash: 54a5715e0eb5
 title: Radiology Report Matcher (site planejado)
 ---
 
@@ -114,4 +114,4 @@ Ele inicia a cadeia: [[radiopaedia-crawler]] → [[report-translator]] → (plan
 Giovanni, agora pelo site de plano e depois pelo site planejado.
 
 ## Notes
-Em 02/11/2026 o fluxo de tradução dos casos foi corrigido: processos antigos de progresso omitiam os contadores de casos, e hooks interativos de documentação do Codex substituíam traduções por mensagens do fluxo de trabalho. As chamadas agora ignoram a configuração interativa (requisito TL-8); quatro trabalhadores continuam traduzindo os casos baixados para alemão e português. As traduções salvas foram preservadas; 93 falhas pendentes sem título foram recolocadas na fila e seus contadores anteriores foram guardados localmente. Em 274 segundos, 25 casos foram baixados e 60 traduções em alemão e 62 em português foram concluídas. É uma observação curta, sem garantia da velocidade futura. A etapa de análise L1d continua em andamento: conjuntos de casos traduzidos, rótulos, divisão e pontuações por idioma ainda estão pendentes. Veja os detalhes da recuperação em [[report-translator]].
+Em 02/11/2026 o fluxo de tradução dos casos foi corrigido: processos antigos de progresso omitiam os contadores de casos, e hooks interativos de documentação do Codex substituíam traduções por mensagens do fluxo de trabalho. As chamadas agora ignoram a configuração interativa (requisito TL-8); quatro trabalhadores continuam traduzindo os casos baixados para alemão e português. As traduções salvas foram preservadas; 93 falhas pendentes sem título foram recolocadas na fila e seus contadores anteriores foram guardados localmente. Em 274 segundos, 25 casos foram baixados e 60 traduções em alemão e 62 em português foram concluídas. É uma observação curta, sem garantia da velocidade futura. A etapa de análise L1d continua em andamento: conjuntos de casos traduzidos, rótulos, divisão e pontuações por idioma ainda estão pendentes. Veja os detalhes da recuperação em [[report-translator]]. Em 2026-11-04 cerca de 1.150 casos por idioma, postos de lado após três traduções falhas, foram recolocados na fila para nova tentativa pelos workers Haiku; veja [[report-translator]].
