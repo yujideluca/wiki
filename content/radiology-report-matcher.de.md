@@ -1,7 +1,7 @@
 ---
 id: radiology-report-matcher
 lang: de
-source_hash: 54a5715e0eb5
+source_hash: 0eaee802542a
 title: Radiology Report Matcher (geplante Website)
 ---
 
@@ -114,4 +114,4 @@ Es steht am Anfang der Kette: [[radiopaedia-crawler]] → [[report-translator]] 
 Giovanni, jetzt über die Planwebsite und später über die geplante Website.
 
 ## Notes
-Am 02.11.2026 wurde die Fallübersetzung repariert: Alte Fortschrittsprozesse ließen Fallzähler weg, und interaktive Codex-Dokumentations-Hooks ersetzten Übersetzungen durch Arbeitsablaufmeldungen. Aufrufe ignorieren jetzt die interaktive Konfiguration (Anforderung TL-8); vier Arbeiter übersetzen heruntergeladene Fälle weiter ins Deutsche und Portugiesische. Gespeicherte Übersetzungen blieben erhalten; 93 ausstehende Fehler ohne Titel wurden erneut eingereiht und ihre bisherigen Zähler lokal gesichert. In 274 Sekunden wurden 25 Fälle heruntergeladen sowie 60 deutsche und 62 portugiesische Übersetzungen fertig. Diese kurze Beobachtung garantiert keine künftige Geschwindigkeit. Analyseschritt L1d läuft weiter: Übersetzte Fallmengen, Diagnosezuordnungen, Aufteilung und Bewertungen je Sprache stehen noch aus. Einzelheiten der Reparatur stehen unter [[report-translator]]. Am 2026-11-04 wurden etwa 1.150 Fälle pro Sprache, die nach drei Fehlversuchen beiseitegelegt waren, für einen weiteren Versuch durch die Haiku-Worker wieder eingereiht; siehe [[report-translator]].
+Am 02.11.2026 wurde die Fallübersetzung repariert: Alte Fortschrittsprozesse ließen Fallzähler weg, und interaktive Codex-Dokumentations-Hooks ersetzten Übersetzungen durch Arbeitsablaufmeldungen. Aufrufe ignorieren jetzt die interaktive Konfiguration (Anforderung TL-8); vier Arbeiter übersetzen heruntergeladene Fälle weiter ins Deutsche und Portugiesische. Gespeicherte Übersetzungen blieben erhalten; 93 ausstehende Fehler ohne Titel wurden erneut eingereiht und ihre bisherigen Zähler lokal gesichert. In 274 Sekunden wurden 25 Fälle heruntergeladen sowie 60 deutsche und 62 portugiesische Übersetzungen fertig. Diese kurze Beobachtung garantiert keine künftige Geschwindigkeit. Analyseschritt L1d läuft weiter: Übersetzte Fallmengen, Diagnosezuordnungen, Aufteilung und Bewertungen je Sprache stehen noch aus. Einzelheiten der Reparatur stehen unter [[report-translator]]. Am 2026-11-04 wurden etwa 1.150 Fälle pro Sprache, die nach drei Fehlversuchen beiseitegelegt waren, für einen weiteren Versuch durch die Haiku-Worker wieder eingereiht; siehe [[report-translator]]. Seit demselben Tag laufen die vier Übersetzer-Dienste mit Claude Haiku statt Codex.
