@@ -1,7 +1,7 @@
 ---
 id: end-of-task
 lang: pt-BR
-source_hash: 8bc9d221021c
+source_hash: f1d470bac045
 title: Fim de uma tarefa (cadeia de atualização do wiki)
 ---
 
@@ -39,6 +39,8 @@ s6 -> p3
 
 ## What it does
 O Claude atualiza as páginas do wiki para tudo o que mudou (coisas novas, alteradas ou aposentadas, cada uma com sua tradução em alemão e português), publica-as passando pelas verificações de conteúdo e depois informa quais entradas da memória influenciaram o trabalho.
+
+Quando nenhuma página descreve a mudança, ou uma página só foi conferida e considerada correta, vale a mesma cadeia com um passo menor: a hora `reviewed` da página recebe a hora UTC atual (essa edição é a revisão) ou, se nenhuma página é afetada, usa-se `wiki publish -m "review: no page change"`.
 
 ## How it does it
 A regra está escrita em [[global-claude-md]]; as verificações que protegem a publicação estão em [[wiki-check]]; e uma rede de segurança, [[wiki-hook-stop]], lembra o Claude se ele esquecer.

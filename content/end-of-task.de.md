@@ -1,7 +1,7 @@
 ---
 id: end-of-task
 lang: de
-source_hash: 8bc9d221021c
+source_hash: f1d470bac045
 title: Ende einer Aufgabe (Wiki-Aktualisierungskette)
 ---
 
@@ -39,6 +39,8 @@ s6 -> p3
 
 ## What it does
 Claude aktualisiert die Wiki-Seiten zu allem, was sich geändert hat (neue, geänderte oder stillgelegte Dinge, jeweils mit deutscher und portugiesischer Übersetzung), veröffentlicht sie durch die Inhaltsprüfungen und meldet dann, welche Gedächtniseinträge die Arbeit geprägt haben.
+
+Beschreibt keine Seite die Änderung oder wurde eine Seite nur geprüft und für richtig befunden, gilt dieselbe Kette mit einem kleineren Schritt: Die `reviewed`-Zeit der Seite wird auf die aktuelle UTC-Zeit gesetzt (diese Änderung ist die Prüfung) oder, wenn keine Seite betroffen ist, wird `wiki publish -m "review: no page change"` benutzt.
 
 ## How it does it
 Die Regel steht in [[global-claude-md]]; die Prüfungen, die das Veröffentlichen absichern, stehen in [[wiki-check]]; und ein Sicherheitsnetz, [[wiki-hook-stop]], erinnert Claude, falls es das vergessen hat.

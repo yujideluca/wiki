@@ -1,7 +1,7 @@
 ---
 id: claude-auto-memory
 lang: pt-BR
-source_hash: f4f1cc68d78c
+source_hash: 93ac45292bea
 title: Auto-memória do Claude Code
 ---
 
@@ -10,6 +10,8 @@ O Claude Code tem uma pequena memória própria, separada da compartilhada. É u
 
 ## What it does
 Guarda notas que só importam neste notebook: como verificar o assistente remoto, o projeto German Quiz, onde estão instaladas as ferramentas de espaço de usuário, a regra de que o código deve ser depurado antes de ser dado como pronto, o fato de que um certo aviso sobre uma skill de conversação em alemão não é para o Claude Code, e o fato de que o serviço de atalhos globais da área de trabalho vive dentro do gerenciador de janelas (kwin), de modo que uma mensagem errada enviada a ele pelo DBus (o sistema que os programas da área de trabalho usam para conversar entre si) pode derrubar o programa que desenha a área de trabalho. Guarda ainda uma nota sobre por que um lembrete do hook de parada da wiki ([[wiki-hook-stop]]) não foi atendido, porque as páginas marcadas eram de trabalho inacabado de outra sessão, e uma nota sobre o site planejado de correspondência de laudos de radiologia (decisões até agora, pesquisa ainda pendente).
+
+Outra nota, de 2026-11-05, aponta a ferramenta e o método para medir a velocidade do mapa deste wiki (a ferramenta está em `~/dev/wiki-bench`, o método em `docs/MEASURING-THE-MAP.md` do repositório do wiki) e lista as armadilhas que deram números errados: um temporizador de quadros de animação limitado, renderização por software e deriva da máquina entre as execuções.
 
 ## How it does it
 O próprio Claude Code escreve esses arquivos, em um formato fixo (um pequeno cabeçalho, o fato, por que importa, como aplicar). Regras que precisam ser compartilhadas entre todas as instâncias do Claude não ficam aqui; vão para a memória compartilhada [[workflow-memory]].

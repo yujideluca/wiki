@@ -1,12 +1,14 @@
 ---
 id: user-space-tools
 lang: pt-BR
-source_hash: cb8dc46d6b2d
+source_hash: 177b32c3174b
 title: Ferramentas em espaço de usuário (~/.local)
 ---
 
 ## What it is
 "Espaço de usuário" significa instalado nas pastas do próprio usuário em vez das pastas do sistema, de modo que não são necessários direitos de administrador. Esta página trata das ferramentas extras que o notebook do Giovanni tem em `~/.local`: [Node.js](https://nodejs.org/) 22 com npm (ambiente de execução de JavaScript e seu instalador de pacotes), [uv](https://docs.astral.sh/uv/) (uma ferramenta rápida de pacotes Python), pyright (verificador de tipos de Python), kotlin-lsp (um auxiliar que explica código Kotlin para editores), rclone (copia arquivos para armazenamento em nuvem), uma cópia do tmux (um terminal que continua rodando sem janela), shellcheck 0.11.0 (um verificador de scripts de shell, usado pelo [[pipeline-check]]), [Elm](https://elm-lang.org/) 0.19.1 com elm-test e elm-format, e os scripts `mem`, `tg-send`, `claude-assistant` e `wiki`. A mesma pasta guarda também o comando `claude` (um link para a versão instalada do Claude Code, que se atualiza sozinha) e `codex` (um link para o comando Codex instalado), além de três scripts auxiliares do Codex: `codex-pbar` e `codex-task-progress` para o rodapé do terminal ([[codex-pbar]]) e `codex-remote-tmux` para a sessão remota do Codex sempre ligada ([[remote-assistant]]).
+
+Também em `~/.local/bin` desde 2026-11-05: `claude-scratch-review`, `claude-scratch-act`, `claude-scratch-keep` e `claude-scratch-drop`, os scripts da revisão diária das pastas de rascunho ([[claude-scratch-review]]), e `status-quo`, o programa da bandeja da área de trabalho ([[status-quo]]), junto com várias cópias `status-quo.bak-*` e `status-quo.prev` de versões anteriores.
 
 ## Architecture
 ### Contexto

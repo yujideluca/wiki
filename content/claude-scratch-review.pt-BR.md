@@ -1,0 +1,25 @@
+---
+id: claude-scratch-review
+lang: pt-BR
+source_hash: 24e320c49c42
+title: claude-scratch-review (revisão das pastas de rascunho)
+---
+
+## What it is
+Esta é uma tarefa diária que impede que pastas de rascunho antigas encham a memória do notebook. O Claude Code grava o trabalho temporário (scripts, saídas de teste, perfis de navegador) numa pasta "scratchpad" sob `/tmp/claude-1000/`. No [[acer-nitro]], `/tmp` é um "tmpfs" (uma pasta que fica na RAM, a memória de trabalho rápida do computador, e não no disco), então cada arquivo ali ocupa memória. Em 2026-11-05 uma pasta de sessão antiga tinha cerca de 5 GB lá. A tarefa roda como um "timer de usuário do systemd" ([systemd](https://en.wikipedia.org/wiki/Systemd) é o programa do Linux que inicia tarefas de fundo em horários programados) chamado `claude-scratch-review.timer`.
+
+## What it does
+Uma vez por dia (04:30, mais um atraso aleatório de até 10 minutos e uma execução de recuperação se o notebook estava desligado) ela procura em `/tmp/claude-1000/` pastas de sessão cujo arquivo mais novo tem mais de 3 dias e que nenhum processo em execução está usando. Depois inicia um Claude "headless" (`claude -p`, Claude sem janela de chat, modelo Sonnet) e entrega a lista. Para cada pasta o Claude decide: manter, que move a pasta para o arquivo no SSD (unidade de estado sólido, um disco sem partes móveis), ou descartar, que a apaga. O Claude deve manter a pasta se ela tem trabalho útil para depois (scripts, resultados, relatórios, notas, qualquer coisa a que outro projeto se refira), apagar só o que pode ser regenerado (caches, perfis de navegador, `node_modules`, logs) e manter na dúvida, porque uma exclusão não pode ser desfeita.
+
+## How it does it
+O script `claude-scratch-review` monta a lista (o "manifesto", `~/.local/state/claude-scratch/manifest.txt`) e grava a pergunta para o Claude em `prompt.txt`, na mesma pasta. Um processo "usa" uma pasta quando seu diretório de trabalho está dentro dela ou quando o `lsof` (uma ferramenta que lista arquivos abertos) mostra um arquivo aberto ali. O Claude só pode ler arquivos e executar dois comandos auxiliares, `claude-scratch-keep <pasta>` e `claude-scratch-drop <pasta>`; ambos chamam `claude-scratch-act`. Esse auxiliar recusa uma pasta que não está no manifesto de hoje, que fica fora de `/tmp/claude-1000/<projeto>/<sessão>`, que não é um diretório comum ou que está em uso. O motivo do desenho: o Claude decide, mas não consegue apagar nada que o script não ofereceu. "Keep" copia a pasta, compara o tamanho em bytes da cópia e só então remove o original; o nome no arquivo é `<projeto>__<sessão>`. O arquivo é `claude-scratch/archive/` no segundo disco de 512 GB, montado em `/run/media/yuji/c202ac7d-57a0-4474-9091-b25ed7af6220`, ou `~/.local/share/claude-scratch-archive` quando esse disco não está montado. O disco não tem entrada em `/etc/fstab` (a lista de discos montados na inicialização), então só existe enquanto estiver montado. Cada ação é registrada em `~/.local/state/claude-scratch/log.txt` e o resumo do próprio Claude em `last-run.txt`. A lista pode ser conferida sem o Claude: `claude-scratch-review --dry` a mostra e para.
+
+No dia em que o timer foi criado, 75 pastas `bench-profile-*` (cerca de 5,1 GB) do scratchpad de uma sessão foram movidas uma única vez, à mão, para `claude-scratch/sessions/18bdee0e/scratchpad/` no segundo disco, deixando um link simbólico (um ponteiro para outro lugar) em cada caminho antigo. Uma pasta que estava em uso ficou onde estava.
+
+Um teste numa árvore de pastas inventada, feito antes de ativar o timer, apagou uma pasta com só um log e `node_modules`, manteve uma com notas e um script e pulou uma pasta com processo em execução e uma mais nova que 3 dias. A primeira execução real, iniciada à mão pela unidade de serviço em 2026-11-05, revisou 32 pastas: manteve 2 (notas do plano de estudo e saídas em lote do Haiku que uma etapa de análise aberta usa) e apagou 30 (25 vazias, 5 regeneráveis ou já aplicadas). A primeira tentativa do Claude, um único laço que descartava todas as pastas de uma vez, foi bloqueada pelo sistema de permissões; depois o Claude chamou o auxiliar uma vez por pasta. Uma exclusão, um download de 94 MB, baseou-se na coincidência do nome do conjunto de dados com uma cópia em `~/dev/merlin-data/raw`, e não numa comparação de conteúdo. A execução iniciada pelo próprio timer (a primeira prevista para 2026-11-06 por volta das 04:35) ainda não foi verificada. Uma execução sem supervisão precisa de um login válido do Claude; `claude setup-token` cria um token de longa duração para esse caso.
+
+## Where it sits in the pipeline
+Roda no [[acer-nitro]] como parte do [[laptop-setup]], ao lado do arquivo de swap de 30 GB (espaço de disco que o sistema usa como memória de reserva) descrito na página do notebook. Os dois existem para impedir que arquivos de rascunho e pressão de memória travem o notebook.
+
+## Who receives its output
+[[giovanni]], por meio da pasta de arquivo e dos arquivos de log; nenhuma outra parte do sistema os lê.

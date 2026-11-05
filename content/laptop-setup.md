@@ -9,7 +9,7 @@ location: home:.claude
 fed_by: []
 feeds: []
 sources: [home:.claude/settings.json, home:.claude/CLAUDE.md]
-reviewed: 2026-11-01T22:25Z
+reviewed: 2026-11-05T19:50Z
 ---
 
 ## What it is
@@ -43,7 +43,7 @@ s3 -> s7
 s7 -> p2
 
 ## What it does
-It provides the ground that every project stands on. The parts are: the Claude Code settings and instructions ([[claude-code-settings]], [[global-claude-md]]), the always-on [[claude-assistant]] service, the status bar [[pbar]], the Telegram sender [[tg-send]], the Android build tools ([[android-toolchain]]), the extra tools in `~/.local` ([[user-space-tools]]), the private network [[tailscale]] and the secure remote access setup [[remote-terminal]].
+It provides the ground that every project stands on. The parts are: the Claude Code settings and instructions ([[claude-code-settings]], [[global-claude-md]]), the always-on [[claude-assistant]] service, the status bar [[pbar]], the Telegram sender [[tg-send]], the Android build tools ([[android-toolchain]]), the extra tools in `~/.local` ([[user-space-tools]]), the daily scratch-folder review [[claude-scratch-review]], the private network [[tailscale]] and the secure remote access setup [[remote-terminal]].
 
 ## How it does it
 Most installs are "user-space": they are placed in the user's own folders (`~/.local` and `~/dev`) instead of system folders, so they need no administrator rights (no `sudo`, the command that runs something as administrator). The few steps that do need administrator rights are handed to Giovanni to run. Lasting facts about the setup are kept in [[claude-auto-memory]] and in the shared memory [[workflow-memory]].

@@ -1,7 +1,7 @@
 ---
 id: laptop-setup
 lang: de
-source_hash: 1c96429c2c86
+source_hash: abecdb3ddb05
 title: Laptop-Einrichtung
 ---
 
@@ -36,7 +36,7 @@ s3 -> s7
 s7 -> p2
 
 ## What it does
-Sie bildet den Boden, auf dem jedes Projekt steht. Die Teile sind: die Einstellungen und Anweisungen von Claude Code ([[claude-code-settings]], [[global-claude-md]]), der dauerhaft laufende Dienst [[claude-assistant]], die Statusleiste [[pbar]], der Telegram-Sender [[tg-send]], die Android-Build-Werkzeuge ([[android-toolchain]]), die zusätzlichen Werkzeuge in `~/.local` ([[user-space-tools]]), das private Netzwerk [[tailscale]] und der sichere Fernzugang [[remote-terminal]].
+Sie bildet den Boden, auf dem jedes Projekt steht. Die Teile sind: die Einstellungen und Anweisungen von Claude Code ([[claude-code-settings]], [[global-claude-md]]), der dauerhaft laufende Dienst [[claude-assistant]], die Statusleiste [[pbar]], der Telegram-Sender [[tg-send]], die Android-Build-Werkzeuge ([[android-toolchain]]), die zusätzlichen Werkzeuge in `~/.local` ([[user-space-tools]]), die tägliche Prüfung der Scratch-Ordner [[claude-scratch-review]], das private Netzwerk [[tailscale]] und der sichere Fernzugang [[remote-terminal]].
 
 ## How it does it
 Die meisten Installationen sind „User-Space“: Sie liegen in den eigenen Ordnern des Benutzers (`~/.local` und `~/dev`) statt in Systemordnern und brauchen deshalb keine Administratorrechte (kein `sudo`, der Befehl, der etwas als Administrator ausführt). Die wenigen Schritte, die Administratorrechte brauchen, übergibt Claude an Giovanni. Dauerhafte Fakten zur Einrichtung stehen in [[claude-auto-memory]] und im gemeinsamen Gedächtnis [[workflow-memory]].

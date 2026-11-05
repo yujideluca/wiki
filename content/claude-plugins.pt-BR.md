@@ -1,7 +1,7 @@
 ---
 id: claude-plugins
 lang: pt-BR
-source_hash: de14de0622c6
+source_hash: b814dccdcc9f
 title: Plugins do Claude Code
 ---
 
@@ -16,9 +16,10 @@ Um plugin é um pacote complementar do Claude Code que traz capacidades extras (
 - feature-dev e pr-review-toolkit oferecem agentes de revisão e planejamento (assistentes auxiliares para uma tarefa específica).
 - claude-code-setup recomenda automações.
 - android-test-pilot analisa apps Android e executa testes no aparelho; vem do marketplace `panicgit/android-test-pilot`.
+- rust-analyzer-lsp dá ao Claude "inteligência de código" para a linguagem Rust (versão 1.0.0).
 
 ## How it does it
-Estão instalados em `~/.claude/plugins` (a lista fica em `installed_plugins.json`) e ligados ou desligados em [[claude-code-settings]]. Ligados: pyright-lsp, kotlin-lsp, security-guidance e android-test-pilot. Instalados, mas desligados: session-report, claude-md-management, feature-dev, pr-review-toolkit e claude-code-setup.
+Estão instalados em `~/.claude/plugins` (a lista fica em `installed_plugins.json`) e ligados ou desligados em [[claude-code-settings]]. Ligados: pyright-lsp, kotlin-lsp, rust-analyzer-lsp, security-guidance e android-test-pilot. Instalados, mas desligados: session-report, claude-md-management, feature-dev, pr-review-toolkit e claude-code-setup.
 
 ## Where it sits in the pipeline
 Dentro de toda sessão do Claude Code.

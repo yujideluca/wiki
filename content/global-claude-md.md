@@ -9,14 +9,14 @@ location: home:.claude/CLAUDE.md
 fed_by: []
 feeds: [claude-code, remote-assistant]
 sources: [home:.claude/CLAUDE.md]
-reviewed: 2026-10-25T07:34Z
+reviewed: 2026-11-05T19:50Z
 ---
 
 ## What it is
 `~/.claude/CLAUDE.md` is Giovanni's private instruction file for every Claude Code session on the laptop. A CLAUDE.md file is plain text that Claude Code reads automatically at the start of a session and treats as standing instructions ([documentation](https://docs.claude.com/en/docs/claude-code/memory)). This one is "global": it applies in every project, while each project also has its own.
 
 ## What it does
-It names [[workflow-memory]] as the shared memory and explains how to record a correction (`mem add`), how to report which memory entries shaped a task (`mem use`) and how to flag a wrong entry. It forbids editing the `events/` and `views/` folders by hand and storing clinical, secret or contact data about other people. It also makes updating the wiki part of finishing any task ([[end-of-task]]).
+It names [[workflow-memory]] as the shared memory and explains how to record a correction (`mem add`), how to report which memory entries shaped a task (`mem use`) and how to flag a wrong entry. It forbids editing the `events/` and `views/` folders by hand and storing clinical, secret or contact data about other people. It also makes updating the wiki part of finishing any task ([[end-of-task]]). It also says that a page checked and found right gets its `reviewed:` field set to the current UTC time, that `wiki publish -m "review: no page change"` is only for a change that no page describes, and that a Stop hook ([[wiki-hook-stop]]) reminds the session once if code changed after the last publish.
 
 ## How it does it
 It is loaded automatically into the context of every session, next to the memory brief ([[session-brief]]). No command is needed.

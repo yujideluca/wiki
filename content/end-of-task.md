@@ -8,7 +8,7 @@ status: active
 fed_by: []
 feeds: []
 sources: [home:.claude/CLAUDE.md, wiki:server/lib/wiki/cli.ex]
-reviewed: 2026-11-01T22:54Z
+reviewed: 2026-11-05T19:50Z
 ---
 
 ## What it is
@@ -45,6 +45,8 @@ s6 -> p3
 
 ## What it does
 Claude updates the wiki pages for whatever changed (new, changed or retired things, each with its German and Portuguese translation), publishes them through the content checks, and then reports which memory entries shaped the work.
+
+When no page describes the change, or a page was only checked and found right, the same chain applies with a smaller step: the page's `reviewed` time is set to the current UTC time (that edit is the review), or, if no page is affected, `wiki publish -m "review: no page change"` is used.
 
 ## How it does it
 The rule is written in [[global-claude-md]]; the checks that guard publishing are in [[wiki-check]]; and a safety net, [[wiki-hook-stop]], reminds Claude if it forgot.

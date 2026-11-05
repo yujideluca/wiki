@@ -1,7 +1,7 @@
 ---
 id: laptop-setup
 lang: pt-BR
-source_hash: 1c96429c2c86
+source_hash: abecdb3ddb05
 title: Configuração do notebook
 ---
 
@@ -36,7 +36,7 @@ s3 -> s7
 s7 -> p2
 
 ## What it does
-Ela fornece o chão sobre o qual todo projeto se apoia. As partes são: as configurações e instruções do Claude Code ([[claude-code-settings]], [[global-claude-md]]), o serviço sempre ligado [[claude-assistant]], a barra de status [[pbar]], o enviador de Telegram [[tg-send]], as ferramentas de build do Android ([[android-toolchain]]), as ferramentas extras em `~/.local` ([[user-space-tools]]), a rede privada [[tailscale]] e o acesso remoto seguro [[remote-terminal]].
+Ela fornece o chão sobre o qual todo projeto se apoia. As partes são: as configurações e instruções do Claude Code ([[claude-code-settings]], [[global-claude-md]]), o serviço sempre ligado [[claude-assistant]], a barra de status [[pbar]], o enviador de Telegram [[tg-send]], as ferramentas de build do Android ([[android-toolchain]]), as ferramentas extras em `~/.local` ([[user-space-tools]]), a revisão diária das pastas de rascunho [[claude-scratch-review]], a rede privada [[tailscale]] e o acesso remoto seguro [[remote-terminal]].
 
 ## How it does it
 A maioria das instalações é "em espaço de usuário": fica nas pastas do próprio usuário (`~/.local` e `~/dev`) em vez de pastas do sistema, então não exige direitos de administrador (nada de `sudo`, o comando que executa algo como administrador). Os poucos passos que exigem esses direitos são entregues ao Giovanni para ele executar. Fatos duradouros sobre a configuração ficam em [[claude-auto-memory]] e na memória compartilhada [[workflow-memory]].

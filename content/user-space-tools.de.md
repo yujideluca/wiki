@@ -1,12 +1,14 @@
 ---
 id: user-space-tools
 lang: de
-source_hash: cb8dc46d6b2d
+source_hash: 177b32c3174b
 title: User-Space-Werkzeuge (~/.local)
 ---
 
 ## What it is
 „User-Space“ heißt: in den eigenen Ordnern des Benutzers statt in Systemordnern installiert, sodass keine Administratorrechte nötig sind. Diese Seite behandelt die zusätzlichen Werkzeuge in `~/.local` auf Giovannis Laptop: [Node.js](https://nodejs.org/) 22 mit npm (JavaScript-Laufzeit und ihr Paketinstaller), [uv](https://docs.astral.sh/uv/) (ein schnelles Python-Paketwerkzeug), pyright (ein Python-Typprüfer), kotlin-lsp (ein Helfer, der Editoren Kotlin-Code erklärt), rclone (kopiert Dateien in Cloud-Speicher), eine eigene Kopie von tmux (ein Terminal, das ohne Fenster weiterläuft), shellcheck 0.11.0 (ein Prüfer für Shell-Skripte, benutzt von [[pipeline-check]]), [Elm](https://elm-lang.org/) 0.19.1 mit elm-test und elm-format sowie die Skripte `mem`, `tg-send`, `claude-assistant` und `wiki`. Im selben Ordner liegen außerdem der Befehl `claude` (ein Link auf die installierte Version von Claude Code, die sich selbst aktualisiert) und `codex` (ein Link auf den installierten Codex-Befehl) sowie drei Codex-Hilfsskripte: `codex-pbar` und `codex-task-progress` für die Fußzeile im Terminal ([[codex-pbar]]) und `codex-remote-tmux` für die dauerhaft laufende Codex-Fernsitzung ([[remote-assistant]]).
+
+Seit 2026-11-05 liegen außerdem in `~/.local/bin`: `claude-scratch-review`, `claude-scratch-act`, `claude-scratch-keep` und `claude-scratch-drop`, die Skripte der täglichen Prüfung der Scratch-Ordner ([[claude-scratch-review]]), sowie `status-quo`, das Programm der Desktop-Leiste ([[status-quo]]), zusammen mit mehreren Kopien früherer Builds (`status-quo.bak-*` und `status-quo.prev`).
 
 ## Architecture
 ### Kontext

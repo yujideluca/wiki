@@ -9,11 +9,13 @@ location: home:.local/bin
 fed_by: []
 feeds: [claude-assistant]
 sources: [home:.local/bin]
-reviewed: 2026-11-01T23:02Z
+reviewed: 2026-11-05T19:50Z
 ---
 
 ## What it is
 "User-space" means installed in the user's own folders instead of the system folders, so no administrator rights are needed. This page covers the extra tools Giovanni's laptop has in `~/.local`: [Node.js](https://nodejs.org/) 22 with npm (JavaScript runtime and its package installer), [uv](https://docs.astral.sh/uv/) (a fast Python package tool), pyright (a Python type checker), kotlin-lsp (a helper that explains Kotlin code to editors), rclone (copies files to cloud storage), a copy of tmux (a terminal that keeps running without a window), shellcheck 0.11.0 (a checker for shell scripts, used by [[pipeline-check]]), [Elm](https://elm-lang.org/) 0.19.1 with elm-test and elm-format, and the scripts `mem`, `tg-send`, `claude-assistant` and `wiki`. The same folder also holds the command `claude` (a link to the installed version of Claude Code, which updates itself) and `codex` (a link to the installed Codex command), and three Codex helper scripts: `codex-pbar` and `codex-task-progress` for the terminal footer ([[codex-pbar]]) and `codex-remote-tmux` for the always-on Codex remote session ([[remote-assistant]]).
+
+Also in `~/.local/bin` since 2026-11-05: `claude-scratch-review`, `claude-scratch-act`, `claude-scratch-keep` and `claude-scratch-drop`, the scripts of the daily scratch-folder review ([[claude-scratch-review]]), and `status-quo`, the program of the desktop tray ([[status-quo]]), together with several `status-quo.bak-*` and `status-quo.prev` copies of earlier builds.
 
 ## Architecture
 ### Context
