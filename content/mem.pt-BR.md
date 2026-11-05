@@ -1,7 +1,7 @@
 ---
 id: mem
 lang: pt-BR
-source_hash: 1b470cac0e2a
+source_hash: 70aea3af5d02
 title: mem (comando da memória)
 ---
 
@@ -64,6 +64,8 @@ O arquivo `mem/cli.py` lê a linha de comando e chama os módulos: `events.py` (
 - `mem claim REF`: reivindicar uma tarefa (vale a reivindicação mais antiga)
 - `mem pending`, `mem scope`: listar e delimitar pendências
 - `mem brief`, `mem search "words"`: imprimir o brief, busca em texto completo
+- `mem add ... --tags deploy,git`: registrar uma regra com os tipos de tarefa a que pertence
+- `mem rules TAG [TAG ...]`, `mem tag KEY TAG ...`: imprimir as regras completas de um tipo de tarefa; mudar as tags de uma regra ([[mem-rules]])
 - `mem check`, `mem quarantine`, `mem dismiss`: validade dos arquivos de evento
 - `mem promote`, `mem compact [--apply]`: tornar hábitos globais; resumir entradas antigas
 - `mem build [--check]`: regenerar as visões

@@ -8,8 +8,8 @@ status: active
 location: workflow-memory:bin/mem
 fed_by: [claude-code, codex, giovanni, remote-assistant]
 feeds: [events-log]
-sources: [workflow-memory:bin/mem, workflow-memory:mem/cli.py]
-reviewed: 2026-10-27T01:45Z
+sources: [workflow-memory:bin/mem, workflow-memory:mem/cli.py, workflow-memory:mem/tags.py]
+reviewed: 2026-11-05T03:57Z
 ---
 
 ## What it is
@@ -71,6 +71,8 @@ It is the door through which the memory is written on the laptop. The hooks call
 - `mem claim REF`: claim a task (the earliest claim wins)
 - `mem pending`, `mem scope`: list and scope open items
 - `mem brief`, `mem search "words"`: print the brief, full-text search
+- `mem add ... --tags deploy,git`: record a rule with the kinds of task it belongs to
+- `mem rules TAG [TAG ...]`, `mem tag KEY TAG ...`: print the full rules of a kind of task; change the tags of a rule ([[mem-rules]])
 - `mem check`, `mem quarantine`, `mem dismiss`: validity of event files
 - `mem promote`, `mem compact [--apply]`: make habits global; summarise old entries
 - `mem build [--check]`: regenerate the views

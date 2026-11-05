@@ -1,7 +1,7 @@
 ---
 id: mem
 lang: de
-source_hash: 1b470cac0e2a
+source_hash: 70aea3af5d02
 title: mem (Gedächtnisbefehl)
 ---
 
@@ -64,6 +64,8 @@ Es ist die Tür, durch die auf dem Laptop ins Gedächtnis geschrieben wird. Auch
 - `mem claim REF`: eine Aufgabe beanspruchen (die früheste Beanspruchung gewinnt)
 - `mem pending`, `mem scope`: offene Punkte auflisten und eingrenzen
 - `mem brief`, `mem search "words"`: den Brief ausgeben, Volltextsuche
+- `mem add ... --tags deploy,git`: eine Regel mit den Arten von Aufgabe festhalten, zu denen sie gehört
+- `mem rules TAG [TAG ...]`, `mem tag KEY TAG ...`: die vollen Regeln einer Aufgabenart ausgeben; die Tags einer Regel ändern ([[mem-rules]])
 - `mem check`, `mem quarantine`, `mem dismiss`: Gültigkeit der Ereignisdateien
 - `mem promote`, `mem compact [--apply]`: Gewohnheiten global machen; alte Einträge zusammenfassen
 - `mem build [--check]`: die Ansichten neu erzeugen
