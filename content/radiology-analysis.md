@@ -8,8 +8,8 @@ status: active
 location: radiology-crawler:analysis
 fed_by: [radiopaedia-crawler]
 feeds: []
-sources: [radiology-crawler:analysis/__init__.py, radiology-crawler:analysis/corpus.py, radiology-crawler:analysis/hardware.py, radiology-crawler:analysis/harness.py, radiology-crawler:analysis/tagger.py, radiology-crawler:analysis/filters.py, radiology-crawler:analysis/wording.py, radiology-crawler:analysis/pipeline.py, radiology-crawler:analysis/v1_model.py, radiology-crawler:analysis/codex_tags.py, radiology-crawler:analysis/haiku_batches.py, radiology-crawler:analysis/tag_agreement.py, radiology-crawler:analysis/filler_test.py, radiology-crawler:analysis/sanity.py, radiology-crawler:tools/analysis_status.py, radiology-crawler:docs/analysis-status.json, radiology-crawler:AGENTS.md]
-reviewed: 2026-11-02T14:04Z
+sources: [radiology-crawler:analysis/__init__.py, radiology-crawler:analysis/corpus.py, radiology-crawler:analysis/hardware.py, radiology-crawler:analysis/harness.py, radiology-crawler:analysis/case_labels.py, radiology-crawler:analysis/tagger.py, radiology-crawler:analysis/filters.py, radiology-crawler:analysis/wording.py, radiology-crawler:analysis/pipeline.py, radiology-crawler:analysis/v1_model.py, radiology-crawler:analysis/codex_tags.py, radiology-crawler:analysis/haiku_batches.py, radiology-crawler:analysis/tag_agreement.py, radiology-crawler:analysis/filler_test.py, radiology-crawler:analysis/sanity.py, radiology-crawler:tools/analysis_status.py, radiology-crawler:docs/analysis-status.json, radiology-crawler:AGENTS.md]
+reviewed: 2026-11-05T12:59Z
 ---
 
 ## What it is
@@ -49,6 +49,7 @@ It provides the pieces below, each in its own file. Each piece has a requirement
 - `haiku_batches.make`, `haiku_batches.merge`: cut batches for Haiku; merge valid answers.
 - `tag_agreement.agreement`: how often the taggers agree with each other.
 - `filler_test.run`, `filler_test.classify`, `filler_test.holm`: run the filler-word test; label a word filler, informative or undecided; correct for many tests at once (Holm's method).
+- `case_labels.label_cases`, `case_labels.assign_split`, `case_labels.build`: give each downloaded case the diagnosis article it belongs to ("exact" when its title or synonym equals an article; "linked" when the first article it links to is typed as a diagnosis; otherwise unlabelled, never guessed), split the labelled cases into tune and test halves with the fixed seed, and write a frozen label file without case text.
 - `sanity.main`: a machinery check on the cases downloaded so far; it is not the real evaluation.
 
 ## Where it sits in the pipeline
@@ -59,3 +60,4 @@ Giovanni, through the step-by-step guide on the home page of the plan site and t
 
 ## Notes
 On 2026-11-02 the case translation pipeline was repaired: old progress writers omitted case counters, and interactive Codex documentation hooks replaced translation output with workflow messages. Calls now ignore interactive configuration (requirement TL-8); four workers keep translating downloaded cases into German and Portuguese. Saved translations were preserved and 93 pending missing-title failures were requeued with their prior counters saved locally. In a 274-second observation, 25 cases downloaded while 60 German and 62 Portuguese translations completed. This is a short observation, not a guarantee of future throughput. Analysis step L1d remains in progress: translated case sets, labels, split and per-language scores are still outstanding. See [[report-translator]] for the recovery details.
+On 2026-11-05, 49,462 cases had been extracted. Labels and split (analysis step F4, `case_labels.build`) gave 17,321 exact, 24,797 linked and 7,344 unlabelled cases; 22,682 went to tuning and 19,436 to testing, covering 5,398 diagnoses of which 1,173 have at least 10 cases. The label file is `data/analysis/case-labels-20261105.jsonl.gz`; it is rebuilt when the case download finishes. Step L1d (per-language case sets and scores) is still in progress.

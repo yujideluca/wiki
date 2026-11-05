@@ -1,7 +1,7 @@
 ---
 id: radiology-analysis
 lang: de
-source_hash: e33cc6a7ec9e
+source_hash: 357552db6a1f
 title: Analysepaket für Radiologie (analysis/)
 ---
 
@@ -42,6 +42,7 @@ Es liefert die folgenden Bausteine, jeder in einer eigenen Datei. Jeder Baustein
 - `haiku_batches.make`, `haiku_batches.merge`: schneiden Stapel für Haiku; übernehmen gültige Antworten.
 - `tag_agreement.agreement`: wie oft die Tagger miteinander übereinstimmen.
 - `filler_test.run`, `filler_test.classify`, `filler_test.holm`: führen den Füllwort-Test aus; stufen ein Wort als Füllwort, informativ oder unentschieden ein; korrigieren für viele gleichzeitige Tests (Holm-Verfahren).
+- `case_labels.label_cases`, `case_labels.assign_split`, `case_labels.build`: ordnen jedem heruntergeladenen Fall den Diagnoseartikel zu, zu dem er gehört („exact“, wenn Titel oder Synonym einem Artikel entspricht; „linked“, wenn der erste verlinkte Artikel als Diagnose eingestuft ist; sonst ohne Label, nie geraten), teilen die Fälle mit dem festen Seed in Tuning- und Testhälfte und schreiben eine eingefrorene Label-Datei ohne Falltext.
 - `sanity.main`: eine Maschinerie-Prüfung an den bisher heruntergeladenen Fällen; sie ist nicht die eigentliche Auswertung.
 
 ## Where it sits in the pipeline
@@ -52,3 +53,4 @@ Giovanni, über die Schritt-für-Schritt-Anleitung auf der Startseite der Planwe
 
 ## Notes
 Am 02.11.2026 wurde die Fallübersetzung repariert: Alte Fortschrittsprozesse ließen Fallzähler weg, und interaktive Codex-Dokumentations-Hooks ersetzten Übersetzungen durch Arbeitsablaufmeldungen. Aufrufe ignorieren jetzt die interaktive Konfiguration (Anforderung TL-8); vier Arbeiter übersetzen heruntergeladene Fälle weiter ins Deutsche und Portugiesische. Gespeicherte Übersetzungen blieben erhalten; 93 ausstehende Fehler ohne Titel wurden erneut eingereiht und ihre bisherigen Zähler lokal gesichert. In 274 Sekunden wurden 25 Fälle heruntergeladen sowie 60 deutsche und 62 portugiesische Übersetzungen fertig. Diese kurze Beobachtung garantiert keine künftige Geschwindigkeit. Analyseschritt L1d läuft weiter: Übersetzte Fallmengen, Diagnosezuordnungen, Aufteilung und Bewertungen je Sprache stehen noch aus. Einzelheiten der Reparatur stehen unter [[report-translator]].
+Am 05.11.2026 waren 49.462 Fälle extrahiert. Labels und Aufteilung (Analyseschritt F4, `case_labels.build`) ergaben 17.321 exact-, 24.797 linked- und 7.344 unbeschriftete Fälle; 22.682 gingen ins Tuning und 19.436 in den Test, verteilt auf 5.398 Diagnosen, von denen 1.173 mindestens 10 Fälle haben. Die Label-Datei ist `data/analysis/case-labels-20261105.jsonl.gz`; sie wird neu erzeugt, wenn der Falldownload fertig ist. Schritt L1d (Fallsätze und Scores je Sprache) läuft noch.
