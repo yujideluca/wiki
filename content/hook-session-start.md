@@ -9,7 +9,7 @@ location: workflow-memory:mem/hooks.py
 fed_by: [claude-code-settings, mem-sync]
 feeds: [session-brief]
 sources: [workflow-memory:mem/hooks.py]
-reviewed: 2026-11-05T03:57Z
+reviewed: 2026-11-05T04:00Z
 ---
 
 ## What it is

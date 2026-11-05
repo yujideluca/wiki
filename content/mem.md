@@ -9,7 +9,7 @@ location: workflow-memory:bin/mem
 fed_by: [claude-code, codex, giovanni, remote-assistant]
 feeds: [events-log]
 sources: [workflow-memory:bin/mem, workflow-memory:mem/cli.py, workflow-memory:mem/tags.py]
-reviewed: 2026-11-05T03:57Z
+reviewed: 2026-11-05T04:00Z
 ---
 
 ## What it is
