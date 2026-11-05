@@ -1,7 +1,7 @@
 ---
 id: mem-validator
 lang: de
-source_hash: ace0f1097185
+source_hash: 81f5988a708c
 title: Validator und Quarantäne (validate.py)
 ---
 
@@ -12,7 +12,7 @@ Der Validator ist der Datenschutz- und Formatwächter des Gedächtnisses, egal w
 Er weist Tokens und Schlüssel, E-Mail-Adressen, Telefonnummern, CPF-Nummern und fehlerhafte Ereignisse zurück. Eine abgelehnte Datei wird mit einer `.reason`-Notiz in den Ordner `quarantine/` verschoben und erscheint in der Prüfdatei. Einen Filter für Gesundheitsvokabular gibt es bewusst nicht (Giovannis Entscheidung vom 2026-10-19); klinische Daten über andere Personen nicht zu speichern ist eine dauerhafte Regel, der Claude folgt, keine automatische Prüfung.
 
 ## How it does it
-Die Funktion `check_event` prüft ein Ereignis, `load_checked` trennt gültige von ungültigen Ereignissen, und `quarantine` verschiebt die schlechten. Getestet wird er durch `test_privacy_boundary` und durch die Fehlersuch-Tests in `tests/test_bughunt.py`; die Token-Muster umfassen fein granulare GitHub-Tokens, GitLab-Tokens und Google-API-Schlüssel (API: Programmierschnittstelle), und Telefonnummern werden auch in der internationalen Form erkannt. Seit dem 2026-10-30 begrenzt `clamp_to_now` außerdem die Zeit jedes gültigen Ereignisses auf den Moment des Lesens: Ein Schreiber ohne verlässliche Uhr, etwa die Chat-App, kann ein Ereignis einige Minuten in die Zukunft datieren, und dieses darf nicht nach einem wirklich später geschriebenen einsortiert werden. Die behauptete Zeit bleibt in `ts_claimed` erhalten.
+Die Funktion `check_event` prüft ein Ereignis, `load_checked` trennt gültige von ungültigen Ereignissen, und `quarantine` verschiebt die schlechten. Getestet wird er durch `test_privacy_boundary` und durch die Fehlersuch-Tests in `tests/test_bughunt.py`; die Token-Muster umfassen fein granulare GitHub-Tokens, GitLab-Tokens und Google-API-Schlüssel (API: Programmierschnittstelle), und Telefonnummern werden auch in der internationalen Form erkannt. Seit dem 2026-10-30 begrenzt `clamp_to_now` außerdem die Zeit jedes gültigen Ereignisses auf den Moment des Lesens: Ein Schreiber ohne verlässliche Uhr, etwa die Chat-App, kann ein Ereignis einige Minuten in die Zukunft datieren, und dieses darf nicht nach einem wirklich später geschriebenen einsortiert werden. Die behauptete Zeit bleibt in `ts_claimed` erhalten. Es prüft auch Tags: Jeder muss in `mem/tags.toml` (den bekannten Tags) stehen und aus Kleinbuchstaben, Ziffern und Bindestrichen bestehen, ein Ereignis darf höchstens sechs tragen, und nur eine Vorliebe, Entscheidung oder ein Fakt darf welche haben ([[mem-rules]]).
 
 ## Where it sits in the pipeline
 Vor jedem Schreiben durch [[mem]] und auf GitHub in [[mem-action]].

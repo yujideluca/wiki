@@ -1,7 +1,7 @@
 ---
 id: memory-fold
 lang: pt-BR
-source_hash: 6c7febffbeb3
+source_hash: 1bc36157ed61
 title: A dobra (core.py)
 ---
 
@@ -9,7 +9,7 @@ title: A dobra (core.py)
 "A dobra" (fold) é a função única no coração do [[workflow-memory]]: ela pega o registro inteiro de eventos e o "dobra" no estado atual (como dobrar uma lista longa em um único resultado). Em termos de programação, é uma [função pura](https://en.wikipedia.org/wiki/Pure_function): a mesma entrada sempre dá a mesma saída e nada mais é alterado. Fica em `mem/core.py`.
 
 ## What it does
-Para cada assunto (escopo mais key) vale a decisão mais recente; a mesma decisão repetida soma evidência; uma negação conta como mudança; `forget` e `done` encerram seu alvo; o feedback muda o destaque de uma entrada (`wrong` a tira do brief e a lista para o Giovanni revisar). Um evento do [[mem-harvester]] automático nunca sobrescreve as palavras do próprio Giovanni. Se dois escritores dão à mesma key textos diferentes em 24 horas, o resultado é um conflito que o Giovanni vê, não uma mescla silenciosa. Depois classifica as entradas para o brief: preferências nunca desbotam; os outros tipos desbotam com uma meia-vida (o tempo após o qual o peso cai pela metade): 180 dias para decisões e fatos, 7 dias para notas, esticada por cada uso informado ([[mem-use]]).
+Para cada assunto (escopo mais key) vale a decisão mais recente; a mesma decisão repetida soma evidência; uma negação conta como mudança; `forget` e `done` encerram seu alvo; o feedback muda o destaque de uma entrada (`wrong` a tira do brief e a lista para o Giovanni revisar). Um evento do [[mem-harvester]] automático nunca sobrescreve as palavras do próprio Giovanni. Se dois escritores dão à mesma key textos diferentes em 24 horas, o resultado é um conflito que o Giovanni vê, não uma mescla silenciosa. Depois classifica as entradas para o brief: preferências nunca desbotam; os outros tipos desbotam com uma meia-vida (o tempo após o qual o peso cai pela metade): 180 dias para decisões e fatos, 7 dias para notas, esticada por cada uso informado ([[mem-use]]). O brief de início não imprime mais essa classificação (usa tags, veja [[mem-rules]]); o comando [[mem]] ainda a imprime por inteiro.
 
 ## How it does it
 O resultado não depende da ordem em que os eventos chegam e é [idempotente](https://en.wikipedia.org/wiki/Idempotence) (aplicar um duplicado não muda nada); as duas propriedades são testadas. Os eventos são ordenados por hora e depois id, e duplicados contam uma vez. Um horário de evento posterior ao momento da leitura é limitado a esse momento (o carimbo original fica em `ts_claimed`), de modo que um escritor com relógio errado não consegue reordenar o registro (ADR-0006, um registro de decisão de arquitetura: [[memory-adrs]]). A função `brief()` encaixa as entradas em um orçamento de 2.900 caracteres (`BRIEF_BUDGET`); com cerca de 1.100 caracteres de texto fixo de instruções, o resumo inteiro tem cerca de 4.000 caracteres, que são 2,5 % da primeira rodada mediana medida em 2026-10-19 (44.860 tokens); os números foram calibrados com `scripts/calibrate.py`. Preferências são fixadas, então o orçamento nunca as descarta; ele limita só decisões, fatos e notas. `brief()` também pode encurtar cada regra a um tamanho dado (usado depois de `/clear`), e uma entrada com escopo `instance:X` é mostrada só à ferramenta chamada X. As tags (os tipos de tarefa a que uma regra pertence, veja [[mem-rules]]) fazem parte da regra: as mesmas palavras com tags diferentes são uma nova regra, e um evento sem linha de tags apenas reafirma.

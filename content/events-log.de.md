@@ -1,7 +1,7 @@
 ---
 id: events-log
 lang: de
-source_hash: 983dc69801c5
+source_hash: d3c979304e73
 title: events/ (das Gedächtnisprotokoll)
 ---
 
@@ -12,7 +12,7 @@ Der Ordner `events/` ist das Gedächtnis selbst: eine Markdown-Datei pro Ereigni
 Er enthält jede Vorliebe, jeden Fakt, jede Entscheidung, Aufgabe und Notiz, dazu „Steuer“-Ereignisse, die den Zustand anderer ändern (Feedback, Claim, Done, Forget, Use, Archive, Reopen, Rescope). Dateien werden nie bearbeitet oder gelöscht, sodass zwei Schreiber nie in Konflikt geraten können (Entscheidung ADR-0002 in [[memory-adrs]]; ein ADR, „Architecture Decision Record“, ist eine kurze Notiz, die eine Entscheidung und ihre Gründe festhält).
 
 ## How it does it
-Jede Datei hat einen Kopf (`type`, `scope`, `key`, `owner`, `instance`, `ts` und optional `supersedes`, `target`, `signal`, `category`), gefolgt von ein bis zwei Sätzen. Ein Auftrag der Continuous Integration (CI, automatische Prüfungen bei jedem Push) namens `append-only` weist jede Änderung an einer bestehenden Datei zurück. Ungültige Dateien verschiebt [[mem-validator]] in einen Ordner `quarantine/`. Ein Zeilenumbruch in einem Kopfwert wird beim Schreiben der Datei in ein Leerzeichen umgewandelt, sodass ein Wert nie eine weitere Kopfzeile beginnen kann (zum Beispiel ein gefälschtes `owner: user`).
+Jede Datei hat einen Kopf (`type`, `scope`, `key`, `owner`, `instance`, `ts` und optional `supersedes`, `target`, `signal`, `category`, `tags`), gefolgt von ein bis zwei Sätzen. Ein Auftrag der Continuous Integration (CI, automatische Prüfungen bei jedem Push) namens `append-only` weist jede Änderung an einer bestehenden Datei zurück. Ungültige Dateien verschiebt [[mem-validator]] in einen Ordner `quarantine/`. Ein Zeilenumbruch in einem Kopfwert wird beim Schreiben der Datei in ein Leerzeichen umgewandelt, sodass ein Wert nie eine weitere Kopfzeile beginnen kann (zum Beispiel ein gefälschtes `owner: user`). Die optionale Zeile `tags` listet die Arten von Aufgabe, für die eine Regel wichtig ist ([[mem-rules]]); eine Zeile nur mit `-` löscht sie.
 
 ## Where it sits in the pipeline
 Geschrieben von [[mem]] auf dem Laptop und von [[mem-github-connector]] für die Claude-App; gelesen von [[memory-fold]].

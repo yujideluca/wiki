@@ -9,7 +9,7 @@ location: workflow-memory:
 fed_by: [claude-code, codex]
 feeds: [status-quo]
 sources: [workflow-memory:README.md, workflow-memory:docs/DESIGN.md]
-reviewed: 2026-10-27T01:34Z
+reviewed: 2026-11-05T04:03Z
 ---
 
 ## What it is
@@ -91,7 +91,7 @@ How this project follows the golden path of [[project-template]].
 6. **This repository is the only interface between the Claude instances**: no new protocol.
 
 ### Decisions
-Five architecture decision records (ADRs, short notes that keep the reasons for a decision) in `docs/adr/`, [[memory-adrs]]: 0002 one append-only event log folded by a pure function, instead of a protocol; 0003 the roles of Giovanni and the Claude instances; 0004 a program measures and a skill judges; 0005 trim the startup brief and split memory by tool. The design, the rules of the fold and the known limits are in `docs/DESIGN.md` (there is no root `DESIGN.md` with a decision log yet).
+Seven architecture decision records (ADRs, short notes that keep the reasons for a decision) in `docs/adr/`, [[memory-adrs]]: 0002 one append-only event log folded by a pure function, instead of a protocol; 0003 the roles of Giovanni and the Claude instances; 0004 a program measures and a skill judges; 0005 trim the startup brief and split memory by tool; 0006 an event is never later than the moment it is read; 0007 rules are fetched by the kind of task, so the start-up brief stays short. The design, the rules of the fold and the known limits are in `docs/DESIGN.md` (there is no root `DESIGN.md` with a decision log yet).
 
 ### Requirements
 There is no requirements list. The principles above are pinned by named tests in `tests/` (for example the order-independence, privacy and harvester tests), run by the gate.

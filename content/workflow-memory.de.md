@@ -1,7 +1,7 @@
 ---
 id: workflow-memory
 lang: de
-source_hash: ef53006f253a
+source_hash: 68354dcee300
 title: workflow-memory (gemeinsames Gedächtnis)
 ---
 
@@ -84,7 +84,7 @@ Wie dieses Projekt dem Goldenen Weg von [[project-template]] folgt.
 6. **Dieses Repository ist die einzige Schnittstelle zwischen den Claude-Instanzen**: kein neues Protokoll.
 
 ### Entscheidungen
-Fünf Architekturentscheidungsprotokolle (kurze Notizen, die die Gründe einer Entscheidung bewahren) in `docs/adr/`, [[memory-adrs]]: 0002 ein nur anhängbares Ereignisprotokoll, von einer reinen Funktion gefaltet, statt eines Protokolls; 0003 die Rollen von Giovanni und den Claude-Instanzen; 0004 ein Programm misst und ein Skill urteilt; 0005 die Startkurzfassung kürzen und das Gedächtnis nach Werkzeug trennen. Der Entwurf, die Regeln der Faltung und die bekannten Grenzen stehen in `docs/DESIGN.md` (ein `DESIGN.md` im Hauptordner mit Entscheidungsprotokoll gibt es noch nicht).
+Sieben Architekturentscheidungsprotokolle (kurze Notizen, die die Gründe einer Entscheidung bewahren) in `docs/adr/`, [[memory-adrs]]: 0002 ein nur anhängbares Ereignisprotokoll, von einer reinen Funktion gefaltet, statt eines Protokolls; 0003 die Rollen von Giovanni und den Claude-Instanzen; 0004 ein Programm misst und ein Skill urteilt; 0005 die Startkurzfassung kürzen und das Gedächtnis nach Werkzeug trennen; 0006 ein Ereignis ist nie später als der Moment, in dem es gelesen wird; 0007 Regeln werden nach Art der Aufgabe geholt, damit der Start-Brief kurz bleibt. Der Entwurf, die Regeln der Faltung und die bekannten Grenzen stehen in `docs/DESIGN.md` (ein `DESIGN.md` im Hauptordner mit Entscheidungsprotokoll gibt es noch nicht).
 
 ### Anforderungen
 Es gibt keine Anforderungsliste. Die obigen Prinzipien werden durch benannte Tests in `tests/` festgehalten (zum Beispiel die Tests zu Reihenfolge-Unabhängigkeit, Datenschutz und Sammler), die das Gate ausführt.

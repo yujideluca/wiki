@@ -1,7 +1,7 @@
 ---
 id: workflow-memory
 lang: pt-BR
-source_hash: ef53006f253a
+source_hash: 68354dcee300
 title: workflow-memory (memória compartilhada)
 ---
 
@@ -84,7 +84,7 @@ Como este projeto segue o caminho dourado do [[project-template]].
 6. **Este repositório é a única interface entre as instâncias do Claude**: nenhum protocolo novo.
 
 ### Decisões
-Cinco registros de decisão de arquitetura (notas curtas que guardam os motivos de uma decisão) em `docs/adr/`, [[memory-adrs]]: 0002 um registro de eventos só de acréscimo, dobrado por uma função pura, em vez de um protocolo; 0003 os papéis do Giovanni e das instâncias do Claude; 0004 um programa mede e uma skill julga; 0005 enxugar o resumo de início e separar a memória por ferramenta. O projeto, as regras da dobra e os limites conhecidos estão em `docs/DESIGN.md` (ainda não há um `DESIGN.md` na raiz com registro de decisões).
+Sete registros de decisão de arquitetura (notas curtas que guardam os motivos de uma decisão) em `docs/adr/`, [[memory-adrs]]: 0002 um registro de eventos só de acréscimo, dobrado por uma função pura, em vez de um protocolo; 0003 os papéis do Giovanni e das instâncias do Claude; 0004 um programa mede e uma skill julga; 0005 enxugar o resumo de início e separar a memória por ferramenta; 0006 um evento nunca é posterior ao momento em que é lido; 0007 as regras são buscadas pelo tipo de tarefa, para o brief de início continuar curto. O projeto, as regras da dobra e os limites conhecidos estão em `docs/DESIGN.md` (ainda não há um `DESIGN.md` na raiz com registro de decisões).
 
 ### Requisitos
 Não há lista de requisitos. Os princípios acima são fixados por testes nomeados em `tests/` (por exemplo os testes de independência de ordem, de privacidade e do coletor), executados pelo portão.
