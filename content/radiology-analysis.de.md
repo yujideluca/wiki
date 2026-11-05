@@ -1,7 +1,7 @@
 ---
 id: radiology-analysis
 lang: de
-source_hash: 357552db6a1f
+source_hash: 529ae8dbf512
 title: Analysepaket für Radiologie (analysis/)
 ---
 
@@ -43,6 +43,7 @@ Es liefert die folgenden Bausteine, jeder in einer eigenen Datei. Jeder Baustein
 - `tag_agreement.agreement`: wie oft die Tagger miteinander übereinstimmen.
 - `filler_test.run`, `filler_test.classify`, `filler_test.holm`: führen den Füllwort-Test aus; stufen ein Wort als Füllwort, informativ oder unentschieden ein; korrigieren für viele gleichzeitige Tests (Holm-Verfahren).
 - `case_labels.label_cases`, `case_labels.assign_split`, `case_labels.build`: ordnen jedem heruntergeladenen Fall den Diagnoseartikel zu, zu dem er gehört („exact“, wenn Titel oder Synonym einem Artikel entspricht; „linked“, wenn der erste verlinkte Artikel als Diagnose eingestuft ist; sonst ohne Label, nie geraten), teilen die Fälle mit dem festen Seed in Tuning- und Testhälfte und schreiben eine eingefrorene Label-Datei ohne Falltext.
+- `list_precision.phrase_precision`, `list_precision.weak_phrases`, `list_precision.prune`, `list_precision.agreement`: prüfen jede Wendung der deutschen und portugiesischen Tag-Wortlisten gegen die Codex-Tags auf einer Tuning-Hälfte der Artikel (Hälfte per Hash des Artikelnamens), listen Wendungen, die oft auslösen, aber selten übereinstimmen, und bewerten eine Liste auf der unberührten Holdout-Hälfte.
 - `sanity.main`: eine Maschinerie-Prüfung an den bisher heruntergeladenen Fällen; sie ist nicht die eigentliche Auswertung.
 
 ## Where it sits in the pipeline
@@ -54,3 +55,4 @@ Giovanni, über die Schritt-für-Schritt-Anleitung auf der Startseite der Planwe
 ## Notes
 Am 02.11.2026 wurde die Fallübersetzung repariert: Alte Fortschrittsprozesse ließen Fallzähler weg, und interaktive Codex-Dokumentations-Hooks ersetzten Übersetzungen durch Arbeitsablaufmeldungen. Aufrufe ignorieren jetzt die interaktive Konfiguration (Anforderung TL-8); vier Arbeiter übersetzen heruntergeladene Fälle weiter ins Deutsche und Portugiesische. Gespeicherte Übersetzungen blieben erhalten; 93 ausstehende Fehler ohne Titel wurden erneut eingereiht und ihre bisherigen Zähler lokal gesichert. In 274 Sekunden wurden 25 Fälle heruntergeladen sowie 60 deutsche und 62 portugiesische Übersetzungen fertig. Diese kurze Beobachtung garantiert keine künftige Geschwindigkeit. Analyseschritt L1d läuft weiter: Übersetzte Fallmengen, Diagnosezuordnungen, Aufteilung und Bewertungen je Sprache stehen noch aus. Einzelheiten der Reparatur stehen unter [[report-translator]].
 Am 05.11.2026 waren 49.462 Fälle extrahiert. Labels und Aufteilung (Analyseschritt F4, `case_labels.build`) ergaben 17.321 exact-, 24.797 linked- und 7.344 unbeschriftete Fälle; 22.682 gingen ins Tuning und 19.436 in den Test, verteilt auf 5.398 Diagnosen, von denen 1.173 mindestens 10 Fälle haben. Die Label-Datei ist `data/analysis/case-labels-20261105.jsonl.gz`; sie wird neu erzeugt, wenn der Falldownload fertig ist. Schritt L1d (Fallsätze und Scores je Sprache) läuft noch.
+Am 05.11.2026 hat Schritt L1c die schwachen deutschen und portugiesischen Wortlisten per Test statt von Hand korrigiert (Anforderung LG-4). Eine Wendung, die in mindestens 15 Artikeln der Tuning-Hälfte auslöst, aber in weniger als 35 % davon den Wert in den Codex-Tags trägt (auf dem englischen Text erstellt; unabhängig von den Listen, keine Wahrheit), wird entfernt. Ein einzelnes `~` in einer Wendung lässt nun bis zu drei andere Wörter zu, und Geschlechtswendungen wurden ergänzt. Auf der Holdout-Hälfte stieg die Übereinstimmung mit Codex (Jaccard), Deutsch: Geschlecht 0,143 auf 0,224, Seite/Anzahl 0,269 auf 0,349, Textur 0,368 auf 0,392; Portugiesisch: Geschlecht 0,097 auf 0,268, Seite/Anzahl 0,318 auf 0,431, Textur 0,358 auf 0,403. Das Geschlecht bleibt in etwa 93 % der Artikel unbekannt, weil die meisten Artikel es nicht nennen.

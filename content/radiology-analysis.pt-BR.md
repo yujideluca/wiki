@@ -1,7 +1,7 @@
 ---
 id: radiology-analysis
 lang: pt-BR
-source_hash: 357552db6a1f
+source_hash: 529ae8dbf512
 title: Pacote de análise de radiologia (analysis/)
 ---
 
@@ -43,6 +43,7 @@ Fornece as peças abaixo, cada uma em seu arquivo. Cada peça tem um requisito (
 - `tag_agreement.agreement`: com que frequência os marcadores concordam entre si.
 - `filler_test.run`, `filler_test.classify`, `filler_test.holm`: executam o teste das palavras de enchimento; classificam uma palavra como enchimento, informativa ou indecisa; corrigem para muitos testes simultâneos (método de Holm).
 - `case_labels.label_cases`, `case_labels.assign_split`, `case_labels.build`: dão a cada caso baixado o artigo de diagnóstico a que pertence ("exact" quando o título ou sinônimo é igual a um artigo; "linked" quando o primeiro artigo linkado é classificado como diagnóstico; senão sem rótulo, nunca adivinhado), dividem os casos rotulados em metades de ajuste e teste com a semente fixa e gravam um arquivo de rótulos congelado, sem texto de caso.
+- `list_precision.phrase_precision`, `list_precision.weak_phrases`, `list_precision.prune`, `list_precision.agreement`: testam cada expressão das listas de palavras de tags em alemão e português contra as tags do Codex numa metade de ajuste dos artigos (metade definida por um hash do nome do artigo), listam expressões que disparam muito mas concordam pouco e pontuam uma lista na metade de validação intocada.
 - `sanity.main`: uma verificação da maquinaria nos casos baixados até agora; não é a avaliação de verdade.
 
 ## Where it sits in the pipeline
@@ -54,3 +55,4 @@ Giovanni, pelo guia passo a passo da página inicial do site de plano e por `doc
 ## Notes
 Em 02/11/2026 o fluxo de tradução dos casos foi corrigido: processos antigos de progresso omitiam os contadores de casos, e hooks interativos de documentação do Codex substituíam traduções por mensagens do fluxo de trabalho. As chamadas agora ignoram a configuração interativa (requisito TL-8); quatro trabalhadores continuam traduzindo os casos baixados para alemão e português. As traduções salvas foram preservadas; 93 falhas pendentes sem título foram recolocadas na fila e seus contadores anteriores foram guardados localmente. Em 274 segundos, 25 casos foram baixados e 60 traduções em alemão e 62 em português foram concluídas. É uma observação curta, sem garantia da velocidade futura. A etapa de análise L1d continua em andamento: conjuntos de casos traduzidos, rótulos, divisão e pontuações por idioma ainda estão pendentes. Veja os detalhes da recuperação em [[report-translator]].
 Em 05/11/2026, 49.462 casos estavam extraídos. Rótulos e divisão (passo de análise F4, `case_labels.build`) deram 17.321 casos exact, 24.797 linked e 7.344 sem rótulo; 22.682 foram para ajuste e 19.436 para teste, cobrindo 5.398 diagnósticos, dos quais 1.173 têm ao menos 10 casos. O arquivo de rótulos é `data/analysis/case-labels-20261105.jsonl.gz`; é refeito quando o download dos casos terminar. O passo L1d (conjuntos de casos e pontuações por idioma) segue em andamento.
+Em 05/11/2026 o passo L1c corrigiu as listas fracas em alemão e português por teste, não à mão (requisito LG-4). Uma expressão que dispara em pelo menos 15 artigos da metade de ajuste, mas em menos de 35% deles tem o valor nas tags do Codex (feitas no texto em inglês; independentes das listas, não são verdade absoluta), é removida. Um `~` isolado numa expressão agora admite até três outras palavras, e foram adicionadas expressões de sexo. Na metade de validação a sobreposição com o Codex (Jaccard) subiu, alemão: sexo 0,143 para 0,224, lado/número 0,269 para 0,349, textura 0,368 para 0,392; português: sexo 0,097 para 0,268, lado/número 0,318 para 0,431, textura 0,358 para 0,403. O sexo continua desconhecido em cerca de 93% dos artigos porque a maioria não o informa.
