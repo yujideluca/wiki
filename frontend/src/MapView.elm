@@ -11,6 +11,7 @@ import Json.Decode as D
 import I18n exposing (Lang)
 import Array
 import Globe exposing (Cam, Spot)
+import GlobeGrab
 import MapCamera
 import MapGeometry exposing (Dot, Geometry, Statics)
 import Motion
@@ -88,7 +89,7 @@ map geometry statics motion adj width height active =
                             Just it ->
                                 let
                                     v =
-                                        Globe.displace it.vec (dx / MapCamera.mrad) (dy / MapCamera.mrad)
+                                        GlobeGrab.displace it.vec (dx / MapCamera.mrad) (dy / MapCamera.mrad)
                                 in
                                 Dict.insert id (MapGeometry.dotAt geometry it v.x v.y v.z) acc
 

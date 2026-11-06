@@ -3,7 +3,8 @@ module GlobeTests exposing (suite)
 {-| The pure functions of `Globe` against the spec's `vectors.json` (generated into `GlobeVectors`), to 1e-9. -}
 
 import Expect exposing (Expectation)
-import Globe exposing (Mode(..))
+import Globe
+import GlobeGrab exposing (Mode(..))
 import GlobeVectors
 import Json.Decode as D exposing (Decoder)
 import Test exposing (Test, describe, test)
@@ -128,7 +129,7 @@ suite =
                         Globe.camera (screenOf i.c i.rho) { lam = i.lam, beta = i.beta, z = i.z }
 
                     r =
-                        Globe.drag cam m0 m1
+                        GlobeGrab.drag cam m0 m1
 
                     modeName =
                         case r.mode of
@@ -163,7 +164,7 @@ suite =
             (\_ ( i, f, ( m, ( l, b, z ) ) ) ->
                 let
                     r =
-                        Globe.zoom (screenOf i.c i.rho) { lam = i.lam, beta = i.beta, z = i.z } f m
+                        GlobeGrab.zoom (screenOf i.c i.rho) { lam = i.lam, beta = i.beta, z = i.z } f m
                 in
                 closeAngle "lam" l r.lam ++ close "beta" b r.beta ++ close "Z" z r.z
             )
@@ -280,7 +281,7 @@ suite =
                                 Globe.camera (screenOf i.c i.rho) { lam = i.lam, beta = i.beta, z = i.z }
 
                             r =
-                                Globe.hitTest cam nodes m tolPx
+                                GlobeGrab.hitTest cam nodes m tolPx
                         in
                         (if r.index == ix then
                             []
@@ -303,7 +304,7 @@ suite =
             (\_ ( n, d, o ) ->
                 let
                     r =
-                        Globe.tangentMove n d
+                        GlobeGrab.tangentMove n d
                 in
                 close "x" o.x r.x ++ close "y" o.y r.y ++ close "z" o.z r.z
             )
@@ -316,7 +317,7 @@ suite =
             (\_ ( ( l, b ), ( de, dn ), ( wl, wb ) ) ->
                 let
                     ( l2, b2 ) =
-                        Globe.tangentMoveLB l b de dn
+                        GlobeGrab.tangentMoveLB l b de dn
                 in
                 closeAngle "l" wl l2 ++ close "b" wb b2
             )
@@ -338,7 +339,7 @@ suite =
                         Globe.camera (screenOf ( 500, 400 ) i.rho) { lam = i.lam, beta = i.beta, z = i.z }
 
                     r =
-                        Globe.hoverPull cam n nh 0.2 14
+                        GlobeGrab.hoverPull cam n nh 0.2 14
                 in
                 close "x" o.x r.x ++ close "y" o.y r.y ++ close "z" o.z r.z
             )

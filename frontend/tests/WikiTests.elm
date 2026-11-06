@@ -5,6 +5,7 @@ import Data exposing (EdgeType(..), Graph, Node)
 import Array
 import Dict
 import Globe
+import GlobeGrab
 import Json.Encode as E
 import Expect
 import Filter
@@ -609,7 +610,7 @@ suite =
                             Dict.get "mem" statics.byId |> Maybe.andThen (\i -> Array.get i statics.items) |> Maybe.map .vec |> Maybe.withDefault (Globe.nodeOf 0 0)
 
                         v =
-                            Globe.displace it (60 / MapCamera.mrad) 0
+                            GlobeGrab.displace it (60 / MapCamera.mrad) 0
 
                         placed =
                             Globe.place (Globe.camera screen home) v.x v.y v.z

@@ -5,9 +5,10 @@ module Touch exposing (Gesture(..), Phase(..), step)
 The zoom library also zooms in on two quick taps, and it remembers which fingers are down, so a lift it misses turns the
 next touch into a second finger and a pinch. Here every touch event restates all the fingers that are down, so the state
 cannot get stuck, and there is no double-tap zoom. Positions are window pixels; the globe turns under the fingers
-(`Globe.dragView`, `Globe.zoom`). -}
+(`GlobeGrab.dragView`, `GlobeGrab.zoom`). -}
 
 import Globe exposing (Screen, View)
+import GlobeGrab
 
 
 type Gesture
@@ -54,15 +55,15 @@ apply : Screen -> Gesture -> Gesture -> View -> View
 apply screen before after view =
     case ( before, after ) of
         ( One a, One b ) ->
-            Globe.dragView (Globe.camera screen view) a b
+            GlobeGrab.dragView (Globe.camera screen view) a b
 
         ( Two a1 a2 da, Two b1 b2 db ) ->
             -- the midpoint is held under the fingers (a drag of the globe), then zoomed about it by the change in distance
             let
                 turned =
-                    Globe.dragView (Globe.camera screen view) (midpoint a1 a2) (midpoint b1 b2)
+                    GlobeGrab.dragView (Globe.camera screen view) (midpoint a1 a2) (midpoint b1 b2)
             in
-            Globe.zoom screen turned (db / max 1 da) (midpoint b1 b2)
+            GlobeGrab.zoom screen turned (db / max 1 da) (midpoint b1 b2)
 
         _ ->
             view

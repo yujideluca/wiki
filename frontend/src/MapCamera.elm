@@ -9,6 +9,7 @@ The elastic layer (`Motion`) keeps two numbers per dot, its displacement east an
 
 import Dict
 import Globe
+import GlobeGrab
 import Layout
 import MapGeometry
 import MapSize
@@ -243,7 +244,7 @@ hoverPulls model =
                                 (\nv ->
                                     let
                                         ( de, dn ) =
-                                            Globe.components nv (Globe.hoverPull cam (vecOf nv) hVec fraction capPx)
+                                            GlobeGrab.components nv (GlobeGrab.hoverPull cam (vecOf nv) hVec fraction capPx)
                                     in
                                     ( n, ( de * mrad, dn * mrad ) )
                                 )
@@ -272,7 +273,7 @@ pinOf model =
                                     Globe.unrotate cam (Globe.targetPoint cam d.target)
 
                                 ( de, dn ) =
-                                    Globe.components n (Globe.logMap (vecOf n) target)
+                                    GlobeGrab.components n (GlobeGrab.logMap (vecOf n) target)
                             in
                             ( d.id, ( de * mrad, dn * mrad ) )
                         )

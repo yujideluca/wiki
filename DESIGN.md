@@ -49,7 +49,7 @@ flowchart TB
     end
     subgraph frontend["frontend/ (Elm)"]
         main[Main: routes, search bar, language]
-        mapv[MapView + MapGeometry + Globe + Motion + Touch + Layout + MapSize + Filter]
+        mapv[MapView + MapGeometry + Globe + GlobeGrab + Motion + Touch + Layout + MapSize + Filter]
         art[ArticleView + WikiText + FlowView + FlowLayout + Flow]
         search[Search]
     end

@@ -17,6 +17,7 @@ import I18n exposing (Lang)
 import Json.Decode as D
 import Layout
 import Globe
+import GlobeGrab
 import MapCamera
 import MapGeometry
 import MapSize
@@ -432,7 +433,7 @@ updateModel msg model =
             )
 
         Wheel x y dy ->
-            ( { model | view = Globe.zoom (MapCamera.screenOf model) model.view (e ^ (-dy * 0.002)) ( x, y ) }, Cmd.none )
+            ( { model | view = GlobeGrab.zoom (MapCamera.screenOf model) model.view (e ^ (-dy * 0.002)) ( x, y ) }, Cmd.none )
 
         PanStart x y ->
             ( { model | pan = Just ( x, y ) }, Cmd.none )
@@ -440,7 +441,7 @@ updateModel msg model =
         PanMove x y ->
             case model.pan of
                 Just p ->
-                    ( { model | pan = Just ( x, y ), view = Globe.dragView (MapCamera.camOf model) p ( x, y ) }, Cmd.none )
+                    ( { model | pan = Just ( x, y ), view = GlobeGrab.dragView (MapCamera.camOf model) p ( x, y ) }, Cmd.none )
 
                 Nothing ->
                     ( model, Cmd.none )
