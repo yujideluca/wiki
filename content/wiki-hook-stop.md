@@ -8,8 +8,8 @@ status: active
 location: wiki:server/lib/wiki/content/stale.ex
 fed_by: [claude-code-settings]
 feeds: [claude-code]
-sources: [wiki:server/lib/wiki/content/stale.ex, wiki:docs/adr/0009-stale-review-claims-and-shared-publish-stamp.md, home:.claude/settings.json, home:.codex/hooks.json]
-reviewed: 2026-11-06T18:12Z
+sources: [wiki:server/lib/wiki/content/stale.ex, wiki:server/lib/wiki/content/memo.ex, wiki:docs/adr/0009-stale-review-claims-and-shared-publish-stamp.md, home:.claude/settings.json, home:.codex/hooks.json]
+reviewed: 2026-11-06T21:22Z
 ---
 
 ## What it is
@@ -20,6 +20,8 @@ When an assistant finishes a turn, it checks the repositories under `~/dev` that
 
 ## How it does it
 It uses read-only git, and keeps its state in `~/.local/state/wiki/` (the time of the last publish and the sessions already blocked). Data folders that change all the time (the memory events and views, quiz backups, the release feed) are listed in `content/_ignore.txt` and are not watched file by file. The message it prints tells the assistant to record a page it checked and found right by setting that page's `reviewed` time (record the time only after comparing the sources, see [[wiki-stale]]), and to run `wiki publish -m "review: no page change"` only when what changed is described by no page, for example a data file. It also tells the session to add `--co-author "Name <email>"` to `wiki publish` with the attribution line that session was given, and to leave it out when it has none ([[wiki-cli]]).
+
+Speed (requirement UP-8): one run asks the same questions many times, because many pages share sources. While the hook runs, a small cache (`Wiki.Content.Memo`) keeps each answer to a git query or a "where does this path really point" question, so each is asked once; outside the hook nothing is cached. Paths are resolved inside the program with the same answers as the `realpath -m` command, instead of starting that command each time. This cut a run from about 4,500 started programs and 22 to 28 seconds (the hook's time limit is 30 seconds) to about 1,250 git calls and 11 seconds, with the same message.
 
 ## Where it sits in the pipeline
 It runs at the end of every turn, next to the memory's [[hook-stop]].

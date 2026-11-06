@@ -8,8 +8,8 @@ status: active
 location: workflow-memory:events
 fed_by: [mem, mem-add, mem-github-connector, mem-harvester, mem-task, mem-use]
 feeds: [mem-action, mem-search, mem-validator, memory-fold]
-sources: [workflow-memory:mem/events.py, workflow-memory:docs/DESIGN.md]
-reviewed: 2026-11-05T04:03Z
+sources: [workflow-memory:mem/events.py, workflow-memory:docs/DESIGN.md, workflow-memory:mem/sync.py]
+reviewed: 2026-11-06T21:25Z
 ---
 
 ## What it is
@@ -22,7 +22,7 @@ It holds every preference, fact, decision, task and note, plus "control" events 
 Each file has a header (`type`, `scope`, `key`, `owner`, `instance`, `ts`, and optionally `supersedes`, `target`, `signal`, `category`, `tags`) followed by one or two sentences. A job in continuous integration (CI, automatic checks on every push) named `append-only` rejects any edit to an existing file. Invalid files are moved to a `quarantine/` folder by [[mem-validator]]. A line break inside a header value is turned into a space when the file is written, so a value can never start another header line (for example a forged `owner: user`). The optional `tags` line lists the kinds of task a rule matters for ([[mem-rules]]); a line with only `-` clears them.
 
 ## Where it sits in the pipeline
-Written by [[mem]] on the laptop and by [[mem-github-connector]] for the Claude app; read by [[memory-fold]].
+Written by [[mem]] on the laptop and by [[mem-github-connector]] for the Claude app; read by [[memory-fold]]. New event files travel between the laptop and GitHub through [[mem-sync]], which downloads before the memory is read and uploads after new events are written.
 
 ## Who receives its output
 [[memory-fold]] and [[mem-action]].

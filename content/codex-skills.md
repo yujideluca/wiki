@@ -9,7 +9,7 @@ location: codex-skills:README.md
 fed_by: []
 feeds: [codex]
 sources: [codex-skills:README.md, codex-skills:manifest.json, codex-skills:DESIGN.md]
-reviewed: 2026-10-27T01:34Z
+reviewed: 2026-11-06T21:24Z
 ---
 
 ## What it is
@@ -68,7 +68,7 @@ ct -validates-> sk
 ct -installs, with backups-> lv
 
 ## What it does
-Keeps 26 adaptations, complete source baselines and content fingerprints. A fingerprint is a calculated value that detects changed files. Reports source changes without overwriting adaptations. Vendor document skills remain under their existing owners.
+Keeps 26 adaptations, complete source baselines and content fingerprints. A fingerprint is a calculated value that detects changed files. Reports source changes without overwriting adaptations. Vendor document skills remain under their existing owners. On 2026-11-06 the adaptations of wiki-page-writer and skill-forge were updated by hand (the wiki is English only) without refreshing their source baselines (the recorded copies of the Claude originals), so `skillsctl status` reports them, and reparo-kubuntu, as `changed` until they are reviewed.
 
 ## How it does it
 Repository: `yujideluca/codex-skills`; folder: `~/dev/codex-skills`. Python manages validation and reversible installation through [[codex-skillsctl]]. The quality gate, a command that decides whether a change passes, is `tools/quality_gate.sh`; GitHub runs it on every push. Start with README.md and AGENTS.md.

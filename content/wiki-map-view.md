@@ -9,7 +9,7 @@ location: wiki:frontend/src/MapView.elm
 fed_by: [map-benchmark]
 feeds: [wiki-frontend]
 sources: [wiki:frontend/src/MapView.elm, wiki:frontend/src/MapGeometry.elm, wiki:frontend/src/MapEdges.elm, wiki:frontend/src/MapLabels.elm, wiki:frontend/tests/MapLabelsTests.elm, wiki:docs/REQUIREMENTS.md, wiki:frontend/tests/MapEdgesTests.elm, wiki:frontend/src/MapCamera.elm, wiki:frontend/src/Main.elm, wiki:frontend/src/Data.elm, wiki:frontend/static/style.css, wiki:docs/MEASURING-THE-MAP.md, wiki:frontend/src/Globe.elm, wiki:frontend/src/GlobeGrab.elm, wiki:frontend/src/Touch.elm, wiki:docs/adr/0010-globe-camera-replaces-lens.md, wiki:frontend/src/Motion.elm, wiki:frontend/tests/GlobeTests.elm, wiki:frontend/tests/GlobeVectors.elm, wiki:frontend/tests/MotionTests.elm, wiki:frontend/tests/MotionOld.elm, wiki:frontend/tests/WikiTests.elm, wiki:frontend/src/Layout.elm, wiki:frontend/src/MapSize.elm, wiki:frontend/src/Filter.elm]
-reviewed: 2026-11-06T20:27Z
+reviewed: 2026-11-06T21:25Z
 ---
 
 ## What it is

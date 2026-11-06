@@ -9,7 +9,7 @@ location: QuizWeb:
 fed_by: [claude-code, quizapp]
 feeds: [check-web-sync, github-pages]
 sources: [QuizWeb:README.md, QuizWeb:src, QuizWeb:sw.js, QuizWeb:tests/bughunt.test.js, QuizWeb:pipeline-check.toml, QuizWeb:.github/workflows/test.yml]
-reviewed: 2026-10-27T01:34Z
+reviewed: 2026-11-06T21:24Z
 ---
 
 ## What it is
@@ -123,4 +123,4 @@ Technical debt is tracked as GitHub issues labelled `debt` (P1 to P3) under the 
 
 ## Notes
 
-The standalone maintenance deployment of 2026-10-26 includes sharp-s search, the zero-goal progress calculation and backup-import checks. Its offline cache key is `v12`. Maintenance fixes can ship independently of another Android release; ports of unreleased Android features still wait on their app release. GitHub protects `main` by requiring the `test` check, including for administrators, and forbids force pushes and branch deletion. The maintenance commit passed all 81 tests and the GitHub Pages deployment.
+The standalone maintenance deployment of 2026-10-26 includes sharp-s search, the zero-goal progress calculation and backup-import checks. Its offline cache key was `v12`; a code tidy-up of 2026-11-06 (one shared helper, no behaviour change, 81 tests passing) raised it to `v13`. Maintenance fixes can ship independently of another Android release; ports of unreleased Android features still wait on their app release. GitHub protects `main` by requiring the `test` check, including for administrators, and forbids force pushes and branch deletion. The maintenance commit passed all 81 tests and the GitHub Pages deployment.

@@ -8,7 +8,7 @@ status: active
 fed_by: []
 feeds: []
 sources: [home:.claude/CLAUDE.md, wiki:server/lib/wiki/cli.ex]
-reviewed: 2026-11-06T18:12Z
+reviewed: 2026-11-06T21:25Z
 ---
 
 ## What it is

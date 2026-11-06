@@ -9,7 +9,7 @@ location: wiki:server/lib/wiki/content/build.ex
 fed_by: [wiki-content]
 feeds: [wiki-cli, wiki-site]
 sources: [wiki:server/lib/wiki/content/build.ex, wiki:server/lib/wiki/content/git.ex]
-reviewed: 2026-11-06T18:12Z
+reviewed: 2026-11-06T21:25Z
 ---
 
 ## What it is
@@ -19,7 +19,7 @@ reviewed: 2026-11-06T18:12Z
 It writes `site/data/graph.json` (the nodes with their text, the `feeds` edges, the `mentions` edges drawn from links, and the kinds) and one file `site/data/pages/<id>.json` per page (sections, infobox fields, history). A page of kind reference (the glossary) can link to any page without drawing edges on the map. It fills in `since` from the first git commit of a page's sources, marks pages without sources (things that live off the laptop) "may be stale" 30 days after their review time, then runs `elm make --optimize` and copies the static files.
 
 ## How it does it
-It uses read-only git calls for dates and history, and writes [JSON](https://en.wikipedia.org/wiki/JSON) (JavaScript Object Notation, a plain-text data format) with the `JSON` module built into Elixir 1.18.
+It uses read-only git calls for dates and history (through `Wiki.Content.Git`, which answers from the one-run cache of the Stop hook ([[wiki-hook-stop]]) only while `wiki hook-stop` runs, so the build always asks git directly), and writes [JSON](https://en.wikipedia.org/wiki/JSON) (JavaScript Object Notation, a plain-text data format) with the `JSON` module built into Elixir 1.18.
 
 ## Where it sits in the pipeline
 The second step of `wiki publish`, after [[wiki-check]].

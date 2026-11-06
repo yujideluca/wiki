@@ -9,7 +9,7 @@ location: machine-bootstrap:
 fed_by: [acer-nitro]
 feeds: []
 sources: [machine-bootstrap:docs/PRIVACY.md, machine-bootstrap:pipeline-check.toml, machine-bootstrap:README.md, machine-bootstrap:DESIGN.md, machine-bootstrap:docs/RESTORE.md, machine-bootstrap:docs/MANUAL.md, machine-bootstrap:docs/REQUIREMENTS.md, machine-bootstrap:mb.toml, machine-bootstrap:mb/cli.py, machine-bootstrap:mb/plan.py, machine-bootstrap:mb/capture.py, machine-bootstrap:mb/secrets_backup.py, machine-bootstrap:mb/databackup.py, machine-bootstrap:bootstrap.sh, machine-bootstrap:tools/vm-test.sh]
-reviewed: 2026-10-27T01:34Z
+reviewed: 2026-11-06T21:24Z
 ---
 
 ## What it is
@@ -84,7 +84,7 @@ cp -checks with-> sc
 cp -writes-> ss
 
 ## What it does
-The command `python3 -m mb` has eight subcommands. `capture` records packages, repositories and allowed settings in `state/`. `status` reports changes since that record. `install-timer` enables a weekly background check. `restore` prints a plan and applies it only with `--apply`. `secrets-backup` encrypts keys and logins; `secrets-restore` restores an archive. `data-backup` copies personal folders. `scan` checks the recorded settings for secrets.
+The command `python3 -m mb` has eight subcommands. `capture` records packages, repositories and allowed settings in `state/`. `status` reports changes since that record. `install-timer` enables a weekly background check. `restore` prints a plan and applies it only with `--apply`. `secrets-backup` encrypts keys and logins; `secrets-restore` restores an archive. `data-backup` copies personal folders. `scan` checks the recorded settings for secrets. `[capture] skip_globs` in `mb.toml` lists name patterns that capture leaves out (backups, lock files, caches). Since 2026-11-06 it includes `synced`: the folder `~/.claude/skills/synced/` is filled by Anthropic's cloud skill sync when Giovanni signs in and changes on its own, so recording it made the weekly check report false changes. The pattern matches by name, so any file or folder called `synced` inside a captured folder is skipped too.
 
 ## How it does it
 The configuration file `mb.toml` lists the files allowed into the record and the recipes used to install tools. A recipe has a check command and an install command. Capture refuses files detected by the secret scanner. Restore installs package sources first, then packages, early recipes, apps, repositories and tool recipes, and writes settings last. Different existing settings receive a dated `.mb-bak` copy. Boot-loader packages, which determine how the computer starts, are excluded. `--profile new` also excludes hardware-specific drivers and settings. `bootstrap.sh` installs missing prerequisites before starting restore.

@@ -9,14 +9,14 @@ location: home:.claude/skills/reparo-kubuntu
 fed_by: []
 feeds: []
 sources: [home:.claude/skills/reparo-kubuntu/SKILL.md, home:.agents/skills/reparo-kubuntu/SKILL.md]
-reviewed: 2026-10-25T20:41Z
+reviewed: 2026-11-06T21:24Z
 ---
 
 ## What it is
-The skill "reparo-kubuntu" ("Kubuntu repair") diagnoses and fixes problems of Giovanni's laptop (an Acer Nitro running Kubuntu 24.04 with the Plasma 5.27 desktop, the X11 display system and an Nvidia graphics card) and makes the fixes survive reboots. It is written in Portuguese. Its description says exactly that. Its role is "domain": it owns the diagnosis and fix flow on his Linux; it defers to [[skill-browser-automacao-segura]] if a browser is used; and it honours the language of the message and the depth flags `!!`, `***` and `...`. The version for Claude Code is edited only there; the Claude app keeps its own version ([[claude-ai-skills]]).
+The skill "reparo-kubuntu" ("Kubuntu repair") diagnoses and fixes problems of Giovanni's laptop (an Acer Nitro running Kubuntu 26.04 with the Plasma 6 desktop, the Wayland display system and an Nvidia graphics card) and makes the fixes survive reboots. Wayland is the part of Linux that draws windows on the screen; it replaced the older X11 system, so some X11 tools (`setxkbmap`, `xinput`) no longer show the real state. The description tells Claude to confirm the versions with `lsb_release` (prints the system version) and `plasmashell --version` (prints the desktop version) rather than trust them. It is written in Portuguese. Its description says exactly that. Its role is "domain": it owns the diagnosis and fix flow on his Linux; it defers to [[skill-browser-automacao-segura]] if a browser is used; and it honours the language of the message and the depth flags `!!`, `***` and `...`. The version for Claude Code is edited only there; the Claude app keeps its own version ([[claude-ai-skills]]).
 
 ## Flow
-trigger t1: A problem on Giovanni's laptop: Kubuntu, Plasma, X11 or the Nvidia card | [[acer-nitro]]
+trigger t1: A problem on Giovanni's laptop: Kubuntu, Plasma, Wayland or the Nvidia card | [[acer-nitro]]
 step s1: Collects diagnostics without changing anything, saved to a diag file
 step s2: Maps the symptom to a first hypothesis and a safe test
 decide d1: Does the safe test confirm the hypothesis?
@@ -52,14 +52,14 @@ The [[acer-nitro]].
 ## Steps
 0. **Format.** Conclusion first: the main hypothesis plus the next step. With `!!`: up to 5 lines (hypothesis, 1 test, 1 fix, how to verify). Every answer that proposes a fix ends with **Verify** (what to check after restarting) and **Undo** (how to revert).
 1. **Stabilise and collect, changing nothing.** Claude Code runs on the laptop itself, so run the commands yourself without asking Giovanni to paste anything. One block collects the system version, kernel, Plasma version, session type, Nvidia driver version, the user and system journal warnings and errors of this boot, recent crash dumps and the recent package-manager history, and saves them to `~/diag_<date>_<time>.txt`. Commands with `sudo` ask for a password: give Giovanni the line to run with `! sudo ...`. Ask only what the log cannot answer: what changed (update, configuration, theme) and whether it is reproducible.
-2. **Symptom → first hypothesis → safe test** (from his history). Black screen, no panel, or plasmashell or krunner crashing → crash of plasmashell (a font-library fault, or a missing theme) → `coredumpctl info plasmashell`, `systemctl --user restart plasma-plasmashell`. Crash in libfontconfig → corrupted font cache or a badly matched web font → `fc-cache -r -v`, `fc-match sans`. Accented capitals or odd keyboard → the Fcitx input method plus layout and model (`pc104alt`, `br`) → `fcitx5-diagnose`, `setxkbmap -query`. Touchpad without configuration → module or driver (libinput versus synaptics, an XCTECH receiver) → `xinput list`, `journalctl -k | grep -i touch`. Slow boot → `NetworkManager-wait-online` or fstab → `systemd-analyze blame | head`, `systemd-analyze critical-chain`. Flicker → Nvidia driver versus kernel → `ubuntu-drivers devices`, `dkms status`.
+2. **Symptom → first hypothesis → safe test** (from his history). Black screen, no panel, or plasmashell or krunner crashing → crash of plasmashell (a font-library fault, or a missing theme) → `coredumpctl info plasmashell`, `systemctl --user restart plasma-plasmashell`. Crash in libfontconfig → corrupted font cache or a badly matched web font → `fc-cache -r -v`, `fc-match sans`. Accented capitals or odd keyboard → the Fcitx input method plus layout and model (`pc104alt`, `br`) → `fcitx5-diagnose`, `grep -A3 Layout ~/.config/kxkbrc` (reads the keyboard layout from the Plasma settings file, because under Wayland `setxkbmap -query` does not show the real layout). Touchpad without configuration → module or driver (libinput versus synaptics, an XCTECH receiver) → `libinput list-devices` (needs `sudo`), `journalctl -k | grep -i touch` (`xinput` sees only the devices of XWayland, the layer that runs old X11 programs under Wayland). Slow boot → `NetworkManager-wait-online` or fstab → `systemd-analyze blame | head`, `systemd-analyze critical-chain`. Flicker → Nvidia driver versus kernel → `ubuntu-drivers devices`, `dkms status`.
 3. **Change safely.** One change at a time, saying what it proves. Before editing, make a dated backup (`cp -a`). Never `rm -rf` in `~/.config` or `/etc`: move things to a quarantine folder instead. Before touching a driver or the kernel, take a snapshot (Timeshift) if available. Explain `sudo` commands in one line and let him run them with `! sudo ...`; without sudo, run them yourself and show the relevant output.
 4. **Make it permanent (his priority).** A fix becomes a script `~/fixes/<name>.sh` (idempotent, with a final check). If it must run every session, make a user systemd unit `~/.config/systemd/user/<name>.service` (`Type=oneshot`, `After=graphical-session.target` and, if it touches Plasma, `After=plasma-plasmashell.service`, `ExecStart=%h/fixes/<name>.sh`, `WantedBy=graphical-session.target`) and enable it with `systemctl --user enable <name>`. A Plasma environment variable goes into `~/.config/plasma-workspace/env/`.
 5. **Retest and record.** Reboot, run the block of step 1 again and compare with the previous one. Record the cause, the fix and how to undo it in `~/fixes/LEIAME.md`.
 
 ## Notes
 
-Codex now uses the independently maintained version in [[codex-skills]]. Its complete source below includes the Codex-specific execution rules; the Claude procedure above remains the Claude version. Browser, memory and connector behavior can differ between versions.
+Codex now uses the independently maintained version in [[codex-skills]]. On 2026-11-06 the Claude version changed to Kubuntu 26.04, Plasma 6 and Wayland (description and the keyboard and touchpad tests); the Codex copy below still names Kubuntu 24.04, Plasma 5.27 and X11. Its complete source below includes the Codex-specific execution rules; the Claude procedure above remains the Claude version. Browser, memory and connector behavior can differ between versions.
 
 ### Complete skill sources
 
@@ -67,10 +67,10 @@ The following blocks contain the complete original `SKILL.md` files, including t
 
 #### Claude: `home:.claude/skills/reparo-kubuntu/SKILL.md`
 
-````skill-source home:.claude/skills/reparo-kubuntu/SKILL.md 2998b68f21662719e79ac67210a207db06ac642f63df741ce2cc5778d0c1fac2
+````skill-source home:.claude/skills/reparo-kubuntu/SKILL.md fe6a54fbfcd57395f8bd89cd94272bfad5fc813ce2a1917474ad6c4614ced819
 ---
 name: "reparo-kubuntu"
-description: "Diagnostica e corrige problemas do notebook Acer Nitro do Giovanni (Kubuntu 24.04, Plasma 5.27, X11, Nvidia) e torna as correções permanentes entre reinicializações."
+description: "Diagnostica e corrige problemas do notebook Acer Nitro do Giovanni (Kubuntu 26.04, Plasma 6, Wayland, Nvidia; confira com lsb_release/plasmashell --version) e torna as correções permanentes entre reinicializações."
 ---
 
 
@@ -101,8 +101,8 @@ Pergunte só o que o log não responde: o que mudou (update, config, tema) e se 
 |---|---|---|
 | tela preta / sem painel / plasmashell ou krunner cai | crash do plasmashell (fontconfig `FcCharSetHasChar`, tema ausente) | `coredumpctl info plasmashell`; `systemctl --user restart plasma-plasmashell` |
 | crash em libfontconfig | cache de fontes corrompido / fonte web (woff) mal casada | `fc-cache -r -v`; `fc-match sans` |
-| letras acentuadas maiúsculas / teclado estranho | Fcitx + layout/modelo (`pc104alt`, `br`) | `fcitx5-diagnose`; `setxkbmap -query` |
-| touchpad sem configuração | módulo/driver (libinput × synaptics, receptor XCTECH) | `xinput list`; `journalctl -k \| grep -i touch` |
+| letras acentuadas maiúsculas / teclado estranho | Fcitx + layout/modelo (`pc104alt`, `br`) | `fcitx5-diagnose`; `grep -A3 Layout ~/.config/kxkbrc` (no Wayland `setxkbmap -query` não reflete o layout real) |
+| touchpad sem configuração | módulo/driver (libinput × synaptics, receptor XCTECH) | `libinput list-devices` (sudo); `journalctl -k \| grep -i touch` (`xinput` só vê dispositivos XWayland) |
 | boot lento | `NetworkManager-wait-online`, fstab | `systemd-analyze blame \| head`; `systemd-analyze critical-chain` |
 | flicker / tela | driver Nvidia × kernel | `ubuntu-drivers devices`; `dkms status` |
 
