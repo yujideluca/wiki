@@ -8,7 +8,7 @@ status: active
 fed_by: []
 feeds: []
 sources: [workflow-memory:mem/privacy-patterns.tsv, workflow-memory:mem/validate.py, wiki:server/lib/wiki/content/privacy.ex, wiki:docs/adr/0003-login-gate-and-decoy.md, wiki:docs/REQUIREMENTS.md, machine-bootstrap:mb/scan.py, machine-bootstrap:docs/adr/0004-allow-list-and-scanner.md, machine-bootstrap:docs/adr/0005-secrets-passphrase-two-places.md, workflow-memory:.github/workflows/mem.yml, radiology-crawler:tools/check_dependencies.py]
-reviewed: 2026-11-06T17:02Z
+reviewed: 2026-11-06T17:41Z
 ---
 
 ## What it is
