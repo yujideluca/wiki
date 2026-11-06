@@ -178,9 +178,10 @@ map geometry statics motion adj width height active =
                 isNear =
                     Set.member id near
 
-                -- detail (label) follows the resting place, not the pulled drawing, so it cannot switch on and off
+                -- detail (label) follows the resting place, not the pulled drawing, so it cannot switch on and off; which dots are named
+                -- (projects included) is decided in `MapGeometry.build` so that no two names overlap (LB-1); only the lit dot is always named
                 labelled restLabelled =
-                    isActive || dot.node.kind == "project" || Set.member id near || restLabelled
+                    isActive || restLabelled
             in
             case Dict.get id moved of
                 Nothing ->

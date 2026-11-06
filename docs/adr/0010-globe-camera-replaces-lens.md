@@ -164,3 +164,21 @@ the ratio falls at every step (desktop 0.20, 0.13, 0.07, 0.03; phone 0.22 to 0.0
 range. DY-13 states it and `WikiTests` checks the first-view size, the growth limit and that the ratio falls; the growth test
 fails on the previous formulas. Not changed: labels (at moderate zoom they overlap, as before).
 
+## Update 2026-11-06 (night): names that do not overlap (LB-1, LB-2)
+
+Giovanni: "Too many names are appearing after a little zoom, it becomes illegible. Why did this pass the tests?" Counting the names on
+the live map (`zoomstats.py`: text boxes from the browser): after three wheel clicks 42 names with 43 overlapping pairs on the desktop;
+on a phone-sized window 36 names and 54 pairs after six pinches; 4 and 7 pairs even at the first view (projects over projects).
+`labelled` was true for every dot whose scale passed `labelThreshold`, `MapView` added every project and every neighbour of the lit
+dot, and nothing looked at the others. The tests that existed (`WikiTests`, LN-2) used the six-dot fixture and checked that `mem`
+had a name and `quizapp` had none at zoom 2, so a map with names on top of each other passed them. I had also looked at the pictures
+of the DY-13 change, seen the overlap, and written "as before" instead of treating it as the defect it was.
+`MapLabels.chosen` now decides in `MapGeometry.build`: candidates (the dots over the threshold and the projects) best first,
+projects, then scale, then id (so the choice is stable), and a name is kept only if its estimated box (0.55 of the font size per
+character, below the dot, 3 px margin) misses the boxes kept. `MapView` forces only the lit dot's name. Result on the live map: 0
+overlapping pairs at every step on the desktop and the phone-size window, 5 to 19 names where there were 36 to 42. The new tests
+(`MapLabelsTests`) build a map of the real size (130 dots, 14 projects, titles of 8 to 50 characters, a spiral over the whole ball) and
+check every zoom of 1 to 12 in three turns; three of them fail when the overlap test in `chosen` is switched off. What they still do
+not check: that the box estimate matches the font (it did on the live map: 0 real overlaps), or that a name does not lie over
+another dot.
+

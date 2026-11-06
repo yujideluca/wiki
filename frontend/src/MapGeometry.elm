@@ -1,4 +1,4 @@
-module MapGeometry exposing (Dot, EdgeRow, GeoKey, Geometry, Item, StaticKey, Statics, baseRadius, build, buildStatics, dotAt, emptyGeometry, emptyStatics, hitAt)
+module MapGeometry exposing (Dot, EdgeRow, GeoKey, Geometry, Item, StaticKey, Statics, baseRadius, build, labelCandidate, buildStatics, dotAt, emptyGeometry, emptyStatics, hitAt)
 
 {-| Everything about the map that does not change while the dots spring about (the cache behind the map's speed), in two layers.
 
@@ -13,6 +13,7 @@ import Data exposing (Graph, Node)
 import Dict exposing (Dict)
 import Filter
 import Globe exposing (Cam, Spot)
+import MapLabels
 import Set
 
 
@@ -197,8 +198,34 @@ build key cam statics =
             , edges = []
             }
 
-        dots =
+        placed =
             Array.map (\it -> dotAt base it it.vec.x it.vec.y it.vec.z) statics.items
+
+        -- of the dots that deserve a name, only those whose names do not overlap get it (LB-1)
+        named =
+            MapLabels.chosen
+                (Array.foldr
+                    (\d acc ->
+                        if d.spot.visible && (d.labelled || d.node.kind == "project") then
+                            labelCandidate d :: acc
+
+                        else
+                            acc
+                    )
+                    []
+                    placed
+                )
+
+        dots =
+            Array.map
+                (\d ->
+                    if d.spot.visible && d.labelled /= Set.member d.node.id named then
+                        { d | labelled = not d.labelled }
+
+                    else
+                        d
+                )
+                placed
 
         edgeOf e =
             case ( Array.get e.a dots, Array.get e.b dots ) of
@@ -222,6 +249,20 @@ build key cam statics =
         | dots = dots
         , visible = Array.foldr (\d acc -> if d.spot.visible then d :: acc else acc) [] dots
         , edges = List.concatMap edgeOf statics.edges
+    }
+
+
+{-| What the label chooser needs to know about a dot: where its name would go, how big, and how it ranks. -}
+labelCandidate : Dot -> MapLabels.Candidate
+labelCandidate d =
+    { id = d.node.id
+    , project = d.node.kind == "project"
+    , scale = d.spot.scale
+    , x = d.spot.x
+    , y = d.spot.y
+    , radius = baseRadius d.node.kind * d.radiusScale
+    , size = d.labelSize
+    , title = d.title
     }
 
 

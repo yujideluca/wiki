@@ -9,7 +9,7 @@ location: project-template:docs/adr
 fed_by: []
 feeds: []
 sources: [project-template:docs/adr, project-template:DESIGN.md, QuizApp:docs/adr, wiki:docs/adr, workflow-memory:docs/adr, machine-bootstrap:docs/adr]
-reviewed: 2026-11-06T19:40Z
+reviewed: 2026-11-06T20:09Z
 ---
 
 ## What it is
