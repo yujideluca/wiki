@@ -18,7 +18,7 @@ This page describes what Claude does every time it finishes a task, so that the 
 trigger t1: Claude finishes a coding task | [[claude-code]]
 trigger t2: Claude tries to stop after code changes without publishing | [[wiki-hook-stop]]
 step s1: Proves the work by running checks | [[skill-verification-before-completion]]
-step s2: Writes or updates the English pages, then the German and Portuguese ones | [[wiki-content]]
+step s2: Writes or updates the English pages | [[wiki-content]]
 step s3: Gives its own page to anything that outgrew its place | [[wiki-check]]
 decide d1: Does the content check pass?
 step s3b: Fixes what the check reports
@@ -44,7 +44,7 @@ s5 -> s6
 s6 -> p3
 
 ## What it does
-Claude updates the wiki pages for whatever changed (new, changed or retired things, each with its German and Portuguese translation), publishes them through the content checks, and then reports which memory entries shaped the work.
+Claude updates the wiki pages for whatever changed (new, changed or retired things; the wiki is English only, so there is no translation to write), publishes them through the content checks, and then reports which memory entries shaped the work.
 
 When no page describes the change, or a page was only checked and found right, the same chain applies with a smaller step: the page's `reviewed` time is set to the current UTC time (that edit is the review), or, if no page is affected, `wiki publish -m "review: no page change"` is used.
 
@@ -59,7 +59,7 @@ The wiki content ([[wiki-content]]), [[github]] (where the wiki is stored) and t
 
 ## Steps
 1. The task's work is done and proven by running checks ([[skill-verification-before-completion]]).
-2. Claude updates or creates the English pages in `~/dev/wiki/content` for what changed, then the German and Brazilian Portuguese versions ([[wiki-content]]). A page that was compared with its sources and found right gets its `reviewed` time set to the current UTC time, which is what clears it in [[wiki-stale]].
+2. Claude updates or creates the English pages in `~/dev/wiki/content` for what changed ([[wiki-content]]). A page that was compared with its sources and found right gets its `reviewed` time set to the current UTC time, which is what clears it in [[wiki-stale]].
 3. Anything that has grown past the page threshold gets its own page (the promotion rule, enforced by [[wiki-check]]).
 4. `wiki publish -m "…"` checks the content, builds the site, commits only the `content/` folder and uploads it ([[wiki-cli]]). The session adds `--co-author "Name <email>"` with its own attribution line, or leaves it out.
 5. The live site serves the new data at once ([[wiki-site]], [[wiki-router]]).

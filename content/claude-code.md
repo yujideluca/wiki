@@ -19,7 +19,7 @@ step s1: The chat starts: a hook prints the memory brief | [[hook-session-start]
 step s2: Reads the global rules and the project's own CLAUDE.md | [[global-claude-md]]
 step s3: Does the task with its tools, inside the permissions it was given | [[claude-code-settings]]
 decide d1: Did it change something in Giovanni's systems?
-step s4: Writes the wiki pages in three languages and publishes them | [[wiki-content]]
+step s4: Writes the English wiki pages and publishes them | [[wiki-content]]
 step s5: Reports which memory entries shaped the work | [[mem]]
 product p1: Changed code and documents in the projects | [[quizapp]], [[workflow-memory]]
 product p2: The wiki, up to date | [[wiki]]

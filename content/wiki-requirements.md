@@ -13,7 +13,7 @@ reviewed: 2026-11-06T17:35Z
 ---
 
 ## What it is
-A requirement is a testable promise of the software. This page describes the wiki's own list of promises (`docs/REQUIREMENTS.md`), each with an ID built from a two-letter family and a number: AU (the login gate), DC (the decoy), CO (content rules), LG (languages), BU (the build), UP (the update chain), ST (the staleness of pages), MP (the map and the pages), MB (the phone version), LN (the globe on the map), AR (how an article is drawn), DY (the elastic dots) LY (the layout computation) and TC (touch on the map).
+A requirement is a testable promise of the software. This page describes the wiki's own list of promises (`docs/REQUIREMENTS.md`), each with an ID built from a two-letter family and a number: AU (the login gate), DC (the decoy), CO (content rules), LG (English only), BU (the build), UP (the update chain), ST (the staleness of pages), MP (the map and the pages), MB (the phone version), LN (the globe on the map), AR (how an article is drawn), DY (the elastic dots) LY (the layout computation) and TC (touch on the map).
 
 ## What it does
 Every row must have at least one test tagged `REQ <ID>`; the generated file `docs/TRACEABILITY.md` maps each requirement to its tests.
@@ -28,4 +28,4 @@ Beside the design document `docs/2026-10-22-wiki-design.md`.
 [[check-traceability]] and the [[wiki-quality-gate]].
 
 ## Notes
-The current traceability report covers 80 requirements. The flowchart family is `FL` and the architecture/practices family is `PJ`. The audit added `ST-4` through `ST-6` for self-source handling, precise wiki-source review semantics and publication validation, and `UP-7` for preserving shared obligations under malformed state, concurrent publication and linked worktrees. The tests include independent processes and a source that exists only in the selected wiki worktree.
+The current traceability report covers 79 requirements. The flowchart family is `FL` and the architecture/practices family is `PJ`. The audit added `ST-4` through `ST-6` for self-source handling, precise wiki-source review semantics and publication validation, and `UP-7` for preserving shared obligations under malformed state, concurrent publication and linked worktrees. The tests include independent processes and a source that exists only in the selected wiki worktree.

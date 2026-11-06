@@ -23,7 +23,7 @@ step s4: Loads that skill and follows it | [[codex-skills]]
 step s5: Works without a skill
 step s6: Does the task and keeps the footer's step count honest | [[codex-pbar]]
 decide d2: Did it change something in Giovanni's systems?
-step s7: Writes the wiki pages in three languages and publishes them | [[wiki-content]]
+step s7: Writes the English wiki pages and publishes them | [[wiki-content]]
 step s8: Reports which memory entries shaped the work | [[mem-use]]
 product p1: Changed code and documents in the projects
 product p2: A wiki that matches what was built | [[wiki]]

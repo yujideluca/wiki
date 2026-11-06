@@ -75,7 +75,7 @@ Beside every task: a skill is loaded by the Claude instance when its description
 - [[skill-regras-magic]]
 - [[skill-reparo-kubuntu]]
 
-The 20 locally maintained skills have separate installed Claude and Codex copies, in `~/.claude/skills` and `~/.agents/skills`. Their pages now retain both complete original `SKILL.md` files in Notes, beside the translated explanations. This includes the entire frontmatter description and instructions, rather than only a trigger summary. Referenced auxiliary files are not embedded. The complete-source rule and its checks are described in [[wiki-content]] and [[wiki-skill-source]].
+The 20 locally maintained skills have separate installed Claude and Codex copies, in `~/.claude/skills` and `~/.agents/skills`. Their pages now retain both complete original `SKILL.md` files in Notes, beside the readable explanations. This includes the entire frontmatter description and instructions, rather than only a trigger summary. Referenced auxiliary files are not embedded. The complete-source rule and its checks are described in [[wiki-content]] and [[wiki-skill-source]].
 
 
 Codex-owned adaptations live in [[codex-skills]] and are installed by [[codex-skillsctl]]. Vendor document skills stay vendor-managed. The following registry lists every Codex adaptation; each link contains its complete source.

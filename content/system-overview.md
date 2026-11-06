@@ -26,7 +26,7 @@ step s7: The work happens in a project: the quiz apps, the wiki, tools | [[quiza
 step s8: A quality gate and the automatic checks must pass | [[maintenance-pipeline]], [[quizapp-quality-gate]]
 decide d2: Is it a change to the Android app?
 step s9: Beta first, stable only when Giovanni says so | [[quizapp-release]]
-step s10: End of task: wiki pages updated in three languages | [[end-of-task]]
+step s10: End of task: wiki pages updated | [[end-of-task]]
 step s11: The memory entries that shaped the work are reported | [[mem]]
 product p1: A working app on Giovanni's phone | [[phone]]
 product p2: A wiki that explains how it all fits | [[wiki]]
