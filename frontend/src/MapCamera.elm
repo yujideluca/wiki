@@ -115,7 +115,7 @@ camOf model =
 
 
 {-| The dot under the pointer at window position [x], [y], or none: the nearest (by fraction of its own reach) of the dots that are
-seen. A dot answers within its drawn radius plus 6 pixels, as its invisible disc used to; there are no discs in the page any more,
+seen. A dot answers within its drawn radius plus 8 pixels, as its invisible disc used to; there are no discs in the page any more,
 so moving the globe no longer rewrites them. The dots are taken at their resting places, as the discs were. -}
 hitAt : Model -> Float -> Float -> Maybe String
 hitAt model x y =

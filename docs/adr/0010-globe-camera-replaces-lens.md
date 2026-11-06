@@ -149,3 +149,18 @@ each segment. The lit lines keep their own elements and the marker (they are few
 variant (lines as paths, round 6) because there the browser's paint is not on the main thread; the phone's is. DY-12 states it;
 `MapEdgesTests` checks the group count, that every line is present, the arrowhead geometry and the line of length zero.
 
+## Update 2026-11-06 (night): smaller dots that spread (DY-13)
+
+Giovanni: "make the nodes smaller and they are not spreading as you zoom in." DY-11 had capped the growth but the dots still filled
+the picture at moderate zoom. Measured on the live map (desktop, wheel at the middle; real phone, Chrome's pinch): the median dot width
+against the median distance to the nearest dot went 0.30, 0.55, 0.49, 0.19 at 0, 3, 6, 9 wheel clicks (the dot 9 to 35 px, the spacing
+30 to 180 px), and on the phone 9 px to 30 px after one pinch. Reading `MapGeometry.dotAt`: the dot's matrix already grows with the
+local scale `s`, and `radiusScale = clamp 0.4 1.6 (s * sqrt s) * rz` multiplied it by a depth cue built on the absolute `s`. At the
+middle `s` equals the zoom exactly, so the cue was 1 at the first view and 1.6 (its cap) from the first wheel clicks on: a 60 %
+growth that had nothing to do with depth, and `rz` (zoom to the power 0.6) came on top. The cue now uses `s / z`, so it means "how
+much nearer than the middle" at any zoom and is the same as before at the first view; `rz` follows the zoom to the power 0.4, at
+most 2; base radii are 4 and 7 (were 6 and 11); the hit padding is 8 px (was 6) so an ordinary dot keeps its 12 px reach. Result:
+the ratio falls at every step (desktop 0.20, 0.13, 0.07, 0.03; phone 0.22 to 0.04), the middle dot grows 8 to 13 px over the pinch
+range. DY-13 states it and `WikiTests` checks the first-view size, the growth limit and that the ratio falls; the growth test
+fails on the previous formulas. Not changed: labels (at moderate zoom they overlap, as before).
+

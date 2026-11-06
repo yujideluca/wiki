@@ -439,14 +439,11 @@ node dot look =
             dot.node
 
         base =
-            if n.kind == "project" then
-                11
-
-            else if look.active then
-                9
+            if look.active && n.kind /= "project" then
+                MapGeometry.baseRadius n.kind * 1.5
 
             else
-                6
+                MapGeometry.baseRadius n.kind
 
         r =
             base * dot.radiusScale

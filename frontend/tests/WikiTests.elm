@@ -445,7 +445,7 @@ suite =
                             (geometryAt { home | z = z }).visible
                                 |> List.filter (\d -> d.node.id == "mem")
                                 |> List.head
-                                |> Maybe.map (\d -> 6 * d.radiusScale * max d.spot.la d.spot.ld)
+                                |> Maybe.map (\d -> MapGeometry.baseRadius d.node.kind * d.radiusScale * max d.spot.la d.spot.ld)
                                 |> Maybe.withDefault 0
 
                         grown =
@@ -466,13 +466,61 @@ suite =
                                     List.filter (\d -> d.node.id == id) seen |> List.head
                             in
                             Maybe.map2
-                                (\a b -> 6 * a.radiusScale * max a.spot.la a.spot.ld / sqrt ((a.spot.x - b.spot.x) ^ 2 + (a.spot.y - b.spot.y) ^ 2))
+                                (\a b -> MapGeometry.baseRadius a.node.kind * a.radiusScale * max a.spot.la a.spot.ld / sqrt ((a.spot.x - b.spot.x) ^ 2 + (a.spot.y - b.spot.y) ^ 2))
                                 (find "mem")
                                 (find "events")
                     in
                     List.map ratioAt [ 1, 1.5, 2, 3 ]
                         |> List.all (\r -> Maybe.withDefault 0 r < 0.25)
                         |> Expect.equal True
+            -- REQ DY-13
+            , test "at the first view an ordinary dot is at most 9 pixels wide (DY-13)" <|
+                \_ ->
+                    let
+                        d =
+                            dotOf "mem"
+                    in
+                    (2 * MapGeometry.baseRadius d.node.kind * d.radiusScale * max d.spot.la d.spot.ld)
+                        |> Expect.atMost 9
+            -- REQ DY-13
+            , test "zooming in the middle dot grows at most 2.2 times from the first view to the deepest zoom, and never shrinks below its first size by more than a tenth (DY-13)" <|
+                \_ ->
+                    let
+                        widthAt z =
+                            (geometryAt { home | z = z }).visible
+                                |> List.filter (\d -> d.node.id == "mem")
+                                |> List.head
+                                |> Maybe.map (\d -> MapGeometry.baseRadius d.node.kind * d.radiusScale * max d.spot.la d.spot.ld)
+                                |> Maybe.withDefault 0
+
+                        grown =
+                            List.map (\z -> widthAt z / widthAt 1) [ 1, 1.5, 2, 3, 4, 8, 12 ]
+                    in
+                    ( List.all (\g -> g <= 2.2) grown, List.all (\g -> g >= 0.9) grown )
+                        |> Expect.equal ( True, True )
+            -- REQ DY-13
+            , test "the dots spread as you zoom: a dot's width against the distance to its neighbour falls at every step of the zoom (DY-13)" <|
+                \_ ->
+                    let
+                        ratioAt z =
+                            let
+                                seen =
+                                    (geometryAt { home | z = z }).visible
+
+                                find id =
+                                    List.filter (\d -> d.node.id == id) seen |> List.head
+                            in
+                            Maybe.map2
+                                (\a b -> MapGeometry.baseRadius a.node.kind * a.radiusScale * max a.spot.la a.spot.ld / sqrt ((a.spot.x - b.spot.x) ^ 2 + (a.spot.y - b.spot.y) ^ 2))
+                                (find "mem")
+                                (find "events")
+                                |> Maybe.withDefault 99
+
+                        ratios =
+                            List.map ratioAt [ 1, 1.5, 2, 3, 4 ]
+                    in
+                    List.map2 (\a b -> b < a) ratios (List.drop 1 ratios)
+                        |> Expect.equal [ True, True, True, True ]
             -- REQ DY-11
             , test "a dot answers where it is drawn: at the zoom its edge is inside its hit area (DY-11)" <|
                 \_ ->
@@ -484,7 +532,7 @@ suite =
                             (geo.visible |> List.filter (\d -> d.node.id == "mem") |> List.head |> Maybe.withDefault missing)
 
                         edge =
-                            6 * mem.radiusScale * max mem.spot.la mem.spot.ld * 0.95
+                            MapGeometry.baseRadius mem.node.kind * mem.radiusScale * max mem.spot.la mem.spot.ld * 0.95
                     in
                     MapGeometry.hitAt geo (mem.spot.x + edge) mem.spot.y |> Expect.equal (Just "mem")
             , test "no dot is drawn outside the ball" <|

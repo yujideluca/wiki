@@ -9,7 +9,7 @@ location: wiki:site
 fed_by: [wiki-build]
 feeds: [wiki-router]
 sources: [wiki:frontend/static]
-reviewed: 2026-11-06T19:22Z
+reviewed: 2026-11-06T19:40Z
 ---
 
 ## What it is

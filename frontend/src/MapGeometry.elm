@@ -1,4 +1,4 @@
-module MapGeometry exposing (Dot, EdgeRow, GeoKey, Geometry, Item, StaticKey, Statics, build, buildStatics, dotAt, emptyGeometry, emptyStatics, hitAt)
+module MapGeometry exposing (Dot, EdgeRow, GeoKey, Geometry, Item, StaticKey, Statics, baseRadius, build, buildStatics, dotAt, emptyGeometry, emptyStatics, hitAt)
 
 {-| Everything about the map that does not change while the dots spring about (the cache behind the map's speed), in two layers.
 
@@ -165,12 +165,16 @@ dotAt geo it x y z =
 
             s =
                 sp.scale
+
+            -- the scale at the middle of the view is exactly the zoom, so this is "how much nearer than the middle", whatever the zoom
+            rel =
+                s / max 1 geo.z
         in
         { node = h.node
         , title = h.title
         , colour = h.colour
         , spot = sp
-        , radiusScale = clamp 0.4 1.6 (s * sqrt s) * geo.rz
+        , radiusScale = clamp 0.4 1.6 (rel * sqrt rel) * geo.rz
         , labelSize = 11 * clamp 0.85 1.25 s * geo.ls
         , labelled = s * s / geo.z >= labelThreshold
         }
@@ -186,7 +190,7 @@ build key cam statics =
             { key = Just key
             , cam = cam
             , z = cam.z
-            , rz = clamp 0.7 2.2 (cam.z ^ 0.6) / max 1 cam.z
+            , rz = clamp 0.5 2 (cam.z ^ 0.4) / max 1 cam.z
             , ls = clamp 1 1.6 (sqrt cam.z)
             , dots = Array.empty
             , visible = []
@@ -221,8 +225,25 @@ build key cam statics =
     }
 
 
+{-| The radius of a dot at the first view before the camera's perspective (in pixels): projects are the big ones. -}
+baseRadius : String -> Float
+baseRadius kind =
+    if kind == "project" then
+        7
+
+    else
+        4
+
+
+{-| How far past its drawn edge a dot still answers the pointer, in pixels. With the smaller dots (4 px radius) it keeps an ordinary
+dot's reach at the 12 px it had when that radius was 6. -}
+hitPad : Float
+hitPad =
+    8
+
+
 {-| The dot under the pointer at window position [x], [y], or none: the nearest (by fraction of its own reach) of the dots that are
-seen. A dot answers within its drawn radius (the ellipse is drawn `radiusScale` times the base radius, times the globe's scale at the dot) plus 6 pixels. The dots are taken at their resting places. -}
+seen. A dot answers within its drawn radius (the ellipse is drawn `radiusScale` times the base radius, times the globe's scale at the dot) plus 8 pixels. The dots are taken at their resting places. -}
 hitAt : Geometry -> Float -> Float -> Maybe String
 hitAt geometry x y =
     geometry.visible
@@ -230,15 +251,10 @@ hitAt geometry x y =
             (\dot best ->
                 let
                     reach =
-                        (if dot.node.kind == "project" then
-                            11
-
-                         else
-                            6
-                        )
+                        baseRadius dot.node.kind
                             * dot.radiusScale
                             * max 1 dot.spot.scale
-                            + 6
+                            + hitPad
 
                     dx =
                         x - dot.spot.x
