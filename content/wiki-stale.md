@@ -9,7 +9,7 @@ location: wiki:server/lib/wiki/content/stale.ex
 fed_by: []
 feeds: [wiki-cli]
 sources: [wiki:server/lib/wiki/content/stale.ex, wiki:server/lib/wiki/content/sources.ex, wiki:server/lib/wiki/content/page.ex, wiki:docs/adr/0006-review-time-in-the-page.md, wiki:docs/adr/0009-stale-review-claims-and-shared-publish-stamp.md, wiki:docs/2026-11-01-wiki-stale-audit.md]
-reviewed: 2026-11-01T22:54Z
+reviewed: 2026-11-06T18:12Z
 ---
 
 ## What it is

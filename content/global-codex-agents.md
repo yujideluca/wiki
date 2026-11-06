@@ -10,7 +10,7 @@ fed_by: []
 feeds: [codex, codex-pbar]
 sources: [home:.codex/AGENTS.md]
 memory: [3f1e29]
-reviewed: 2026-10-26T18:16Z
+reviewed: 2026-11-06T18:12Z
 ---
 
 ## What it is

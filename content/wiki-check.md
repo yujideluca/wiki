@@ -9,7 +9,7 @@ location: wiki:server/lib/wiki/content/check.ex
 fed_by: [wiki-content]
 feeds: [wiki-cli]
 sources: [wiki:server/lib/wiki/content/check.ex, wiki:server/lib/wiki/content/privacy.ex, wiki:server/lib/wiki/content/skill_source.ex, wiki:server/lib/wiki/content/page.ex]
-reviewed: 2026-11-01T22:25Z
+reviewed: 2026-11-06T18:12Z
 ---
 
 ## What it is

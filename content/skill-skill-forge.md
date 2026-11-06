@@ -9,7 +9,7 @@ location: home:.claude/skills/skill-forge
 fed_by: []
 feeds: []
 sources: [home:.claude/skills/skill-forge/SKILL.md, home:.agents/skills/skill-forge/SKILL.md]
-reviewed: 2026-10-25T21:08Z
+reviewed: 2026-11-06T18:12Z
 ---
 
 ## What it is

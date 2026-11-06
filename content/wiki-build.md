@@ -9,7 +9,7 @@ location: wiki:server/lib/wiki/content/build.ex
 fed_by: [wiki-content]
 feeds: [wiki-cli, wiki-site]
 sources: [wiki:server/lib/wiki/content/build.ex, wiki:server/lib/wiki/content/git.ex]
-reviewed: 2026-11-01T22:54Z
+reviewed: 2026-11-06T18:12Z
 ---
 
 ## What it is
