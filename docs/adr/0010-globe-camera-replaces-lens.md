@@ -136,3 +136,16 @@ dot drawn large was only hit near its middle; it is now multiplied by the globe'
 is unchanged). DY-11 states both; `WikiTests` checks the growth limit, the ratio to the distance to the neighbour at zoom 1 to 3,
 and that the edge of a zoomed dot is inside its hit area. The earlier tests passed because they looked at the first view and at
 zoom 2 to 3 only, not at the size of a dot against its neighbours.
+
+## Update 2026-11-06 (end of day): the lines as paths (DY-12)
+
+Measured on the real phone, what a frame of a swipe is made of: 12.8 ms, script 5.5, layout 3.5, paint 2.6. Hiding the lines (CSS
+`display: none`, five builds alternated, a control build measured twice and within 0.1 ms of itself) gave 10.1 ms; hiding only the
+arrowhead markers gave 12.0 ms (paint 2.6 to 1.6); removing the dashes changed nothing. So the cost was the number of elements, not
+the dashes. `MapEdges` draws the unlit lines as one `path` per kind and per stroke width (quarter-pixel steps, so at most 14 groups)
+and the arrowheads as triangles in one more path per feeding group, because an SVG marker belongs to the last point of a path, not to
+each segment. The lit lines keep their own elements and the marker (they are few and the stylesheet lights them one by one). Phone,
+3 repeats x 2 cycles: swipe 13.1 to 9.6 ms, flick 14.7 to 10.4, pinch 12.1 to 9.5. The desktop had shown no gain from an earlier
+variant (lines as paths, round 6) because there the browser's paint is not on the main thread; the phone's is. DY-12 states it;
+`MapEdgesTests` checks the group count, that every line is present, the arrowhead geometry and the line of length zero.
+

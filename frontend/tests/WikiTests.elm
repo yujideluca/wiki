@@ -14,6 +14,7 @@ import Html.Attributes
 import Layout
 import Motion
 import MapCamera
+import MapEdges
 import MapSize
 import MapGeometry
 import MapView
@@ -724,25 +725,41 @@ suite =
                                     )
                     in
                     Expect.all [ \_ -> litLines Nothing, \_ -> litLines (Just "mem"), \_ -> litLines (Just "events") ] ()
-            , test "a line to a displaced dot follows it, and a line between dots at rest stays where they rest" <|
+            , test "the lines to a displaced dot follow it (the path data changes), and at rest they are exactly where the dots rest (DY-12)" <|
                 \_ ->
                     let
-                        mem =
-                            dotOf "mem"
+                        restGroups =
+                            MapEdges.groups [ ( True, (dotOf "giovanni").spot, (dotOf "mem").spot ), ( True, (dotOf "mem").spot, (dotOf "events").spot ) ]
 
-                        events =
-                            dotOf "events"
+                        feedsPaths motion =
+                            drawn motion Nothing |> Query.fromHtml |> Query.findAll [ Selector.all [ Selector.tag "path", Selector.class "edges", Selector.class "feeds" ] ]
 
-                        feedsLine motion =
+                        hasLines g motion =
                             drawn motion Nothing
                                 |> Query.fromHtml
-                                |> Query.find [ Selector.all [ Selector.class "edge", Selector.class "feeds", Selector.attribute (Svg.Attributes.x2 (tenthOf events.spot.x)) ] ]
+                                |> Query.findAll [ Selector.all [ Selector.tag "path", Selector.attribute (Svg.Attributes.d g.lines) ] ]
+                                |> Query.count (Expect.equal 1)
                     in
                     Expect.all
-                        [ \_ -> feedsLine Motion.rest |> Query.has [ Selector.attribute (Svg.Attributes.x1 (tenthOf mem.spot.x)) ]
-                        , \_ -> feedsLine (Motion.from adj (Dict.fromList [ ( "mem", ( 60, 0 ) ) ])) |> Query.hasNot [ Selector.attribute (Svg.Attributes.x1 (tenthOf mem.spot.x)) ]
-                        ]
+                        ((\_ -> feedsPaths Motion.rest |> Query.count (Expect.equal (List.length restGroups)))
+                            :: List.map (\g -> \_ -> hasLines g Motion.rest) restGroups
+                        )
                         ()
+                        |> (\atRest ->
+                                if atRest == Expect.pass then
+                                    restGroups
+                                        |> List.map
+                                            (\g _ ->
+                                                drawn (Motion.from adj (Dict.fromList [ ( "mem", ( 60, 0 ) ) ])) Nothing
+                                                    |> Query.fromHtml
+                                                    |> Query.findAll [ Selector.all [ Selector.tag "path", Selector.attribute (Svg.Attributes.d g.lines) ] ]
+                                                    |> Query.count (Expect.equal 0)
+                                            )
+                                        |> (\fs -> Expect.all fs ())
+
+                                else
+                                    atRest
+                           )
             , test "when everything has settled with nothing pulling or holding, no dot is displaced any more" <|
                 \_ ->
                     run Motion.desktop 1500 { pulls = Dict.empty, pin = Nothing } (run Motion.desktop 60 { pulls = Dict.empty, pin = Just ( "mem", ( 40, 0 ) ) } Motion.rest)

@@ -82,6 +82,10 @@ svg.map:active { cursor: grabbing; }
 .edge { stroke: #2f343c; transition: stroke .07s, opacity .07s; }
 .edge.mentions { stroke-dasharray: 3 4; }
 .edge.feeds { marker-end: url(#arrow); }
+.edges { fill: none; stroke: #2f343c; }
+.edges.mentions { stroke-dasharray: 3 4; }
+.heads { fill: #4a4f57; stroke: none; }
+.map.focus .edges, .map.focus .heads { opacity: .25; }
 .edge.lit { stroke: var(--gold); opacity: 1; }
 .map.focus .edge:not(.lit) { opacity: .25; }
 .arrowhead { fill: #4a4f57; }

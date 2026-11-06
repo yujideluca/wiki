@@ -13,6 +13,7 @@ import Array
 import Globe exposing (Cam, Spot)
 import GlobeGrab
 import MapCamera
+import MapEdges
 import MapGeometry exposing (Dot, Geometry, Statics)
 import Motion
 import Route exposing (Route(..))
@@ -121,25 +122,48 @@ map geometry statics motion adj width height active =
                                     Nothing
                             )
 
-        edgeView row =
-            let
-                lit =
-                    active == Just row.from || active == Just row.to
-            in
-            -- far from the middle the dashed "mentions" lines are left out: less detail at the border
-            if row.coarse && not lit then
-                []
-
-            else if not (Dict.isEmpty moved) && (Dict.member row.from moved || Dict.member row.to moved) then
+        -- the edges: the lit ones one by one (they carry the arrowhead marker); every other one is a segment of a shared path, grouped
+        -- by kind and by stroke width (in steps of a quarter pixel), with its arrowhead as a triangle in a second shared path
+        edgeEnds row =
+            if not (Dict.isEmpty moved) && (Dict.member row.from moved || Dict.member row.to moved) then
                 case ( spotOf row.from, spotOf row.to ) of
                     ( Just a, Just b ) ->
-                        [ edgeLine row.feeds lit a b ]
+                        Just ( a, b )
 
                     _ ->
-                        []
+                        Nothing
 
             else
-                [ Svg.Lazy.lazy4 edgeLine row.feeds lit (Tuple.first row.ends) (Tuple.second row.ends) ]
+                Just row.ends
+
+        litEdges =
+            case active of
+                Nothing ->
+                    []
+
+                Just id ->
+                    List.filterMap
+                        (\row ->
+                            if row.from == id || row.to == id then
+                                edgeEnds row |> Maybe.map (\( a, b ) -> edgeLine row.feeds True a b)
+
+                            else
+                                Nothing
+                        )
+                        geometry.edges
+
+        restEdges =
+            MapEdges.paths
+                (List.filterMap
+                    (\row ->
+                        if (active == Just row.from || active == Just row.to) || row.coarse then
+                            Nothing
+
+                        else
+                            edgeEnds row |> Maybe.map (\( a, b ) -> ( row.feeds, a, b ))
+                    )
+                    geometry.edges
+                )
 
         nodeView dot =
             let
@@ -205,7 +229,7 @@ map geometry statics motion adj width height active =
 
         -- the glass and the pointer's discs do not change while the dots spring about: the browser is not asked again
         , Svg.Lazy.lazy globe geometry.cam
-        , Svg.g [] (List.concatMap edgeView geometry.edges)
+        , Svg.g [] (restEdges ++ litEdges)
         , Svg.g [] (List.concatMap nodeView geometry.visible)
         ]
 
