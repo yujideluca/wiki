@@ -1,6 +1,6 @@
 # ADR-0004: Content as Markdown pages with a header, checked before publishing
 
-- **Status:** accepted
+- **Status:** accepted; the three languages and the `source_hash` of translations are superseded by ADR-0011 (English only)
 - **Date:** 2026-10-22
 - **Type (ISO/IEC/IEEE 14764):** initial
 - **Decided by:** Giovanni (granularity option A, promotion rule, three languages, update tied to `mem use`);

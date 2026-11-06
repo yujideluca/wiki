@@ -12,7 +12,7 @@ Tailscale Funnel, behind Google sign-in for yujideluca@gmail.com only. Design: `
 2. **Default deny**: without Giovanni's verified Google session nothing real is served (decoy or 404). Checked by
    `server/test/router_test.exs` (AU-1..AU-6) and `server/test/decoy_test.exs` (DC-1).
 3. **Content follows the rules before it is published**: `wiki check` (links, symmetry, sections, privacy,
-   promotion, translations). `wiki publish` refuses on any problem.
+   promotion, English only). `wiki publish` refuses on any problem.
 4. **The gate decides**: `tools/quality_gate.sh` is the only definition of passing; CI runs it through `pipeline-check` (own repository, pinned in `pipeline-check.version`) on every push (limits in `pipeline-check.toml`, ADR-0005).
 5. **Decisions are written where the code is**: decision-log row with its Type in `DESIGN.md`, an ADR for
    structural ones.
@@ -24,9 +24,9 @@ Tailscale Funnel, behind Google sign-in for yujideluca@gmail.com only. Design: `
   asking (memory key `work.ask-language`).
 - Build and test: `tools/quality_gate.sh`. Reinstall the server, the `wiki` command and the service:
   `tools/install.sh`. After pushing, the CI run must be green.
-- Content: `content/<id>.md` (English, source of truth) plus `<id>.de.md` and `<id>.pt-BR.md`, each translation
-  with the `source_hash` of the English text (`wiki check` prints the expected hash when it is outdated). Format
-  and rules: the page `wiki-content` and `server/lib/wiki/content/check.ex`.
+- Content: `content/<id>.md`, in English only (ADR-0011): never write a `<id>.de.md`, `<id>.pt-BR.md` or any other
+  language version; `wiki check` refuses it. Format and rules: the page `wiki-content` and
+  `server/lib/wiki/content/check.ex`.
 - Granularity (D11): a page for every project, program, module, skill, hook, service, data store, actor and
   process, and for a function that is an entry point, passes data between modules, or came up in a decision or
   conversation. Other functions go in the `## Functions` list of their module page. Anything that grows past
@@ -36,7 +36,7 @@ Tailscale Funnel, behind Google sign-in for yujideluca@gmail.com only. Design: `
   `#code` in the `memory:` field. No secrets, keys, or clinical, secret or contact data about other people.
 - Secrets live only in `~/.config/wiki/oauth.env` and `secret.env` (mode 600). Never print or commit them.
 - After coding anything, do a first-line debug pass: gate, `tools/install.sh`, then the real flow in Chrome
-  (decoy logged out, map, hover, click, languages, phone width).
+  (decoy logged out, map, hover, click, phone width).
 - Keep `DESIGN.md` current in the same commit as any design change; structural changes get an ADR.
 - Publishing: `wiki publish -m "..."`. The commit's `Co-Authored-By` line is never fixed by the tool: pass `--co-author "Name <email>"` (or set `WIKI_CO_AUTHOR`) with the exact attribution line your own session was given (Claude Code: the one in its system reminder; Codex: its own, if any), and leave it out when you have none (UP-4).
 - Never force-push. Ask Giovanni before anything outward-facing or destructive.
@@ -44,7 +44,7 @@ Tailscale Funnel, behind Google sign-in for yujideluca@gmail.com only. Design: `
 
 ## Complete skill pages (CO-10)
 
-For `kind: skill`, follow the complete-source rule in `AGENTS.md`: locate and read the entire installed `SKILL.md`, include its full description and instructions beside the readable explanation, and preserve the same originals in all three language versions. Include separate Claude and Codex sources when both exist. Summaries alone do not pass. `wiki check --local` compares each copy with its source.
+For `kind: skill`, follow the complete-source rule in `AGENTS.md`: locate and read the entire installed `SKILL.md`, include its full description and instructions beside the readable explanation, and keep the full original in the page. Include separate Claude and Codex sources when both exist. Summaries alone do not pass. `wiki check --local` compares each copy with its source.
 
 ## Flow chart on the big concepts (FL-1, FL-2)
 
@@ -59,8 +59,8 @@ A page of kind `actor`, `project`, `process` or `skill` has a `## Flow` section 
     s1 -> d1
     d1 -yes-> p1
 
-Rules: 2 page links at most per box, labels up to 120 characters in plain words (no acronym before the page explains it), 18 boxes at most, no loops (write a repeat in the text), every box reachable from a trigger, every decision with two or more labelled arrows. Translations keep the same ids, kinds, links and arrows and translate only the words and the arrow labels. `wiki check` enforces all of it (`server/lib/wiki/content/flow.ex`); the format is in ADR-0007 and the page `wiki-flow-view`.
+Rules: 2 page links at most per box, labels up to 120 characters in plain words (no acronym before the page explains it), 18 boxes at most, no loops (write a repeat in the text), every box reachable from a trigger, every decision with two or more labelled arrows. `wiki check` enforces all of it (`server/lib/wiki/content/flow.ex`); the format is in ADR-0007 and the page `wiki-flow-view`.
 
 ## Architecture and practices on project and program pages (PJ-1, PJ-2, PJ-4)
 
-A page of kind `program` has `## Architecture` too (PJ-4) but not the practices. A page of kind `project` that lives in a repository (not `location: home:...`) has `## Architecture` after `## Flow` and `## Engineering practices` after `## Who receives its output`. Architecture is two C4 diagrams in the flow's line format, `### Context` (exactly one `system` box among `person` and `external` boxes) and `### Containers` (`container` and `store` boxes), a box written `kind id: Name — what it does | [[page]]`, every arrow labelled with what the relation is for (`a -reads-> b`), no loops, 14 boxes at most. Practices has the six parts of project-template in this order: `### Principles`, `### Decisions`, `### Requirements`, `### Quality gate`, `### Continuous integration`, `### Maintenance`. Translations keep the same boxes, links, arrows and six parts. Take the facts from the repository's `DESIGN.md`, `CLAUDE.md`, `docs/adr/`, `docs/REQUIREMENTS.md`, `tools/quality_gate.sh` and workflow; format in ADR-0008 and the page `wiki-flow-view`. `wiki check` enforces it (`server/lib/wiki/content/architecture.ex`, `practices.ex`).
+A page of kind `program` has `## Architecture` too (PJ-4) but not the practices. A page of kind `project` that lives in a repository (not `location: home:...`) has `## Architecture` after `## Flow` and `## Engineering practices` after `## Who receives its output`. Architecture is two C4 diagrams in the flow's line format, `### Context` (exactly one `system` box among `person` and `external` boxes) and `### Containers` (`container` and `store` boxes), a box written `kind id: Name — what it does | [[page]]`, every arrow labelled with what the relation is for (`a -reads-> b`), no loops, 14 boxes at most. Practices has the six parts of project-template in this order: `### Principles`, `### Decisions`, `### Requirements`, `### Quality gate`, `### Continuous integration`, `### Maintenance`. Take the facts from the repository's `DESIGN.md`, `CLAUDE.md`, `docs/adr/`, `docs/REQUIREMENTS.md`, `tools/quality_gate.sh` and workflow; format in ADR-0008 and the page `wiki-flow-view`. `wiki check` enforces it (`server/lib/wiki/content/architecture.ex`, `practices.ex`).
