@@ -1,12 +1,12 @@
 ---
 id: wiki-requirements
 lang: pt-BR
-source_hash: 881d92cc292f
+source_hash: 2d314c678656
 title: Requisitos do wiki
 ---
 
 ## What it is
-Um requisito é uma promessa testável do software. Esta página descreve a lista de promessas do próprio wiki (`docs/REQUIREMENTS.md`), cada uma com um ID formado por uma família de duas letras e um número: AU (o portão de login), DC (a isca), CO (regras de conteúdo), LG (idiomas), BU (o build), UP (a cadeia de atualização), ST (a desatualização das páginas), MP (o mapa e as páginas), MB (a versão para celular), LN (a lente no mapa), AR (como um artigo é desenhado) DY (os pontos elásticos) LY (o cálculo do layout) e TC (toque no mapa).
+Um requisito é uma promessa testável do software. Esta página descreve a lista de promessas do próprio wiki (`docs/REQUIREMENTS.md`), cada uma com um ID formado por uma família de duas letras e um número: AU (o portão de login), DC (a isca), CO (regras de conteúdo), LG (idiomas), BU (o build), UP (a cadeia de atualização), ST (a desatualização das páginas), MP (o mapa e as páginas), MB (a versão para celular), LN (o globo no mapa), AR (como um artigo é desenhado) DY (os pontos elásticos) LY (o cálculo do layout) e TC (toque no mapa).
 
 ## What it does
 Toda linha precisa ter pelo menos um teste etiquetado `REQ <ID>`; o arquivo gerado `docs/TRACEABILITY.md` liga cada requisito aos seus testes.
@@ -21,4 +21,4 @@ Ao lado do documento de design `docs/2026-10-22-wiki-design.md`.
 O [[check-traceability]] e o [[wiki-quality-gate]].
 
 ## Notes
-O relatório atual de rastreabilidade cobre 76 requisitos. A família de fluxogramas é `FL`; a de arquitetura e práticas é `PJ`. A auditoria adicionou `ST-4` a `ST-6` para fontes próprias, semântica exata de revisão e validação da publicação, além de `UP-7` para preservar pendências com estado corrompido, publicações concorrentes e cópias vinculadas. Os testes incluem processos independentes e uma fonte existente apenas na cópia selecionada da wiki.
+O relatório atual de rastreabilidade cobre 79 requisitos. A família de fluxogramas é `FL`; a de arquitetura e práticas é `PJ`. A auditoria adicionou `ST-4` a `ST-6` para fontes próprias, semântica exata de revisão e validação da publicação, além de `UP-7` para preservar pendências com estado corrompido, publicações concorrentes e cópias vinculadas. Os testes incluem processos independentes e uma fonte existente apenas na cópia selecionada da wiki.

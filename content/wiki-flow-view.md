@@ -9,7 +9,7 @@ location: wiki:frontend/src/FlowView.elm
 fed_by: []
 feeds: [wiki-frontend]
 sources: [wiki:frontend/src/Flow.elm, wiki:frontend/src/FlowLayout.elm, wiki:frontend/src/FlowView.elm, wiki:server/lib/wiki/content/flow.ex, wiki:frontend/tests/FlowTests.elm, wiki:server/test/flow_test.exs, wiki:docs/adr/0007-flow-chart-section.md]
-reviewed: 2026-11-01T22:25Z
+reviewed: 2026-11-06T13:12Z
 ---
 
 ## What it is
