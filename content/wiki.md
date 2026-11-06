@@ -10,7 +10,7 @@ fed_by: [claude-code, project-template]
 feeds: []
 sources: [wiki:docs/2026-10-22-wiki-design.md, wiki:DESIGN.md]
 memory: [#f1e117]
-reviewed: 2026-11-06T13:12Z
+reviewed: 2026-11-06T13:37Z
 ---
 
 ## What it is
