@@ -8,8 +8,8 @@ status: active
 location: wiki:frontend
 fed_by: [wiki-article-view, wiki-flow-view, wiki-map-view, wiki-router, wiki-search]
 feeds: [giovanni]
-sources: [wiki:frontend/src/Main.elm, wiki:frontend/src/TopBar.elm, wiki:frontend/src/MapScreen.elm, wiki:frontend/src/MapGeometry.elm, wiki:frontend/src/MapCamera.elm, wiki:frontend/src/Globe.elm, wiki:frontend/src/GlobeGrab.elm, wiki:frontend/src/Touch.elm, wiki:frontend/src/Motion.elm, wiki:frontend/static/style.css, wiki:frontend/static/index.html]
-reviewed: 2026-11-06T18:12Z
+sources: [wiki:frontend/src/Main.elm, wiki:frontend/src/TopBar.elm, wiki:frontend/src/UiText.elm, wiki:frontend/src/MapScreen.elm, wiki:frontend/src/MapGeometry.elm, wiki:frontend/src/MapCamera.elm, wiki:frontend/src/Globe.elm, wiki:frontend/src/GlobeGrab.elm, wiki:frontend/src/Touch.elm, wiki:frontend/src/Motion.elm, wiki:frontend/static/style.css, wiki:frontend/static/index.html]
+reviewed: 2026-11-06T18:14Z
 ---
 
 ## What it is
