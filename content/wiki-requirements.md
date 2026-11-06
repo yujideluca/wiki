@@ -9,7 +9,7 @@ location: wiki:docs/REQUIREMENTS.md
 fed_by: []
 feeds: [check-traceability, wiki-quality-gate]
 sources: [wiki:docs/REQUIREMENTS.md]
-reviewed: 2026-11-06T13:12Z
+reviewed: 2026-11-06T17:02Z
 ---
 
 ## What it is
