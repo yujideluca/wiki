@@ -176,7 +176,7 @@ dotAt geo it x y z =
         , colour = h.colour
         , spot = sp
         , radiusScale = clamp 0.4 1.6 (rel * sqrt rel) * geo.rz
-        , labelSize = 11 * clamp 0.85 1.25 s * geo.ls
+        , labelSize = (if h.node.kind == "project" then 1 else 0.5) * 11 * clamp 0.85 1.25 s * geo.ls
         , labelled = s * s / geo.z >= labelThreshold
         }
 

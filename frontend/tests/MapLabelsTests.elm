@@ -158,4 +158,16 @@ suite =
                 in
                 ( Set.toList (MapLabels.chosen [ a, b, c ]), Set.toList (MapLabels.chosen [ c, b, a ]) )
                     |> Expect.equal ( [ "a", "c" ], [ "a", "c" ] )
+        -- REQ LB-2
+        , test "the name of a dot that is not a project is written at half the size of a project's name" <|
+            \_ ->
+                let
+                    seen =
+                        (geometryAt { lam = 0, beta = 0, z = 3 }).visible
+
+                    sizeOf kind =
+                        seen |> List.filter (\d -> d.node.kind == kind) |> List.map .labelSize |> List.maximum |> Maybe.withDefault 0
+                in
+                (sizeOf "program" > 0 && sizeOf "program" <= 11 * 1.25 * 1.6 * 0.5 + 0.001 && sizeOf "project" > 11 * 0.85 * 0.9)
+                    |> Expect.equal True
         ]
