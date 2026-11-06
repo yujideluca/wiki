@@ -17,6 +17,17 @@ import I18n exposing (Lang)
 import Set
 
 
+{-| How much a dot needs to get a label (LN-2): the zoom times the square of how much it is foreshortened, where the foreshortening
+is the dot's area scale divided by the zoom (the scale in the middle grows about one for one with the zoom, so the zoom is counted
+once). At the first view only the projects (always labelled) have a label; the labels of the others come as you zoom in, the dots
+in the middle first and the ones towards the rim later. The earlier threshold, which counted the zoom three times, labelled 59 of
+126 dots at the first view (the earlier lens: 14 of 202, the projects) and nearly all of them after two wheel notches, which
+overlapped on a phone. -}
+labelThreshold : Float
+labelThreshold =
+    1.4
+
+
 {-| One visible dot, as the view draws it. [spot] is its place and the matrix that flattens it; the rest is its detail there. -}
 type alias Dot =
     { node : Node
@@ -163,7 +174,7 @@ dotAt geo it x y z =
         , spot = sp
         , radiusScale = clamp 0.4 1.6 (s * sqrt s) * geo.rz
         , labelSize = 11 * clamp 0.85 1.25 s * geo.ls
-        , labelled = geo.z * s * s >= 0.7
+        , labelled = s * s / geo.z >= labelThreshold
         }
 
     else

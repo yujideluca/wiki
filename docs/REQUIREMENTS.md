@@ -65,7 +65,7 @@ Source: G = stated by Giovanni, D = derived by Claude Code and accepted (design 
 | MB-4 | On a phone an article shows its title, lead and infobox first, and every other section starts closed and opens when its heading is tapped | G |
 | MB-5 | The lit step of a process page is drawn whole: its circle, glow and growth are not cut off by the box around the steps | G |
 | LN-1 | The map is a globe seen in perspective (every dot is a unit vector on a sphere, north is held up, one camera for the whole frame): dots in the middle are bigger and further apart, dots near the rim smaller, closer and flattened along the turn, and no dot is drawn outside the ball | G |
-| LN-2 | Detail follows the camera: dots in the middle get their labels, dots near the border have none, and the dashed "mentions" lines are left out there unless lit | G |
+| LN-2 | Detail follows the camera: at the first view only the projects have a label; as you zoom in, the dots in the middle get theirs first and the dots near the border have none, and the dashed "mentions" lines are left out there unless lit | G |
 | LN-3 | A pointer position finds the dot under it by the camera maths (the nearest dot within its drawn radius plus 6 pixels, among the dots that are seen; there are no invisible discs in the page), so dragging and clicking work where the dots are drawn | D |
 | DY-1 | The dots have an elastic layer on top of the layout: at rest every displacement is zero (the layout, MP-6, is unchanged) and when everything has settled no animation frames are requested | G |
 | DY-2 | Pressing a dot and moving the mouse drags it, its neighbours stretch along and contract back when it is let go; a press without movement still opens the page and a drag never does | G |

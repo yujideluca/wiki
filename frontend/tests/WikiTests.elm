@@ -445,9 +445,20 @@ suite =
                     (geometryAt home).visible
                         |> List.all (\d -> sqrt ((d.spot.x - screen.cx) ^ 2 + (d.spot.y - screen.cy) ^ 2) <= screen.rho + 0.001)
                         |> Expect.equal True
-            , test "dots near the middle get their labels, dots near the border have none" <|
+            , test "at the first view only the projects have a label; zoomed in, the dots near the middle get theirs and the dots near the border have none" <|
                 \_ ->
-                    ( (dotOf "mem").labelled, (dotOf "quizapp").labelled ) |> Expect.equal ( True, False )
+                    let
+                        zoomed =
+                            (geometryAt { lam = 0, beta = 0, z = 2 }).visible
+
+                        labelOf id dots =
+                            dots |> List.filter (\d -> d.node.id == id) |> List.head |> Maybe.map .labelled
+                    in
+                    ( List.any .labelled (geometryAt home).visible
+                    , labelOf "mem" zoomed
+                    , labelOf "quizapp" zoomed
+                    )
+                        |> Expect.equal ( False, Just True, Just False )
             , test "the dashed mentions line to a dot near the border is left out unless lit" <|
                 \_ ->
                     let
@@ -723,8 +734,9 @@ suite =
             , test "a dot's label is decided at its resting place, even if the pull has drawn it towards the border" <|
                 \_ ->
                     let
+                        -- zoomed in, so that the dot in the middle has a label of its own
                         labelled motion =
-                            drawn motion Nothing
+                            MapView.map (geometryAt { lam = 0, beta = 0, z = 2 }) statics motion adj 800 500 Nothing
                                 |> Query.fromHtml
                                 |> Query.findAll [ Selector.all [ Selector.tag "text", Selector.class "label" ] ]
                                 |> Query.count (Expect.atLeast 1)

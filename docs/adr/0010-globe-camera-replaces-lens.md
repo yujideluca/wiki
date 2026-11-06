@@ -109,3 +109,14 @@ not drawn) raised the zoom raster time from 1,363 to 2,074 ms, the same as the n
 main thread did not pay for it (the new map's busy time in the zoom scenario is lower than both controls, the 95th percentile frame
 time is equal or lower), so it is work on other threads. Not measured: a phone GPU, compositor frames, and whether an inert
 transparent element would bring the old raster time back; no such element was added because nothing shows a cost to the reader.
+
+## Update 2026-11-06 (later): labels, found on the real phone
+
+Looking at the phone (Motorola edge 50 fusion, over USB) showed what the desktop screenshots had not: the globe labelled 59 of 126
+dots at the first view, the earlier lens only the 14 projects, and the names piled up on the small screen. Both versions used the
+same rule (zoom times the square of the dot's area scale at least 0.7), but the old zoom number started well below 1 and the new
+area scale at the middle grows one for one with the zoom, so the new rule counted the zoom three times. The rule is now the square
+of the area scale divided by the zoom, at least 1.4 (`MapGeometry.labelThreshold`): 12 labels at the first view (the projects in
+view), more as you zoom in, the middle first. LN-2 says so, and `WikiTests` checks it (no non-project label at the first view; at
+zoom 2 the middle dot has one, the dot near the rim has none). The earlier claim that the screenshots "look the same by eye" was
+made from desktop-size pictures only.
