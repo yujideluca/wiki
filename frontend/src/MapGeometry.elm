@@ -85,7 +85,7 @@ type alias Geometry =
     { key : Maybe GeoKey
     , cam : Cam
     , z : Float
-    , rz : Float -- the zoom's part of the dot size, once per frame
+    , rz : Float -- what the zoom adds to the dot size, once per frame: the dot's matrix already grows with the globe's scale (about z), so rz brings the whole growth to z^0.6, at most 2.2 times, and with the area factor (at most 1.6) 3.5 times in all (DY-11)
     , ls : Float -- and of the label size
     , dots : Array Dot -- by position in `Statics.items`
     , visible : List Dot -- the dots that are seen, in the order they are drawn in
@@ -188,7 +188,7 @@ build key cam statics =
             { key = Just key
             , cam = cam
             , z = cam.z
-            , rz = clamp 0.7 2.2 (cam.z ^ 0.6)
+            , rz = clamp 0.7 2.2 (cam.z ^ 0.6) / max 1 cam.z
             , ls = clamp 1 1.6 (sqrt cam.z)
             , dots = Array.empty
             , visible = []
@@ -224,7 +224,7 @@ build key cam statics =
 
 
 {-| The dot under the pointer at window position [x], [y], or none: the nearest (by fraction of its own reach) of the dots that are
-seen. A dot answers within its drawn radius plus 6 pixels. The dots are taken at their resting places. -}
+seen. A dot answers within its drawn radius (the ellipse is drawn `radiusScale` times the base radius, times the globe's scale at the dot) plus 6 pixels. The dots are taken at their resting places. -}
 hitAt : Geometry -> Float -> Float -> Maybe String
 hitAt geometry x y =
     geometry.visible
@@ -239,6 +239,7 @@ hitAt geometry x y =
                             6
                         )
                             * dot.radiusScale
+                            * max 1 dot.spot.scale
                             + 6
 
                     dx =

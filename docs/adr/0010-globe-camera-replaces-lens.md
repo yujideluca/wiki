@@ -120,3 +120,19 @@ of the area scale divided by the zoom, at least 1.4 (`MapGeometry.labelThreshold
 view), more as you zoom in, the middle first. LN-2 says so, and `WikiTests` checks it (no non-project label at the first view; at
 zoom 2 the middle dot has one, the dot near the rim has none). The earlier claim that the screenshots "look the same by eye" was
 made from desktop-size pictures only.
+
+## Update 2026-11-06 (later still): dots grew too fast when zooming (DY-11)
+
+Giovanni: "the balls are getting disproportionately bigger as the zoom is implemented, it makes the zoom unusable after a certain
+point." Measured on the real phone, pinching in on the merged build: the middle dot was 8 px wide at the first view, 75 px after
+one pinch, 141 px after three, and 344 px after four, while the distance to the nearest dot went 27, 63, 80, 220 px. Dots
+overlapped into blobs (screenshots in the session). Cause: the dot's matrix (`Globe.place`) already grows with the globe's scale,
+which is about the zoom at the middle, and `MapGeometry.build` still multiplied by `rz = clamp 0.7 2.2 (z^0.6)`, which the lens had
+used when its matrix did not grow with the zoom. The zoom was counted twice. `rz` is now divided by the zoom (`/ max 1 z`), so the
+whole growth is the zoom to the power 0.6, at most 2.2 times, and with the area factor (at most 1.6) 3.5 times, the lens's own
+limit. The same pinch on the fixed build: 8, 31, 34, 38, 37 px wide against 27, 63, 67, 168, 264 px between dots. The hit area had
+the same flaw the other way round: the reach was the base radius times the area factor plus 6 px and ignored the matrix, so a
+dot drawn large was only hit near its middle; it is now multiplied by the globe's scale at the dot (not below 1, so the first view
+is unchanged). DY-11 states both; `WikiTests` checks the growth limit, the ratio to the distance to the neighbour at zoom 1 to 3,
+and that the edge of a zoomed dot is inside its hit area. The earlier tests passed because they looked at the first view and at
+zoom 2 to 3 only, not at the size of a dot against its neighbours.

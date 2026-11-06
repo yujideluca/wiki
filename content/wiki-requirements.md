@@ -9,7 +9,7 @@ location: wiki:docs/REQUIREMENTS.md
 fed_by: []
 feeds: [check-traceability, wiki-quality-gate]
 sources: [wiki:docs/REQUIREMENTS.md]
-reviewed: 2026-11-06T17:02Z
+reviewed: 2026-11-06T17:35Z
 ---
 
 ## What it is
@@ -28,4 +28,4 @@ Beside the design document `docs/2026-10-22-wiki-design.md`.
 [[check-traceability]] and the [[wiki-quality-gate]].
 
 ## Notes
-The current traceability report covers 79 requirements. The flowchart family is `FL` and the architecture/practices family is `PJ`. The audit added `ST-4` through `ST-6` for self-source handling, precise wiki-source review semantics and publication validation, and `UP-7` for preserving shared obligations under malformed state, concurrent publication and linked worktrees. The tests include independent processes and a source that exists only in the selected wiki worktree.
+The current traceability report covers 80 requirements. The flowchart family is `FL` and the architecture/practices family is `PJ`. The audit added `ST-4` through `ST-6` for self-source handling, precise wiki-source review semantics and publication validation, and `UP-7` for preserving shared obligations under malformed state, concurrent publication and linked worktrees. The tests include independent processes and a source that exists only in the selected wiki worktree.

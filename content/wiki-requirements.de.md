@@ -1,7 +1,7 @@
 ---
 id: wiki-requirements
 lang: de
-source_hash: 2d314c678656
+source_hash: 11b317b4f8c8
 title: Wiki-Anforderungen
 ---
 
@@ -21,4 +21,4 @@ Neben dem Entwurfsdokument `docs/2026-10-22-wiki-design.md`.
 [[check-traceability]] und das [[wiki-quality-gate]].
 
 ## Notes
-Der aktuelle Rückverfolgbarkeitsbericht deckt 79 Anforderungen ab. `FL` bezeichnet Ablaufdiagramme und `PJ` Architektur und Entwicklungspraktiken. Die Prüfung ergänzte `ST-4` bis `ST-6` für eigene Quellen, genaue Prüfungsregeln und Veröffentlichungsvalidierung sowie `UP-7` für den Erhalt offener Aufgaben bei beschädigtem Zustand, gleichzeitigen Veröffentlichungen und verknüpften Arbeitskopien. Tests verwenden unabhängige Prozesse und eine Quelle, die nur in der gewählten Wiki-Arbeitskopie existiert.
+Der aktuelle Rückverfolgbarkeitsbericht deckt 80 Anforderungen ab. `FL` bezeichnet Ablaufdiagramme und `PJ` Architektur und Entwicklungspraktiken. Die Prüfung ergänzte `ST-4` bis `ST-6` für eigene Quellen, genaue Prüfungsregeln und Veröffentlichungsvalidierung sowie `UP-7` für den Erhalt offener Aufgaben bei beschädigtem Zustand, gleichzeitigen Veröffentlichungen und verknüpften Arbeitskopien. Tests verwenden unabhängige Prozesse und eine Quelle, die nur in der gewählten Wiki-Arbeitskopie existiert.
