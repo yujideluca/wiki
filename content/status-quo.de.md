@@ -1,7 +1,7 @@
 ---
 id: status-quo
 lang: de
-source_hash: 9c4631951b5c
+source_hash: 0b3b532a984f
 title: Status-Quo-Desktop-Widget-Tray
 ---
 

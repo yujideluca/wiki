@@ -10,7 +10,7 @@ location: vm-lab:vmlab
 fed_by: []
 feeds: [status-quo]
 sources: [vm-lab:vmlab, vm-lab:README.md, vm-lab:templates/autounattend.xml, vm-lab:templates/lab-setup.ps1, vm-lab:templates/provision-rust.ps1]
-reviewed: 2026-11-06T04:09Z
+reviewed: 2026-11-06T06:46Z
 ---
 
 ## What it is
@@ -29,4 +29,4 @@ It is a tool of the [[acer-nitro]] used by the Windows part of [[status-quo]] (r
 Giovanni and Claude read the test logs and screenshots it produces; the results shape the Windows support of [[status-quo]].
 
 ## Notes
-The images are Microsoft's evaluation editions (90 days). The Windows 10 image shows "license expired" on its desktop because of the date baked into that build; use `vmlab create --force` for a fresh one. The VM has no graphics card, so the Windows program cannot open its window there unless a software OpenGL driver (Mesa) is added; this was not done on 2026-11-06 because installing downloaded driver files into the VM needs Giovanni's go-ahead. Windows 11 was installed and its Rust setup was started the same day.
+The images are Microsoft's evaluation editions (90 days). The Windows 10 image shows "license expired" on its desktop because of the date baked into that build; use `vmlab create --force` for a fresh one. The VM has no graphics card, so the Windows program can open its window there only with a software OpenGL driver (Mesa) copied next to it and `GALLIUM_DRIVER=llvmpipe` set; Giovanni approved this on 2026-11-06 and it was done in the Windows 11 VM (see the README of vm-lab). Windows 11 was installed and its Rust setup was started the same day.

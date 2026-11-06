@@ -1,7 +1,7 @@
 ---
 id: vm-lab
 lang: pt-BR
-source_hash: b693c9a61448
+source_hash: 1b5f0133e5bb
 title: vm-lab (máquinas de teste para Windows)
 ---
 
@@ -21,4 +21,4 @@ title: vm-lab (máquinas de teste para Windows)
 Giovanni e o Claude leem os logs de teste e as capturas de tela; os resultados orientam o suporte a Windows do [[status-quo]].
 
 ## Notes
-As imagens são as edições de avaliação da Microsoft (90 dias). A imagem do Windows 10 mostra "license expired" na área de trabalho por causa da data embutida nessa versão; `vmlab create --force` cria uma nova. A VM não tem placa de vídeo, então o programa para Windows não consegue abrir sua janela lá sem um driver OpenGL por software (Mesa); isso não foi feito em 2026-11-06 porque instalar arquivos de driver baixados na VM precisa da autorização do Giovanni. O Windows 11 foi instalado e sua configuração do Rust foi iniciada no mesmo dia.
+As imagens são as edições de avaliação da Microsoft (90 dias). A imagem do Windows 10 mostra "license expired" na área de trabalho por causa da data embutida nessa versão; `vmlab create --force` cria uma nova. A VM não tem placa de vídeo, então o programa para Windows só consegue abrir sua janela lá com um driver OpenGL por software (Mesa) copiado ao lado dele e `GALLIUM_DRIVER=llvmpipe` definido; o Giovanni autorizou em 2026-11-06 e isso foi feito na VM do Windows 11 (veja o README do vm-lab). O Windows 11 foi instalado e sua configuração do Rust foi iniciada no mesmo dia.

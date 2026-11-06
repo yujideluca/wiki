@@ -1,7 +1,7 @@
 ---
 id: vm-lab
 lang: de
-source_hash: b693c9a61448
+source_hash: 1b5f0133e5bb
 title: vm-lab (Testrechner für Windows)
 ---
 
@@ -21,4 +21,4 @@ Es ist ein Werkzeug des [[acer-nitro]], das der Windows-Teil von [[status-quo]] 
 Giovanni und Claude lesen die Testprotokolle und Bildschirmfotos; die Ergebnisse prägen die Windows-Unterstützung von [[status-quo]].
 
 ## Notes
-Die Abbilder sind Microsofts Evaluierungsversionen (90 Tage). Das Windows-10-Abbild zeigt auf dem Desktop „license expired“ wegen des in diesem Build eingebrannten Datums; `vmlab create --force` erzeugt ein frisches. Die VM hat keine Grafikkarte, daher kann das Windows-Programm dort sein Fenster nicht öffnen, solange kein Software-OpenGL-Treiber (Mesa) hinzugefügt wird; das geschah am 2026-11-06 nicht, weil das Installieren heruntergeladener Treiberdateien in die VM Giovannis Zustimmung braucht. Windows 11 wurde am selben Tag installiert und die Rust-Einrichtung gestartet.
+Die Abbilder sind Microsofts Evaluierungsversionen (90 Tage). Das Windows-10-Abbild zeigt auf dem Desktop „license expired“ wegen des in diesem Build eingebrannten Datums; `vmlab create --force` erzeugt ein frisches. Die VM hat keine Grafikkarte, daher kann das Windows-Programm dort sein Fenster nur mit einem daneben kopierten Software-OpenGL-Treiber (Mesa) und gesetztem `GALLIUM_DRIVER=llvmpipe` öffnen; Giovanni stimmte am 2026-11-06 zu, und es wurde in der Windows-11-VM gemacht (siehe README von vm-lab). Windows 11 wurde am selben Tag installiert und die Rust-Einrichtung gestartet.
