@@ -68,4 +68,15 @@ defmodule Wiki.MapCssTest do
     assert html =~ ~s(translate="no")
     assert html =~ ~s(<meta name="google" content="notranslate">)
   end
+
+  # REQ LG-2
+  test "the front end has no language switch: nothing in it chooses, stores or loads a language" do
+    front = Path.expand("../../frontend", __DIR__)
+    sources = Path.wildcard(Path.join(front, "src/*.elm")) ++ Path.wildcard(Path.join(front, "static/*.{js,html}"))
+    assert sources != []
+
+    for file <- sources, text = File.read!(file), word <- ["SetLang", "saveLang", "langSelect", "wiki.lang", "I18n"] do
+      refute text =~ word, "#{Path.relative_to(file, front)} still mentions #{word}"
+    end
+  end
 end

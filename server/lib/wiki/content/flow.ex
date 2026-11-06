@@ -63,7 +63,7 @@ defmodule Wiki.Content.Flow do
     end
   end
 
-  @doc "Problems in one flow (the English source or a translation); empty means it is valid."
+  @doc "Problems in one flow; empty means it is valid."
   def problems(text) do
     {nodes, edges, errs} = parse(text)
     ids = Enum.map(nodes, & &1.id)
@@ -127,11 +127,5 @@ defmodule Wiki.Content.Flow do
     else
       peel(ids -- free, Enum.reject(edges, &(&1.from in free)))
     end
-  end
-
-  @doc "What a translation must keep from the English flow: box ids, kinds and links, and the arrows' ends."
-  def skeleton(text) do
-    {nodes, edges, _} = parse(text)
-    {Enum.map(nodes, &{&1.id, &1.kind, &1.links}), Enum.map(edges, &{&1.from, &1.to})}
   end
 end

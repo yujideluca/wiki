@@ -6,7 +6,6 @@ import Dict
 import Expect
 import Flow exposing (Role(..))
 import FlowLayout
-import I18n exposing (Lang(..))
 import Set
 import Test exposing (Test, describe, test)
 import Test.Html.Query as Query
@@ -58,7 +57,6 @@ article markdown =
 articleWith : String -> String -> Data.Article
 articleWith key markdown =
     { id = "example"
-    , lang = "en"
     , title = "Example"
     , kind = "actor"
     , project = "none"
@@ -190,38 +188,26 @@ layouts =
 -- REQ FL-3
 view : Test
 view =
-    describe "REQ FL-3: the article shows the Flow section as a chart with a legend, in every language"
+    describe "REQ FL-3: the article shows the Flow section as a chart with a legend"
         [ test "one group per box, one arrow per arrow line, and the legend" <|
             \_ ->
-                [ En, De, PtBr ]
-                    |> List.map
-                        (\lang ->
-                            \_ ->
-                                ArticleView.view lang graph 0 False Set.empty (article sample)
-                                    |> Query.fromHtml
-                                    |> Query.find [ Selector.class "sec-flow" ]
-                                    |> Expect.all
-                                        [ Query.findAll [ Selector.class "fl-group" ] >> Query.count (Expect.equal 5)
-                                        , Query.findAll [ Selector.class "fl-edge" ] >> Query.count (Expect.equal 4)
-                                        , Query.findAll [ Selector.class "flow-key" ] >> Query.count (Expect.equal 4)
-                                        ]
-                        )
-                    |> (\checks -> Expect.all checks ())
-        , test "the section heading is translated" <|
+                ArticleView.view graph 0 False Set.empty (article sample)
+                    |> Query.fromHtml
+                    |> Query.find [ Selector.class "sec-flow" ]
+                    |> Expect.all
+                        [ Query.findAll [ Selector.class "fl-group" ] >> Query.count (Expect.equal 5)
+                        , Query.findAll [ Selector.class "fl-edge" ] >> Query.count (Expect.equal 4)
+                        , Query.findAll [ Selector.class "flow-key" ] >> Query.count (Expect.equal 4)
+                        ]
+        , test "the section has its heading" <|
             \_ ->
-                [ ( En, "Flow chart" ), ( De, "Flussdiagramm" ), ( PtBr, "Fluxograma" ) ]
-                    |> List.map
-                        (\( lang, heading ) ->
-                            \_ ->
-                                ArticleView.view lang graph 0 False Set.empty (article sample)
-                                    |> Query.fromHtml
-                                    |> Query.find [ Selector.class "sec-flow" ]
-                                    |> Query.has [ Selector.text heading ]
-                        )
-                    |> (\checks -> Expect.all checks ())
+                ArticleView.view graph 0 False Set.empty (article sample)
+                    |> Query.fromHtml
+                    |> Query.find [ Selector.class "sec-flow" ]
+                    |> Query.has [ Selector.text "Flow chart" ]
         , test "a decision is drawn as a diamond and a product as a double box" <|
             \_ ->
-                ArticleView.view En graph 0 False Set.empty (article sample)
+                ArticleView.view graph 0 False Set.empty (article sample)
                     |> Query.fromHtml
                     |> Expect.all
                         [ Query.findAll [ Selector.tag "polygon" ] >> Query.count (Expect.equal 1)
@@ -270,27 +256,21 @@ architectureView =
                         laid.boxes |> List.map (\p -> ( p.box.id, p.head ))
                 in
                 heads |> List.filter (\( id, _ ) -> id == "s") |> Expect.equal [ ( "s", 1 ) ]
-        , test "two diagrams, a caption for each, the five-shape key, and a translated heading" <|
+        , test "two diagrams, a caption for each, the five-shape key, and its heading" <|
             \_ ->
-                [ ( En, "Architecture" ), ( De, "Architektur" ), ( PtBr, "Arquitetura" ) ]
-                    |> List.map
-                        (\( lang, heading ) ->
-                            \_ ->
-                                ArticleView.view lang graph 0 False Set.empty (articleWith "architecture" architecture)
-                                    |> Query.fromHtml
-                                    |> Query.find [ Selector.class "sec-architecture" ]
-                                    |> Expect.all
-                                        [ Query.has [ Selector.text heading ]
-                                        , Query.findAll [ Selector.class "flow-svg" ] >> Query.count (Expect.equal 2)
-                                        , Query.findAll [ Selector.class "arch-caption" ] >> Query.count (Expect.equal 2)
-                                        , Query.findAll [ Selector.class "flow-key" ] >> Query.count (Expect.equal 5)
-                                        , Query.findAll [ Selector.class "fl-group" ] >> Query.count (Expect.equal 5)
-                                        ]
-                        )
-                    |> (\checks -> Expect.all checks ())
+                ArticleView.view graph 0 False Set.empty (articleWith "architecture" architecture)
+                    |> Query.fromHtml
+                    |> Query.find [ Selector.class "sec-architecture" ]
+                    |> Expect.all
+                        [ Query.has [ Selector.text "Architecture" ]
+                        , Query.findAll [ Selector.class "flow-svg" ] >> Query.count (Expect.equal 2)
+                        , Query.findAll [ Selector.class "arch-caption" ] >> Query.count (Expect.equal 2)
+                        , Query.findAll [ Selector.class "flow-key" ] >> Query.count (Expect.equal 5)
+                        , Query.findAll [ Selector.class "fl-group" ] >> Query.count (Expect.equal 5)
+                        ]
         , test "a data store is drawn as a cylinder and a person has a head" <|
             \_ ->
-                ArticleView.view En graph 0 False Set.empty (articleWith "architecture" architecture)
+                ArticleView.view graph 0 False Set.empty (articleWith "architecture" architecture)
                     |> Query.fromHtml
                     |> Query.find [ Selector.class "sec-architecture" ]
                     |> Expect.all

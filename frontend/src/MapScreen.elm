@@ -10,12 +10,12 @@ import Html exposing (Html, a, div, input, label, option, select, span, text)
 import Html.Attributes as A
 import Html.Events as E
 import Html.Lazy
-import I18n exposing (Lang)
 import MapSize
 import MapView
 import Route exposing (Route(..))
 import Set
 import Types exposing (Model, Msg(..))
+import UiText
 
 
 view : Model -> Graph -> Html Msg
@@ -40,29 +40,29 @@ view model g =
             [ MapView.map model.geometry model.statics model.motion model.adj model.width model.height active
 
             -- everything around the map is skipped while the dots spring about and nothing here has changed
-            , Html.Lazy.lazy4 controls model.lang g model.project model.month
+            , Html.Lazy.lazy3 controls g model.project model.month
             , Html.Lazy.lazy legend g
             , if model.sim /= Nothing then
-                div [ A.class "layout-wait" ] [ text (I18n.strings model.lang).loading ]
+                div [ A.class "layout-wait" ] [ text UiText.strings.loading ]
 
               else
                 text ""
             ]
             :: (if phone then
-                    [ Html.Lazy.lazy3 balloon model.lang g active ]
+                    [ Html.Lazy.lazy2 balloon g active ]
 
                 else
-                    [ Html.Lazy.lazy4 desktopLower model.lang g model.boxHeight active ]
+                    [ Html.Lazy.lazy3 desktopLower g model.boxHeight active ]
                )
         )
 
 
 {-| The project filter and the timeline slider over the map. -}
-controls : Lang -> Graph -> Maybe String -> Maybe String -> Html Msg
-controls lang g project month =
+controls : Graph -> Maybe String -> Maybe String -> Html Msg
+controls g project month =
     let
         s =
-            I18n.strings lang
+            UiText.strings
 
         stops =
             Filter.days g.nodes
@@ -76,12 +76,12 @@ controls lang g project month =
                     stops |> List.indexedMap Tuple.pair |> List.filter (\( _, x ) -> x == m) |> List.head |> Maybe.map Tuple.first |> Maybe.withDefault 0
 
         projects =
-            g.nodes |> List.filter (\n -> n.kind == "project") |> List.sortBy (Data.title lang)
+            g.nodes |> List.filter (\n -> n.kind == "project") |> List.sortBy Data.title
     in
     div [ A.class "controls" ]
         [ select [ E.onInput SetProject, A.attribute "aria-label" s.project ]
             (option [ A.value "" ] [ text s.allProjects ]
-                :: List.map (\p -> option [ A.value p.id, A.selected (project == Just p.id) ] [ text (Data.title lang p) ]) projects
+                :: List.map (\p -> option [ A.value p.id, A.selected (project == Just p.id) ] [ text (Data.title p) ]) projects
             )
         , if List.length stops > 1 then
             label [ A.class "timeline" ]
@@ -102,25 +102,25 @@ controls lang g project month =
 
 
 {-| The phone's balloon for the selected node, or the hint to tap one. -}
-balloon : Lang -> Graph -> Maybe String -> Html Msg
-balloon lang g active =
+balloon : Graph -> Maybe String -> Html Msg
+balloon g active =
     case active |> Maybe.andThen (Data.nodeById g) of
         Just n ->
-            MapView.sheet lang g n
+            MapView.sheet g n
 
         Nothing ->
-            div [ A.class "tap-hint" ] [ text (I18n.strings lang).tapHint ]
+            div [ A.class "tap-hint" ] [ text UiText.strings.tapHint ]
 
 
 {-| The title line and the four boxes under the map on a desktop. -}
-desktopLower : Lang -> Graph -> Maybe Float -> Maybe String -> Html Msg
-desktopLower lang g boxHeight active =
+desktopLower : Graph -> Maybe Float -> Maybe String -> Html Msg
+desktopLower g boxHeight active =
     let
         s =
-            I18n.strings lang
+            UiText.strings
 
         focusInfo =
-            active |> Maybe.andThen (Data.nodeById g) |> Maybe.map (MapView.info lang g)
+            active |> Maybe.andThen (Data.nodeById g) |> Maybe.map (MapView.info g)
     in
     div [ A.class "lower" ]
         [ div [ A.class "focus-title" ]
@@ -135,7 +135,7 @@ desktopLower lang g boxHeight active =
                                             []
 
                                         else
-                                            [ Data.nodeById g n.project |> Maybe.map (Data.title lang) |> Maybe.withDefault n.project ]
+                                            [ Data.nodeById g n.project |> Maybe.map Data.title |> Maybe.withDefault n.project ]
                                        )
                                     ++ [ n.status ]
                                 )
@@ -147,7 +147,7 @@ desktopLower lang g boxHeight active =
                 _ ->
                     []
             )
-        , MapView.infoBoxes lang boxHeight focusInfo
+        , MapView.infoBoxes boxHeight focusInfo
         ]
 
 

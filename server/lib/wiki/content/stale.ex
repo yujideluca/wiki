@@ -3,7 +3,7 @@ defmodule Wiki.Content.Stale do
   Keeps the wiki from falling behind the code.
 
   * `pages/1`: pages with a source that changed after the page's `reviewed` time (ADR-0006). The page file's own
-    commits are never used: a rewrite or a translation fix is not a review. A source outside git counts by modification time.
+    commits are never used: a rewrite or a wording fix is not a review. A source outside git counts by modification time.
   * `claimed/2`: the pages whose `reviewed` line a commit changed and that were still behind a source when that commit
     was made. `wiki publish` refuses to push such a commit (ADR-0009).
   * `record_publish/2`: the publish stamp the hook compares against. It moves forward only when no page is still
@@ -367,9 +367,10 @@ defmodule Wiki.Content.Stale do
     """
     Wiki update needed: code changed since the last `wiki publish`.
     #{Enum.join(lines, "\n")}
-    Update or create those pages in ~/dev/wiki/content (English, then de and pt-BR).
+    Update or create those pages in ~/dev/wiki/content. The wiki is English only: one file per page, `<id>.md`;
+    never write a `.de` or `.pt-BR` file (wiki check refuses it).
     For every page of kind skill, locate and read the complete SKILL.md (description and all instructions),
-    then include its full original text and fingerprint on the page and in both translations; a summary is
+    then include its full original text and fingerprint on the page; a summary is
     insufficient. Follow AGENTS.md and wiki-page-writer, and run wiki check --local to compare with the sources.
     A page you compared with its
     sources and found right still needs `reviewed: <UTC time>` (date -u +%Y-%m-%dT%H:%MZ): that edit is the review.

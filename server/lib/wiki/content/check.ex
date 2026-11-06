@@ -24,9 +24,7 @@ defmodule Wiki.Content.Check do
       Enum.flat_map(Map.values(store.pages), &page(&1, store, ids, local)) ++
       symmetry(store) ++
       orphans(store) ++
-      promotion(store) ++
-      translations(store) ++
-      Enum.flat_map(Map.values(store.translations), &Privacy.scan/1)
+      promotion(store)
     |> Enum.sort()
   end
 
@@ -63,7 +61,7 @@ defmodule Wiki.Content.Check do
         if(local, do: local_checks(p), else: []) ++
         Privacy.scan(p)
 
-    (errs |> Enum.filter(&is_binary/1) |> Enum.map(&prefix(p, &1))) ++ SkillSource.check(p, store, local)
+    (errs |> Enum.filter(&is_binary/1) |> Enum.map(&prefix(p, &1))) ++ SkillSource.check(p, local)
   end
 
   # A skill page holds the skill's own definition (its rules or steps), so a reader never needs the SKILL.md file.
@@ -199,67 +197,6 @@ defmodule Wiki.Content.Check do
 
   def slug(name),
     do: name |> String.downcase() |> String.replace(~r/[^a-z0-9]+/, "-") |> String.trim("-")
-
-  defp translations(store) do
-    for {id, p} <- store.pages, lang <- Store.translation_langs() do
-      hash = Page.source_hash(p)
-
-      case store.translations[{id, lang}] do
-        nil ->
-          "#{id}.md: #{lang} translation missing (#{id}.#{lang}.md)"
-
-        t ->
-          cond do
-            t.errors != [] -> "#{t.file}: #{Enum.join(t.errors, "; ")}"
-            t.header["source_hash"] != hash -> "#{t.file}: outdated, English changed (source_hash should be #{hash})"
-            !t.header["title"] -> "#{t.file}: title missing"
-            (miss = Enum.filter(Page.required_sections(), &(Page.section(t, &1) == ""))) != [] ->
-              "#{t.file}: sections missing: #{Enum.join(miss, ", ")}"
-            (flow_problem = translated_flow_problem(p, t)) != nil ->
-              "#{t.file}: #{flow_problem}"
-            (project_problem = translated_project_problem(p, t)) != nil ->
-              "#{t.file}: #{project_problem}"
-            true -> nil
-          end
-      end
-    end
-    |> Enum.reject(&is_nil/1)
-    |> Kernel.++(
-      for {{id, _}, t} <- store.translations, !store.pages[id], do: "#{t.file}: translation of a page that does not exist"
-    )
-  end
-
-  # FL-2: a translated flow keeps the English boxes (ids, kinds, page links) and arrows; only the words change.
-  defp translated_flow_problem(p, t) do
-    en = Page.section(p, "flow")
-    tr = Page.section(t, "flow")
-
-    cond do
-      en == "" and tr == "" -> nil
-      tr == "" -> "section ## Flow is missing (the English page has one)"
-      en == "" -> "section ## Flow has no English original"
-      (problems = Flow.problems(tr)) != [] -> Enum.join(problems, "; ")
-      Flow.skeleton(en) != Flow.skeleton(tr) -> "flow differs from the English one in boxes, links or arrows (only the words may change)"
-      true -> nil
-    end
-  end
-
-  # PJ-1, PJ-2: a translation keeps the English diagrams (boxes, links, arrows) and the number of practice parts.
-  defp translated_project_problem(p, t) do
-    {en_a, tr_a} = {Page.section(p, "architecture"), Page.section(t, "architecture")}
-    {en_p, tr_p} = {Page.section(p, "practices"), Page.section(t, "practices")}
-    arch_problems = if tr_a == "", do: [], else: Architecture.problems(tr_a)
-    prac_problems = if tr_p == "", do: [], else: Practices.problems(tr_p, true)
-
-    cond do
-      (en_a == "") != (tr_a == "") -> "section ## Architecture must exist in the translation exactly when it exists in English"
-      (en_p == "") != (tr_p == "") -> "section ## Engineering practices must exist in the translation exactly when it exists in English"
-      arch_problems != [] -> Enum.join(arch_problems, "; ")
-      tr_a != "" and Architecture.skeleton(en_a) != Architecture.skeleton(tr_a) -> "architecture differs from the English one in boxes, links or arrows (only the words may change)"
-      prac_problems != [] -> Enum.join(prac_problems, "; ")
-      true -> nil
-    end
-  end
 
   defp prefix(p, msg), do: "#{p.file}: #{msg}"
 end

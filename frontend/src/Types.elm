@@ -5,7 +5,6 @@ import Browser.Dom
 import Browser.Navigation as Nav
 import Data exposing (Article, Graph)
 import Http
-import I18n exposing (Lang)
 import Dict exposing (Dict)
 import Globe
 import Layout exposing (Positions)
@@ -25,7 +24,6 @@ type Load a
 
 type alias Model =
     { key : Nav.Key
-    , lang : Lang
     , route : Route
     , graph : Load Graph
     , layout : Positions -- the force layout as computed, in layout units
@@ -88,7 +86,6 @@ type Msg
     | SearchKey String
     | PickSuggestion String
     | CloseSuggestions
-    | SetLang String
     | SetProject String
     | SetMonth String
     | Wheel Float Float Float

@@ -11,13 +11,13 @@ import Flow exposing (Role(..))
 import FlowLayout exposing (Placed, Route)
 import Html exposing (Html, div, h3, p, span, text)
 import Html.Attributes as A
-import I18n exposing (Lang)
 import Path
 import Shape
 import Svg exposing (Svg)
 import Svg.Attributes as S
 import Svg.Events as SE
 import Types exposing (Msg(..))
+import UiText
 
 
 {-| The ids of the scrolling boxes around the charts of one article, so that `Main` can centre them (PJ-3). -}
@@ -29,21 +29,21 @@ chartIds =
     }
 
 
-view : Lang -> Graph -> String -> Html Msg
-view lang graph markdown =
+view : Graph -> String -> Html Msg
+view graph markdown =
     let
         chart =
             Flow.parse markdown
 
         s =
-            I18n.strings lang
+            UiText.strings
     in
     if List.isEmpty chart.boxes then
         text ""
 
     else
         div [ A.class "flow" ]
-            [ chartSvg chartIds.flow graph lang chart
+            [ chartSvg chartIds.flow graph chart
             , div [ A.class "flow-legend" ]
                 [ legendItem "fl-trigger" s.flowStart
                 , legendItem "fl-step" s.flowStep
@@ -56,11 +56,11 @@ view lang graph markdown =
 
 {-| The `## Architecture` section (requirement PJ-3): the C4 context diagram and the containers diagram of a project,
 one under the other, with a key to the five kinds of box. -}
-viewArchitecture : Lang -> Graph -> String -> Html Msg
-viewArchitecture lang graph markdown =
+viewArchitecture : Graph -> String -> Html Msg
+viewArchitecture graph markdown =
     let
         s =
-            I18n.strings lang
+            UiText.strings
 
         captions =
             [ s.archContext, s.archContainers ]
@@ -69,7 +69,7 @@ viewArchitecture lang graph markdown =
             div [ A.class "arch-level" ]
                 [ h3 [] [ text heading ]
                 , p [ A.class "arch-caption" ] [ text (captions |> List.drop i |> List.head |> Maybe.withDefault "") ]
-                , chartSvg (chartIds.arch i) graph lang chart
+                , chartSvg (chartIds.arch i) graph chart
                 ]
     in
     div [ A.class "flow arch" ]
@@ -86,14 +86,14 @@ viewArchitecture lang graph markdown =
         )
 
 
-chartSvg : String -> Graph -> Lang -> Flow.Chart -> Html Msg
-chartSvg domId graph lang chart =
+chartSvg : String -> Graph -> Flow.Chart -> Html Msg
+chartSvg domId graph chart =
     let
         laid =
             FlowLayout.layout chart
 
         titleOf id =
-            Data.nodeById graph id |> Maybe.map (Data.title lang) |> Maybe.withDefault id
+            Data.nodeById graph id |> Maybe.map Data.title |> Maybe.withDefault id
 
         accent b =
             b.links

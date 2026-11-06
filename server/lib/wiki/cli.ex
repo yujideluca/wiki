@@ -52,8 +52,7 @@ defmodule Wiki.CLI do
 
     case Check.run(store, local: Keyword.get(opts, :local, false)) do
       [] ->
-        IO.puts("wiki check ok (#{if opts[:local], do: "local", else: "ci"} mode): #{map_size(store.pages)} pages, " <>
-                  "#{map_size(store.translations)} translations")
+        IO.puts("wiki check ok (#{if opts[:local], do: "local", else: "ci"} mode): #{map_size(store.pages)} pages")
         0
 
       errors ->

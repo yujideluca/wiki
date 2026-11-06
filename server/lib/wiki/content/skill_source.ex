@@ -1,29 +1,14 @@
 defmodule Wiki.Content.SkillSource do
   @moduledoc "Complete, fingerprinted SKILL.md copies on skill pages (CO-10)."
-  alias Wiki.Content.{Page, Sources, Store}
+  alias Wiki.Content.{Page, Sources}
 
-  def check(page, store, local) do
+  def check(page, local) do
     if page.header["kind"] == "skill" do
       sources = Page.list(page, "sources") |> Enum.filter(&(Path.basename(&1) == "SKILL.md"))
       copies = copies(page)
 
-      translations =
-        for lang <- Store.translation_langs(), p = store.translations[{page.id, lang}], do: p
-
       if(sources == [], do: ["#{page.file}: a skill page needs a SKILL.md source"], else: []) ++
-        Enum.flat_map(sources, fn source ->
-          validate(page.file, source, copies, local) ++
-            Enum.flat_map(translations, fn translation ->
-              translated = copies(translation)
-
-              validate(translation.file, source, translated, false) ++
-                if Map.get(copies, source) != Map.get(translated, source),
-                  do: [
-                    "#{translation.file}: complete SKILL.md copy must match the English original for #{source}"
-                  ],
-                  else: []
-            end)
-        end)
+        Enum.flat_map(sources, &validate(page.file, &1, copies, local))
     else
       []
     end

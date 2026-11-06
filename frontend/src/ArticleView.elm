@@ -12,34 +12,34 @@ import FlowView
 import Html exposing (Html, a, aside, button, code, div, h1, h2, li, p, section, span, table, td, text, th, tr, ul)
 import Html.Attributes as A
 import Html.Events as E
-import I18n exposing (Lang)
 import Set exposing (Set)
 import Types exposing (Msg(..))
+import UiText
 import WikiText
 
 
-view : Lang -> Graph -> Int -> Bool -> Set String -> Article -> Html Msg
-view lang graph step phone openSecs art =
+view : Graph -> Int -> Bool -> Set String -> Article -> Html Msg
+view graph step phone openSecs art =
     let
         s =
-            I18n.strings lang
+            UiText.strings
 
         titleOf id =
-            Data.nodeById graph id |> Maybe.map (Data.title lang) |> Maybe.withDefault id
+            Data.nodeById graph id |> Maybe.map Data.title |> Maybe.withDefault id
 
         body sec =
             if sec.key == "flow" then
-                [ FlowView.view lang graph sec.markdown ]
+                [ FlowView.view graph sec.markdown ]
 
             else if sec.key == "architecture" then
-                [ FlowView.viewArchitecture lang graph sec.markdown ]
+                [ FlowView.viewArchitecture graph sec.markdown ]
 
             else if sec.key == "steps" && art.kind == "skill" then
-                [ stepper lang graph step (WikiText.steps sec.markdown) ]
+                [ stepper graph step (WikiText.steps sec.markdown) ]
 
             else
                 (if sec.key == "steps" then
-                    [ stepper lang graph step (WikiText.steps sec.markdown) ]
+                    [ stepper graph step (WikiText.steps sec.markdown) ]
 
                  else
                     []
@@ -74,7 +74,7 @@ view lang graph step phone openSecs art =
                                     "false"
                                 )
                             ]
-                            [ text (I18n.sectionHeading lang sec.key) ]
+                            [ text (UiText.sectionHeading sec.key) ]
                         ]
                         :: (if isOpen then
                                 [ div [ A.class "sec-body" ] (body sec) ]
@@ -86,7 +86,7 @@ view lang graph step phone openSecs art =
 
             else
                 section [ A.class ("sec sec-" ++ sec.key) ]
-                    (h2 [] [ text (I18n.sectionHeading lang sec.key) ] :: body sec)
+                    (h2 [] [ text (UiText.sectionHeading sec.key) ] :: body sec)
 
         lead =
             art.sections |> List.filter (\x -> x.key == "what") |> List.head
@@ -107,19 +107,13 @@ view lang graph step phone openSecs art =
                     )
                 ]
              ]
-                ++ (if art.lang /= I18n.code lang then
-                        [ p [ A.class "notice" ] [ text s.notTranslated ] ]
-
-                    else
-                        []
-                   )
                 ++ (if art.mayBeStale then
                         [ p [ A.class "notice stale" ] [ text (s.mayBeStale ++ " " ++ Maybe.withDefault "?" art.reviewed) ] ]
 
                     else
                         []
                    )
-                ++ [ infobox lang graph art ]
+                ++ [ infobox graph art ]
                 ++ (case lead of
                         Just l ->
                             [ div [ A.class "lead" ] (WikiText.toHtml titleOf l.markdown) ]
@@ -128,19 +122,19 @@ view lang graph step phone openSecs art =
                             []
                    )
                 ++ List.map sectionView rest
-                ++ history lang art
+                ++ history art
             )
         ]
 
 
-infobox : Lang -> Graph -> Article -> Html Msg
-infobox lang graph art =
+infobox : Graph -> Article -> Html Msg
+infobox graph art =
     let
         s =
-            I18n.strings lang
+            UiText.strings
 
         titleOf id =
-            Data.nodeById graph id |> Maybe.map (Data.title lang) |> Maybe.withDefault id
+            Data.nodeById graph id |> Maybe.map Data.title |> Maybe.withDefault id
 
         row label content =
             tr [] [ th [] [ text label ], td [] content ]
@@ -185,19 +179,19 @@ infobox lang graph art =
                    )
             )
         , div [ A.class "ib-head" ] [ text s.pipeline ]
-        , pipelineStrip lang graph art
+        , pipelineStrip graph art
         , div [ A.class "ib-head" ] [ text s.neighbours ]
-        , connectedPages lang graph art.id
+        , connectedPages graph art.id
         ]
 
 
 {-| inputs → this → outputs, as small boxes with arrows.
 -}
-pipelineStrip : Lang -> Graph -> Article -> Html Msg
-pipelineStrip lang graph art =
+pipelineStrip : Graph -> Article -> Html Msg
+pipelineStrip graph art =
     let
         titleOf id =
-            Data.nodeById graph id |> Maybe.map (Data.title lang) |> Maybe.withDefault id
+            Data.nodeById graph id |> Maybe.map Data.title |> Maybe.withDefault id
 
         column ids cls =
             div [ A.class ("pl-col " ++ cls) ]
@@ -219,20 +213,20 @@ pipelineStrip lang graph art =
 
 {-| Full page names remain readable even when a page has many neighbours.
 -}
-connectedPages : Lang -> Graph -> String -> Html Msg
-connectedPages lang graph id =
+connectedPages : Graph -> String -> Html Msg
+connectedPages graph id =
     let
         neighbours =
             Filter.neighbours graph.edges id
                 |> Set.toList
                 |> List.filterMap (Data.nodeById graph)
-                |> List.sortBy (Data.title lang >> String.toLower)
+                |> List.sortBy (Data.title >> String.toLower)
 
         item node =
             li []
                 [ a [ A.href ("/p/" ++ node.id) ]
                     [ span [ A.class "connected-dot", A.style "background-color" (Data.kindColour graph node.kind), A.attribute "aria-hidden" "true" ] []
-                    , span [ A.class "connected-title" ] [ text (Data.title lang node) ]
+                    , span [ A.class "connected-title" ] [ text (Data.title node) ]
                     , span [ A.class "connected-kind" ] [ text node.kind ]
                     ]
                 ]
@@ -243,11 +237,11 @@ connectedPages lang graph id =
 {-| Step-through diagram for process pages: the steps as a chain, the current one lit, with its text and
 the pages it involves.
 -}
-stepper : Lang -> Graph -> Int -> List String -> Html Msg
-stepper lang graph current steps =
+stepper : Graph -> Int -> List String -> Html Msg
+stepper graph current steps =
     let
         s =
-            I18n.strings lang
+            UiText.strings
 
         n =
             List.length steps
@@ -256,7 +250,7 @@ stepper lang graph current steps =
             clamp 0 (max 0 (n - 1)) current
 
         titleOf id =
-            Data.nodeById graph id |> Maybe.map (Data.title lang) |> Maybe.withDefault id
+            Data.nodeById graph id |> Maybe.map Data.title |> Maybe.withDefault id
 
         currentText =
             steps |> List.drop cur |> List.head |> Maybe.withDefault ""
@@ -309,14 +303,14 @@ stepper lang graph current steps =
             ]
 
 
-history : Lang -> Article -> List (Html Msg)
-history lang art =
+history : Article -> List (Html Msg)
+history art =
     if List.isEmpty art.history then
         []
 
     else
         [ section [ A.class "sec history" ]
-            [ h2 [] [ text (I18n.strings lang).history ]
+            [ h2 [] [ text UiText.strings.history ]
             , ul [] (List.map (\h -> li [] [ span [ A.class "date" ] [ text h.date ], text (" " ++ h.subject) ]) art.history)
             ]
         ]

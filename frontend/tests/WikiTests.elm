@@ -11,7 +11,6 @@ import Expect
 import Filter
 import Html
 import Html.Attributes
-import I18n exposing (Lang(..))
 import Layout
 import Motion
 import MapCamera
@@ -23,6 +22,7 @@ import Set
 import Svg
 import Svg.Attributes
 import Touch
+import UiText
 import Test exposing (Test, describe, test)
 import Test.Html.Event as Event
 import Test.Html.Query as Query
@@ -44,10 +44,7 @@ mkNode id title project fedBy feeds =
     , functions = []
     , process = False
     , text =
-        Dict.fromList
-            [ ( "en", { title = title, aliases = [ title ++ " alias" ], what = title ++ " is a thing.", does = "Does " ++ title ++ "." } )
-            , ( "de", { title = title ++ " (de)", aliases = [], what = "Ist ein Ding.", does = "Tut etwas." } )
-            ]
+        { title = title, aliases = [ title ++ " alias" ], what = title ++ " is a thing.", does = "Does " ++ title ++ "." }
     }
 
 
@@ -59,7 +56,7 @@ graph =
         , mkNode "giovanni" "Giovanni" "none" [] [ "mem" ]
         , mkNode "memory-brief" "Session brief" "workflow-memory" [] []
         , mkNode "quizapp" "QuizApp" "quizapp" [] []
-        , { id = "old", kind = "program", project = "quizapp", status = "retired", since = "2025-01-01", until = Just "2025-06-01", fedBy = [], feeds = [], functions = [], process = False, text = Dict.fromList [ ( "en", { title = "Old", aliases = [], what = "", does = "" } ) ] }
+        , { id = "old", kind = "program", project = "quizapp", status = "retired", since = "2025-01-01", until = Just "2025-06-01", fedBy = [], feeds = [], functions = [], process = False, text = { title = "Old", aliases = [], what = "", does = "" } }
         ]
         [ { from = "giovanni", to = "mem", edgeType = Feeds }
         , { from = "mem", to = "events", edgeType = Feeds }
@@ -71,7 +68,6 @@ graph =
 phoneArticle : Data.Article
 phoneArticle =
     { id = "mem"
-    , lang = "en"
     , title = "mem"
     , kind = "program"
     , project = "none"
@@ -122,7 +118,7 @@ adj =
 
 statics : MapGeometry.Statics
 statics =
-    MapGeometry.buildStatics { lang = En, graph = graph, sphere = sphere, project = Nothing, month = Nothing }
+    MapGeometry.buildStatics { graph = graph, sphere = sphere, project = Nothing, month = Nothing }
 
 
 geometryAt : Globe.View -> MapGeometry.Geometry
@@ -232,29 +228,29 @@ suite =
         [ describe "search"
             [ test "best match first: exact, then prefix, then contains" <|
                 \_ ->
-                    Search.suggestions En 5 "mem" graph.nodes
+                    Search.suggestions 5 "mem" graph.nodes
                         |> ids
                         |> List.take 2
                         |> Expect.equal [ "mem", "memory-brief" ]
             , test "matches aliases and is accent and case insensitive" <|
                 \_ ->
-                    Search.suggestions En 5 "QUÍZAPP ALIAS" graph.nodes |> ids |> Expect.equal [ "quizapp" ]
+                    Search.suggestions 5 "QUÍZAPP ALIAS" graph.nodes |> ids |> Expect.equal [ "quizapp" ]
             , test "letters in order still match, empty query gives nothing" <|
                 \_ ->
                     Expect.all
-                        [ \_ -> Search.suggestions En 5 "gvn" graph.nodes |> ids |> Expect.equal [ "giovanni" ]
-                        , \_ -> Search.suggestions En 5 "  " graph.nodes |> Expect.equal []
-                        , \_ -> Search.suggestions En 5 "zzzz" graph.nodes |> Expect.equal []
+                        [ \_ -> Search.suggestions 5 "gvn" graph.nodes |> ids |> Expect.equal [ "giovanni" ]
+                        , \_ -> Search.suggestions 5 "  " graph.nodes |> Expect.equal []
+                        , \_ -> Search.suggestions 5 "zzzz" graph.nodes |> Expect.equal []
                         ]
                         ()
             , test "loose letter matches are dropped when a real match exists" <|
                 \_ ->
-                    Search.suggestions En 5 "mem" graph.nodes |> ids |> List.member "giovanni" |> Expect.equal False
-            , test "finds the German title in German and the English one too" <|
+                    Search.suggestions 5 "mem" graph.nodes |> ids |> List.member "giovanni" |> Expect.equal False
+            , test "finds a page by its title and by its alias" <|
                 \_ ->
                     Expect.all
-                        [ \_ -> Search.suggestions De 5 "events/ (de" graph.nodes |> ids |> Expect.equal [ "events" ]
-                        , \_ -> Search.suggestions De 5 "events/" graph.nodes |> ids |> Expect.equal [ "events" ]
+                        [ \_ -> Search.suggestions 5 "events/" graph.nodes |> ids |> Expect.equal [ "events" ]
+                        , \_ -> Search.suggestions 5 "events/ alias" graph.nodes |> ids |> Expect.equal [ "events" ]
                         ]
                         ()
             ]
@@ -313,7 +309,7 @@ suite =
                 \_ ->
                     case Data.nodeById graph "mem" of
                         Just n ->
-                            MapView.info En graph n
+                            MapView.info graph n
                                 |> Expect.equal
                                     { title = "mem", kind = "program", what = "mem is a thing.", does = "Does mem.", fedBy = [ "Giovanni" ], receives = [ "events/" ] }
 
@@ -323,11 +319,11 @@ suite =
                 \_ ->
                     WikiText.plain (\id -> "T-" ++ id) "Uses [[mem]], [[events|the log]] and `code`."
                         |> Expect.equal "Uses T-mem, the log and code."
-            , test "boxes are filled in the chosen language" <|
+            , test "boxes are filled from the page" <|
                 \_ ->
                     Data.nodeById graph "mem"
-                        |> Maybe.map (MapView.info De graph >> .receives)
-                        |> Expect.equal (Just [ "events/ (de)" ])
+                        |> Maybe.map (MapView.info graph >> .receives)
+                        |> Expect.equal (Just [ "events/" ])
             ]
 
 
@@ -842,7 +838,7 @@ suite =
                 \_ ->
                     case Data.nodeById graph "mem" of
                         Just n ->
-                            MapView.sheet En graph n
+                            MapView.sheet graph n
                                 |> Query.fromHtml
                                 |> Expect.all
                                     [ Query.has [ Selector.text "mem is a thing." ]
@@ -856,7 +852,7 @@ suite =
                 \_ ->
                     case Data.nodeById graph "mem" of
                         Just n ->
-                            MapView.sheet En graph n
+                            MapView.sheet graph n
                                 |> Query.fromHtml
                                 |> Query.find [ Selector.class "pill", Selector.containing [ Selector.text "Giovanni" ] ]
                                 |> Event.simulate Event.click
@@ -868,7 +864,7 @@ suite =
                 \_ ->
                     case Data.nodeById graph "mem" of
                         Just n ->
-                            MapView.sheet En graph n
+                            MapView.sheet graph n
                                 |> Query.fromHtml
                                 |> Query.find [ Selector.class "sheet-close" ]
                                 |> Event.simulate Event.click
@@ -882,7 +878,7 @@ suite =
         , describe "phone article"
             [ test "on a phone a section's text is hidden until its heading is tapped" <|
                 \_ ->
-                    ArticleView.view En graph 0 True Set.empty phoneArticle
+                    ArticleView.view graph 0 True Set.empty phoneArticle
                         |> Query.fromHtml
                         |> Expect.all
                             [ Query.has [ Selector.text "Lead text." ]
@@ -891,12 +887,12 @@ suite =
                             ]
             , test "an opened section shows its text" <|
                 \_ ->
-                    ArticleView.view En graph 0 True (Set.fromList [ "does" ]) phoneArticle
+                    ArticleView.view graph 0 True (Set.fromList [ "does" ]) phoneArticle
                         |> Query.fromHtml
                         |> Query.has [ Selector.text "Body text." ]
             , test "on a wide window the sections are always open" <|
                 \_ ->
-                    ArticleView.view En graph 0 False Set.empty phoneArticle
+                    ArticleView.view graph 0 False Set.empty phoneArticle
                         |> Query.fromHtml
                         |> Query.has [ Selector.text "Body text." ]
             ]
@@ -942,14 +938,14 @@ suite =
                         ()
             , test "wide windows give every info box a fixed height that scrolls inside" <|
                 \_ ->
-                    MapView.infoBoxes En (Just 200) (Just { title = "t", kind = "k", what = "w", does = "d", fedBy = [], receives = [] })
+                    MapView.infoBoxes (Just 200) (Just { title = "t", kind = "k", what = "w", does = "d", fedBy = [], receives = [] })
                         |> Query.fromHtml
                         |> Query.findAll [ Selector.class "box" ]
                         |> Query.each
                             (Query.has [ Selector.style "height" "200px", Selector.style "overflow-y" "auto" ])
             , test "without a height (narrow windows) the boxes size themselves" <|
                 \_ ->
-                    MapView.infoBoxes En Nothing (Just { title = "t", kind = "k", what = "w", does = "d", fedBy = [], receives = [] })
+                    MapView.infoBoxes Nothing (Just { title = "t", kind = "k", what = "w", does = "d", fedBy = [], receives = [] })
                         |> Query.fromHtml
                         |> Query.findAll [ Selector.class "box" ]
                         |> Query.each (Query.hasNot [ Selector.style "height" "200px" ])
@@ -1077,28 +1073,20 @@ suite =
             ]
 
         -- REQ LG-2
-        , describe "languages"
-            [ test "English is the default and codes round-trip" <|
+        , describe "interface text"
+            [ test "the interface text is English" <|
                 \_ ->
                     Expect.all
-                        [ \_ -> I18n.fromCode "xx" |> Expect.equal En
-                        , \_ -> List.map (I18n.code >> I18n.fromCode) I18n.all |> Expect.equal I18n.all
-                        , \_ -> List.map I18n.code I18n.all |> Expect.equal [ "en", "de", "pt-BR" ]
+                        [ \_ -> UiText.strings.whatItDoes |> Expect.equal "What it does"
+                        , \_ -> UiText.sectionHeading "receives" |> Expect.equal "Who receives its output"
+                        , \_ -> UiText.sectionHeading "unknown" |> Expect.equal "unknown"
                         ]
                         ()
-            , test "interface text exists and differs in each language" <|
-                \_ ->
-                    List.map (\l -> (I18n.strings l).whatItDoes) I18n.all
-                        |> Expect.equal [ "What it does", "Was es tut", "O que faz" ]
+
             -- REQ MP-9
-            , test "the glossary link is named in each language" <|
+            , test "the glossary link is named" <|
                 \_ ->
-                    List.map (\l -> (I18n.strings l).glossary) I18n.all
-                        |> Expect.equal [ "Glossary", "Glossar", "Glossário" ]
-            , test "section headings are translated" <|
-                \_ ->
-                    List.map (\l -> I18n.sectionHeading l "receives") I18n.all
-                        |> Expect.equal [ "Who receives its output", "Wer seine Ausgabe erhält", "Quem recebe o que produz" ]
+                    UiText.strings.glossary |> Expect.equal "Glossary"
             ]
         ]
 

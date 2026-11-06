@@ -60,28 +60,4 @@ defmodule Wiki.Content.FlowTest do
     write_page(c, "proj", base_header("proj", kind: "project", project: "none"), Map.merge(project_sections(), %{"what" => "[[a]] [[b]]", "flow" => bad}))
     assert Enum.any?(errors(c), &(&1 =~ "link [[ghost]] points to no page"))
   end
-
-  # REQ FL-2
-  test "a translated flow keeps boxes, links and arrows and may change the words", %{content: c} do
-    valid_wiki(c)
-    hdr = base_header("proj", kind: "project", project: "none")
-    sections = Map.merge(project_sections(), %{"what" => "[[a]] [[b]]"})
-    write_page(c, "proj", hdr, sections)
-    assert errors(c) == []
-
-    changed = String.replace(flow(), "Someone asks", "Jemand fragt")
-    File.write!(Path.join(c, "proj.de.md"), String.replace(File.read!(Path.join(c, "proj.de.md")), flow(), changed))
-    assert errors(c) == []
-
-    broken = String.replace(changed, "[[b]]", "[[a]]")
-    File.write!(Path.join(c, "proj.de.md"), String.replace(File.read!(Path.join(c, "proj.de.md")), changed, broken))
-    assert Enum.any?(errors(c), &(&1 =~ "proj.de.md: flow differs from the English one"))
-  end
-
-  # REQ FL-2
-  test "a translation without the flow is reported", %{content: c} do
-    valid_wiki(c)
-    File.write!(Path.join(c, "proj.pt-BR.md"), String.replace(File.read!(Path.join(c, "proj.pt-BR.md")), ~r/## Flow\n.*?\n\n/s, ""))
-    assert Enum.any?(errors(c), &(&1 =~ "proj.pt-BR.md: section ## Flow is missing"))
-  end
 end

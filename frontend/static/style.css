@@ -62,7 +62,7 @@ button, select, input { font: inherit; }
 .sdot { width: 9px; height: 9px; border-radius: 50%; flex: none; display: inline-block; }
 .stitle { font-weight: 500; }
 .skind { color: var(--muted); font-size: 12px; margin-left: auto; white-space: nowrap; }
-.lang, .controls select {
+.controls select {
   background: var(--bg-2); color: var(--text); border: 1px solid #3a3f47; border-radius: 8px; padding: 7px 8px;
 }
 .logout { color: var(--muted); font-size: 13px; text-decoration: none; white-space: nowrap; }

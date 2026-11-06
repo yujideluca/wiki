@@ -2,8 +2,8 @@ defmodule Wiki.Content.Build do
   @moduledoc """
   `wiki build`: turns the content folder into the data the Elm front end reads.
 
-      <out>/data/graph.json             nodes, edges, kinds, projects (all languages)
-      <out>/data/pages/<id>.<lang>.json one article per language
+      <out>/data/graph.json    nodes, edges, kinds, projects
+      <out>/data/pages/<id>.json  one article per page (English only, requirement LG-2)
 
   Pipeline edges come from `feeds`; every `[[link]]` (except from a page of kind `reference`, the glossary, which links to anything to explain it) that is not already a pipeline edge becomes a
   `mentions` edge. `since` is the header value, else the first commit of the page's sources, else the
@@ -19,8 +19,8 @@ defmodule Wiki.Content.Build do
     File.mkdir_p!(Path.join(out, "data/pages"))
     write(Path.join(out, "data/graph.json"), graph(store, meta))
 
-    for {id, _} <- store.pages, lang <- Store.langs() do
-      write(Path.join(out, "data/pages/#{id}.#{lang}.json"), article(store, id, lang, meta[id]))
+    for {id, _} <- store.pages do
+      write(Path.join(out, "data/pages/#{id}.json"), article(store, id, meta[id]))
     end
 
     :ok
@@ -58,19 +58,6 @@ defmodule Wiki.Content.Build do
   def graph(store, meta) do
     nodes =
       for {id, p} <- Enum.sort(store.pages) do
-        texts =
-          Map.new(Store.langs(), fn lang ->
-            l = Store.localized(store, id, lang)
-
-            {lang,
-             %{
-               "title" => l.header["title"] || p.header["title"],
-               "aliases" => Page.list(l, "aliases") ++ Page.list(p, "aliases"),
-               "what" => Page.first_paragraph(l, "what"),
-               "does" => Page.first_paragraph(l, "does")
-             }}
-          end)
-
         %{
           "id" => id,
           "kind" => p.header["kind"],
@@ -82,7 +69,12 @@ defmodule Wiki.Content.Build do
           "feeds" => Page.list(p, "feeds"),
           "functions" => Page.listed_functions(p),
           "process" => Page.section(p, "steps") != "",
-          "text" => texts
+          "text" => %{
+            "title" => p.header["title"],
+            "aliases" => Page.list(p, "aliases"),
+            "what" => Page.first_paragraph(p, "what"),
+            "does" => Page.first_paragraph(p, "does")
+          }
         }
       end
 
@@ -107,15 +99,13 @@ defmodule Wiki.Content.Build do
     }
   end
 
-  def article(store, id, lang, meta) do
+  def article(store, id, meta) do
     p = store.pages[id]
-    l = Store.localized(store, id, lang)
 
     %{
       "id" => id,
-      "lang" => if(l.lang == lang, do: lang, else: "en"),
-      "title" => l.header["title"] || p.header["title"],
-      "aliases" => Page.list(l, "aliases"),
+      "title" => p.header["title"],
+      "aliases" => Page.list(p, "aliases"),
       "kind" => p.header["kind"],
       "project" => p.header["project"],
       "status" => p.header["status"],
@@ -129,7 +119,7 @@ defmodule Wiki.Content.Build do
       "memory" => Page.list(p, "memory"),
       "sources" => Page.list(p, "sources"),
       "sections" =>
-        for key <- Page.section_keys(), (text = Page.section(l, key)) != "" do
+        for key <- Page.section_keys(), (text = Page.section(p, key)) != "" do
           %{"key" => key, "markdown" => text}
         end,
       "history" => meta.history

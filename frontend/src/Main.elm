@@ -1,4 +1,4 @@
-port module Main exposing (main)
+module Main exposing (main)
 
 import ArticleView
 import Browser
@@ -13,7 +13,7 @@ import Html exposing (Html, a, div, text)
 import Html.Attributes as A
 import Html.Events as E
 import Http
-import I18n exposing (Lang)
+import UiText
 import Json.Decode as D
 import Layout
 import Globe
@@ -34,10 +34,7 @@ import Types exposing (Load(..), Model, Msg(..))
 import Url exposing (Url)
 
 
-port saveLang : String -> Cmd msg
-
-
-main : Program { lang : String } Model Msg
+main : Program () Model Msg
 main =
     Browser.application
         { init = init
@@ -49,15 +46,14 @@ main =
         }
 
 
-init : { lang : String } -> Url -> Nav.Key -> ( Model, Cmd Msg )
-init flags url key =
+init : () -> Url -> Nav.Key -> ( Model, Cmd Msg )
+init _ url key =
     let
         route =
             Route.fromUrl url
 
         model =
             { key = key
-            , lang = I18n.fromCode flags.lang
             , route = route
             , graph = Loading
             , layout = Dict.empty
@@ -120,7 +116,7 @@ loadArticle model =
     case model.route of
         ArticleView id ->
             Http.get
-                { url = "/data/pages/" ++ id ++ "." ++ I18n.code model.lang ++ ".json"
+                { url = "/data/pages/" ++ id ++ ".json"
                 , expect = Http.expectJson GotArticle Data.articleDecoder
                 }
 
@@ -389,13 +385,6 @@ updateModel msg model =
         CloseSuggestions ->
             ( { model | suggestionsOpen = False }, Cmd.none )
 
-        SetLang c ->
-            let
-                m =
-                    { model | lang = I18n.fromCode c }
-            in
-            ( m, Cmd.batch [ saveLang c, loadArticle m ] )
-
         SetProject p ->
             ( { model
                 | project =
@@ -494,7 +483,7 @@ view : Model -> Browser.Document Msg
 view model =
     let
         s =
-            I18n.strings model.lang
+            UiText.strings
     in
     { title =
         case ( model.route, model.article ) of
@@ -527,7 +516,7 @@ view model =
                                     div [ A.class "status" ] [ text s.loadError ]
 
                                 Loaded art ->
-                                    ArticleView.view model.lang g model.step (MapSize.isPhone model.width) model.openSecs art
+                                    ArticleView.view g model.step (MapSize.isPhone model.width) model.openSecs art
             ]
         ]
     }

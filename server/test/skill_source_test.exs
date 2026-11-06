@@ -38,7 +38,7 @@ defmodule Wiki.Content.SkillSourceTest do
   end
 
   # REQ CO-10
-  test "the full file survives parsing and building in every language", %{content: c, dir: dir} do
+  test "the full file survives parsing and building", %{content: c, dir: dir} do
     skill(c, snapshot())
     store = Store.load(c)
     assert Check.run(store, local: true) == []
@@ -48,10 +48,8 @@ defmodule Wiki.Content.SkillSourceTest do
     out = Path.join(dir, "site")
     Build.run(store, out)
 
-    for lang <- Store.langs() do
-      article = File.read!(Path.join(out, "data/pages/skill-demo.#{lang}.json")) |> JSON.decode!()
-      assert Enum.find(article["sections"], &(&1["key"] == "notes"))["markdown"] =~ @skill
-    end
+    article = File.read!(Path.join(out, "data/pages/skill-demo.json")) |> JSON.decode!()
+    assert Enum.find(article["sections"], &(&1["key"] == "notes"))["markdown"] =~ @skill
   end
 
   # REQ CO-10
@@ -64,24 +62,13 @@ defmodule Wiki.Content.SkillSourceTest do
   end
 
   # REQ CO-10
-  test "source changes require a refreshed copy and translations cannot drop it", %{
+  test "source changes require a refreshed copy", %{
     content: c,
     dir: dir
   } do
     skill(c, snapshot())
     File.write!(Path.join(dir, "dev/repo1/demo/SKILL.md"), @skill <> "New rule.\n")
     assert Enum.any?(Check.run(Store.load(c), local: true), &(&1 =~ "differs from"))
-    file = Path.join(c, "skill-demo.de.md")
-
-    File.write!(
-      file,
-      File.read!(file) |> String.replace(snapshot() |> String.trim(), "No source.")
-    )
-
-    assert Enum.any?(
-             Check.run(Store.load(c)),
-             &(&1 =~ "skill-demo.de.md" and &1 =~ "complete SKILL.md")
-           )
   end
 
   # REQ CO-10
@@ -90,7 +77,6 @@ defmodule Wiki.Content.SkillSourceTest do
     assert Enum.any?(Check.run(Store.load(c)), &(&1 =~ "repo1:other/SKILL.md"))
     valid_wiki(c)
     File.rm!(Path.join(c, "skill-demo.md"))
-    for lang <- Store.translation_langs(), do: File.rm!(Path.join(c, "skill-demo.#{lang}.md"))
     assert Check.run(Store.load(c), local: true) == []
   end
 end

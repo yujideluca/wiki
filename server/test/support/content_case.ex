@@ -1,7 +1,7 @@
 defmodule Wiki.ContentCase do
   @moduledoc "Builds throw-away content folders (and git repos) for tests."
   use ExUnit.CaseTemplate
-  alias Wiki.Content.{Page, Store}
+  alias Wiki.Content.Page
 
   using do
     quote do
@@ -64,7 +64,7 @@ defmodule Wiki.ContentCase do
     |> Keyword.merge(extra)
   end
 
-  @doc "Writes an English page and, unless `translate: false`, matching de and pt-BR versions."
+  @doc "Writes an English page (the wiki has no other language)."
   def write_page(content, id, header, sections \\ %{}, opts \\ []) do
     # a program page always shows its C4 diagrams (PJ-4); `architecture: false` leaves them out
     sections =
@@ -72,20 +72,7 @@ defmodule Wiki.ContentCase do
         do: Map.put_new(sections, "architecture", architecture()),
         else: sections
 
-    text = page_text(header, sections)
-    File.write!(Path.join(content, "#{id}.md"), text)
-
-    if Keyword.get(opts, :translate, true) do
-      hash = Page.source_hash(Page.parse(text, "#{id}.md"))
-
-      for lang <- Store.translation_langs() do
-        File.write!(
-          Path.join(content, "#{id}.#{lang}.md"),
-          page_text([id: id, lang: lang, source_hash: hash, title: "#{id} (#{lang})"], sections)
-        )
-      end
-    end
-
+    File.write!(Path.join(content, "#{id}.md"), page_text(header, sections))
     :ok
   end
 

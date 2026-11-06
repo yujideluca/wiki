@@ -8,7 +8,7 @@ import Html exposing (Html, a, button, div, h4, p, span, text)
 import Html.Attributes as A
 import Html.Events as E
 import Json.Decode as D
-import I18n exposing (Lang)
+import UiText
 import Array
 import Globe exposing (Cam, Spot)
 import GlobeGrab
@@ -37,17 +37,17 @@ type alias Info =
 
 
 {-| What the four boxes show for a node. -}
-info : Lang -> Graph -> Node -> Info
-info lang graph n =
+info : Graph -> Node -> Info
+info graph n =
     let
         t =
-            Data.nodeText lang n
+            Data.nodeText n
 
         titles ids =
-            List.filterMap (Data.nodeById graph >> Maybe.map (Data.title lang)) ids
+            List.filterMap (Data.nodeById graph >> Maybe.map Data.title) ids
 
         titleOf id =
-            Data.nodeById graph id |> Maybe.map (Data.title lang) |> Maybe.withDefault id
+            Data.nodeById graph id |> Maybe.map Data.title |> Maybe.withDefault id
     in
     { title = t.title
     , kind = n.kind
@@ -501,11 +501,11 @@ node dot look =
 
 {-| The four boxes. [boxHeight] is their fixed height on wide windows (a longer text scrolls inside), `Nothing` on
 narrow ones where they size themselves (MP-5). -}
-infoBoxes : Lang -> Maybe Float -> Maybe Info -> Html Msg
-infoBoxes lang boxHeight maybeInfo =
+infoBoxes : Maybe Float -> Maybe Info -> Html Msg
+infoBoxes boxHeight maybeInfo =
     let
         s =
-            I18n.strings lang
+            UiText.strings
 
         box heading body =
             div
@@ -553,14 +553,14 @@ infoBoxes lang boxHeight maybeInfo =
 
 {-| The phone's balloon for the selected node (MB-2): a card sliding up over the map, as the place card of Google Maps,
 with the four texts of the desktop boxes, the neighbours as buttons that jump to them, and the link to the page. -}
-sheet : Lang -> Graph -> Node -> Html Msg
-sheet lang graph n =
+sheet : Graph -> Node -> Html Msg
+sheet graph n =
     let
         s =
-            I18n.strings lang
+            UiText.strings
 
         i =
-            info lang graph n
+            info graph n
 
         pill id =
             case Data.nodeById graph id of
@@ -570,7 +570,7 @@ sheet lang graph n =
                         , A.style "--c" (Data.kindColour graph m.kind)
                         , E.onClick (SelectNode id)
                         ]
-                        [ text (Data.title lang m) ]
+                        [ text (Data.title m) ]
                     ]
 
                 Nothing ->
@@ -601,7 +601,7 @@ sheet lang graph n =
                 []
 
             else
-                [ Data.nodeById graph n.project |> Maybe.map (Data.title lang) |> Maybe.withDefault n.project ]
+                [ Data.nodeById graph n.project |> Maybe.map Data.title |> Maybe.withDefault n.project ]
     in
     div [ A.class "sheet", A.attribute "role" "dialog", A.attribute "aria-label" i.title ]
         [ div [ A.class "sheet-grip" ] []

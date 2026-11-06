@@ -2,7 +2,7 @@ defmodule Wiki.Content.BuildTest do
   use Wiki.ContentCase, async: false
 
   # REQ BU-1
-  test "graph.json has nodes, feeds and mentions edges; one article per page per language", %{content: c, dir: dir} do
+  test "graph.json has nodes, feeds and mentions edges; one article per page", %{content: c, dir: dir} do
     valid_wiki(c)
     out = Path.join(dir, "site")
     :ok = Build.run(Store.load(c), out, today: ~D[2026-10-22])
@@ -13,12 +13,12 @@ defmodule Wiki.Content.BuildTest do
     assert %{"from" => "a", "to" => "proj", "type" => "mentions"} in graph["edges"]
     refute Enum.any?(graph["edges"], &(&1["type"] == "mentions" and Enum.sort([&1["from"], &1["to"]]) == ["a", "b"]))
     a = Enum.find(graph["nodes"], &(&1["id"] == "a"))
-    assert a["text"]["de"]["title"] == "a (de)"
-    assert a["text"]["en"]["what"] == "A thing."
+    assert a["text"]["title"] == "A"
+    assert a["text"]["what"] == "A thing."
 
-    for id <- ~w(a b proj), lang <- ~w(en de pt-BR) do
-      art = out |> Path.join("data/pages/#{id}.#{lang}.json") |> File.read!() |> JSON.decode!()
-      assert art["lang"] == lang
+    for id <- ~w(a b proj) do
+      art = out |> Path.join("data/pages/#{id}.json") |> File.read!() |> JSON.decode!()
+      refute Map.has_key?(art, "lang")
       expected = if id == "proj", do: ~w(what flow architecture does how where receives practices), else: ~w(what architecture does how where receives)
       assert Enum.map(art["sections"], & &1["key"]) == expected
     end
@@ -63,7 +63,7 @@ defmodule Wiki.Content.BuildTest do
     write_page(c, "a", base_header("a", feeds: ["b"], reviewed: "2026-09-01"))
     out = Path.join(dir, "site")
     :ok = Build.run(Store.load(c), out, today: ~D[2026-10-22])
-    read = &(Path.join(out, "data/pages/#{&1}.en.json") |> File.read!() |> JSON.decode!())
+    read = &(Path.join(out, "data/pages/#{&1}.json") |> File.read!() |> JSON.decode!())
     assert read.("a")["mayBeStale"] == true
     assert read.("b")["mayBeStale"] == false
   end
@@ -75,7 +75,7 @@ defmodule Wiki.Content.BuildTest do
     write_page(c, "b", base_header("b", fed_by: ["a"], reviewed: "2026-10-01T00:00Z"))
     out = Path.join(dir, "site")
     :ok = Build.run(Store.load(c), out, today: ~D[2026-10-22])
-    read = &(Path.join(out, "data/pages/#{&1}.en.json") |> File.read!() |> JSON.decode!())
+    read = &(Path.join(out, "data/pages/#{&1}.json") |> File.read!() |> JSON.decode!())
     assert read.("a")["mayBeStale"] == true
     assert read.("b")["mayBeStale"] == false
   end

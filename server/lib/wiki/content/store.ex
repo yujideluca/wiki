@@ -2,31 +2,26 @@ defmodule Wiki.Content.Store do
   @moduledoc """
   Loads every page and the kinds registry from a content folder.
 
-  `content/<id>.md` is English; `content/<id>.de.md` and `content/<id>.pt-BR.md` are translations;
+  `content/<id>.md` is the page (the wiki is English only: one file per page, requirement LG-1);
   `content/_kinds.json` lists the kinds of concept (name, colour, description);
   `content/_acronyms.tsv` lists the acronyms whose first use on a page must come with the full name.
   """
   alias Wiki.Content.Page
 
-  @langs ["en", "de", "pt-BR"]
-  def langs, do: @langs
-  def translation_langs, do: tl(@langs)
-
-  defstruct dir: nil, pages: %{}, translations: %{}, kinds: %{}, acronyms: [], errors: []
+  defstruct dir: nil, pages: %{}, kinds: %{}, acronyms: [], errors: []
 
   def load(dir) do
     files = dir |> File.ls!() |> Enum.filter(&String.ends_with?(&1, ".md")) |> Enum.sort()
-    parsed = Enum.map(files, fn f -> Page.parse(File.read!(Path.join(dir, f)), f) end)
-    {en, tr} = Enum.split_with(parsed, &(&1.lang == "en"))
+    {pages, other} = Enum.split_with(files, &(Path.basename(&1, ".md") |> String.contains?(".") |> Kernel.not()))
+    parsed = Enum.map(pages, fn f -> Page.parse(File.read!(Path.join(dir, f)), f) end)
     {kinds, kerrs} = load_kinds(Path.join(dir, "_kinds.json"))
 
     %__MODULE__{
       dir: dir,
-      pages: Map.new(en, &{&1.id, &1}),
-      translations: Map.new(tr, &{{&1.id, &1.lang}, &1}),
+      pages: Map.new(parsed, &{&1.id, &1}),
       kinds: kinds,
       acronyms: load_acronyms(Path.join(dir, "_acronyms.tsv")),
-      errors: kerrs
+      errors: kerrs ++ Enum.map(other, &english_only/1)
     }
   end
 
@@ -52,7 +47,7 @@ defmodule Wiki.Content.Store do
     end
   end
 
-  @doc "The page in a language, falling back to English when there is no translation."
-  def localized(store, id, "en"), do: store.pages[id]
-  def localized(store, id, lang), do: store.translations[{id, lang}] || store.pages[id]
+  # LG-1: a file such as `mem.de.md` would be a translation; there are none, so it is a mistake to report.
+  defp english_only(file),
+    do: "#{file}: the wiki is English only (one file per page, content/<id>.md): delete this file and put the text in the English page"
 end

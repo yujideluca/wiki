@@ -16,11 +16,11 @@ module Data exposing
     , title
     )
 
-{-| The data `wiki build` writes: `data/graph.json` and `data/pages/<id>.<lang>.json`. -}
+{-| The data `wiki build` writes: `data/graph.json` and `data/pages/<id>.json`. -}
 
 import Dict exposing (Dict)
-import I18n exposing (Lang)
 import Json.Decode as D exposing (Decoder)
+import UiText
 
 
 type alias NodeText =
@@ -42,7 +42,7 @@ type alias Node =
     , feeds : List String
     , functions : List String
     , process : Bool
-    , text : Dict String NodeText
+    , text : NodeText
     }
 
 
@@ -91,7 +91,6 @@ type alias Section =
 
 type alias Article =
     { id : String
-    , lang : String
     , title : String
     , kind : String
     , project : String
@@ -110,20 +109,14 @@ type alias Article =
     }
 
 
-nodeText : Lang -> Node -> NodeText
-nodeText lang node =
-    case Dict.get (I18n.code lang) node.text of
-        Just t ->
-            t
-
-        Nothing ->
-            Dict.get "en" node.text
-                |> Maybe.withDefault { title = node.id, aliases = [], what = "", does = "" }
+nodeText : Node -> NodeText
+nodeText node =
+    node.text
 
 
-title : Lang -> Node -> String
-title lang node =
-    (nodeText lang node).title
+title : Node -> String
+title node =
+    node.text.title
 
 
 nodeById : Graph -> String -> Maybe Node
@@ -180,7 +173,7 @@ nodeDecoder =
         |> andMap (strings "feeds")
         |> andMap (strings "functions")
         |> andMap (D.oneOf [ D.field "process" D.bool, D.succeed False ])
-        |> andMap (D.field "text" (D.dict nodeTextDecoder))
+        |> andMap (D.field "text" nodeTextDecoder)
 
 
 edgeDecoder : Decoder Edge
@@ -220,7 +213,6 @@ articleDecoder : Decoder Article
 articleDecoder =
     D.succeed Article
         |> andMap (D.field "id" D.string)
-        |> andMap (D.field "lang" D.string)
         |> andMap (D.field "title" D.string)
         |> andMap (D.field "kind" D.string)
         |> andMap (D.oneOf [ D.field "project" D.string, D.succeed "none" ])

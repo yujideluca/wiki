@@ -37,7 +37,7 @@ defmodule Wiki.Content.Architecture do
     end)
   end
 
-  @doc "Problems in an architecture section (the English source or a translation); empty means it is valid."
+  @doc "Problems in an architecture section; empty means it is valid."
   def problems(text) do
     case levels(text) do
       [{_, context}, {_, containers}] ->
@@ -80,13 +80,5 @@ defmodule Wiki.Content.Architecture do
         [] -> []
         left -> ["a loop through #{Enum.join(Enum.sort(left), ", ")}: draw each relation once, from the side that starts it"]
       end
-  end
-
-  @doc "What a translation must keep: the boxes (ids, kinds, links) and the arrows' ends of both diagrams."
-  def skeleton(text) do
-    for {_, body} <- levels(text) do
-      {nodes, edges, _} = Flow.parse(body, @kinds)
-      {Enum.map(nodes, &{&1.id, &1.kind, &1.links}), Enum.map(edges, &{&1.from, &1.to})}
-    end
   end
 end

@@ -5,7 +5,6 @@ import Data
 import Dict
 import Html.Attributes
 import Expect
-import I18n exposing (Lang(..))
 import Set
 import Test exposing (Test, describe, test)
 import Test.Html.Query as Query
@@ -15,7 +14,6 @@ import Test.Html.Selector as Selector
 article : Data.Article
 article =
     { id = "example-skill"
-    , lang = "en"
     , title = "Example skill"
     , kind = "skill"
     , project = "none"
@@ -48,16 +46,16 @@ tests =
             \_ ->
                 let
                     node =
-                        { id = "long-page", kind = "module", project = "none", status = "active", since = "2026-10-25", until = Nothing, fedBy = [], feeds = [], functions = [], process = False, text = Dict.fromList [ ( "en", { title = "A connected page with a very long readable title", aliases = [], what = "", does = "" } ) ] }
+                        { id = "long-page", kind = "module", project = "none", status = "active", since = "2026-10-25", until = Nothing, fedBy = [], feeds = [], functions = [], process = False, text = { title = "A connected page with a very long readable title", aliases = [], what = "", does = "" } }
 
                     connected =
                         Data.indexed [ node ] [ { from = article.id, to = node.id, edgeType = Data.Mentions }, { from = node.id, to = article.id, edgeType = Data.Feeds } ] graph.kinds
                 in
-                [ ( En, False ), ( De, False ), ( PtBr, False ), ( En, True ), ( De, True ), ( PtBr, True ) ]
+                [ False, True ]
                     |> List.map
-                        (\( lang, phone ) ->
+                        (\phone ->
                             \_ ->
-                                ArticleView.view lang connected 0 phone Set.empty article
+                                ArticleView.view connected 0 phone Set.empty article
                                     |> Query.fromHtml
                                     |> Query.find [ Selector.class "connected-pages" ]
                                     |> Expect.all
@@ -67,13 +65,13 @@ tests =
                                         ]
                         )
                     |> (\checks -> Expect.all checks ())
-        , test "desktop and expanded phone sections have one stepper and no repeated list in every language" <|
+        , test "desktop and expanded phone sections have one stepper and no repeated list" <|
             \_ ->
-                [ ( En, False ), ( En, True ), ( De, False ), ( De, True ), ( PtBr, False ), ( PtBr, True ) ]
+                [ False, True ]
                     |> List.map
-                        (\( lang, phone ) ->
+                        (\phone ->
                             \_ ->
-                                ArticleView.view lang graph 0 phone (Set.singleton "steps") article
+                                ArticleView.view graph 0 phone (Set.singleton "steps") article
                                     |> Query.fromHtml
                                     |> Query.find [ Selector.class "sec-steps" ]
                                     |> Expect.all
@@ -85,7 +83,7 @@ tests =
                     |> (\checks -> Expect.all checks ())
         , test "the next instruction remains accessible in the styled box" <|
             \_ ->
-                ArticleView.view En graph 1 False Set.empty article
+                ArticleView.view graph 1 False Set.empty article
                     |> Query.fromHtml
                     |> Query.find [ Selector.class "sec-steps" ]
                     |> Expect.all
@@ -94,7 +92,7 @@ tests =
                         ]
         , test "other page kinds retain their existing steps presentation" <|
             \_ ->
-                ArticleView.view En graph 0 False Set.empty { article | kind = "process" }
+                ArticleView.view graph 0 False Set.empty { article | kind = "process" }
                     |> Query.fromHtml
                     |> Query.find [ Selector.class "sec-steps" ]
                     |> Query.findAll [ Selector.tag "ol" ]

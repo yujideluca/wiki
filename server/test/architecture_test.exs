@@ -49,31 +49,11 @@ defmodule Wiki.Content.ArchitectureTest do
     assert Enum.any?(errors(c), &(&1 =~ "a.md: section ## Architecture is missing: a program page"))
   end
 
-  # REQ PJ-1
-  test "a translated architecture keeps boxes, links and arrows and may change the words", %{content: c} do
-    valid_wiki(c)
-    de = Path.join(c, "proj.de.md")
-    File.write!(de, String.replace(File.read!(de), "does the thing", "tut das Ding"))
-    assert errors(c) == []
-
-    File.write!(de, String.replace(File.read!(de), "c -writes-> d", "u -writes-> d"))
-    assert Enum.any?(errors(c), &(&1 =~ "proj.de.md: architecture differs from the English one"))
-  end
-
   # REQ PJ-2
-  test "practices need the six parts in order; a translation needs six headings" do
+  test "practices need the six parts in order" do
     assert Practices.problems(practices()) == []
     assert [_] = Practices.problems("### Principles\nx")
     swapped = String.replace(practices(), "### Decisions", "### Zebra")
     assert [_] = Practices.problems(swapped)
-    assert Practices.problems(swapped, true) == []
-  end
-
-  # REQ PJ-2
-  test "a translation that drops a practice part is refused", %{content: c} do
-    valid_wiki(c)
-    de = Path.join(c, "proj.de.md")
-    File.write!(de, String.replace(File.read!(de), "### Maintenance\nSix.", ""))
-    assert Enum.any?(errors(c), &(&1 =~ "proj.de.md: practices need these parts"))
   end
 end

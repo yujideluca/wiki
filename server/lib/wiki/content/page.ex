@@ -1,7 +1,6 @@
 defmodule Wiki.Content.Page do
   @moduledoc """
-  One wiki page parsed from `content/<id>.md` (English, the source of truth) or
-  `content/<id>.<lang>.md` (a translation).
+  One wiki page parsed from `content/<id>.md` (the wiki is English only).
 
   File layout: a header between two `---` lines (`key: value`, lists as `[a, b]`),
   then sections that start with `## <canonical English heading>`.
@@ -23,16 +22,15 @@ defmodule Wiki.Content.Page do
   @required ~w(what does how where receives)
   @list_fields ~w(aliases fed_by feeds tags sources memory)
 
-  defstruct [:id, :lang, :file, header: %{}, sections: [], errors: []]
+  defstruct [:id, :file, header: %{}, sections: [], errors: []]
 
   def section_keys, do: Enum.map(@sections, &elem(&1, 0))
   def required_sections, do: @required
   def heading(key), do: @sections |> List.keyfind(key, 0) |> elem(1)
 
-  @doc "Parses a file's text. `file` is the base name, e.g. `mem.md` or `mem.de.md`."
+  @doc "Parses a file's text. `file` is the base name, e.g. `mem.md`."
   def parse(text, file) do
-    {id, lang} = id_and_lang(file)
-    page = %__MODULE__{id: id, lang: lang, file: file}
+    page = %__MODULE__{id: Path.basename(file, ".md"), file: file}
 
     case String.split(text, ~r/^---[ \t]*$/m, parts: 3) do
       ["", head, body] ->
@@ -42,15 +40,6 @@ defmodule Wiki.Content.Page do
 
       _ ->
         %{page | errors: ["missing header block between --- lines"]}
-    end
-  end
-
-  def id_and_lang(file) do
-    base = Path.basename(file, ".md")
-
-    case String.split(base, ".", parts: 2) do
-      [id, lang] -> {id, lang}
-      [id] -> {id, "en"}
     end
   end
 
@@ -216,14 +205,5 @@ defmodule Wiki.Content.Page do
   @doc "First paragraph of a section, for the map's hover boxes."
   def first_paragraph(page, key) do
     page |> section(key) |> String.split(~r/\n\s*\n/, parts: 2) |> List.first("") |> String.trim()
-  end
-
-  @doc "Hash of the English text a translation was made from (title + all sections)."
-  def source_hash(%__MODULE__{lang: "en"} = page) do
-    text = [page.header["title"] || "" | Enum.map(page.sections, fn {k, t} -> k <> "\n" <> t end)]
-
-    :crypto.hash(:sha256, Enum.join(text, "\n\n"))
-    |> Base.encode16(case: :lower)
-    |> binary_part(0, 12)
   end
 end

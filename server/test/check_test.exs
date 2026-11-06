@@ -151,16 +151,17 @@ defmodule Wiki.Content.CheckTest do
   end
 
   # REQ LG-1
-  test "translations must exist and match the current English text", %{content: c} do
+  test "the wiki is English only: a translation file is refused and the message says what to do", %{content: c} do
     valid_wiki(c)
-    File.rm!(Path.join(c, "a.de.md"))
-    assert Enum.any?(errors(c), &(&1 =~ "a.md: de translation missing"))
+    assert errors(c) == []
 
-    valid_wiki(c)
-    write_page(c, "b", base_header("b", fed_by: ["a"]), %{"does" => "Does new things."}, translate: false)
+    File.write!(Path.join(c, "a.de.md"), File.read!(Path.join(c, "a.md")))
+    File.write!(Path.join(c, "b.pt-BR.md"), File.read!(Path.join(c, "b.md")))
     errs = errors(c)
-    assert Enum.any?(errs, &(&1 =~ "b.de.md: outdated"))
-    assert Enum.any?(errs, &(&1 =~ "b.pt-BR.md: outdated"))
+    assert Enum.any?(errs, &(&1 =~ "a.de.md: the wiki is English only" and &1 =~ "delete this file"))
+    assert Enum.any?(errs, &(&1 =~ "b.pt-BR.md: the wiki is English only" and &1 =~ "delete this file"))
+    refute Enum.any?(errs, &String.starts_with?(&1, "a.md:"))
+    refute Store.load(c).pages |> Map.keys() |> Enum.any?(&(&1 =~ "."))
   end
 
   # REQ CO-8

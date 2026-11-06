@@ -32,7 +32,7 @@ refreshGeometry model =
         Loaded g ->
             let
                 skey =
-                    { lang = model.lang, graph = g, sphere = model.sphere, project = model.project, month = model.month }
+                    { graph = g, sphere = model.sphere, project = model.project, month = model.month }
 
                 newStatics =
                     model.statics.key /= Just skey

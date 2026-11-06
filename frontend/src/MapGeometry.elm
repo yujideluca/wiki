@@ -13,7 +13,6 @@ import Data exposing (Graph, Node)
 import Dict exposing (Dict)
 import Filter
 import Globe exposing (Cam, Spot)
-import I18n exposing (Lang)
 import Set
 
 
@@ -51,8 +50,7 @@ type alias StaticEdge =
 
 
 type alias StaticKey =
-    { lang : Lang
-    , graph : Graph
+    { graph : Graph
     , sphere : Dict String Globe.Node
     , project : Maybe String
     , month : Maybe String
@@ -123,7 +121,7 @@ buildStatics key =
                     [ { vec = vec
                       , hidden =
                             { node = n
-                            , title = Data.title key.lang n
+                            , title = Data.title n
                             , colour = Data.kindColour key.graph n.kind
                             , spot = Globe.hiddenSpot
                             , radiusScale = 0

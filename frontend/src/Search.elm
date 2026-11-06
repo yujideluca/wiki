@@ -1,15 +1,13 @@
 module Search exposing (score, suggestions)
 
-{-| Autocomplete: ranks pages by how well their title or aliases (in the chosen language and in English)
+{-| Autocomplete: ranks pages by how well their title or aliases
 match what was typed. Exact > prefix > word prefix > contains > letters in order. -}
 
 import Data exposing (Node)
-import Dict
-import I18n exposing (Lang)
 
 
-suggestions : Lang -> Int -> String -> List Node -> List Node
-suggestions lang limit query nodes =
+suggestions : Int -> String -> List Node -> List Node
+suggestions limit query nodes =
     let
         q =
             normalize query
@@ -23,10 +21,10 @@ suggestions lang limit query nodes =
                 (\n ->
                     let
                         s =
-                            score q (names lang n)
+                            score q (names n)
                     in
                     if s > 0 then
-                        Just ( s, Data.title lang n, n )
+                        Just ( s, Data.title n, n )
 
                     else
                         Nothing
@@ -55,16 +53,9 @@ dropLooseIfBetter scored =
         scored
 
 
-names : Lang -> Node -> List String
-names lang node =
-    let
-        local =
-            Data.nodeText lang node
-
-        english =
-            Dict.get "en" node.text |> Maybe.map (\t -> t.title :: t.aliases) |> Maybe.withDefault []
-    in
-    node.id :: local.title :: local.aliases ++ english
+names : Node -> List String
+names node =
+    node.id :: node.text.title :: node.text.aliases
 
 
 {-| Best score of the (already normalized) query against any name; 0 means no match. -}
