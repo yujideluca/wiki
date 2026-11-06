@@ -100,3 +100,12 @@ Full titles:
 - the sparse step reports at rest at the same step as the plain step does, while a dot is held lit
 - when everything has settled with nothing pulling or holding, no dot has an entry any more
 - the hit disc is flattened like the resting dot, and the drawn dot has none, so lighting it cannot grow it
+
+## Update 2026-11-06 (same day): the open raster question
+
+The raster rise is caused by the missing hit discs. A copy of the old map with only `.node-hit { display: none; }` added (the discs
+not drawn) raised the zoom raster time from 1,363 to 2,074 ms, the same as the new map (2,028 ms); 4 rounds, same method
+(`~/dev/wiki-bench/globe/RESULTS.md`, round 9). It is not the spring rewrite or the handlers. The browser's reason is not known. The
+main thread did not pay for it (the new map's busy time in the zoom scenario is lower than both controls, the 95th percentile frame
+time is equal or lower), so it is work on other threads. Not measured: a phone GPU, compositor frames, and whether an inert
+transparent element would bring the old raster time back; no such element was added because nothing shows a cost to the reader.
