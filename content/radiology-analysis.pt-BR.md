@@ -1,7 +1,7 @@
 ---
 id: radiology-analysis
 lang: pt-BR
-source_hash: b13bc0e60a1a
+source_hash: 0b0436e2f33c
 title: Pacote de análise de radiologia (analysis/)
 ---
 
@@ -42,6 +42,7 @@ Fornece as peças abaixo, cada uma em seu arquivo. Cada peça tem um requisito (
 - `haiku_batches.make`, `haiku_batches.merge`: cortam lotes para o Haiku; incorporam respostas válidas.
 - `tag_agreement.agreement`: com que frequência os marcadores concordam entre si.
 - `filler_test.run`, `filler_test.classify`, `filler_test.holm`: executam o teste das palavras de enchimento; classificam uma palavra como enchimento, informativa ou indecisa; corrigem para muitos testes simultâneos (método de Holm).
+- `filler_stage_b.run`, `filler_stage_b.classify`, `filler_stage_b.lift_row`: etapa B do teste de palavras de preenchimento (requisito AN-23): lift de cada palavra da lista no artigo certo contra um aleatório, em textos de casos da metade de ajuste, com controle negativo e controle positivo de palavras inventadas; grava `docs/filler-list-report-stageB-<lang>.md`.
 - `case_labels.label_cases`, `case_labels.assign_split`, `case_labels.build`: dão a cada caso baixado o artigo de diagnóstico a que pertence ("exact" quando o título ou sinônimo é igual a um artigo; "linked" quando o primeiro artigo linkado é classificado como diagnóstico; senão sem rótulo, nunca adivinhado), dividem os casos rotulados em metades de ajuste e teste com a semente fixa e gravam um arquivo de rótulos congelado, sem texto de caso.
 - `list_precision.phrase_precision`, `list_precision.weak_phrases`, `list_precision.prune`, `list_precision.agreement`: testam cada expressão das listas de palavras de tags em alemão e português contra as tags do Codex numa metade de ajuste dos artigos (metade definida por um hash do nome do artigo), listam expressões que disparam muito mas concordam pouco e pontuam uma lista na metade de validação intocada.
 - `case_sets.build`, `case_sets.query_text_translated`, `case_sets.load`: juntam cada caso rotulado ao texto que um usuário digitaria (apresentação, dados do paciente, achados; a discussão que dá a resposta é cortada), em inglês, alemão e português.

@@ -1,7 +1,7 @@
 ---
 id: radiology-analysis
 lang: de
-source_hash: b13bc0e60a1a
+source_hash: 0b0436e2f33c
 title: Analysepaket für Radiologie (analysis/)
 ---
 
@@ -42,6 +42,7 @@ Es liefert die folgenden Bausteine, jeder in einer eigenen Datei. Jeder Baustein
 - `haiku_batches.make`, `haiku_batches.merge`: schneiden Stapel für Haiku; übernehmen gültige Antworten.
 - `tag_agreement.agreement`: wie oft die Tagger miteinander übereinstimmen.
 - `filler_test.run`, `filler_test.classify`, `filler_test.holm`: führen den Füllwort-Test aus; stufen ein Wort als Füllwort, informativ oder unentschieden ein; korrigieren für viele gleichzeitige Tests (Holm-Verfahren).
+- `filler_stage_b.run`, `filler_stage_b.classify`, `filler_stage_b.lift_row`: Stufe B des Füllwort-Tests (Anforderung AN-23): Lift jedes Listenworts im richtigen Artikel gegenüber einem zufälligen, auf Falltexten der Tuning-Hälfte, mit negativer und Erfindungswort-Positivkontrolle; schreibt `docs/filler-list-report-stageB-<lang>.md`.
 - `case_labels.label_cases`, `case_labels.assign_split`, `case_labels.build`: ordnen jedem heruntergeladenen Fall den Diagnoseartikel zu, zu dem er gehört („exact“, wenn Titel oder Synonym einem Artikel entspricht; „linked“, wenn der erste verlinkte Artikel als Diagnose eingestuft ist; sonst ohne Label, nie geraten), teilen die Fälle mit dem festen Seed in Tuning- und Testhälfte und schreiben eine eingefrorene Label-Datei ohne Falltext.
 - `list_precision.phrase_precision`, `list_precision.weak_phrases`, `list_precision.prune`, `list_precision.agreement`: prüfen jede Wendung der deutschen und portugiesischen Tag-Wortlisten gegen die Codex-Tags auf einer Tuning-Hälfte der Artikel (Hälfte per Hash des Artikelnamens), listen Wendungen, die oft auslösen, aber selten übereinstimmen, und bewerten eine Liste auf der unberührten Holdout-Hälfte.
 - `case_sets.build`, `case_sets.query_text_translated`, `case_sets.load`: verbinden jeden beschrifteten Fall mit dem Text, den ein Nutzer eingeben würde (Vorstellung, Patientendaten, Befunde; die Diskussion, die die Antwort nennt, wird entfernt), für Englisch, Deutsch und Portugiesisch.
