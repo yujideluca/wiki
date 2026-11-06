@@ -11,7 +11,7 @@ fed_by: []
 feeds: []
 sources: [project-template:CLAUDE.md, project-template:pipeline-check.toml, status-quo:README.md, status-quo:DESIGN.md, status-quo:Cargo.toml, status-quo:Cargo.lock, status-quo:.cargo/config.toml, status-quo:.gitignore, status-quo:crates/collector/Cargo.toml, status-quo:crates/collector/src/events.rs, status-quo:docs/2026-11-01-status-quo-design.md, status-quo:docs/REQUIREMENTS.md, status-quo:docs/TESTES-AUTOMATIZADOS.md, status-quo:docs/MAINTENANCE.md, status-quo:docs/adr/0004-host-compatibility-layer.md, status-quo:docs/adr/0005-free-canvas-layout.md, status-quo:tools/quality_gate.sh, status-quo:tools/ui_e2e.sh]
 memory: [#f1e117, #d975f2, #63efec, #c1f1f8]
-reviewed: 2026-11-06T20:30Z
+reviewed: 2026-11-06T22:36Z
 ---
 
 ## What it is
@@ -102,7 +102,7 @@ Start from [[project-template]] after design approval, in the proposed private `
 
 After approval, continue through these scopes without stopping for routine milestone approvals. Stop only for a blocker that cannot be resolved autonomously or a change requiring Giovanni's scope decision. Keep task progress truthful and report findings as they arise. A failing check triggers investigation; it is not a reason to proceed to release.
 
-Every implementation commit describes changed files, reasons, requirements, and any outside-repository changes. Required continuous integration, the automated checks run on each push, must pass on the exact commit before promotion to `main`. A temporary branch exists only while those checks run; remove it and its worktree after promotion. Do not force-push or bypass protection. End with maintenance review, wiki publication, and memory-use recording.
+Every implementation commit describes changed files, reasons, requirements, and any outside-repository changes. Required continuous integration, the automated checks run on each push, must pass on the exact commit before promotion to `main`. Since 2026-11-06 both CI jobs, `gate` (Linux) and `windows`, are required; before that only `gate` was, and `windows` stayed red unnoticed from b701cda (see [[checks-status-quo]]). A temporary branch exists only while those checks run; remove it and its worktree after promotion. Do not force-push or bypass protection. End with maintenance review, wiki publication, and memory-use recording.
 
 ### Out of scope
 No sending prompts, account management, purchases, memory edits, arbitrary third-party executable plugins, Windows/macOS release, public dashboard, native Plasma-panel applet, or additional visual style pack in the first delivery. Future wrapper and style interfaces are in scope; claiming universal environment compatibility without tests is not.
