@@ -23,7 +23,7 @@ mrad =
     1000
 
 
-{-| Bring the map's caches up to date (see `MapGeometry`): the statics only when the layout, graph, language or filter has
+{-| Bring the map's caches up to date (see `MapGeometry`): the statics only when the layout, graph or filter has
 changed, the geometry only when the camera has, which a spring, a hover or a drag of a dot does not do. Called after every
 message, so that the view always finds it current. -}
 refreshGeometry : Model -> Model

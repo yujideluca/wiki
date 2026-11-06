@@ -33,7 +33,7 @@ defmodule Wiki.Web.RouterTest do
 
   # REQ AU-2
   test "without a session data and assets answer 404" do
-    for path <- ["/data/graph.json", "/assets/app.js", "/data/pages/mem.en.json"] do
+    for path <- ["/data/graph.json", "/assets/app.js", "/data/pages/mem.json"] do
       conn = call(conn(:get, path))
       assert conn.status == 404
       refute conn.resp_body =~ "secret-real-node"

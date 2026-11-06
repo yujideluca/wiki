@@ -2,7 +2,7 @@ module MapGeometry exposing (Dot, EdgeRow, GeoKey, Geometry, Item, StaticKey, St
 
 {-| Everything about the map that does not change while the dots spring about (the cache behind the map's speed), in two layers.
 
-`Statics` is what only a new layout, graph, language or filter changes: which dots there are, their titles and colours, their
+`Statics` is what only a new layout, graph or filter changes: which dots there are, their titles and colours, their
 unit vectors on the sphere, and which edge joins which two (as positions in an array, so that a frame never looks a dot up by
 its name). `Geometry` is what a turn or a zoom of the globe changes: one camera, built once, and for every dot the matrix
 product with it. A dot on the far side is dropped right there, before its shape is computed, and costs a compare and a

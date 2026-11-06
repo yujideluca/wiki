@@ -63,7 +63,7 @@ Codex now uses the independently maintained version in [[codex-skills]]. Its com
 
 ### Complete skill sources
 
-The following blocks contain the complete original `SKILL.md` files, including their full descriptions and instructions. The originals retain their source language; the explanation and Steps above describe them in this page's language. Claude and Codex versions are separate. Referenced auxiliary files are named in the originals but are not included in these copies. Each fingerprint identifies the entire copied text.
+The following blocks contain the complete original `SKILL.md` files, including their full descriptions and instructions. The originals are copied exactly as they are; the explanation and Steps above describe them. Claude and Codex versions are separate. Referenced auxiliary files are named in the originals but are not included in these copies. Each fingerprint identifies the entire copied text.
 
 #### Claude: `home:.claude/skills/reparo-kubuntu/SKILL.md`
 

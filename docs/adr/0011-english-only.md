@@ -32,10 +32,9 @@ and Codex session ends a task.
 
 ## Alternatives considered
 
-- **Keep the translations but stop requiring them** — pages would drift out of date silently, and a reader would
-  meet old text in another language with no sign it is old.
-- **Generate the translations in the build** — adds a dependency on a translation service for a wiki whose only reader
-  chose English.
+No alternatives were discussed with Giovanni; the instruction was to make the wiki exclusively English. Two
+neighbouring options exist and were not chosen, since neither is "exclusively English": keeping the translation
+files without requiring them, and generating translations in the build.
 
 ## Consequences
 
