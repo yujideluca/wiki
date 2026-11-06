@@ -9,6 +9,7 @@ module Data exposing
     , Section
     , articleDecoder
     , graphDecoder
+    , indexed
     , kindColour
     , nodeById
     , nodeText
@@ -68,6 +69,17 @@ type alias Graph =
     { nodes : List Node
     , edges : List Edge
     , kinds : List Kind
+    , byId : Dict String Node -- the nodes by their id, so that a lookup does not scan the list
+    }
+
+
+{-| A graph with its index. -}
+indexed : List Node -> List Edge -> List Kind -> Graph
+indexed nodes edges kinds =
+    { nodes = nodes
+    , edges = edges
+    , kinds = kinds
+    , byId = Dict.fromList (List.map (\n -> ( n.id, n )) nodes)
     }
 
 
@@ -116,7 +128,7 @@ title lang node =
 
 nodeById : Graph -> String -> Maybe Node
 nodeById graph id =
-    List.filter (\n -> n.id == id) graph.nodes |> List.head
+    Dict.get id graph.byId
 
 
 kindColour : Graph -> String -> String
@@ -198,7 +210,7 @@ kindDecoder =
 
 graphDecoder : Decoder Graph
 graphDecoder =
-    D.map3 Graph
+    D.map3 indexed
         (D.field "nodes" (D.list nodeDecoder))
         (D.field "edges" (D.list edgeDecoder))
         (D.field "kinds" (D.list kindDecoder))

@@ -1,0 +1,194 @@
+module MotionOld exposing (Adjacency, Body, Feel, Forces, State, adjacency, apply, desktop, from, phone, step)
+
+{-| The map's elastic layer (DY-1..DY-4). The layout puts every dot at a resting place; on top of it each dot has a
+small displacement that behaves like a mass on springs: one spring pulls it back to its resting place, one pulls it
+towards the average displacement of its neighbours (so a dot dragged away stretches its neighbours along, and they
+contract when it is let go), and friction lets it settle with a little wobble. At rest every displacement is zero, so
+the layout (and requirement MP-6) is unchanged. -}
+
+import Data exposing (Edge)
+import Dict exposing (Dict)
+import Layout exposing (Positions)
+import Set
+
+
+type alias Body =
+    { dx : Float
+    , dy : Float
+    , vx : Float
+    , vy : Float
+    }
+
+
+type alias State =
+    Dict String Body
+
+
+type alias Adjacency =
+    Dict String (List String)
+
+
+{-| What pushes the dots right now: [pulls] are displacements some dots are drawn towards (the neighbours of the
+hovered dot), [pin] is a dot held at a displacement (the dragged one). -}
+type alias Forces =
+    { pulls : Dict String ( Float, Float )
+    , pin : Maybe ( String, ( Float, Float ) )
+    }
+
+
+{-| How springy the dots are: [stiffness] pulls a dot back to its place, [coupling] makes it follow its neighbours,
+[damping] is the friction. The phone is stiffer, follows less and settles faster, so less elastic (DY-6). -}
+type alias Feel =
+    { stiffness : Float
+    , coupling : Float
+    , damping : Float
+    }
+
+
+desktop : Feel
+desktop =
+    { stiffness = 55, coupling = 45, damping = 7.5 }
+
+
+phone : Feel
+phone =
+    { stiffness = 75, coupling = 32, damping = 10 }
+
+
+adjacency : List Edge -> Adjacency
+adjacency edges =
+    let
+        add a b =
+            Dict.update a (\m -> Just (b :: Maybe.withDefault [] m))
+    in
+    edges
+        |> List.filter (\e -> e.from /= e.to)
+        |> List.foldl (\e acc -> acc |> add e.from e.to |> add e.to e.from) Dict.empty
+        |> Dict.map (\_ ids -> Set.toList (Set.fromList ids))
+
+
+{-| A state where every dot is displaced as given and at rest. -}
+from : Dict String ( Float, Float ) -> State
+from offsets =
+    Dict.map (\_ ( dx, dy ) -> { dx = dx, dy = dy, vx = 0, vy = 0 }) offsets
+
+
+displacement : State -> String -> ( Float, Float )
+displacement state id =
+    Dict.get id state |> Maybe.map (\b -> ( b.dx, b.dy )) |> Maybe.withDefault ( 0, 0 )
+
+
+{-| Advance by [dt] seconds. The second value is True when everything has come to rest, so the page can stop asking
+for animation frames.
+
+Only the dots that can change are looked at: those that are displaced, their neighbours (which the springs pull along),
+those that are pulled and the one that is held. Every other dot has no displacement and no neighbour with one, so its
+acceleration is exactly zero and it stays at zero: the state keeps no entry for a dot at rest, and a step costs what moves,
+not the number of dots. When everything has settled with nothing pulling or holding, the small leftovers are dropped, so
+that at rest every displacement is exactly zero (DY-1). -}
+step : Float -> Feel -> Adjacency -> Forces -> State -> ( State, Bool )
+step dt feel adj forces state =
+    let
+        neighboursOf id =
+            Dict.get id adj |> Maybe.withDefault []
+
+        candidates : Set.Set String
+        candidates =
+            Dict.foldl (\id _ acc -> List.foldl Set.insert (Set.insert id acc) (neighboursOf id)) Set.empty state
+                |> (\acc -> Dict.foldl (\id _ a -> Set.insert id a) acc forces.pulls)
+                |> (\acc -> forces.pin |> Maybe.map (\( pid, _ ) -> Set.insert pid acc) |> Maybe.withDefault acc)
+
+        one id b =
+            case forces.pin of
+                Just ( pid, ( px, py ) ) ->
+                    if pid == id then
+                        ( { dx = px, dy = py, vx = 0, vy = 0 }, False )
+
+                    else
+                        free id b
+
+                Nothing ->
+                    free id b
+
+        free id b =
+            let
+                nbrs =
+                    neighboursOf id
+
+                ( mx, my ) =
+                    if List.isEmpty nbrs then
+                        ( b.dx, b.dy )
+
+                    else
+                        let
+                            ds =
+                                List.map (displacement state) nbrs
+
+                            n =
+                                toFloat (List.length ds)
+                        in
+                        ( List.sum (List.map Tuple.first ds) / n, List.sum (List.map Tuple.second ds) / n )
+
+                ( tx, ty ) =
+                    Dict.get id forces.pulls |> Maybe.withDefault ( 0, 0 )
+
+                ax =
+                    -feel.stiffness * (b.dx - tx) + feel.coupling * (mx - b.dx) - feel.damping * b.vx
+
+                ay =
+                    -feel.stiffness * (b.dy - ty) + feel.coupling * (my - b.dy) - feel.damping * b.vy
+
+                vx =
+                    b.vx + ax * dt
+
+                vy =
+                    b.vy + ay * dt
+            in
+            ( { dx = b.dx + vx * dt, dy = b.dy + vy * dt, vx = vx, vy = vy }
+            , abs ax < 0.4 && abs ay < 0.4 && abs vx < 0.04 && abs vy < 0.04
+            )
+
+        isZero b =
+            b.dx == 0 && b.dy == 0 && b.vx == 0 && b.vy == 0
+
+        ( next, allRest ) =
+            Set.foldl
+                (\id ( acc, ok ) ->
+                    let
+                        ( b, rest ) =
+                            one id (Dict.get id state |> Maybe.withDefault { dx = 0, dy = 0, vx = 0, vy = 0 })
+                    in
+                    ( if isZero b then
+                        Dict.remove id acc
+
+                      else
+                        Dict.insert id b acc
+                    , ok && rest
+                    )
+                )
+                ( state, True )
+                candidates
+
+        settled =
+            forces.pin == Nothing && allRest
+    in
+    if settled && Dict.isEmpty forces.pulls then
+        ( Dict.empty, True )
+
+    else
+        ( next, settled )
+
+
+{-| Resting places plus displacements. -}
+apply : State -> Positions -> Positions
+apply state positions =
+    Dict.map
+        (\id ( x, y ) ->
+            case Dict.get id state of
+                Just b ->
+                    ( x + b.dx, y + b.dy )
+
+                Nothing ->
+                    ( x, y )
+        )
+        positions

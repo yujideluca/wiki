@@ -9,17 +9,17 @@ import Data exposing (Graph)
 import Dict
 import Filter
 import FlowView
-import Html exposing (Html, a, button, div, header, input, label, li, option, select, span, text, ul)
+import Html exposing (Html, a, div, text)
 import Html.Attributes as A
 import Html.Events as E
 import Http
 import I18n exposing (Lang)
 import Json.Decode as D
 import Layout
-import Lens exposing (Lens)
+import Globe
 import MapCamera
+import MapGeometry
 import MapSize
-import MapView
 import Motion
 import Process
 import Route exposing (Route(..))
@@ -28,9 +28,9 @@ import Set exposing (Set)
 import Task
 import Touch
 import TopBar
+import MapScreen
 import Types exposing (Load(..), Model, Msg(..))
 import Url exposing (Url)
-import Zoom
 
 
 port saveLang : String -> Cmd msg
@@ -61,9 +61,9 @@ init flags url key =
             , graph = Loading
             , layout = Dict.empty
             , sim = Nothing
-            , positions = Dict.empty
-            , zoom = Zoom.init { width = 800, height = 500 }
-            , fitScale = 1
+            , sphere = Dict.empty
+            , view = { lam = 0, beta = 0, z = 1 }
+            , pan = Nothing
             , width = 800
             , height = 500
             , boxHeight = Nothing
@@ -79,11 +79,14 @@ init flags url key =
             , selected = Nothing
             , menuOpen = False
             , openSecs = Set.empty
-            , motion = Dict.empty
-            , adj = Dict.empty
+            , statics = MapGeometry.emptyStatics
+            , geometry = MapGeometry.emptyGeometry
+            , motion = Motion.rest
+            , adj = Motion.noAdjacency
             , moving = False
             , drag = Nothing
             , justDragged = False
+            , pressed = Nothing
             , gesture = Touch.Idle
             }
     in
@@ -126,6 +129,11 @@ loadArticle model =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
+    updateModel msg model |> Tuple.mapFirst MapCamera.refreshGeometry
+
+
+updateModel : Msg -> Model -> ( Model, Cmd Msg )
+updateModel msg model =
     case msg of
         UrlRequested (Browser.Internal url) ->
             if String.startsWith "/logout" url.path || String.startsWith "/auth" url.path then
@@ -146,7 +154,7 @@ update msg model =
 
         GotGraph (Ok g) ->
             -- the layout is computed a few steps per frame (LY-1), so a slow phone keeps answering meanwhile
-            ( { model | graph = Loaded g, layout = Dict.empty, sim = Just (Layout.start g), adj = Motion.adjacency g.edges, moving = True }, Cmd.none )
+            ( { model | graph = Loaded g, layout = Dict.empty, sim = Just (Layout.start g), adj = Motion.adjacency (List.map .id g.nodes) g.edges, moving = True }, Cmd.none )
 
         GotGraph (Err _) ->
             ( { model | graph = Failed }, Cmd.none )
@@ -158,15 +166,11 @@ update msg model =
             ( { model | article = Failed }, Cmd.none )
 
         GotViewport vp ->
-            ( MapCamera.reflow model (MapCamera.fit (MapCamera.resized vp.viewport.width vp.viewport.height model)), Cmd.none )
+            ( MapCamera.resized vp.viewport.width vp.viewport.height model, Cmd.none )
 
         Resized w h ->
-            if MapSize.isPhone model.width && toFloat w == model.width && model.graph /= Loading then
-                -- on a phone only the height changes when the keyboard or the address bar comes and goes: the view stays
-                ( MapCamera.resized (toFloat w) (toFloat h) model, Cmd.none )
-
-            else
-                ( MapCamera.reflow model (MapCamera.fit (MapCamera.resized (toFloat w) (toFloat h) model)), Cmd.none )
+            -- the dots are on the sphere, not in pixels: a new window size moves nothing, the ball is just sized again
+            ( MapCamera.resized (toFloat w) (toFloat h) model, Cmd.none )
 
         Hover id ->
             -- a tap also sends mouseover on a phone; there the balloon (SelectNode) is the only preview
@@ -177,14 +181,50 @@ update msg model =
                 ( { model | hovered = Just id, focused = Just id, justDragged = False, moving = True }, Cmd.none )
 
         Unhover ->
-            ( { model | hovered = Nothing, justDragged = False, moving = True }, Cmd.none )
+            -- the dots spring back only if something is displaced; with nothing displaced there is nothing to animate
+            ( { model | hovered = Nothing, justDragged = False, moving = not (Motion.isRest model.motion) }, Cmd.none )
+
+        PointerAt x y ->
+            -- the dot under a pointer that is only moving (no globe turning, no dot dragged, no fingers): found by the camera maths
+            case MapCamera.pointerMoved (model.pan /= Nothing || model.drag /= Nothing || model.gesture /= Touch.Idle) (\_ -> MapCamera.hitAt model x y) model.hovered of
+                MapCamera.Light id ->
+                    update (Hover id) model
+
+                MapCamera.Unlight ->
+                    update Unhover model
+
+                MapCamera.Keep ->
+                    ( model, Cmd.none )
+
+        PointerLeft ->
+            if model.hovered == Nothing then
+                ( model, Cmd.none )
+
+            else
+                update Unhover model
+
+        PressAt x y ->
+            case MapCamera.hitAt model x y of
+                Just id ->
+                    update (DragStart id x y) { model | pressed = Just id }
+
+                Nothing ->
+                    ( { model | pan = Just ( x, y ), pressed = Nothing }, Cmd.none )
+
+        ClickAt x y ->
+            case MapCamera.clickOpens (MapCamera.hitAt model x y) model.pressed of
+                Just id ->
+                    update (OpenNode id) { model | pressed = Nothing }
+
+                Nothing ->
+                    ( model, Cmd.none )
 
         TouchEvent phase fingers ->
             let
-                ( gesture, zoom ) =
-                    Touch.step (Lens.invert (MapCamera.lensFor model)) phase fingers model.gesture model.zoom
+                ( gesture, turned ) =
+                    Touch.step (MapCamera.screenOf model) phase fingers model.gesture model.view
             in
-            ( { model | gesture = gesture, zoom = zoom }, Cmd.none )
+            ( { model | gesture = gesture, view = turned }, Cmd.none )
 
         Frame ms ->
             let
@@ -228,7 +268,7 @@ update msg model =
                 ( model, Cmd.none )
 
             else
-                ( { model | drag = Just { id = id, startX = x, startY = y, moved = False, target = Dict.get id model.positions |> Maybe.withDefault ( 0, 0 ) }, justDragged = False }, Cmd.none )
+                ( { model | drag = Just { id = id, startX = x, startY = y, moved = False, target = ( x, y ) }, justDragged = False }, Cmd.none )
 
         DragMove x y ->
             case model.drag of
@@ -238,7 +278,7 @@ update msg model =
                             Just
                                 { d
                                     | moved = d.moved || sqrt ((x - d.startX) ^ 2 + (y - d.startY) ^ 2) > 4
-                                    , target = Lens.unproject model.zoom (Lens.invert (MapCamera.lensFor model) ( x, y ))
+                                    , target = ( x, y )
                                 }
                         , moving = True
                       }
@@ -391,8 +431,22 @@ update msg model =
             , Cmd.none
             )
 
-        ZoomMsg z ->
-            ( { model | zoom = Zoom.update z model.zoom }, Cmd.none )
+        Wheel x y dy ->
+            ( { model | view = Globe.zoom (MapCamera.screenOf model) model.view (e ^ (-dy * 0.002)) ( x, y ) }, Cmd.none )
+
+        PanStart x y ->
+            ( { model | pan = Just ( x, y ) }, Cmd.none )
+
+        PanMove x y ->
+            case model.pan of
+                Just p ->
+                    ( { model | pan = Just ( x, y ), view = Globe.dragView (MapCamera.camOf model) p ( x, y ) }, Cmd.none )
+
+                Nothing ->
+                    ( model, Cmd.none )
+
+        PanEnd ->
+            ( { model | pan = Nothing }, Cmd.none )
 
         StepTo i ->
             ( { model | step = max 0 i }, Cmd.none )
@@ -404,13 +458,21 @@ update msg model =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ Zoom.subscriptions model.zoom ZoomMsg
-        , Browser.Events.onResize Resized
+        [ Browser.Events.onResize Resized
         , if model.moving || model.sim /= Nothing then
             Browser.Events.onAnimationFrameDelta Frame
 
           else
             Sub.none
+        , case model.pan of
+            Just _ ->
+                Sub.batch
+                    [ Browser.Events.onMouseMove (D.map2 PanMove (D.field "clientX" D.float) (D.field "clientY" D.float))
+                    , Browser.Events.onMouseUp (D.succeed PanEnd)
+                    ]
+
+            Nothing ->
+                Sub.none
         , case model.drag of
             Just _ ->
                 Sub.batch
@@ -453,7 +515,7 @@ view model =
                 Loaded g ->
                     case model.route of
                         MapView ->
-                            mapScreen model g
+                            MapScreen.view model g
 
                         ArticleView _ ->
                             case model.article of
@@ -478,144 +540,3 @@ routeClass route =
 
         ArticleView _ ->
             "on-article"
-
-
-mapScreen : Model -> Graph -> Html Msg
-mapScreen model g =
-    let
-        s =
-            I18n.strings model.lang
-
-        phone =
-            MapSize.isPhone model.width
-
-        active =
-            if phone then
-                model.selected
-
-            else
-                case model.hovered of
-                    Just h ->
-                        Just h
-
-                    Nothing ->
-                        model.focused
-
-        stops =
-            Filter.days g.nodes
-
-        stopIndex =
-            case model.month of
-                Nothing ->
-                    List.length stops - 1
-
-                Just m ->
-                    stops |> List.indexedMap Tuple.pair |> List.filter (\( _, x ) -> x == m) |> List.head |> Maybe.map Tuple.first |> Maybe.withDefault 0
-
-        projects =
-            g.nodes |> List.filter (\n -> n.kind == "project") |> List.sortBy (Data.title model.lang)
-
-        focusInfo =
-            active |> Maybe.andThen (Data.nodeById g) |> Maybe.map (MapView.info model.lang g)
-    in
-    div [ A.class "map-screen" ]
-        (div [ A.class "map-wrap" ]
-            [ MapView.map model.lang g (Motion.apply model.motion model.positions) model.positions model.zoom (MapCamera.lensFor model) model.width model.height model.project model.month active
-            , div [ A.class "controls" ]
-                [ select [ E.onInput SetProject, A.attribute "aria-label" s.project ]
-                    (option [ A.value "" ] [ text s.allProjects ]
-                        :: List.map (\p -> option [ A.value p.id, A.selected (model.project == Just p.id) ] [ text (Data.title model.lang p) ]) projects
-                    )
-                , if List.length stops > 1 then
-                    label [ A.class "timeline" ]
-                        [ span [] [ text (s.timeline ++ " " ++ Maybe.withDefault "—" (model.month |> Maybe.map identity |> orLast stops)) ]
-                        , input
-                            [ A.type_ "range"
-                            , A.min "0"
-                            , A.max (String.fromInt (List.length stops - 1))
-                            , A.value (String.fromInt stopIndex)
-                            , E.onInput SetMonth
-                            ]
-                            []
-                        ]
-
-                  else
-                    text ""
-                ]
-            , legend model g
-            , if model.sim /= Nothing then
-                div [ A.class "layout-wait" ] [ text s.loading ]
-
-              else
-                text ""
-            ]
-            :: (if phone then
-                    [ case active |> Maybe.andThen (Data.nodeById g) of
-                        Just n ->
-                            MapView.sheet model.lang g n
-
-                        Nothing ->
-                            div [ A.class "tap-hint" ] [ text s.tapHint ]
-                    ]
-
-                else
-                    desktopLower model g active focusInfo
-               )
-        )
-
-
-desktopLower : Model -> Graph -> Maybe String -> Maybe MapView.Info -> List (Html Msg)
-desktopLower model g active focusInfo =
-    let
-        s =
-            I18n.strings model.lang
-    in
-    [ div [ A.class "focus-title" ]
-            (case ( active |> Maybe.andThen (Data.nodeById g), focusInfo ) of
-                ( Just n, Just i ) ->
-                    [ span [ A.class "ft-title" ] [ text i.title ]
-                    , span [ A.class "ft-kind" ]
-                        [ text
-                            (String.join " · "
-                                (i.kind
-                                    :: (if n.project == "none" then
-                                            []
-
-                                        else
-                                            [ Data.nodeById g n.project |> Maybe.map (Data.title model.lang) |> Maybe.withDefault n.project ]
-                                       )
-                                    ++ [ n.status ]
-                                )
-                            )
-                        ]
-                    , a [ A.class "ft-open", A.href (Route.toPath (ArticleView n.id)) ] [ text s.openArticle ]
-                    ]
-
-                _ ->
-                    []
-            )
-    , MapView.infoBoxes model.lang model.boxHeight focusInfo
-    ]
-
-
-orLast : List String -> Maybe String -> Maybe String
-orLast stops m =
-    case m of
-        Just x ->
-            Just x
-
-        Nothing ->
-            List.reverse stops |> List.head
-
-
-legend : Model -> Graph -> Html Msg
-legend model g =
-    let
-        used =
-            g.nodes |> List.map .kind |> Set.fromList
-    in
-    div [ A.class "legend" ]
-        (g.kinds
-            |> List.filter (\k -> Set.member k.name used)
-            |> List.map (\k -> span [ A.class "lg-item", A.title k.description ] [ span [ A.class "sdot", A.style "background" k.colour ] [], text k.name ])
-        )

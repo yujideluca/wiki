@@ -36,7 +36,7 @@ article =
 
 graph : Data.Graph
 graph =
-    { nodes = [], edges = [], kinds = [] }
+    Data.indexed [] [] []
 
 
 -- REQ AR-1
@@ -51,7 +51,7 @@ tests =
                         { id = "long-page", kind = "module", project = "none", status = "active", since = "2026-10-25", until = Nothing, fedBy = [], feeds = [], functions = [], process = False, text = Dict.fromList [ ( "en", { title = "A connected page with a very long readable title", aliases = [], what = "", does = "" } ) ] }
 
                     connected =
-                        { graph | nodes = [ node ], edges = [ { from = article.id, to = node.id, edgeType = Data.Mentions }, { from = node.id, to = article.id, edgeType = Data.Feeds } ] }
+                        Data.indexed [ node ] [ { from = article.id, to = node.id, edgeType = Data.Mentions }, { from = node.id, to = article.id, edgeType = Data.Feeds } ] graph.kinds
                 in
                 [ ( En, False ), ( De, False ), ( PtBr, False ), ( En, True ), ( De, True ), ( PtBr, True ) ]
                     |> List.map

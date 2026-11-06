@@ -1,26 +1,28 @@
-module MapView exposing (Info, Look, info, infoBoxes, lookAt, map, node, sheet)
+module MapView exposing (Info, Look, info, infoBoxes, map, node, sheet)
 
 {-| The home screen: the system map (Dark-style), and the four info boxes that follow the hovered node. -}
 
 import Data exposing (EdgeType(..), Graph, Node)
 import Dict
-import Filter
 import Html exposing (Html, a, button, div, h4, p, span, text)
 import Html.Attributes as A
 import Html.Events as E
 import Json.Decode as D
 import I18n exposing (Lang)
-import Layout exposing (Positions)
-import Lens exposing (Lens)
+import Array
+import Globe exposing (Cam, Spot)
+import MapCamera
+import MapGeometry exposing (Dot, Geometry, Statics)
+import Motion
 import Route exposing (Route(..))
 import Set exposing (Set)
 import Svg exposing (Svg)
 import Svg.Attributes as S
 import Svg.Events as SE
+import Svg.Lazy
 import Touch
 import Types exposing (Msg(..))
 import WikiText
-import Zoom exposing (Zoom)
 
 
 type alias Info =
@@ -55,143 +57,139 @@ info lang graph n =
     }
 
 
-{-| The map, drawn in window coordinates: each dot is placed by the zoom and then by the lens (LN-1..LN-3), which
-makes the dots in the middle bigger, more spread and labelled, and the ones near the border smaller and plainer. -}
-map : Lang -> Graph -> Positions -> Positions -> Zoom -> Lens -> Float -> Float -> Maybe String -> Maybe String -> Maybe String -> Html Msg
-map lang graph positions rest zoom lens width height project month active =
+{-| The map, drawn in window coordinates: the globe seen by one camera (`Globe`), which makes the dots in the middle bigger,
+more spread and labelled, and the ones near the horizon smaller, flattened and plainer; the far side is not drawn.
+
+The resting side comes ready from [geometry] and [statics] (see `MapGeometry`). [motion] holds how far the springs have pushed
+each dot (milliradians east and north); only the dots that are displaced are placed again, the rest are drawn from the cache
+through `Svg.Lazy`, so that a frame in which only a few dots move costs about that many dots (DY-1). [adj] says who is whose
+neighbour. -}
+map : Geometry -> Statics -> Motion.State -> Motion.Adjacency -> Float -> Float -> Maybe String -> Html Msg
+map geometry statics motion adj width height active =
     let
-        visibleIds =
-            Filter.visible project month graph
-
-        k =
-            (Zoom.asRecord zoom).scale
-
         near =
             case active of
                 Just id ->
-                    Set.insert id (Filter.neighbours graph.edges id)
+                    Set.insert id (Set.fromList (Motion.neighbours adj id))
 
                 Nothing ->
                     Set.empty
 
-        -- a dot beyond the rim is on the far side of the ball: it is not drawn
-        place =
-            Dict.filter (\id _ -> Set.member id visibleIds)
-                >> Dict.map (\_ xy -> Lens.apply lens (Lens.project zoom xy))
-                >> Dict.filter (\_ spot -> spot.r <= 1.03)
+        -- the dots that are away from their resting place, with where they are placed now (the others are exactly at rest)
+        moved : Dict.Dict String Dot
+        moved =
+            if Motion.isRest motion then
+                Dict.empty
 
-        spots =
-            place positions
+            else
+                List.foldl
+                    (\( id, dx, dy ) acc ->
+                        case Dict.get id statics.byId |> Maybe.andThen (\i -> Array.get i statics.items) of
+                            Just it ->
+                                let
+                                    v =
+                                        Globe.displace it.vec (dx / MapCamera.mrad) (dy / MapCamera.mrad)
+                                in
+                                Dict.insert id (MapGeometry.dotAt geometry it v.x v.y v.z) acc
 
-        -- where each dot answers the pointer: at its resting place, so that the elastic movement can never slide a dot
-        -- under (or out from under) a still pointer and make the hover flicker (DY-5)
-        spotsAtRest =
-            place rest
+                            Nothing ->
+                                acc
+                    )
+                    Dict.empty
+                    (Motion.displaced adj motion)
 
-        isCoarse from to =
-            case ( Dict.get from spotsAtRest, Dict.get to spotsAtRest ) of
-                ( Just a, Just b ) ->
-                    min a.scale b.scale < 0.86
+        -- where a dot is drawn now; a dot on the far side is not drawn
+        spotOf id =
+            case Dict.get id moved of
+                Just d ->
+                    if d.spot.visible then
+                        Just d.spot
 
-                _ ->
-                    False
+                    else
+                        Nothing
 
-        edgeView e =
-            case ( Dict.get e.from spots, Dict.get e.to spots ) of
-                ( Just a, Just b ) ->
-                    let
-                        lit =
-                            active == Just e.from || active == Just e.to
+                Nothing ->
+                    Dict.get id statics.byId
+                        |> Maybe.andThen (\i -> Array.get i geometry.dots)
+                        |> Maybe.andThen
+                            (\d ->
+                                if d.spot.visible then
+                                    Just d.spot
 
-                        -- far from the middle the dashed "mentions" lines are left out: less detail at the border
-                        -- (judged at the resting places, so the elastic pull cannot make a line flicker in and out)
-                        coarse =
-                            e.edgeType /= Feeds && (isCoarse e.from e.to)
-                    in
-                    if coarse && not lit then
+                                else
+                                    Nothing
+                            )
+
+        edgeView row =
+            let
+                lit =
+                    active == Just row.from || active == Just row.to
+            in
+            -- far from the middle the dashed "mentions" lines are left out: less detail at the border
+            if row.coarse && not lit then
+                []
+
+            else if not (Dict.isEmpty moved) && (Dict.member row.from moved || Dict.member row.to moved) then
+                case ( spotOf row.from, spotOf row.to ) of
+                    ( Just a, Just b ) ->
+                        [ edgeLine row.feeds lit a b ]
+
+                    _ ->
+                        []
+
+            else
+                [ Svg.Lazy.lazy4 edgeLine row.feeds lit (Tuple.first row.ends) (Tuple.second row.ends) ]
+
+        nodeView dot =
+            let
+                id =
+                    dot.node.id
+
+                isActive =
+                    active == Just id
+
+                -- the lit dot and its neighbours; the rest are dimmed by the stylesheet while a dot is lit (`.map.focus`), so that
+                -- lighting a dot changes the classes of about forty elements and not of two hundred and a thousand lines
+                isNear =
+                    Set.member id near
+
+                -- detail (label) follows the resting place, not the pulled drawing, so it cannot switch on and off
+                labelled restLabelled =
+                    isActive || dot.node.kind == "project" || Set.member id near || restLabelled
+            in
+            case Dict.get id moved of
+                Nothing ->
+                    [ Svg.Lazy.lazy4 restNode dot isActive isNear (labelled dot.labelled) ]
+
+                Just d ->
+                    if not d.spot.visible then
                         []
 
                     else
-                        [ Svg.line
-                            [ S.x1 (String.fromFloat a.x)
-                            , S.y1 (String.fromFloat a.y)
-                            , S.x2 (String.fromFloat b.x)
-                            , S.y2 (String.fromFloat b.y)
-                            , S.strokeWidth (String.fromFloat (clamp 0.5 2 ((if lit then 1.8 else 0.9) * (a.scale + b.scale) / 2)))
-                            , S.class
-                                ("edge"
-                                    ++ (if e.edgeType == Feeds then
-                                            " feeds"
-
-                                        else
-                                            " mentions"
-                                       )
-                                    ++ (if lit then
-                                            " lit"
-
-                                        else if active /= Nothing then
-                                            " dim"
-
-                                        else
-                                            ""
-                                       )
-                                )
-                            ]
-                            []
+                        [ node d
+                            { active = isActive
+                            , offset = ( d.spot.x - dot.spot.x, d.spot.y - dot.spot.y )
+                            , near = isNear
+                            , label = labelled dot.labelled
+                            }
                         ]
-
-                _ ->
-                    []
-
-        nodeView n =
-            case Dict.get n.id spots of
-                Just spot ->
-                    let
-                        hit =
-                            Dict.get n.id spotsAtRest |> Maybe.withDefault spot
-
-                        l =
-                            lookAt k spot
-
-                        -- detail (label) follows the resting place, not the pulled drawing, so it cannot switch on and off
-                        lRest =
-                            lookAt k hit
-
-                        isActive =
-                            active == Just n.id
-                    in
-                    [ node lang
-                        graph
-                        ( hit.x, hit.y )
-                        { active = isActive
-                        , offset = ( spot.x - hit.x, spot.y - hit.y )
-                        , dim = active /= Nothing && not (Set.member n.id near)
-                        , label = isActive || n.kind == "project" || Set.member n.id near || lRest.labelled
-                        , radiusScale = l.radiusScale
-                        , labelSize = l.labelSize
-                        , squash = spot.squash
-                        , tilt = spot.tilt
-                        , labelHit = active == Nothing || isActive
-                        , rest = { radiusScale = lRest.radiusScale, squash = hit.squash, tilt = hit.tilt }
-                        }
-                        n
-                    ]
-
-                Nothing ->
-                    []
     in
     Svg.svg
-        ([ S.class "map"
+        ([ S.class
+            (if active == Nothing then
+                "map"
+
+             else
+                "map focus"
+            )
          , S.width (String.fromFloat width)
          , S.height (String.fromFloat height)
-           -- Zoom reads pointer positions through the viewBox; without one Chrome reports an empty box and every
-           -- position becomes (0,0), so wheel zoom anchors at the corner and dragging does not pan.
          , S.viewBox ("0 0 " ++ String.fromFloat width ++ " " ++ String.fromFloat height)
          , A.attribute "role" "img"
          , A.attribute "aria-label" "System map"
-         , A.attribute "data-zoom" (String.fromFloat k)
+         , A.attribute "data-zoom" (String.fromFloat geometry.z)
          ]
-            ++ (Zoom.onWheel zoom ZoomMsg :: Zoom.onDrag zoom ZoomMsg ++ Zoom.onGesture zoom ZoomMsg)
+            ++ pointerEvents
             ++ touchEvents
         )
         [ Svg.defs []
@@ -203,46 +201,182 @@ map lang graph positions rest zoom lens width height project month active =
             , Svg.marker [ S.id "arrow", S.viewBox "0 0 10 10", S.refX "22", S.refY "5", S.markerWidth "5", S.markerHeight "5", S.orient "auto" ]
                 [ Svg.path [ S.d "M0,0 L10,5 L0,10 z", S.class "arrowhead" ] [] ]
             ]
-        , globe lens
-        , Svg.g [] (List.concatMap edgeView graph.edges ++ List.concatMap nodeView graph.nodes)
+
+        -- the glass and the pointer's discs do not change while the dots spring about: the browser is not asked again
+        , Svg.Lazy.lazy globe geometry.cam
+        , Svg.g [] (List.concatMap edgeView geometry.edges)
+        , Svg.g [] (List.concatMap nodeView geometry.visible)
         ]
 
 
-{-| The body of the globe: a soft sphere shading and a few lines of latitude and longitude drawn through the lens, so the
-eye reads the curve. They stay in place while the map is panned: they belong to the glass, not the map. -}
-globe : Lens -> Svg Msg
-globe lens =
+{-| The pointer on the globe itself: the wheel zooms about the pointer and a press on the glass (not on a dot, whose own
+handler stops the event) turns the globe under it. -}
+pointerEvents : List (Html.Attribute Msg)
+pointerEvents =
     let
-        steps =
-            List.range 0 32 |> List.map (\i -> -1 + toFloat i * 2 / 32)
+        wheel =
+            D.map3 (\x y dy -> { message = Wheel x y dy, stopPropagation = True, preventDefault = True })
+                (D.field "clientX" D.float)
+                (D.field "clientY" D.float)
+                (D.field "deltaY" D.float)
+    in
+    [ E.custom "wheel" wheel
+    , E.on "mousedown"
+        (D.field "button" D.int
+            |> D.andThen
+                (\b ->
+                    if b == 0 then
+                        D.map2 PressAt (D.field "clientX" D.float) (D.field "clientY" D.float)
 
-        line toPoint =
-            steps
-                |> List.map (toPoint >> Lens.apply lens)
-                |> List.filter (\sp -> sp.r <= 1.001)
-                |> List.map (\sp -> String.fromFloat sp.x ++ "," ++ String.fromFloat sp.y)
-                |> String.join " "
-                |> (\points -> Svg.polyline [ S.points points, S.class "graticule" ] [])
+                    else
+                        D.fail "not the main button"
+                )
+        )
+    , E.on "mousemove" (notOnLabel (D.map2 PointerAt (D.field "clientX" D.float) (D.field "clientY" D.float)))
+    , E.on "mouseleave" (D.succeed PointerLeft)
+    , E.on "click" (D.map2 ClickAt (D.field "clientX" D.float) (D.field "clientY" D.float))
+    ]
 
-        at c t =
-            ( lens.cx + c * lens.hw, lens.cy + t * lens.hh )
 
-        offsets =
-            [ -0.8, -0.55, -0.3, 0, 0.3, 0.55, 0.8 ]
+{-| A label has its own hover (the text can be selected), so a pointer moving over one is not looked at by the dot search. -}
+notOnLabel : D.Decoder Msg -> D.Decoder Msg
+notOnLabel decoder =
+    D.oneOf [ D.at [ "target", "className", "baseVal" ] D.string, D.succeed "" ]
+        |> D.andThen
+            (\cls ->
+                if String.contains "label" cls then
+                    D.fail "over a label"
+
+                else
+                    decoder
+            )
+
+
+{-| One line between two dots, from [a] to [b]. -}
+edgeLine : Bool -> Bool -> Spot -> Spot -> Svg Msg
+edgeLine feeds lit a b =
+    Svg.line
+        [ S.x1 (px a.x)
+        , S.y1 (px a.y)
+        , S.x2 (px b.x)
+        , S.y2 (px b.y)
+        , S.strokeWidth (ratio (clamp 0.5 2 ((if lit then 1.8 else 0.9) * (a.scale + b.scale) / 2)))
+        , S.class
+            ("edge"
+                ++ (if feeds then
+                        " feeds"
+
+                    else
+                        " mentions"
+                   )
+                ++ (if lit then
+                        " lit"
+
+                    else
+                        ""
+                   )
+            )
+        ]
+        []
+
+
+{-| A dot that is at rest: drawn from the cache, where the camera put it. -}
+restNode : Dot -> Bool -> Bool -> Bool -> Svg Msg
+restNode dot isActive near label =
+    node dot { active = isActive, offset = ( 0, 0 ), near = near, label = label }
+
+
+{-| The body of the globe: a soft sphere shading and a few lines of latitude and longitude, so the eye reads the curve. They stay
+in place while the globe is turned only in that they belong to the glass: the lines are those of the sphere, so they move with
+it. Each line is cut where it goes over the horizon. -}
+globe : Cam -> Svg Msg
+globe cam =
+    let
+        steps n a b =
+            List.range 0 n |> List.map (\i -> a + toFloat i * (b - a) / toFloat n)
+
+        runs toVec ts =
+            List.foldr
+                (\t ( cur, done ) ->
+                    let
+                        p =
+                            Globe.project cam (toVec t)
+                    in
+                    if p.visible then
+                        ( ( px p.x ++ "," ++ px p.y ) :: cur, done )
+
+                    else if List.isEmpty cur then
+                        ( cur, done )
+
+                    else
+                        ( [], cur :: done )
+                )
+                ( [], [] )
+                ts
+                |> (\( cur, done ) ->
+                        if List.isEmpty cur then
+                            done
+
+                        else
+                            cur :: done
+                   )
+
+        polyline pts =
+            Svg.polyline [ S.points (String.join " " pts), S.class "graticule" ] []
+
+        deg d =
+            d * pi / 180
+
+        meridian l t =
+            { x = cos t * sin l, y = sin t, z = cos t * cos l }
+
+        parallel b t =
+            { x = cos b * sin t, y = sin b, z = cos b * cos t }
+
+        meridians =
+            List.range 0 11
+                |> List.concatMap (\i -> runs (meridian (deg (toFloat i * 30))) (steps 24 (-pi / 2) (pi * 3 / 2)))
+
+        parallels =
+            [ -60, -30, 0, 30, 60 ]
+                |> List.concatMap (\b -> runs (parallel (deg b)) (steps 48 -pi pi))
     in
     Svg.g [ S.pointerEvents "none" ]
-        (Svg.ellipse
-            [ S.cx (String.fromFloat lens.cx)
-            , S.cy (String.fromFloat lens.cy)
-            , S.rx (String.fromFloat lens.hw)
-            , S.ry (String.fromFloat lens.hh)
+        (Svg.circle
+            [ S.cx (String.fromFloat cam.cx)
+            , S.cy (String.fromFloat cam.cy)
+            , S.r (String.fromFloat cam.r)
             , S.fill "url(#globe-shade)"
             , S.class "globe-body"
             ]
             []
-            :: List.map (\c -> line (at c)) offsets
-            ++ List.map (\c -> line (\t -> at t c)) offsets
+            :: List.map polyline (meridians ++ parallels)
         )
+
+
+{-| A number for an SVG attribute, rounded to a tenth of a pixel: the full-precision text of a float (`412.83719283749`) is
+several times longer, and the browser parses it and the virtual DOM compares it for every dot and line on every frame. -}
+px : Float -> String
+px v =
+    String.fromFloat (toFloat (round (v * 10)) / 10)
+
+
+{-| A unitless ratio or angle for an attribute, rounded to a hundredth. -}
+ratio : Float -> String
+ratio v =
+    String.fromFloat (toFloat (round (v * 100)) / 100)
+
+
+{-| The matrix entries of a dot's ellipse, to a thousandth. -}
+thou : Float -> String
+thou v =
+    String.fromFloat (toFloat (round (v * 1000)) / 1000)
+
+
+{-| A round dot at the place of [spot] is an ellipse: the circle under this matrix (`Globe.place`). -}
+flatten : Spot -> String
+flatten sp =
+    "matrix(" ++ thou sp.la ++ " " ++ thou sp.lb ++ " " ++ thou sp.lb ++ " " ++ thou sp.ld ++ " 0 0)"
 
 
 {-| The fingers on the map (TC-1..TC-3): see `Touch`. No double-tap or double-click zoom. -}
@@ -261,36 +395,24 @@ touchEvents =
     [ on "touchstart" Touch.Start, on "touchmove" Touch.Move, on "touchend" Touch.End, on "touchcancel" Touch.End ]
 
 
-{-| How much detail a dot gets where the lens puts it, at zoom [k] (LN-2): near the middle it is bigger and labelled, near
-the border smaller and without a label. -}
-lookAt : Float -> Lens.Spot -> { radiusScale : Float, labelSize : Float, labelled : Bool }
-lookAt k spot =
-    { radiusScale = clamp 0.4 1.6 (spot.scale ^ 1.6) * clamp 0.7 2.2 (k ^ 0.6)
-    , labelSize = 11 * clamp 0.85 1.25 spot.scale * clamp 1 1.6 (sqrt k)
-    , labelled = k * spot.scale ^ 2 >= 0.7
-    }
-
-
-{-| How one dot is drawn: lit, dimmed, with a label or not, its radius factor and its label size in pixels. -}
+{-| How one dot is drawn: lit, dimmed, with a label or not. -}
 type alias Look =
     { active : Bool
     , offset : ( Float, Float ) -- how far the drawing is from where the dot answers the pointer
-    , dim : Bool
+    , near : Bool -- the lit dot or one of its neighbours: while a dot is lit, the others are dimmed (`.map.focus` in the stylesheet)
     , label : Bool
-    , radiusScale : Float
-    , labelSize : Float
-    , squash : Float -- short axis over long axis of the dot where the globe turns away (1 facing us)
-    , tilt : Float -- direction of the long axis, in degrees
-    , labelHit : Bool -- may the label answer the pointer: only while no dot is lit, or when it is the lit dot's own
-    , rest : { radiusScale : Float, squash : Float, tilt : Float } -- the same three at the resting place, which the invisible hit disc follows
     }
 
 
-{-| One dot. Hover previews it in the boxes; click opens its page (MP-2); pressing and moving drags it, and its
-neighbours follow elastically (DY-2). -}
-node : Lang -> Graph -> ( Float, Float ) -> Look -> Node -> Svg Msg
-node lang graph ( x, y ) look n =
+{-| One dot as drawn, at the place the springs have put it. It hears nothing itself, except its label while that is at rest
+(the discs of `hit` do the rest), and a label's pointer events are the same as the disc's, so moving from a dot to its label
+looks the same to the page as before (MP-2). -}
+node : Dot -> Look -> Svg Msg
+node dot look =
     let
+        n =
+            dot.node
+
         base =
             if n.kind == "project" then
                 11
@@ -302,32 +424,26 @@ node lang graph ( x, y ) look n =
                 6
 
         r =
-            base * look.radiusScale
+            base * dot.radiusScale
 
         -- where the globe turns away the round dot is seen at a slant: an ellipse whose short axis points to the middle
-        flatten =
-            "rotate(" ++ String.fromFloat look.tilt ++ ") scale(1," ++ String.fromFloat look.squash ++ ")"
+        slant =
+            flatten dot.spot
 
-        -- the invisible disc is the dot's resting shape (flattened like the dot, not growing when lit), plus a margin
-        hitR =
-            (if n.kind == "project" then 11 else 6) * look.rest.radiusScale + 6
-
-        hitFlatten =
-            "rotate(" ++ String.fromFloat look.rest.tilt ++ ") scale(1," ++ String.fromFloat look.rest.squash ++ ")"
-
-        -- a label answers the pointer only if it is at rest and no other dot is lit: a neighbour's label that is pulled, or
-        -- that springs back, would otherwise slide under a still pointer and take the hover from the lit dot (DY-7)
+        -- a label answers the pointer only if it is at rest, and (the stylesheet) only while no other dot is lit: a neighbour's
+        -- label that is pulled, or that springs back, would otherwise slide under a still pointer and take the hover from the
+        -- lit dot (DY-7)
         labelAtRest =
-            look.labelHit && abs (Tuple.first look.offset) + abs (Tuple.second look.offset) < 0.5
+            abs (Tuple.first look.offset) + abs (Tuple.second look.offset) < 0.5
     in
     Svg.g
-        [ S.class
+        ([ S.class
             ("node"
                 ++ (if look.active then
-                        " active"
+                        " active near"
 
-                    else if look.dim then
-                        " dim"
+                    else if look.near then
+                        " near"
 
                     else
                         ""
@@ -339,45 +455,46 @@ node lang graph ( x, y ) look n =
                         ""
                    )
             )
-        , S.transform ("translate(" ++ String.fromFloat x ++ "," ++ String.fromFloat y ++ ")")
-        , SE.onMouseOver (Hover n.id)
-        , SE.onMouseOut Unhover
-        , SE.onClick (OpenNode n.id)
-        , SE.stopPropagationOn "mousedown" (D.map2 (\cx cy -> ( DragStart n.id cx cy, True )) (D.field "clientX" D.float) (D.field "clientY" D.float))
-        , A.attribute "data-id" n.id
-        ]
-        [ Svg.g [ S.pointerEvents "none", S.transform ("translate(" ++ String.fromFloat (Tuple.first look.offset) ++ "," ++ String.fromFloat (Tuple.second look.offset) ++ ")") ]
-            [ if look.active then
-                Svg.circle [ S.r (String.fromFloat (r + 7)), S.class "halo", S.transform flatten ] []
+         , S.transform ("translate(" ++ px dot.spot.x ++ "," ++ px dot.spot.y ++ ")")
+         , S.pointerEvents "none"
+         ]
+            ++ (if dot.spot.opacity < 1 then
+                    [ S.opacity (ratio dot.spot.opacity) ]
 
-              else
-                Svg.text ""
-            , Svg.circle [ S.r (String.fromFloat r), S.fill (Data.kindColour graph n.kind), S.class "dot", S.transform flatten ] []
-            , if look.label then
-                Svg.text_
-                    [ S.y (String.fromFloat (r + look.labelSize + 2))
-                    , S.textAnchor "middle"
-                    , S.class "label"
-                    , S.pointerEvents
-                        (if labelAtRest then
-                            "all"
+                else
+                    []
+               )
+        )
+        [ if look.active then
+            Svg.circle [ S.r (px (r + 7)), S.class "halo", S.transform slant ] []
 
-                         else
-                            "none"
-                        )
-                    , S.fontSize (String.fromFloat look.labelSize)
-                    -- only a drag that starts on the text selects it: no pan, no dot drag, no page opening
-                    , SE.stopPropagationOn "mousedown" (D.succeed ( NoOp, True ))
-                    , SE.stopPropagationOn "click" (D.succeed ( NoOp, True ))
-                    ]
-                    [ Svg.text (Data.title lang n) ]
+          else
+            Svg.text ""
+        , Svg.circle [ S.r (px r), S.fill dot.colour, S.class "dot", S.transform slant ] []
+        , if dot.labelled || look.label then
+            Svg.text_
+                ([ S.y (px (r + dot.labelSize + 2))
+                 , S.textAnchor "middle"
+                 , S.class "label"
+                 , S.pointerEvents
+                    (if labelAtRest then
+                        "all"
 
-              else
-                Svg.title [] [ Svg.text (Data.title lang n) ]
-            ]
+                     else
+                        "none"
+                    )
+                 , S.fontSize (px dot.labelSize)
 
-        -- A larger invisible disc around the dot, so the pointer reaches a node a few pixels early.
-        , Svg.circle [ S.r (String.fromFloat hitR), S.fill "transparent", S.class "hit", S.transform hitFlatten ] []
+                 -- only a drag that starts on the text selects it: no pan, no dot drag, no page opening
+                 , SE.stopPropagationOn "mousedown" (D.succeed ( NoOp, True ))
+                 , SE.stopPropagationOn "click" (D.succeed ( NoOp, True ))
+                 ]
+                    ++ [ SE.onMouseOver (Hover n.id), SE.onMouseOut Unhover ]
+                )
+                [ Svg.text dot.title ]
+
+          else
+            Svg.title [] [ Svg.text dot.title ]
         ]
 
 

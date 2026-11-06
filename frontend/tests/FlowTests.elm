@@ -47,7 +47,7 @@ long =
 
 graph : Data.Graph
 graph =
-    { nodes = [], edges = [], kinds = [] }
+    Data.indexed [] [] []
 
 
 article : String -> Data.Article

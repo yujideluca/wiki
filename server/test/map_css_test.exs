@@ -22,6 +22,29 @@ defmodule Wiki.MapCssTest do
     assert Enum.max(seconds) <= 0.08, "slowest map transition is #{Enum.max(seconds)} s"
   end
 
+  # REQ DY-7
+  test "while a dot is lit only its own label answers the pointer: the rule is in the stylesheet" do
+    css = File.read!(@css)
+    assert css =~ ~r/\.map\.focus \.node:not\(\.active\) \.label \{ pointer-events: none; \}/
+  end
+
+  # REQ DY-8
+  test "dimming and the label rule come from one class on the map, and a dot's size is not animated by the stylesheet" do
+    css = File.read!(@css)
+    assert css =~ ~r/\.map\.focus \.node:not\(\.near\) \{ opacity: \.22; \}/
+    assert css =~ ~r/\.map\.focus \.edge:not\(\.lit\) \{ opacity: \.25; \}/
+    # the old per-element classes are gone, so lighting a dot does not touch two hundred dots and a thousand lines
+    refute css =~ ~r/\.node\.dim|\.edge\.dim/
+    # a transition on `r` would restart on every animation frame
+    refute css =~ ~r/\.node \.dot \{[^}]*transition:[^;}]*\br\b/
+  end
+
+  # REQ DY-10
+  test "the map has a layer of its own, so turning the globe does not make the browser draw the rest of the page again" do
+    css = File.read!(@css)
+    assert css =~ ~r/^svg\.map \{[^}]*will-change: transform;/m
+  end
+
   # REQ MB-5
   test "the box around the step circles leaves room for the lit circle's growth and glow" do
     [_, rule] = Regex.run(~r/^\.chain\s*\{([^}]*)\}/m, File.read!(@css))

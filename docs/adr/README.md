@@ -15,3 +15,4 @@ rewritten: a new decision supersedes it.
 | [0007](0007-flow-chart-section.md) | Flow chart section on big concept pages | accepted |
 | [0008](0008-project-architecture-and-practices.md) | Architecture and practices on project and program pages | accepted |
 | [0009](0009-stale-review-claims-and-shared-publish-stamp.md) | A review claim is checked at publish; wiki sources follow commit order; the publish stamp does not hide unreviewed work | accepted |
+| [0010](0010-globe-camera-replaces-lens.md) | The map is one camera on a sphere (`Globe`) instead of a lens bent over a flat layout | accepted |

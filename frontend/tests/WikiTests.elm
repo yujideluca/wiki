@@ -2,23 +2,25 @@ module WikiTests exposing (suite)
 
 import ArticleView
 import Data exposing (EdgeType(..), Graph, Node)
+import Array
 import Dict
+import Globe
+import Json.Encode as E
 import Expect
 import Filter
 import Html
 import Html.Attributes
 import I18n exposing (Lang(..))
 import Layout
-import Lens
 import Motion
 import MapCamera
 import MapSize
+import MapGeometry
 import MapView
 import Search
 import Set
 import Svg
 import Svg.Attributes
-import Zoom
 import Touch
 import Test exposing (Test, describe, test)
 import Test.Html.Event as Event
@@ -50,7 +52,7 @@ mkNode id title project fedBy feeds =
 
 graph : Graph
 graph =
-    { nodes =
+    Data.indexed
         [ mkNode "mem" "mem" "workflow-memory" [ "giovanni" ] [ "events" ]
         , mkNode "events" "events/" "workflow-memory" [ "mem" ] []
         , mkNode "giovanni" "Giovanni" "none" [] [ "mem" ]
@@ -58,13 +60,11 @@ graph =
         , mkNode "quizapp" "QuizApp" "quizapp" [] []
         , { id = "old", kind = "program", project = "quizapp", status = "retired", since = "2025-01-01", until = Just "2025-06-01", fedBy = [], feeds = [], functions = [], process = False, text = Dict.fromList [ ( "en", { title = "Old", aliases = [], what = "", does = "" } ) ] }
         ]
-    , edges =
         [ { from = "giovanni", to = "mem", edgeType = Feeds }
         , { from = "mem", to = "events", edgeType = Feeds }
         , { from = "mem", to = "quizapp", edgeType = Mentions }
         ]
-    , kinds = []
-    }
+        []
 
 
 phoneArticle : Data.Article
@@ -89,28 +89,134 @@ phoneArticle =
     }
 
 
+{-| The ball of the map: 800 by 500 window, centred, as `MapCamera.screenOf` makes it on a wide window without floating controls. -}
+screen : Globe.Screen
+screen =
+    { cx = 400, cy = 250, rho = 250 }
+
+
+home : Globe.View
+home =
+    { lam = 0, beta = 0, z = 1 }
+
+
+{-| Where the six pages sit on the sphere (longitude, latitude in radians): `mem` in the middle of the view, its neighbours
+around it, and two pages near the rim. -}
+sphere : Dict.Dict String Globe.Node
+sphere =
+    Dict.fromList
+        [ ( "mem", Globe.nodeOf 0 0 )
+        , ( "events", Globe.nodeOf 0.35 0.1 )
+        , ( "giovanni", Globe.nodeOf -0.35 0.1 )
+        , ( "memory-brief", Globe.nodeOf 0.1 -0.4 )
+        , ( "quizapp", Globe.nodeOf 1.3 0 )
+        , ( "old", Globe.nodeOf -1.3 0 )
+        ]
+
+
+adj : Motion.Adjacency
+adj =
+    Motion.adjacency (List.map .id graph.nodes) graph.edges
+
+
+statics : MapGeometry.Statics
+statics =
+    MapGeometry.buildStatics { lang = En, graph = graph, sphere = sphere, project = Nothing, month = Nothing }
+
+
+geometryAt : Globe.View -> MapGeometry.Geometry
+geometryAt view =
+    MapGeometry.build { lam = view.lam, beta = view.beta, z = view.z, cx = screen.cx, cy = screen.cy, rho = screen.rho } (Globe.camera screen view) statics
+
+
+{-| The map drawn with the dots displaced as given, one dot lit (or none). -}
+drawn : Motion.State -> Maybe String -> Html.Html Msg
+drawn motion lit =
+    MapView.map (geometryAt home) statics motion adj 800 500 lit
+
+
+missing : MapGeometry.Dot
+missing =
+    { node = mkNode "missing" "missing" "p" [] [], title = "", colour = "", spot = Globe.hiddenSpot, radiusScale = 1, labelSize = 12, labelled = False }
+
+
+dotOf : String -> MapGeometry.Dot
+dotOf id =
+    (geometryAt home).visible
+        |> List.filter (\d -> d.node.id == id)
+        |> List.head
+        |> Maybe.withDefault (Dict.get id statics.byId |> Maybe.andThen (\i -> Array.get i statics.items) |> Maybe.map .hidden |> Maybe.withDefault missing)
+
+
 look : MapView.Look
 look =
-    { active = False, offset = ( 0, 0 ), dim = False, label = True, radiusScale = 1, labelSize = 12, squash = 1, tilt = 0, rest = { radiusScale = 1, squash = 1, tilt = 0 }, labelHit = True }
+    { active = False, offset = ( 0, 0 ), near = False, label = True }
 
 
-lens : Lens.Lens
-lens =
-    { cx = 500, cy = 300, hw = 500, hh = 300, strength = 1.2 }
+pointer : Float -> Float -> E.Value
+pointer x y =
+    E.object [ ( "clientX", E.float x ), ( "clientY", E.float y ) ]
 
 
-fresh : Zoom.Zoom
-fresh =
-    Zoom.init { width = 400, height = 600 } |> Zoom.scaleExtent 0.1 6
+{-| The finger-held point: where the point of the globe that is under [under] on the screen with the camera [before] is drawn
+with the camera [after]. -}
+drawnAt : ( Float, Float ) -> Globe.View -> Globe.View -> Maybe ( Float, Float )
+drawnAt under before after =
+    Globe.hitRay (Globe.camera screen before) under
+        |> Maybe.map (\p -> Globe.project (Globe.camera screen after) p |> (\s -> ( s.x, s.y )))
 
 
-transformOf : Zoom.Zoom -> { k : Float, x : Float, y : Float }
-transformOf z =
+near : ( Float, Float ) -> Maybe ( Float, Float ) -> Bool
+near ( x, y ) found =
+    case found of
+        Just ( fx, fy ) ->
+            abs (fx - x) < 0.5 && abs (fy - y) < 0.5
+
+        Nothing ->
+            False
+
+
+{-| Every dot's displacement east of it, after the springs have run [n] steps with the given forces. -}
+run : Motion.Feel -> Int -> Motion.Forces -> Motion.State -> Motion.State
+run feel n forces st =
+    List.foldl (\_ s -> Motion.step 0.016 feel adj forces s |> Tuple.first) st (List.range 1 n)
+
+
+eastOf : String -> Motion.State -> Float
+eastOf id st =
+    Motion.displaced adj st
+        |> List.filter (\( i, _, _ ) -> i == id)
+        |> List.head
+        |> Maybe.map (\( _, dx, _ ) -> dx)
+        |> Maybe.withDefault 0
+
+
+{-| How round a dot is drawn: the short axis of its ellipse over the long one (1 for a dot that faces us). -}
+roundness : MapGeometry.Dot -> Float
+roundness d =
     let
-        t =
-            Zoom.asRecord z
+        mean =
+            (d.spot.la + d.spot.ld) / 2
+
+        spread =
+            sqrt (((d.spot.la - d.spot.ld) / 2) ^ 2 + d.spot.lb ^ 2)
     in
-    { k = t.scale, x = t.translate.x, y = t.translate.y }
+    (mean - spread) / (mean + spread)
+
+
+tenthOf : Float -> String
+tenthOf n =
+    String.fromFloat (toFloat (round (n * 10)) / 10)
+
+
+{-| The text of a dot's ellipse matrix, as `MapView` writes it (to a thousandth). -}
+flattenOf : MapGeometry.Dot -> String
+flattenOf d =
+    let
+        thou v =
+            String.fromFloat (toFloat (round (v * 1000)) / 1000)
+    in
+    "matrix(" ++ thou d.spot.la ++ " " ++ thou d.spot.lb ++ " " ++ thou d.spot.lb ++ " " ++ thou d.spot.ld ++ " 0 0)"
 
 
 ids : List Node -> List String
@@ -154,27 +260,54 @@ suite =
 
         -- REQ MP-2
         , describe "map interaction"
-            [ test "hovering a node asks to preview it" <|
+            [ test "moving the pointer over the map asks which dot is under it" <|
                 \_ ->
-                    MapView.node En graph ( 0, 0 ) look (mkNode "mem" "mem" "p" [] [])
-                        |> (\n -> Svg.svg [] [ n ])
+                    drawn Motion.rest Nothing
                         |> Query.fromHtml
-                        |> Query.find [ Selector.attribute (Html.Attributes.attribute "data-id" "mem") ]
-                        |> Event.simulate Event.mouseOver
-                        |> Event.expect (Hover "mem")
+                        |> Event.simulate (Event.custom "mousemove" (pointer 123 45))
+                        |> Event.expect (PointerAt 123 45)
+            , test "the dot under the pointer is found by the camera maths: the nearest within its reach, none away from every dot" <|
+                \_ ->
+                    let
+                        geometry =
+                            geometryAt home
+
+                        mem =
+                            dotOf "mem"
+                    in
+                    Expect.all
+                        [ \_ -> MapGeometry.hitAt geometry mem.spot.x mem.spot.y |> Expect.equal (Just "mem")
+                        , \_ -> MapGeometry.hitAt geometry (mem.spot.x + 4) mem.spot.y |> Expect.equal (Just "mem")
+                        , \_ -> MapGeometry.hitAt geometry 5 5 |> Expect.equal Nothing
+                        ]
+                        ()
+            , test "a dot on the far side of the globe is not found" <|
+                \_ ->
+                    let
+                        behind =
+                            geometryAt { lam = pi, beta = 0, z = 1 }
+
+                        mem =
+                            dotOf "mem"
+                    in
+                    MapGeometry.hitAt behind mem.spot.x mem.spot.y |> Expect.notEqual (Just "mem")
             , test "the map declares a viewBox matching its size, so zoom and drag use real pointer positions" <|
                 \_ ->
-                    MapView.map En graph Dict.empty Dict.empty (Zoom.init { width = 800, height = 500 }) { cx = 400, cy = 250, hw = 400, hh = 250, strength = 1.2 } 800 500 Nothing Nothing Nothing
+                    drawn Motion.rest Nothing
                         |> Query.fromHtml
                         |> Query.has [ Selector.attribute (Svg.Attributes.viewBox "0 0 800 500") ]
-            , test "clicking a node opens its page" <|
+            , test "a click on the map says where, so the page can open the dot that was pressed and released on (the page is opened by Main)" <|
                 \_ ->
-                    MapView.node En graph ( 0, 0 ) look (mkNode "mem" "mem" "p" [] [])
-                        |> (\n -> Svg.svg [] [ n ])
+                    drawn Motion.rest Nothing
                         |> Query.fromHtml
-                        |> Query.find [ Selector.attribute (Html.Attributes.attribute "data-id" "mem") ]
-                        |> Event.simulate Event.click
-                        |> Event.expect (OpenNode "mem")
+                        |> Event.simulate (Event.custom "click" (pointer 200 100))
+                        |> Event.expect (ClickAt 200 100)
+            , test "there are no invisible hit discs in the page: the dots are found by the maths" <|
+                \_ ->
+                    drawn Motion.rest Nothing
+                        |> Query.fromHtml
+                        |> Query.findAll [ Selector.class "node-hit" ]
+                        |> Query.count (Expect.equal 0)
             , test "the four boxes get what it is, what it does, fed by and who receives" <|
                 \_ ->
                     case Data.nodeById graph "mem" of
@@ -196,6 +329,7 @@ suite =
                         |> Expect.equal (Just [ "events/ (de)" ])
             ]
 
+
         -- REQ LY-1
         , describe "layout in slices"
             [ test "running the simulation a few steps at a time gives the layout of a single run" <|
@@ -214,258 +348,173 @@ suite =
                     Layout.start graph |> Layout.advance 7 |> Layout.isDone |> Expect.equal False
             ]
 
+
         -- REQ TC-1
         -- REQ TC-2
         -- REQ TC-3
         , describe "touch"
-            [ test "one finger pans: the map point under it stays under it" <|
+            [ test "one finger pans: the point of the globe under it stays under it" <|
                 \_ ->
                     let
-                        ( g1, z1 ) =
-                            Touch.step identity Touch.Start [ ( 100, 100 ) ] Touch.Idle fresh
+                        ( g1, v1 ) =
+                            Touch.step screen Touch.Start [ ( 420, 240 ) ] Touch.Idle home
 
-                        ( _, z2 ) =
-                            Touch.step identity Touch.Move [ ( 130, 90 ) ] g1 z1
+                        ( _, v2 ) =
+                            Touch.step screen Touch.Move [ ( 450, 230 ) ] g1 v1
                     in
-                    transformOf z2 |> Expect.equal { k = 1, x = 30, y = -10 }
+                    ( v2 /= home, near ( 450, 230 ) (drawnAt ( 420, 240 ) home v2) ) |> Expect.equal ( True, True )
             , test "two fingers pinch around their midpoint" <|
                 \_ ->
                     let
-                        ( g1, z1 ) =
-                            Touch.step identity Touch.Start [ ( 150, 200 ), ( 250, 200 ) ] Touch.Idle fresh
+                        ( g1, v1 ) =
+                            Touch.step screen Touch.Start [ ( 350, 250 ), ( 450, 250 ) ] Touch.Idle home
 
-                        ( _, z2 ) =
-                            Touch.step identity Touch.Move [ ( 100, 200 ), ( 300, 200 ) ] g1 z1
+                        ( _, v2 ) =
+                            Touch.step screen Touch.Move [ ( 300, 250 ), ( 500, 250 ) ] g1 v1
                     in
-                    -- twice as far apart: twice the scale, and the point at the midpoint (200, 200) is still there
-                    transformOf z2 |> Expect.equal { k = 2, x = -200, y = -200 }
-            , test "a double tap, quick taps and circles of one finger do not change the scale" <|
+                    -- twice as far apart: zoomed in, and the point of the globe at the midpoint (400, 250) is still there
+                    ( v2.z > home.z, near ( 400, 250 ) (drawnAt ( 400, 250 ) home v2) ) |> Expect.equal ( True, True )
+            , test "a double tap, quick taps and circles of one finger do not change the zoom" <|
                 \_ ->
                     let
-                        tap ( g, z ) =
-                            Touch.step identity Touch.Start [ ( 50, 50 ) ] g z |> (\( g2, z2 ) -> Touch.step identity Touch.End [] g2 z2)
+                        tap ( g, v ) =
+                            Touch.step screen Touch.Start [ ( 50, 50 ) ] g v |> (\( g2, v2 ) -> Touch.step screen Touch.End [] g2 v2)
 
-                        circleStep a ( g, z ) =
-                            Touch.step identity Touch.Move [ ( 200 + 60 * cos a, 300 + 60 * sin a ) ] g z
+                        circleStep a ( g, v ) =
+                            Touch.step screen Touch.Move [ ( 400 + 60 * cos a, 250 + 60 * sin a ) ] g v
 
                         taps =
-                            List.foldl (\_ s -> tap s) ( Touch.Idle, fresh ) (List.range 1 6)
+                            List.foldl (\_ s -> tap s) ( Touch.Idle, home ) (List.range 1 6)
 
                         circled =
-                            Touch.step identity Touch.Start [ ( 260, 300 ) ] Touch.Idle (Tuple.second taps)
+                            Touch.step screen Touch.Start [ ( 460, 250 ) ] Touch.Idle (Tuple.second taps)
                                 |> (\s -> List.foldl circleStep s (List.map (\i -> toFloat i * 0.3) (List.range 1 60)))
                     in
-                    ( (transformOf (Tuple.second taps)).k, (transformOf (Tuple.second circled)).k ) |> Expect.equal ( 1, 1 )
+                    ( (Tuple.second taps).z, (Tuple.second circled).z ) |> Expect.equal ( 1, 1 )
             , test "a lift that was never reported does not turn the next touch into a pinch" <|
                 \_ ->
                     let
                         -- a finger goes down, its lift is missed; the next touch arrives alone with the event restating one finger
-                        ( g1, z1 ) =
-                            Touch.step identity Touch.Start [ ( 100, 100 ) ] Touch.Idle fresh
+                        ( g1, v1 ) =
+                            Touch.step screen Touch.Start [ ( 300, 200 ) ] Touch.Idle home
 
-                        ( g2, z2 ) =
-                            Touch.step identity Touch.Start [ ( 300, 300 ) ] g1 z1
+                        ( g2, v2 ) =
+                            Touch.step screen Touch.Start [ ( 400, 250 ) ] g1 v1
 
-                        ( _, z3 ) =
-                            Touch.step identity Touch.Move [ ( 330, 300 ) ] g2 z2
+                        ( _, v3 ) =
+                            Touch.step screen Touch.Move [ ( 430, 250 ) ] g2 v2
                     in
-                    transformOf z3 |> Expect.equal { k = 1, x = 30, y = 0 }
-            , test "a pinch scales by the distance between the fingers on screen, whatever the lens does around them" <|
-                \_ ->
-                    let
-                        toMap =
-                            Lens.invert lens
-
-                        ( g1, z1 ) =
-                            Touch.step toMap Touch.Start [ ( 450, 300 ), ( 550, 300 ) ] Touch.Idle fresh
-
-                        ( _, z2 ) =
-                            Touch.step toMap Touch.Move [ ( 400, 300 ), ( 600, 300 ) ] g1 z1
-                    in
-                    (transformOf z2).k |> Expect.within (Expect.Absolute 0.0001) 2
+                    ( v3.z, near ( 430, 250 ) (drawnAt ( 400, 250 ) home v3) ) |> Expect.equal ( 1, True )
             , test "a finger count that changes between events moves nothing" <|
                 \_ ->
                     let
-                        ( g1, z1 ) =
-                            Touch.step identity Touch.Start [ ( 100, 100 ) ] Touch.Idle fresh
+                        ( g1, v1 ) =
+                            Touch.step screen Touch.Start [ ( 300, 200 ) ] Touch.Idle home
 
-                        ( _, z2 ) =
-                            Touch.step identity Touch.Move [ ( 100, 100 ), ( 400, 400 ) ] g1 z1
+                        ( _, v2 ) =
+                            Touch.step screen Touch.Move [ ( 300, 200 ), ( 500, 300 ) ] g1 v1
                     in
-                    transformOf z2 |> Expect.equal { k = 1, x = 0, y = 0 }
-            , test "the lens is undone first, so the finger holds the dot it is on" <|
-                \_ ->
-                    let
-                        toMap =
-                            Lens.invert lens
-
-                        ( g1, z1 ) =
-                            Touch.step toMap Touch.Start [ ( 700, 300 ) ] Touch.Idle fresh
-
-                        ( _, z2 ) =
-                            Touch.step toMap Touch.Move [ ( 720, 300 ) ] g1 z1
-                    in
-                    -- the finger moved 20 px on screen; the map moved through the lens by that same 20 px at the finger
-                    (toMap ( 720, 300 ) |> Tuple.first) - (toMap ( 700, 300 ) |> Tuple.first) |> Expect.within (Expect.Absolute 0.001) (transformOf z2).x
+                    v2 |> Expect.equal home
             ]
 
         -- REQ LN-1
         -- REQ LN-2
         -- REQ LN-3
-        , describe "lens"
-            [ test "the middle is magnified, the ellipse touching the sides is not, the border is squeezed" <|
-                \_ ->
-                    ( (Lens.apply lens ( 500, 300 )).scale, (Lens.apply lens ( 1000, 300 )).scale, (Lens.apply lens ( 1000, 600 )).scale )
-                        |> (\( mid, edge, corner ) -> mid > 1.05 && edge < 1 && corner < edge)
-                        |> Expect.equal True
-            , test "dots near the middle end up further apart, dots near the border closer together" <|
+        , describe "globe"
+            [ test "the dots these tests look at are really in view (so none of them is the stand-in for a missing dot)" <|
                 \_ ->
                     let
-                        gap a b =
-                            abs ((Lens.apply lens b).x - (Lens.apply lens a).x)
+                        seen =
+                            List.map (.node >> .id) (geometryAt home).visible
                     in
-                    ( gap ( 500, 300 ) ( 540, 300 ) > 40 * 1.05, gap ( 940, 300 ) ( 980, 300 ) < 40 )
-                        |> Expect.equal ( True, True )
-            , test "points on the ellipse that touches the sides stay where they are, everything stays inside the window" <|
-                \_ ->
-                    let
-                        corner =
-                            Lens.apply lens ( 1000, 600 )
-                    in
-                    ( (Lens.apply lens ( 1000, 300 )).x, corner.x < 1000 && corner.y < 600 && corner.x > 500 )
-                        |> Expect.equal ( 1000, True )
-            , test "order along a line is kept" <|
-                \_ ->
-                    List.range 0 20
-                        |> List.map (\i -> (Lens.apply lens ( 500 + toFloat i * 25, 300 )).x)
-                        |> (\xs -> List.map2 (<) xs (List.drop 1 xs) |> List.all identity)
-                        |> Expect.equal True
-            , test "the rim is tighter than the middle but never crammed: about 3 times at most on the sides" <|
+                    List.map (\id -> List.member id seen) [ "mem", "events", "giovanni", "memory-brief", "quizapp" ] |> Expect.equal [ True, True, True, True, True ]
+            , test "the middle is magnified and the border is squeezed: a dot near the rim is smaller and flattened" <|
                 \_ ->
                     let
                         mid =
-                            (Lens.apply lens ( 500, 300 )).scale
+                            dotOf "mem"
 
-                        side =
-                            (Lens.apply lens ( 1000, 300 )).scale
+                        rim =
+                            dotOf "quizapp"
                     in
-                    (mid / side < 3) |> Expect.equal True
-            , test "a round dot faces us in the middle and is flattened towards the middle where the surface turns away" <|
+                    ( mid.spot.scale > rim.spot.scale * 1.15, mid.radiusScale > rim.radiusScale, roundness mid > roundness rim )
+                        |> Expect.equal ( True, True, True )
+            , test "no dot is drawn outside the ball" <|
+                \_ ->
+                    (geometryAt home).visible
+                        |> List.all (\d -> sqrt ((d.spot.x - screen.cx) ^ 2 + (d.spot.y - screen.cy) ^ 2) <= screen.rho + 0.001)
+                        |> Expect.equal True
+            , test "dots near the middle get their labels, dots near the border have none" <|
+                \_ ->
+                    ( (dotOf "mem").labelled, (dotOf "quizapp").labelled ) |> Expect.equal ( True, False )
+            , test "the dashed mentions line to a dot near the border is left out unless lit" <|
                 \_ ->
                     let
-                        mid =
-                            Lens.apply lens ( 500, 300 )
-
-                        side =
-                            Lens.apply lens ( 1000, 300 )
-
-                        top =
-                            Lens.apply lens ( 500, 0 )
+                        mentionLines lit =
+                            drawn Motion.rest lit |> Query.fromHtml |> Query.findAll [ Selector.class "mentions" ]
                     in
-                    -- on the right side the long axis is up and down (90 degrees), at the top it is sideways (0)
-                    [ mid.squash > 0.99, side.squash < 0.8, abs (abs side.tilt - 90) < 1, abs top.tilt < 1 || abs (abs top.tilt - 180) < 1 ]
-                        |> Expect.equal [ True, True, True, True ]
-            , test "a point far outside the window never folds back over the globe" <|
-                \_ ->
-                    List.range 0 40
-                        |> List.map (\i -> (Lens.apply lens ( 500 + toFloat i * 100, 300 )).x)
-                        |> (\xs -> List.map2 (<) xs (List.drop 1 xs) |> List.all identity)
-                        |> Expect.equal True
-            , test "strength 0 changes nothing (phones)" <|
-                \_ ->
-                    Lens.apply { lens | strength = 0 } ( 123, 456 ) |> (\s -> ( s.x, s.y, s.scale )) |> Expect.equal ( 123, 456, 1 )
-            , test "a pointer position maps back to the dot under it" <|
-                \_ ->
-                    [ ( 520, 310 ), ( 100, 80 ), ( 900, 500 ), ( 500, 300 ), ( 2500, 1900 ) ]
-                        |> List.all
-                            (\p ->
-                                let
-                                    spot =
-                                        Lens.apply lens p
-
-                                    ( bx, by ) =
-                                        Lens.invert lens ( spot.x, spot.y )
-                                in
-                                abs (bx - Tuple.first p) < 0.01 && abs (by - Tuple.second p) < 0.01
-                            )
-                        |> Expect.equal True
-            , test "a dot in the middle is drawn bigger and with its label, one at the border smaller and without" <|
+                    Expect.all
+                        [ \_ -> mentionLines Nothing |> Query.count (Expect.equal 0)
+                        , \_ -> mentionLines (Just "quizapp") |> Query.count (Expect.equal 1)
+                        ]
+                        ()
+            , test "the pointer finds each dot where it is drawn" <|
                 \_ ->
                     let
-                        mid =
-                            MapView.lookAt 0.6 (Lens.apply lens ( 500, 300 ))
-
-                        border =
-                            MapView.lookAt 0.6 (Lens.apply lens ( 1000, 300 ))
+                        geometry =
+                            geometryAt { lam = 0.2, beta = 0.1, z = 1.4 }
                     in
-                    ( mid.radiusScale > border.radiusScale * 1.4, mid.labelled, border.labelled )
-                        |> Expect.equal ( True, True, False )
+                    geometry.visible
+                        |> List.all (\d -> MapGeometry.hitAt geometry d.spot.x d.spot.y == Just d.node.id)
+                        |> Expect.equal True
             ]
 
         -- REQ LN-5
         , describe "round globe"
-            [ test "the layout made round fits inside the rim, wide or tall area alike" <|
+            [ test "a dot beyond the rim is on the far side and is not drawn, and zooming in leaves fewer dots in view" <|
                 \_ ->
                     let
-                        cloud =
-                            Dict.fromList (List.range 0 40 |> List.map (\i -> ( String.fromInt i, ( toFloat (modBy 400 (i * 37)) * 1.2, toFloat (modBy 130 (i * 91)) ) )))
-
-                        check circle =
-                            let
-                                ( shaped, k, ( tx, ty ) ) =
-                                    MapCamera.globeFit circle cloud
-
-                                rs =
-                                    Dict.values shaped
-                                        |> List.map (\( x, y ) -> (Lens.apply circle ( k * x + tx, k * y + ty )).r)
-
-                                xs =
-                                    Dict.values shaped |> List.map Tuple.first
-
-                                ys =
-                                    Dict.values shaped |> List.map Tuple.second
-
-                                extent vs =
-                                    (List.maximum vs |> Maybe.withDefault 0) - (List.minimum vs |> Maybe.withDefault 0)
-                            in
-                            ( List.all (\r -> r <= 1) rs, extent xs / extent ys < 1.5 && extent ys / extent xs < 1.5 )
+                        count z =
+                            List.length (geometryAt { lam = 0, beta = 0, z = z }).visible
                     in
-                    [ check { cx = 960, cy = 450, hw = 400, hh = 400, strength = 1.2 }
-                    , check { cx = 200, cy = 400, hw = 200, hh = 200, strength = 1.2 }
+                    Expect.all
+                        [ \_ -> Expect.equal True (List.member "mem" (List.map (.node >> .id) (geometryAt home).visible))
+                        , \_ -> Expect.equal False (List.member "mem" (List.map (.node >> .id) (geometryAt { lam = pi, beta = 0, z = 1 }).visible))
+                        , \_ -> Expect.atMost (count 1) (count 4)
+                        ]
+                        ()
+            ]
+
+        -- REQ DY-9
+        , describe "pointer and click rules"
+            [ test "a free pointer lights the dot under it and puts the light out when it leaves; staying on the same dot changes nothing" <|
+                \_ ->
+                    [ MapCamera.pointerMoved False (\_ -> Just "a") Nothing
+                    , MapCamera.pointerMoved False (\_ -> Just "b") (Just "a")
+                    , MapCamera.pointerMoved False (\_ -> Just "a") (Just "a")
+                    , MapCamera.pointerMoved False (\_ -> Nothing) (Just "a")
+                    , MapCamera.pointerMoved False (\_ -> Nothing) Nothing
                     ]
-                        |> Expect.equal [ ( True, True ), ( True, True ) ]
-            , test "the ball starts fitting exactly, grows with the zoom until the edges cut off 30 % of it, then stays" <|
+                        |> Expect.equal [ MapCamera.Light "a", MapCamera.Light "b", MapCamera.Keep, MapCamera.Unlight, MapCamera.Keep ]
+            , test "while the globe is turned, a dot dragged or fingers are down, the dots passing under the pointer are neither lit nor put out" <|
                 \_ ->
-                    let
-                        side =
-                            400
+                    [ MapCamera.pointerMoved True (\_ -> Just "a") Nothing
+                    , MapCamera.pointerMoved True (\_ -> Just "b") (Just "a")
+                    , MapCamera.pointerMoved True (\_ -> Nothing) (Just "a")
+                    ]
+                        |> Expect.equal [ MapCamera.Keep, MapCamera.Keep, MapCamera.Keep ]
+            ]
 
-                        radius =
-                            MapCamera.maxGrowth * side / 2
-
-                        n =
-                            200
-
-                        cells =
-                            List.range 0 (n * n - 1)
-                                |> List.map (\i -> ( (toFloat (modBy n i) + 0.5) / toFloat n * 2 - 1, (toFloat (i // n) + 0.5) / toFloat n * 2 - 1 ))
-                                |> List.filter (\( u, v ) -> u * u + v * v <= 1)
-
-                        cut =
-                            List.filter (\( _, v ) -> abs v * radius > side / 2) cells |> List.length |> toFloat
-                    in
-                    ( [ MapCamera.growth 0.5, MapCamera.growth 1, MapCamera.growth 1.3 ], MapCamera.growth 9 == MapCamera.maxGrowth, abs (cut / toFloat (List.length cells) - 0.3) < 0.01 )
-                        |> Expect.equal ( [ 1, 1, 1.3 ], True, True )
-            , test "a dot beyond the rim is on the far side and is not drawn" <|
+        -- REQ DY-2
+        , describe "click opens the page"
+            [ test "a click opens the dot it was pressed on and released on; a click that ends a drag or lands on another dot opens nothing" <|
                 \_ ->
-                    let
-                        circle =
-                            { cx = 400, cy = 250, hw = 250, hh = 250, strength = 1.2 }
-
-                        spots =
-                            MapView.map En graph (Dict.fromList [ ( "a", ( 400, 250 ) ), ( "b", ( 400, 250 ) ) ]) Dict.empty (Zoom.init { width = 800, height = 500 }) circle 800 500 Nothing Nothing Nothing
-                    in
-                    spots |> Query.fromHtml |> Query.findAll [ Selector.class "dot" ] |> Query.count (Expect.atMost 2)
+                    [ MapCamera.clickOpens (Just "a") (Just "a")
+                    , MapCamera.clickOpens (Just "a") (Just "b")
+                    , MapCamera.clickOpens Nothing (Just "a")
+                    , MapCamera.clickOpens (Just "a") Nothing
+                    ]
+                        |> Expect.equal [ Just "a", Nothing, Nothing, Nothing ]
             ]
 
         -- REQ DY-6
@@ -473,24 +522,20 @@ suite =
             [ test "a dragged dot pulls its neighbour along less on the phone than on the desktop, and it still settles" <|
                 \_ ->
                     let
-                        adj =
-                            Motion.adjacency graph.edges
+                        held =
+                            { pulls = Dict.empty, pin = Just ( "mem", ( 100, 0 ) ) }
 
-                        run feel n forces st =
-                            List.foldl (\_ s -> Motion.step 0.016 feel adj forces s |> Tuple.first) st (List.range 1 n)
+                        free =
+                            { pulls = Dict.empty, pin = Nothing }
 
                         follow feel =
-                            run feel 400 { pulls = Dict.empty, pin = Just ( "mem", ( 100, 0 ) ) } Dict.empty
-                                |> Dict.get "events"
-                                |> Maybe.map .dx
-                                |> Maybe.withDefault 0
+                            run feel 400 held Motion.rest |> eastOf "events"
 
                         settled =
-                            run Motion.phone 400 { pulls = Dict.empty, pin = Just ( "mem", ( 100, 0 ) ) } Dict.empty
-                                |> run Motion.phone 600 { pulls = Dict.empty, pin = Nothing }
-                                |> Dict.get "events"
-                                |> Maybe.map (.dx >> abs)
-                                |> Maybe.withDefault 99
+                            run Motion.phone 400 held Motion.rest
+                                |> run Motion.phone 600 free
+                                |> eastOf "events"
+                                |> abs
                     in
                     ( follow Motion.phone < follow Motion.desktop, follow Motion.phone > 15, settled < 0.5 )
                         |> Expect.equal ( True, True, True )
@@ -503,53 +548,31 @@ suite =
             [ test "a map at rest stays at rest and keeps its layout" <|
                 \_ ->
                     let
-                        positions =
-                            Dict.fromList [ ( "mem", ( 10, 20 ) ), ( "events", ( 30, 40 ) ) ]
-
                         ( st, settled ) =
-                            Motion.step 0.016 Motion.desktop (Motion.adjacency graph.edges) { pulls = Dict.empty, pin = Nothing } Dict.empty
+                            Motion.step 0.016 Motion.desktop adj { pulls = Dict.empty, pin = Nothing } Motion.rest
                     in
-                    ( settled, Motion.apply st positions ) |> Expect.equal ( True, positions )
+                    ( settled, Motion.isRest st, Motion.displaced adj st ) |> Expect.equal ( True, True, [] )
             , test "a dragged dot stretches its neighbour along, and the neighbour contracts back when it is let go" <|
                 \_ ->
                     let
-                        adj =
-                            Motion.adjacency graph.edges
-
-                        run n forces st =
-                            List.foldl (\_ s -> Motion.step 0.016 Motion.desktop adj forces s |> Tuple.first) st (List.range 1 n)
-
                         held =
-                            run 120 { pulls = Dict.empty, pin = Just ( "mem", ( 100, 0 ) ) } Dict.empty
-
-                        nbr st =
-                            Dict.get "events" st |> Maybe.map .dx |> Maybe.withDefault 0
+                            run Motion.desktop 120 { pulls = Dict.empty, pin = Just ( "mem", ( 100, 0 ) ) } Motion.rest
 
                         freed =
-                            run 600 { pulls = Dict.empty, pin = Nothing } held
+                            run Motion.desktop 600 { pulls = Dict.empty, pin = Nothing } held
                     in
-                    ( nbr held > 10 && nbr held < 100, abs (nbr freed) < 0.5, Dict.get "mem" held |> Maybe.map .dx )
-                        |> Expect.equal ( True, True, Just 100 )
+                    ( eastOf "events" held > 10 && eastOf "events" held < 100, abs (eastOf "events" freed) < 0.5, eastOf "mem" held )
+                        |> Expect.equal ( True, True, 100 )
             , test "the neighbours of a hovered dot are drawn towards it and settle there" <|
                 \_ ->
                     let
-                        adj =
-                            Motion.adjacency graph.edges
-
                         pulls =
                             Dict.fromList [ ( "events", ( -20, 0 ) ) ]
 
-                        loop n st =
-                            if n == 0 then
-                                st
-
-                            else
-                                loop (n - 1) (Motion.step 0.016 Motion.desktop adj { pulls = pulls, pin = Nothing } st |> Tuple.first)
-
                         end =
-                            loop 900 Dict.empty
+                            run Motion.desktop 900 { pulls = pulls, pin = Nothing } Motion.rest
                     in
-                    ( Dict.get "events" end |> Maybe.map .dx |> Maybe.withDefault 0 |> (\x -> x < -8 && x > -20.5)
+                    ( eastOf "events" end |> (\x -> x < -8 && x > -20.5)
                     , Motion.step 0.016 Motion.desktop adj { pulls = pulls, pin = Nothing } end |> Tuple.second
                     )
                         |> Expect.equal ( True, True )
@@ -559,67 +582,168 @@ suite =
         , describe "hover stays put"
             [ test "the dot answers the pointer where it rests, and its displaced drawing does not" <|
                 \_ ->
-                    MapView.node En graph ( 100, 100 ) { look | offset = ( 30, 0 ) } (mkNode "mem" "mem" "p" [] [])
-                        |> (\n -> Svg.svg [] [ n ])
-                        |> Query.fromHtml
-                        |> Expect.all
-                            [ Query.find [ Selector.attribute (Html.Attributes.attribute "data-id" "mem") ]
-                                >> Query.has [ Selector.attribute (Svg.Attributes.transform "translate(100,100)") ]
-                            , Query.find [ Selector.attribute (Svg.Attributes.transform "translate(30,0)") ]
-                                >> Expect.all
-                                    [ Query.has [ Selector.attribute (Svg.Attributes.pointerEvents "none") ]
-                                    , Query.has [ Selector.class "dot" ]
-                                    ]
-                            , Query.has [ Selector.class "hit" ]
-                            ]
+                    let
+                        mem =
+                            dotOf "mem"
+
+                        moved =
+                            drawn (Motion.from adj (Dict.fromList [ ( "mem", ( 60, 0 ) ) ])) Nothing |> Query.fromHtml
+
+                        restPlace =
+                            "translate(" ++ String.fromFloat (toFloat (round (mem.spot.x * 10)) / 10) ++ "," ++ String.fromFloat (toFloat (round (mem.spot.y * 10)) / 10) ++ ")"
+                    in
+                    Expect.all
+                        [ \_ -> MapGeometry.hitAt (geometryAt home) mem.spot.x mem.spot.y |> Expect.equal (Just "mem")
+                        , \_ -> moved |> Query.findAll [ Selector.all [ Selector.class "node", Selector.attribute (Svg.Attributes.transform restPlace) ] ] |> Query.count (Expect.equal 0)
+                        , \_ -> moved |> Query.findAll [ Selector.class "node" ] |> Query.count (Expect.atLeast 2)
+                        ]
+                        ()
+            ]
+
+        -- REQ DY-8
+        , describe "only displaced dots are placed again"
+            [ test "a displaced dot is drawn where its displaced place on the globe is, one that rests at its cached place" <|
+                \_ ->
+                    let
+                        it =
+                            Dict.get "mem" statics.byId |> Maybe.andThen (\i -> Array.get i statics.items) |> Maybe.map .vec |> Maybe.withDefault (Globe.nodeOf 0 0)
+
+                        v =
+                            Globe.displace it (60 / MapCamera.mrad) 0
+
+                        placed =
+                            Globe.place (Globe.camera screen home) v.x v.y v.z
+
+                        tenth n =
+                            String.fromFloat (toFloat (round (n * 10)) / 10)
+
+                        at x y =
+                            "translate(" ++ tenth x ++ "," ++ tenth y ++ ")"
+
+                        events =
+                            dotOf "events"
+
+                        page =
+                            drawn (Motion.from adj (Dict.fromList [ ( "mem", ( 60, 0 ) ) ])) Nothing |> Query.fromHtml
+
+                        nodeAt p =
+                            page |> Query.findAll [ Selector.all [ Selector.class "node", Selector.attribute (Svg.Attributes.transform p) ] ]
+                    in
+                    Expect.all
+                        [ \_ -> nodeAt (at placed.x placed.y) |> Query.count (Expect.equal 1)
+                        , \_ -> nodeAt (at events.spot.x events.spot.y) |> Query.count (Expect.equal 1)
+                        ]
+                        ()
+            , test "the geometry does not depend on the displacement, and changes with the zoom" <|
+                \_ ->
+                    let
+                        spotAt z =
+                            (geometryAt { lam = 0, beta = 0, z = z }).dots |> Array.get 0 |> Maybe.map .spot
+                    in
+                    Expect.all
+                        [ \_ -> Expect.equal (geometryAt home) (geometryAt home)
+                        , \_ -> Expect.notEqual (spotAt 1) (spotAt 1.5)
+                        ]
+                        ()
+            , test "lighting a dot lights exactly the lines that end at it, though the other lines come from the cache" <|
+                \_ ->
+                    let
+                        litLines lit =
+                            drawn Motion.rest lit
+                                |> Query.fromHtml
+                                |> Query.findAll [ Selector.all [ Selector.class "edge", Selector.class "lit" ] ]
+                                |> Query.count
+                                    (Expect.equal
+                                        (if lit == Just "mem" then
+                                            3
+
+                                         else if lit == Just "events" then
+                                            1
+
+                                         else
+                                            0
+                                        )
+                                    )
+                    in
+                    Expect.all [ \_ -> litLines Nothing, \_ -> litLines (Just "mem"), \_ -> litLines (Just "events") ] ()
+            , test "a line to a displaced dot follows it, and a line between dots at rest stays where they rest" <|
+                \_ ->
+                    let
+                        mem =
+                            dotOf "mem"
+
+                        events =
+                            dotOf "events"
+
+                        feedsLine motion =
+                            drawn motion Nothing
+                                |> Query.fromHtml
+                                |> Query.find [ Selector.all [ Selector.class "edge", Selector.class "feeds", Selector.attribute (Svg.Attributes.x2 (tenthOf events.spot.x)) ] ]
+                    in
+                    Expect.all
+                        [ \_ -> feedsLine Motion.rest |> Query.has [ Selector.attribute (Svg.Attributes.x1 (tenthOf mem.spot.x)) ]
+                        , \_ -> feedsLine (Motion.from adj (Dict.fromList [ ( "mem", ( 60, 0 ) ) ])) |> Query.hasNot [ Selector.attribute (Svg.Attributes.x1 (tenthOf mem.spot.x)) ]
+                        ]
+                        ()
+            , test "when everything has settled with nothing pulling or holding, no dot is displaced any more" <|
+                \_ ->
+                    run Motion.desktop 1500 { pulls = Dict.empty, pin = Nothing } (run Motion.desktop 60 { pulls = Dict.empty, pin = Just ( "mem", ( 40, 0 ) ) } Motion.rest)
+                        |> (\st -> ( Motion.displaced adj st, Motion.isRest st ))
+                        |> Expect.equal ( [], True )
             ]
 
         -- REQ DY-7
-        , describe "hover stays put: labels and hit disc"
+        , describe "hover stays put: labels"
             [ test "a displaced label does not answer the pointer, a label at rest does" <|
                 \_ ->
                     let
                         labelEvents off =
-                            MapView.node En graph ( 100, 100 ) { look | offset = off } (mkNode "mem" "mem" "p" [] [])
+                            MapView.node (dotOf "mem") { look | offset = off }
                                 |> (\n -> Svg.svg [] [ n ])
                                 |> Query.fromHtml
                                 |> Query.find [ Selector.all [ Selector.tag "text", Selector.class "label" ] ]
                                 |> Query.has [ Selector.attribute (Svg.Attributes.pointerEvents (if off == ( 0, 0 ) then "all" else "none")) ]
                     in
                     Expect.all [ \_ -> labelEvents ( 0, 0 ), \_ -> labelEvents ( 9, -4 ) ] ()
-            , test "while another dot is lit, a label at rest does not answer the pointer either" <|
+            , test "while a dot is lit the map is marked, and only the lit dot and its neighbours are, so the stylesheet dims the rest" <|
                 \_ ->
-                    MapView.node En graph ( 100, 100 ) { look | labelHit = False } (mkNode "mem" "mem" "p" [] [])
-                        |> (\n -> Svg.svg [] [ n ])
-                        |> Query.fromHtml
-                        |> Query.find [ Selector.all [ Selector.tag "text", Selector.class "label" ] ]
-                        |> Query.has [ Selector.attribute (Svg.Attributes.pointerEvents "none") ]
+                    let
+                        page lit =
+                            drawn Motion.rest lit |> Query.fromHtml
+                    in
+                    Expect.all
+                        [ \_ -> page Nothing |> Query.hasNot [ Selector.class "focus" ]
+                        , \_ -> page (Just "events") |> Query.has [ Selector.class "focus" ]
+                        , \_ -> page (Just "events") |> Query.findAll [ Selector.class "near" ] |> Query.count (Expect.equal 2)
+                        , \_ -> page (Just "events") |> Query.findAll [ Selector.class "active" ] |> Query.count (Expect.equal 1)
+                        , \_ -> page Nothing |> Query.findAll [ Selector.class "near" ] |> Query.count (Expect.equal 0)
+                        ]
+                        ()
             , test "a dot's label is decided at its resting place, even if the pull has drawn it towards the border" <|
                 \_ ->
                     let
-                        wide =
-                            { cx = 400, cy = 250, hw = 400, hh = 250, strength = 1.2 }
-
-                        labelled displaced =
-                            MapView.map En graph (Dict.fromList [ ( "mem", displaced ) ]) (Dict.fromList [ ( "mem", ( 400, 250 ) ) ]) (Zoom.init { width = 800, height = 500 }) wide 800 500 Nothing Nothing Nothing
+                        labelled motion =
+                            drawn motion Nothing
                                 |> Query.fromHtml
-                                |> Query.find [ Selector.attribute (Html.Attributes.attribute "data-id" "mem") ]
                                 |> Query.findAll [ Selector.all [ Selector.tag "text", Selector.class "label" ] ]
-                                |> Query.count (Expect.equal 1)
-                    in
-                    Expect.all [ \_ -> labelled ( 400, 250 ), \_ -> labelled ( 770, 250 ) ] ()
-            , test "the hit disc is flattened like the resting dot and does not grow when the dot is lit" <|
-                \_ ->
-                    let
-                        hitOf active =
-                            MapView.node En graph ( 100, 100 ) { look | active = active, squash = 0.2, rest = { radiusScale = 1, squash = 0.5, tilt = 30 } } (mkNode "mem" "mem" "p" [] [])
-                                |> (\n -> Svg.svg [] [ n ])
-                                |> Query.fromHtml
-                                |> Query.find [ Selector.class "hit" ]
+                                |> Query.count (Expect.atLeast 1)
                     in
                     Expect.all
-                        [ \_ -> hitOf False |> Query.has [ Selector.attribute (Svg.Attributes.transform "rotate(30) scale(1,0.5)") ]
-                        , \_ -> hitOf True |> Query.has [ Selector.attribute (Svg.Attributes.r "12") ]
+                        [ \_ -> labelled Motion.rest
+                        , \_ -> labelled (Motion.from adj (Dict.fromList [ ( "mem", ( 900, 0 ) ) ]))
+                        ]
+                        ()
+            , test "the dot is drawn as an ellipse where the globe turns away, and a lit dot has no hit disc to grow" <|
+                \_ ->
+                    let
+                        rim =
+                            MapView.node (dotOf "quizapp") { look | active = True }
+                                |> (\n -> Svg.svg [] [ n ])
+                                |> Query.fromHtml
+                    in
+                    Expect.all
+                        [ \_ -> rim |> Query.find [ Selector.class "dot" ] |> Query.has [ Selector.attribute (Html.Attributes.attribute "transform" (flattenOf (dotOf "quizapp"))) ]
+                        , \_ -> rim |> Query.findAll [ Selector.class "hit" ] |> Query.count (Expect.equal 0)
                         ]
                         ()
             ]
@@ -628,10 +752,11 @@ suite =
         , describe "motion start"
             [ test "dots can start displaced and at rest, to spring to their place" <|
                 \_ ->
-                    Motion.from (Dict.fromList [ ( "mem", ( 5, -5 ) ) ])
-                        |> Dict.get "mem"
-                        |> Expect.equal (Just { dx = 5, dy = -5, vx = 0, vy = 0 })
+                    Motion.from adj (Dict.fromList [ ( "mem", ( 5, -5 ) ) ])
+                        |> Motion.displaced adj
+                        |> Expect.equal [ ( "mem", 5, -5 ) ]
             ]
+
 
         -- REQ MB-1
         -- REQ MB-8

@@ -73,8 +73,9 @@ button, select, input { font: inherit; }
 
 /* Map */
 .map-wrap { position: relative; overflow: hidden; background: radial-gradient(ellipse at 50% 40%, #10151c 0%, var(--bg) 70%); border-bottom: 1px solid var(--line); }
-svg.map { display: block; cursor: grab; max-width: 100%; user-select: none; -webkit-user-select: none; }
+svg.map { transform-origin: 0 0; will-change: transform; display: block; cursor: grab; max-width: 100%; user-select: none; -webkit-user-select: none; }
 html, body { overflow-x: hidden; }
+svg.map.focus { cursor: pointer; }
 svg.map:active { cursor: grabbing; }
 .globe-body { stroke: rgba(120,150,200,.18); stroke-width: 1; }
 .graticule { fill: none; stroke: rgba(120,150,200,.10); stroke-width: 1; }
@@ -82,14 +83,15 @@ svg.map:active { cursor: grabbing; }
 .edge.mentions { stroke-dasharray: 3 4; }
 .edge.feeds { marker-end: url(#arrow); }
 .edge.lit { stroke: var(--gold); opacity: 1; }
-.edge.dim { opacity: .25; }
+.map.focus .edge:not(.lit) { opacity: .25; }
 .arrowhead { fill: #4a4f57; }
-.node { cursor: pointer; transition: opacity .07s; }
-.node .dot { stroke: rgba(0,0,0,.6); stroke-width: 1.5; transition: r .07s; }
+.node { transition: opacity .07s; }
+.node .dot { stroke: rgba(0,0,0,.6); stroke-width: 1.5; }
 .node .halo { fill: none; stroke: var(--gold); stroke-width: 2; }
 .node .label { fill: #cfc9bb; user-select: text; -webkit-user-select: text; cursor: text; paint-order: stroke; stroke: var(--bg); stroke-width: 3px; }
 .node.active .label { fill: #fff; font-weight: 600; }
-.node.dim { opacity: .22; }
+.map.focus .node:not(.near) { opacity: .22; }
+.map.focus .node:not(.active) .label { pointer-events: none; }
 .node.retired .dot { opacity: .45; }
 .controls { position: absolute; top: 12px; left: 16px; right: 16px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
 .timeline { display: flex; align-items: center; gap: 8px; background: rgba(14,18,23,.85); border: 1px solid var(--line); border-radius: 8px; padding: 5px 10px; font-size: 12px; color: var(--muted); }
@@ -224,7 +226,7 @@ svg.map { touch-action: none; }
   .edge, .node, .node .dot { transition: none; }
   .edge.mentions { stroke-dasharray: none; opacity: .6; }
   .edge.mentions.lit { opacity: 1; }
-  .edge.mentions.dim { opacity: .15; }
+  .map.focus .edge.mentions:not(.lit) { opacity: .15; }
 
   .phone-bar { display: block; padding: 10px 12px; background: transparent; border: 0; backdrop-filter: none; -webkit-backdrop-filter: none; }
   .on-article .phone-bar { background: rgba(7, 9, 12, .96); border-bottom: 1px solid var(--line); }
