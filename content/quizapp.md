@@ -8,8 +8,8 @@ status: active
 location: QuizApp:
 fed_by: [claude-code, project-template]
 feeds: [quizweb]
-sources: [QuizApp:DESIGN.md, QuizApp:CLAUDE.md]
-reviewed: 2026-10-27T01:34Z
+sources: [QuizApp:DESIGN.md, QuizApp:CLAUDE.md, QuizApp:docs/adr, QuizApp:docs/REQUIREMENTS.md, QuizApp:tools/quality_gate.sh, QuizApp:app/build.gradle.kts]
+reviewed: 2026-11-06T23:20Z
 ---
 
 ## What it is
@@ -17,7 +17,7 @@ QuizApp ("German Quiz") is an Android app that Giovanni uses to drill German for
 
 ## Flow
 trigger t1: Giovanni opens the app on the phone | [[phone]]
-step s1: Picks one of the five study modes | [[game-modes]]
+step s1: Picks one of the six study modes | [[game-modes]]
 step s2: The scheduler picks the next question from the pool | [[spaced-repetition-scheduler]]
 step s3: Giovanni answers; the grader checks it | [[answer-grader]]
 decide d1: Correct and quick?
@@ -78,7 +78,7 @@ da -reads and writes-> dl
 da -downloads from-> f
 
 ## What it does
-It offers five study modes over a curated pool of B2 content ([[game-modes]]): der/die/das, prepositions, plural forms, Präteritum (the German simple past) and "Fehler finden" (find the error). Wrong or slow answers return soon; known cards move out to days, weeks and months ([[spaced-repetition-scheduler]]). It has a daily goal and a streak calendar ([[daily-goal]], [[activity-calendar]]), a backup of progress ([[progress-backup]]) and updates from inside the app ([[update-client]]). Since 2026-10-22 the question pool can grow without a new app release: new [[question-pack]]s arrive from the update feed ([[question-pool-updater]], [[publish-content]]).
+It offers six study modes ([[game-modes]]): five over a curated pool of B2 content, der/die/das, prepositions, plural forms, Präteritum (the German simple past) and "Fehler finden" (find the error), and since version 2.8.0 (2026-11-06) "FSP-Fälle": 58 simulated cases of the FSP (Fachsprachprüfung, the German medical-language exam that Giovanni takes after B2), each played step by step as one card ([[fsp-case]]). Wrong or slow answers return soon; known cards move out to days, weeks and months ([[spaced-repetition-scheduler]]). It has a daily goal and a streak calendar ([[daily-goal]], [[activity-calendar]]), a backup of progress ([[progress-backup]]) and updates from inside the app ([[update-client]]). Since 2026-10-22 the question pool can grow without a new app release: new [[question-pack]]s arrive from the update feed ([[question-pool-updater]], [[publish-content]]).
 
 ## How it does it
 It is written in [Kotlin](https://kotlinlang.org/) with [Jetpack Compose](https://developer.android.com/compose) (Android's modern way of drawing screens), split into two Gradle modules (parts built separately): [[quizapp-core]] (pure Kotlin logic: scheduler, grader, queue, session, content) and [[quizapp-app]] (Android screens, storage, updates). The content is built from tab-separated text files by [[build-vocab]]. Every change goes requirement → test → code, passes the [[quizapp-quality-gate]], and reaches the phone through the beta channel first ([[release-channels]], [[quizapp-release]]). The design and its decisions are in [[quizapp-design-doc]] and [[quizapp-adrs]].
@@ -101,13 +101,13 @@ How this project follows the golden path of [[project-template]].
 6. **Decisions are written where the code is**: decision log with its type, an architecture decision record for structural ones, the C4 diagrams in `DESIGN.md` change in the same commit.
 
 ### Decisions
-13 architecture decision records (ADRs, short notes that keep the reasons for a decision) in `docs/adr/`, [[quizapp-adrs]]: Kotlin with Jetpack Compose; a pure scheduler with an injected clock; an update feed with an in-app updater; two release channels (beta first); a web twin; spacing rules as requirements; requirements first; a pure core module; progress backup as one file; promotion after updated tests; a downloadable question pool; a program that measures and a skill that judges. `DESIGN.md` also holds the decision log.
+14 architecture decision records (ADRs, short notes that keep the reasons for a decision) in `docs/adr/`, [[quizapp-adrs]]: Kotlin with Jetpack Compose; a pure scheduler with an injected clock; an update feed with an in-app updater; two release channels (beta first); a web twin; spacing rules as requirements; requirements first; a pure core module; progress backup as one file; promotion after updated tests; a downloadable question pool; a program that measures and a skill that judges; simulated FSP cases as a sixth mode built from one template. `DESIGN.md` also holds the decision log.
 
 ### Requirements
-33 requirements in `docs/REQUIREMENTS.md` ([[quizapp-requirements]]), grouped by prefix (spacing rules SP, scheduling and daily goal DG, question pool QP, backup PE, updates UP and more). Each has a test tagged `REQ <ID>`, and the traceability check ([[check-traceability]]) fails when one has none.
+38 requirements in `docs/REQUIREMENTS.md` ([[quizapp-requirements]]), grouped by prefix (spacing rules SP, scheduling and daily goal DG, question pool QP, backup PE, updates UP, FSP cases FS and more). Each has a test tagged `REQ <ID>`, and the traceability check ([[check-traceability]]) fails when one has none.
 
 ### Quality gate
-[[quizapp-quality-gate]] is one script, seven steps: core and app tests with coverage; coverage thresholds for the logic packages; the web tests; the conformance vectors identical in app and web; requirement traceability; Android lint; the fitness functions and the question pool manifest. Before a promotion a mutation check also runs (faults planted on purpose must be caught).
+[[quizapp-quality-gate]] is one script, seven steps: core and app tests with coverage; coverage thresholds for the logic packages; the web tests; the conformance vectors identical in app and web; requirement traceability; Android lint; the fitness functions, the question pool manifest and the template check of the FSP cases ([[check-fsp-cases]]). Before a promotion a mutation check also runs (faults planted on purpose must be caught).
 
 ### Continuous integration
 Continuous integration (CI) means automatic checks on every push. The workflow `quality-gate.yml` runs the gate on GitHub for every push ([[quizapp-ci]]); after pushing, the run must be green.

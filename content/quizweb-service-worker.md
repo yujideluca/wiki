@@ -9,7 +9,7 @@ location: QuizWeb:sw.js
 fed_by: []
 feeds: []
 sources: [QuizWeb:sw.js]
-reviewed: 2026-11-06T21:24Z
+reviewed: 2026-11-06T23:20Z
 ---
 
 ## What it is
@@ -19,7 +19,7 @@ reviewed: 2026-11-06T21:24Z
 It caches every file of the app. It tries the network first and uses the cache only as the offline fallback, so a deploy shows up on the next open; after 4 seconds without an answer it uses the saved copy, so the app still opens quickly on a bad connection. The page reloads once when a new worker takes over.
 
 ## How it does it
-When any cached file changes, the `VERSION` constant in the file must be raised, so installed copies notice the change and update. (It is an offline cache key; since the maintenance commit of 2026-11-06 it is `v13`.)
+When any cached file changes, the `VERSION` constant in the file must be raised, so installed copies notice the change and update. (It is an offline cache key: `v13` since the maintenance commit of 2026-11-06 on GitHub's `main`, and `v14` in the FSP-Fälle port (FSP: Fachsprachprüfung, the German medical-language exam) of the same day, on the branch `web-2.8.0`, which also caches `src/fsp.js` and `vocab/fsp_cases.json`; [[quizweb-fsp]].)
 
 ## Where it sits in the pipeline
 Between [[github-pages]] and the browser.
