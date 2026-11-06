@@ -9,7 +9,7 @@ location: home:dev/b2-vorlagen
 fed_by: []
 feeds: []
 sources: [home:dev/b2-themen/build.py, home:dev/b2-vorlagen/build/site.py, home:dev/b2-vorlagen/build/templates.py, home:dev/b2-vorlagen/data/new_forum.py, home:dev/b2-vorlagen/data/new_mail.py]
-reviewed: 2026-10-31T22:23Z
+reviewed: 2026-11-06T21:57Z
 ---
 
 ## What it is
@@ -68,7 +68,7 @@ Giovanni, who reads the page in a browser.
 How this project follows the golden path of [[project-template]].
 
 ### Principles
-Not yet followed: the folder has no git repository, no quality gate and no tests (verified 2026-10-31).
+Partly followed: since 2026-11-06 the folder is a local git repository (branch main, no remote; `__pycache__/` ignored). It has no quality gate and no tests yet.
 
 ### Decisions
 No decision records.
@@ -83,7 +83,7 @@ None yet.
 None yet.
 
 ### Maintenance
-Not covered by the [[monthly-architecture-review]]. It has no repository yet.
+Not covered by the [[monthly-architecture-review]]. The git repository is local only; no GitHub repository exists yet.
 
 ## Notes
 The model texts behind the new tasks are not shown on any page. A native speaker has not reviewed the German of the tasks or of those texts.

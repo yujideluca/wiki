@@ -9,7 +9,7 @@ location: radiology-crawler:
 fed_by: []
 feeds: []
 sources: [radiology-crawler:DESIGN.md, radiology-crawler:CLAUDE.md, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/adr/0002-technology-and-languages.md, radiology-crawler:tools/quality_gate.sh, radiology-crawler:tools/check_dependencies.py, radiology-crawler:requirements.txt, radiology-crawler:requirements-optional.txt, radiology-crawler:.github/workflows/quality-gate.yml, radiology-crawler:site_src/build.py, radiology-crawler:run_all.sh, radiology-crawler:docs/modelling-directives.md, radiology-crawler:docs/analysis-status.json, radiology-crawler:AGENTS.md, radiology-crawler:analysis/__init__.py]
-reviewed: 2026-11-06T02:12Z
+reviewed: 2026-11-06T22:03Z
 ---
 
 ## What it is
@@ -94,7 +94,7 @@ Four architecture decision records (ADRs, short notes that keep the reasons for 
 Thirty-nine requirements in `docs/REQUIREMENTS.md` (2026-11-02): seven for the crawler (prefix CW), eight for the translator (TL), three for the plan site (WS), seventeen for the statistical analysis (AN) one for dependencies (DP), and three for per-language models (LG). The traceability tool reads only two-letter prefixes, so a longer one is silently ignored. Each has a test tagged `REQ <ID>`; the traceability step fails when one has none.
 
 ### Quality gate
-`tools/quality_gate.sh` has four steps: (0) `tools/check_dependencies.py` fails when the code imports a third-party package that is in neither `requirements.txt` nor `requirements-optional.txt`, or when a workflow installs packages from anywhere else; (1) compile the code and run the 71 tests; (2) requirement traceability; (3) the fitness functions of `pipeline-check` (the maintenance program, see [[pipeline-check]]): architecture rule, shell-script lint, a limit of 800 lines per Python file, and gate time.
+`tools/quality_gate.sh` has four steps: (0) `tools/check_dependencies.py` fails when the code imports a third-party package that is in neither `requirements.txt` nor `requirements-optional.txt`, or when a workflow installs packages from anywhere else; (1) compile the code and run the tests (145 in the committed code on 2026-11-06, among them a check that every script's `--help` does no work, see [[radiology-analysis]]); (2) requirement traceability; (3) the fitness functions of `pipeline-check` (the maintenance program, see [[pipeline-check]]): architecture rule, shell-script lint, a limit of 800 lines per Python file, and gate time.
 
 ### Continuous integration
 Continuous integration (CI) means automatic checks on every push. The workflow `quality-gate.yml` runs the gate on GitHub; a local pre-push check runs it before `main` is pushed. On 2026-10-27 the first run failed because a fresh copy of the repository has no `data/` folder and the crawler's log function assumed one; the fix passed. On 2026-11-01 run 41335076862 failed because the analysis code imported NumPy while `requirements.txt` did not list it: the laptop passed because the gate added its own library folder (`~/.local/share/claude-workflow/pylibs`) to the search path. The gate now adds that folder only when the `CI` variable is not `true`, and step 0 above prevents the gap. A run on a clean Python 3.12 environment with only `requirements.txt` installed passed.

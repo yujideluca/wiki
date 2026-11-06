@@ -9,7 +9,7 @@ location: codex-skills:tools/skillsctl.py
 fed_by: []
 feeds: []
 sources: [codex-skills:tools/skillsctl.py, codex-skills:manifest.json, codex-skills:DESIGN.md]
-reviewed: 2026-11-06T21:24Z
+reviewed: 2026-11-06T22:03Z
 ---
 
 ## What it is
@@ -57,6 +57,14 @@ Claude source folders feed manual review, then Codex skill folders feed the inst
 Codex reads the installed skills. The user receives task results and reports of missing capabilities.
 
 ## Notes
+
+The command is `python3 tools/skillsctl.py <command>` in `~/dev/codex-skills`, with six commands:
+- `check` validates the 26 skills against the manifest and prints `validated 26 Codex skills`, or the problems and exit code 1.
+- `status` prints the state of each skill as JSON (JavaScript Object Notation, a plain-text data format).
+- `doctor` prints the read-only report described below and exits 1 with `Workflow attention required.` when a file fails its fingerprint, a name is duplicated or a skill is not linked.
+- `seal` records the current fingerprint of every adapted skill in `manifest.json`.
+- `install` links the skills into `~/.agents/skills` (change with `--target`), saves a backup and a receipt under `~/.local/state/codex-skills` (`--state`), and prints the receipt path or `No deployment changes.`; `--dry-run` only shows the plan.
+- `rollback <receipt>` restores what that install replaced and prints `deployment restored`.
 
 The full command and rollback instructions are in README.md. Installation receipts stay outside version control. Missing browser, Google or scheduling capabilities remain explicit limitations.
 

@@ -7,8 +7,8 @@ project: workflow-memory
 status: active
 fed_by: []
 feeds: []
-sources: [workflow-memory:mem/hooks.py, home:.claude/settings.json]
-reviewed: 2026-11-05T04:03Z
+sources: [workflow-memory:mem/hooks.py, home:.claude/settings.json, status-quo:crates/desktop/src/main.rs]
+reviewed: 2026-11-06T22:03Z
 ---
 
 ## What it is
@@ -41,7 +41,7 @@ s6 -> p1
 It makes every session begin with the same standing preferences and the same list of unfinished items, no matter which project the chat is opened in.
 
 ## How it does it
-Claude Code runs the "session start" hooks that are configured in [[claude-code-settings]] (a hook is a small program run automatically at an event). The memory's hook prints a summary called the brief; whatever is printed at that moment becomes part of what the model reads first.
+Claude Code runs the "session start" hooks that are configured in [[claude-code-settings]] (a hook is a small program run automatically at an event). The memory's hook prints a summary called the brief; whatever is printed at that moment becomes part of what the model reads first. Two SessionStart hooks are configured: `mem hook-session-start` (the memory's hook, allowed 40 seconds) and `status-quo hook claude SessionStart` (allowed 3 seconds), which records that a session began in the state folder of the desktop tray [[status-quo]] and prints nothing for the model.
 
 ## Where it sits in the pipeline
 Before any work in any project.

@@ -8,17 +8,17 @@ location: home:.codex/config.toml
 fed_by: []
 feeds: []
 sources: [home:.codex/config.toml, home:AGENTS.md, home:.codex/AGENTS.md]
-reviewed: 2026-11-05T19:50Z
+reviewed: 2026-11-06T22:03Z
 ---
 
 ## What it is
-The native status line is the usage display inside the Codex terminal. It complements the separate task-progress row in the [[laptop-setup]].
+Codex is OpenAI's coding assistant that runs in a terminal, the counterpart of [[claude-code]] on this laptop. Its native status line is the usage display built into the Codex terminal screen. It complements the separate task-progress row ([[codex-pbar]]) in the [[laptop-setup]].
 
 ## What it does
 It shows the percentages remaining in the five-hour and weekly allowances, tokens used in the current context, and context-window size. Tokens are the text units counted by the model. The context window is how much text one request can hold.
 
 ## How it does it
-The `tui.status_line` list in `~/.codex/config.toml` contains `five-hour-limit`, `weekly-limit`, `used-tokens`, `context-window-size` and `task-progress`. A new terminal loads these settings. Context values appear after a request reports usage.
+Codex's settings file is `~/.codex/config.toml`, written in TOML (a plain-text settings format of `key = value` lines under `[section]` headings). In its `[tui]` section (TUI, terminal user interface, the screen Codex draws in the terminal) the `status_line` list contains `five-hour-limit`, `weekly-limit`, `used-tokens`, `context-window-size` and `task-progress`. The global Codex instructions ([[global-codex-agents]]) tell Codex to keep these fields. A new terminal loads these settings. Context values appear after a request reports usage.
 
 ## Where it sits in the pipeline
 It runs inside Codex, above the separate task-progress footer.

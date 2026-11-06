@@ -8,8 +8,8 @@ status: active
 location: home:.claude/skills
 fed_by: []
 feeds: []
-sources: [home:.claude/skills]
-reviewed: 2026-11-06T18:17Z
+sources: [home:.claude/skills, machine-bootstrap:mb.toml]
+reviewed: 2026-11-06T22:03Z
 ---
 
 ## What it is
@@ -45,7 +45,7 @@ s6 -> p3
 The skills encode how Giovanni wants recurring tasks done: German training, clinical answers, appraisal of scientific articles, applications to Germany, Magic: The Gathering, safe browser automation, laptop repair, and the development process (brainstorming, debugging, verification, maintenance reviews, building tests and building skills). Each skill has a page in this wiki that contains its own definition, so you never need to open the `SKILL.md` file to understand it.
 
 ## How it does it
-Claude sees the list of names and descriptions in every chat; when a request matches a description, it loads that skill's full text and follows it. New or rebuilt skills go through [[skill-skill-forge]]. The folder was once filled by the retired pipeline ([[retired-workflow-pipeline]]); the skills are now ordinary folders.
+Claude sees the list of names and descriptions in every chat; when a request matches a description, it loads that skill's full text and follows it. New or rebuilt skills go through [[skill-skill-forge]]. The folder was once filled by the retired pipeline ([[retired-workflow-pipeline]]); the skills are now ordinary folders. Besides the 20 skill folders, `~/.claude/skills` holds a `synced` folder: Anthropic's cloud skill sync keeps there a downloaded copy of the skills of the Claude app ([[claude-ai-skills]]), one subfolder per skill (25 at this review) and a `manifest.json` file that lists each skill's name, description, origin and last change. The sync rewrites it on its own (twice in the evening of 2026-11-06 alone, at 21:50 and 22:00 UTC). These copies appear in the skill list with the prefix `anthropic-skills:`; the 13 that duplicate a local skill are switched off in [[claude-code-settings]] (`skillOverrides`). [[machine-bootstrap]] does not capture this folder, because it comes back by signing in.
 
 ## Where it sits in the pipeline
 Beside every task: a skill is loaded by the Claude instance when its description matches the request.
