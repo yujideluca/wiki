@@ -8,8 +8,8 @@ status: active
 location: wiki:server/lib/wiki/content/stale.ex
 fed_by: [claude-code-settings]
 feeds: [claude-code]
-sources: [wiki:server/lib/wiki/content/stale.ex, wiki:server/lib/wiki/content/memo.ex, wiki:docs/adr/0009-stale-review-claims-and-shared-publish-stamp.md, home:.claude/settings.json, home:.codex/hooks.json]
-reviewed: 2026-11-06T21:22Z
+sources: [wiki:server/lib/wiki/content/stale.ex, wiki:server/lib/wiki/content/memo.ex, wiki:server/test/memo_test.exs, wiki:docs/adr/0009-stale-review-claims-and-shared-publish-stamp.md, home:.claude/settings.json, home:.codex/hooks.json]
+reviewed: 2026-11-06T21:29Z
 ---
 
 ## What it is

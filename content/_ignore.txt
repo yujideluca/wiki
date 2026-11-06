@@ -5,3 +5,4 @@ workflow-memory:views
 workflow-memory:quarantine
 quiz-backups:
 german-quiz-releases:
+machine-bootstrap:state
