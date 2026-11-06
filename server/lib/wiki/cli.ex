@@ -108,7 +108,8 @@ defmodule Wiki.CLI do
       _ -> %{}
     end
 
-    case Stale.hook_message(Store.load(content_dir()), payload) do
+    # One run asks the same git and path questions many times; the memo asks each once (UP-8).
+    case Wiki.Content.Memo.run(fn -> Stale.hook_message(Store.load(content_dir()), payload) end) do
       nil -> 0
       msg -> IO.puts(:stderr, msg) && 2
     end

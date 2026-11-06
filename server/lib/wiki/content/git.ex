@@ -5,10 +5,12 @@ defmodule Wiki.Content.Git do
   def env, do: [{"GIT_DIR", nil}, {"GIT_WORK_TREE", nil}, {"GIT_INDEX_FILE", nil}]
 
   def cmd(dir, args) do
-    case System.cmd("git", ["-C", dir | args], env: env(), stderr_to_stdout: true) do
-      {out, 0} -> String.trim(out)
-      _ -> nil
-    end
+    Wiki.Content.Memo.fetch({:git, dir, args}, fn ->
+      case System.cmd("git", ["-C", dir | args], env: env(), stderr_to_stdout: true) do
+        {out, 0} -> String.trim(out)
+        _ -> nil
+      end
+    end)
   end
 
   @doc "Date (YYYY-MM-DD) of the first commit that added the path."

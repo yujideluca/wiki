@@ -6,7 +6,7 @@ defmodule Wiki.Content.Sources do
   so pages stay valid on any machine.
   """
 
-  alias Wiki.Content.Git
+  alias Wiki.Content.{Git, Memo}
 
   def dev_root, do: System.get_env("WIKI_DEV_ROOT") || Path.expand("~/dev")
   def home_root, do: System.get_env("WIKI_HOME_ROOT") || Path.expand("~")
@@ -112,18 +112,45 @@ defmodule Wiki.Content.Sources do
     end
   end
 
-  @doc "The path with symbolic links resolved (the path as given when it cannot be resolved)."
+  @doc """
+  The path with symbolic links resolved (the path as given when it cannot be resolved, for example a link loop).
+  Same answer as `realpath -m` on the expanded path: missing parts are kept as written, and a `..` inside a link's
+  target goes to the parent of where the link points. Done in-process: the Stop hook asks this hundreds of times per run (UP-8).
+  """
   def real(path) do
     path = Path.expand(path)
 
-    case System.cmd("realpath", ["-m", path], stderr_to_stdout: true) do
-      {out, 0} -> String.trim(out)
-      _ -> path
+    Memo.fetch({:realpath, path}, fn ->
+      case resolve_links(tl(Path.split(path)), "/", 0) do
+        {:ok, resolved} -> resolved
+        :loop -> path
+      end
+    end)
+  end
+
+  # Like GNU realpath, give up after many link hops (a loop); a long but finite chain is far shorter in practice.
+  @max_links 256
+
+  defp resolve_links(_parts, _at, hops) when hops > @max_links, do: :loop
+  defp resolve_links([], at, _hops), do: {:ok, at}
+  defp resolve_links(["." | rest], at, hops), do: resolve_links(rest, at, hops)
+  defp resolve_links([".." | rest], at, hops), do: resolve_links(rest, Path.dirname(at), hops)
+
+  defp resolve_links([name | rest], at, hops) do
+    next = Path.join(at, name)
+
+    case File.read_link(next) do
+      {:ok, "/" <> _ = target} -> resolve_links(tl(Path.split(target)) ++ rest, "/", hops + 1)
+      {:ok, target} -> resolve_links(Path.split(target) ++ rest, at, hops + 1)
+      # Not a link, missing, or unreadable: `realpath -m` keeps the part as written and goes on.
+      {:error, _} -> resolve_links(rest, next, hops)
     end
   end
 
   @doc "The git repository that holds a source and the path inside it, or nil."
-  def git_location(source) do
+  def git_location(source), do: Memo.fetch({:git_location, source}, fn -> locate(source) end)
+
+  defp locate(source) do
     with {_, dir, path} <- resolve(source),
          full = real(Path.join(dir, path)),
          base = if(File.dir?(full), do: full, else: Path.dirname(full)),
