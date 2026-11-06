@@ -10,7 +10,7 @@ location: wiki:content/status-quo-layout.md
 fed_by: []
 feeds: []
 sources: [wiki:content/status-quo-design.md, status-quo:crates/tray/src/ui.rs, status-quo:crates/core/src/config.rs]
-reviewed: 2026-11-06T17:44Z
+reviewed: 2026-11-06T21:02Z
 ---
 
 ## What it is
