@@ -9,7 +9,7 @@ location: workflow-memory:docs/CLAUDE-AI.md
 fed_by: []
 feeds: [mem-github-connector]
 sources: [workflow-memory:docs/CLAUDE-AI.md]
-reviewed: 2026-10-22T16:33Z
+reviewed: 2026-11-07T23:44Z
 ---
 
 ## What it is

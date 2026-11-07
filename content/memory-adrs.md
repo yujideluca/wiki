@@ -9,7 +9,7 @@ location: workflow-memory:docs/adr
 fed_by: []
 feeds: []
 sources: [workflow-memory:docs/adr, workflow-memory:docs/adr/0008-router-rules-as-modules.md, workflow-memory:tools/migrations/2026-11-07-router-cleanup.sh]
-reviewed: 2026-11-07T22:09Z
+reviewed: 2026-11-07T23:44Z
 ---
 
 ## What it is

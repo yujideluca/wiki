@@ -8,7 +8,7 @@ status: active
 fed_by: []
 feeds: []
 sources: [project-template:README.md, project-template:CLAUDE.md, pipeline-check:src/lib.rs, wiki:docs/adr/0003-login-gate-and-decoy.md, workflow-memory:mem/privacy-patterns.tsv]
-reviewed: 2026-11-02T10:44Z
+reviewed: 2026-11-07T23:44Z
 ---
 
 ## What it is

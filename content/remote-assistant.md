@@ -8,7 +8,7 @@ status: active
 fed_by: [claude-assistant, giovanni, global-claude-md, session-brief]
 feeds: [mem]
 sources: [home:.local/bin/claude-assistant, home:.config/systemd/user/claude-assistant.service, home:assistant/CLAUDE.md, home:.local/bin/codex-remote-tmux, home:.config/systemd/user/codex-remote-tmux.service, home:Documents/Codex/2026-10-25/i-w/outputs/install-codex-remote.sh]
-reviewed: 2026-10-26T18:16Z
+reviewed: 2026-11-07T23:44Z
 ---
 
 ## What it is

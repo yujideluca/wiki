@@ -9,7 +9,7 @@ location: project-template:docs/adr
 fed_by: []
 feeds: []
 sources: [project-template:docs/adr, project-template:DESIGN.md, QuizApp:docs/adr, wiki:docs/adr, workflow-memory:docs/adr, machine-bootstrap:docs/adr, status-quo:docs/adr, codex-pbar:docs/adr, codex-skills:docs/adr, radiology-crawler:docs/adr, pipeline-check:docs/adr]
-reviewed: 2026-11-07T22:06Z
+reviewed: 2026-11-07T23:44Z
 ---
 
 ## What it is

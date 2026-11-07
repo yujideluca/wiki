@@ -9,7 +9,7 @@ location: workflow-memory:.github/workflows/mem.yml
 fed_by: [events-log]
 feeds: [memory-views]
 sources: [workflow-memory:.github/workflows/mem.yml]
-reviewed: 2026-10-22T16:33Z
+reviewed: 2026-11-07T23:44Z
 ---
 
 ## What it is

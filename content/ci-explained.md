@@ -9,7 +9,7 @@ location: project-template:.github/workflows/quality-gate.yml
 fed_by: []
 feeds: []
 sources: [project-template:.github/workflows/quality-gate.yml, QuizApp:.github/workflows/quality-gate.yml, workflow-memory:.github/workflows/mem.yml, QuizWeb:.github/workflows/test.yml]
-reviewed: 2026-11-02T10:44Z
+reviewed: 2026-11-07T23:44Z
 ---
 
 ## What it is

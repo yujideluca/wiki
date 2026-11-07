@@ -8,7 +8,7 @@ status: active
 fed_by: []
 feeds: []
 sources: [workflow-memory:mem/hooks.py, home:.claude/settings.json, status-quo:crates/desktop/src/main.rs]
-reviewed: 2026-11-07T22:06Z
+reviewed: 2026-11-07T23:44Z
 ---
 
 ## What it is

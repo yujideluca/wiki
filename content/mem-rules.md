@@ -9,7 +9,7 @@ location: workflow-memory:mem/tags.py
 fed_by: []
 feeds: [session-brief]
 sources: [workflow-memory:mem/tags.py, workflow-memory:mem/tags.toml, workflow-memory:mem/cli.py, workflow-memory:docs/adr/0007-rule-tags.md, workflow-memory:docs/adr/0008-router-rules-as-modules.md, workflow-memory:mem/hooks.py]
-reviewed: 2026-11-07T22:03Z
+reviewed: 2026-11-07T23:44Z
 ---
 
 ## What it is
