@@ -8,8 +8,8 @@ status: active
 location: workflow-memory:
 fed_by: [claude-code, codex]
 feeds: [status-quo]
-sources: [workflow-memory:README.md, workflow-memory:docs/DESIGN.md, workflow-memory:mem/sync.py]
-reviewed: 2026-11-07T23:42Z
+sources: [workflow-memory:CLAUDE.md, workflow-memory:mem.json, workflow-memory:.gitignore, workflow-memory:pipeline-check.version, workflow-memory:docs/OPEN-QUESTIONS.md, workflow-memory:docs/TESTES-AUTOMATIZADOS.md, workflow-memory:mem/project.py, workflow-memory:README.md, workflow-memory:docs/DESIGN.md, workflow-memory:mem/sync.py]
+reviewed: 2026-11-07T23:47Z
 ---
 
 ## What it is
@@ -72,6 +72,8 @@ It keeps preferences, facts, decisions and open items (things still to be done),
 
 ## How it does it
 The memory is a log: every entry is one new file that is never edited afterwards, stored in [[events-log]]. One function, [[memory-fold]], reads the whole log and works out the current state (the latest ruling for each topic wins). A GitHub Action ([[mem-action]], an automatic job on GitHub) regenerates the readable files in [[memory-views]]. Claude Code writes with the command [[mem]] and with three hooks ([[hook-session-start]], [[hook-prompt]], [[hook-stop]]); the Claude app writes through [[mem-github-connector]]. The laptop's copy of the repository (its clone) is kept in step with GitHub by [[mem-sync]]: several sessions often start at the same moment on the same clone, so since 2026-11-06 only one sync at a time works on it (a lock file in the clone's `.git` folder; a sync waits for it at most 15 seconds before a download and 10 before an upload, then goes ahead anyway), and it downloads and moves forward without `git pull`, which failed when several downloads ran at once. Everything is written in plain Python (only its standard library), and [[mem-validator]] keeps secrets and other people's contact data out.
+
+Other files at the top of the repository: `CLAUDE.md` (the working notes for Claude Code in this repository: each principle and the check that enforces it), `mem.json` (one setting, `repo` = `yujideluca/workflow-memory`, which `mem/project.py` writes into the fetch instructions of the generated brief), `.gitignore` (Python caches, `build/` and `.tmp-*` folders), `pipeline-check.version` (the pinned [[pipeline-check]] version, v0.8.0 since 2026-11-07), `docs/OPEN-QUESTIONS.md` (status notes and what waits for Giovanni) and `docs/TESTES-AUTOMATIZADOS.md` (the record of the automated bug-finding tests, written by [[skill-gerar-teste-automatizado]]).
 
 ## Where it sits in the pipeline
 Under every other project: they read their defaults from it and report back with `mem use`.

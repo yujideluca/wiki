@@ -8,8 +8,8 @@ status: active
 location: workflow-memory:bin/mem
 fed_by: [claude-code, codex, giovanni, remote-assistant]
 feeds: [events-log]
-sources: [workflow-memory:bin/mem, workflow-memory:mem/cli.py, workflow-memory:mem/tags.py, workflow-memory:docs/adr/0008-router-rules-as-modules.md]
-reviewed: 2026-11-07T23:44Z
+sources: [workflow-memory:bin/mem, workflow-memory:mem/__main__.py, workflow-memory:mem/install.py, workflow-memory:mem/cli.py, workflow-memory:mem/tags.py, workflow-memory:docs/adr/0008-router-rules-as-modules.md]
+reviewed: 2026-11-07T23:47Z
 ---
 
 ## What it is
@@ -76,4 +76,4 @@ It is the door through which the memory is written on the laptop. The hooks call
 - `mem check`, `mem quarantine`, `mem dismiss`: validity of event files
 - `mem promote`, `mem compact [--apply]`: make habits global; summarise old entries
 - `mem build [--check]`: regenerate the views
-- `mem sync [--pull] [--push]`, `mem install-hooks`
+- `mem sync [--pull] [--push]`, `mem install-hooks` (`mem/install.py`: wires the hooks into a Claude Code `settings.json`, idempotent, with a backup); `python3 -m mem` runs the same command line (`mem/__main__.py`)
