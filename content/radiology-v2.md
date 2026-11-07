@@ -9,7 +9,7 @@ location: radiology-crawler:analysis/v2_model.py
 fed_by: []
 feeds: []
 sources: [radiology-crawler:analysis/v2_model.py, radiology-crawler:analysis/v2_run.py, radiology-crawler:tests/test_v2_model.py, radiology-crawler:tests/test_text_encoding.py, radiology-crawler:docs/v2-report.md]
-reviewed: 2026-11-07T20:45Z
+reviewed: 2026-11-07T22:47Z
 ---
 
 ## What it is
@@ -22,6 +22,8 @@ It blends full-article word similarity with evidence from teaching reports used 
 NumPy and SciPy, libraries for bulk numerical calculations, store word counts in sparse matrices: tables that store only nonzero values. Four matrix products compare reports with full articles, selected sections, average training reports and individual training reports. Independent processor products run in a thread pool. CuPy runs the products on a graphics processing unit (GPU) when the shared hardware adapter finds one.
 
 The tuning command divides only the approved tuning cases into training, parameter selection and an internal audit. The audit checks the chosen settings without choosing them. The validate command replays saved settings and rejects changed input checksums. Neither command evaluates the outer test half or newly downloaded cases; that belongs to analysis step S1.
+
+Its requirements are AN-29 (per-language models, GPU agrees with CPU), AN-30 (training evidence only from allowed tuning cases) and AN-31 (the tuning command never scores the test or new halves), each checked by tagged tests in `tests/test_v2_model.py`. They were first named AN-V2-1..3, a shape the [[check-traceability]] check did not read; they were renamed on 2026-11-07 and the work was pushed.
 
 On 2026-11-07 the real English GPU replay matched all six saved processor selection and audit rates exactly. German and Portuguese processor replays also matched their saved rates. Internal audit top-10 rates were 81.0732%, 75.4557% and 79.3340%, respectively. These are internal checks, not clinical validation or outer-test results. The synthetic GPU test compares all four score components and their mixture within a numerical tolerance.
 
