@@ -9,7 +9,7 @@ location: radiology-crawler:
 fed_by: []
 feeds: []
 sources: [radiology-crawler:DESIGN.md, radiology-crawler:CLAUDE.md, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/adr/0002-technology-and-languages.md, radiology-crawler:tools/quality_gate.sh, radiology-crawler:tools/check_dependencies.py, radiology-crawler:requirements.txt, radiology-crawler:requirements-optional.txt, radiology-crawler:.github/workflows/quality-gate.yml, radiology-crawler:site_src/build.py, radiology-crawler:run_all.sh, radiology-crawler:docs/modelling-directives.md, radiology-crawler:docs/analysis-status.json, radiology-crawler:AGENTS.md, radiology-crawler:analysis/__init__.py]
-reviewed: 2026-11-07T22:49Z
+reviewed: 2026-11-07T23:39Z
 ---
 
 ## What it is
@@ -91,7 +91,7 @@ How this project follows the golden path of [[project-template]].
 Four architecture decision records (ADRs, short notes that keep the reasons for a decision) in `docs/adr/`: record decisions (0001), the stack and the rule for the math (0002), the maintenance program measures and the review skill judges (0003), plus the blank template (0000).
 
 ### Requirements
-Fifty-five requirements in `docs/REQUIREMENTS.md` (committed, 2026-11-07): seven for the crawler (prefix CW), nine for the translator (TL), three for the plan site (WS), thirty-one for the statistical analysis (AN), one for dependencies (DP), and four for per-language models (LG). An ID is exactly two capital letters, a dash and a number; since pipeline-check v0.6.0 any other shape (such as `AN-V2-1`) fails the traceability step instead of being skipped. Each has a test tagged `REQ <ID>`; the traceability step fails when one has none.
+Fifty-five requirements in `docs/REQUIREMENTS.md` (committed, 2026-11-07): seven for the crawler (prefix CW), nine for the translator (TL), three for the plan site (WS), thirty-one for the statistical analysis (AN), one for dependencies (DP), and four for per-language models (LG). An ID is exactly two capital letters, a dash and a number; since pipeline-check v0.7.0 (now pinned at v0.8.0) any other shape (such as `AN-V2-1`) fails the traceability step instead of being skipped. Each has a test tagged `REQ <ID>`; the traceability step fails when one has none.
 
 ### Quality gate
 `tools/quality_gate.sh` has four steps: (0) `tools/check_dependencies.py` fails when the code imports a third-party package that is in neither `requirements.txt` nor `requirements-optional.txt`, or when a workflow installs packages from anywhere else; (1) compile the code and run the tests (145 in the committed code on 2026-11-06, among them a check that every script's `--help` does no work, see [[radiology-analysis]]); (2) requirement traceability; (3) the fitness functions of `pipeline-check` (the maintenance program, see [[pipeline-check]]): architecture rule, shell-script lint, a limit of 800 lines per Python file, and gate time.

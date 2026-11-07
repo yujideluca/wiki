@@ -9,7 +9,7 @@ location: project-template:tools/quality_gate.sh
 fed_by: []
 feeds: []
 sources: [project-template:tools/quality_gate.sh, project-template:pipeline-check.toml, pipeline-check:src/lib.rs, pipeline-check:src/traceability.rs]
-reviewed: 2026-11-07T22:48Z
+reviewed: 2026-11-07T23:39Z
 ---
 
 ## What it is
@@ -18,7 +18,7 @@ A quality gate is one script, `tools/quality_gate.sh`, that decides whether a pr
 ## What it does
 A gate usually has three kinds of step, explained here once:
 - **Tests**: the project's own test suite (unit tests, property tests, conformance tests).
-- **Requirement traceability**: every promise in `docs/REQUIREMENTS.md` has an ID, and a test carries the tag `REQ <ID>` ([[check-traceability]]). A promise without a test, or a tag for a promise that does not exist, fails; since pipeline-check v0.6.0 so does an ID that is not two capital letters, a dash and a number.
+- **Requirement traceability**: every promise in `docs/REQUIREMENTS.md` has an ID, and a test carries the tag `REQ <ID>` ([[check-traceability]]). A promise without a test, or a tag for a promise that does not exist, fails; since pipeline-check v0.7.0 so does an ID that is not two capital letters, a dash and a number, and any table row or `REQ` mention that cannot be read.
 - **Mutation check**: the script plants a small fault on purpose in a copy of the code (for example changing a number) and demands that at least one test fails; a fault that survives means a test is missing ([[mutation-check]]).
 - **Fitness functions**: automatic limits on a design quality, such as the largest file, the size of the app or how long the gate takes. A fitness function warns from 80 % of its limit and fails at 100 % ([[fitness-check]]).
 - **Shell lint**: [ShellCheck](https://www.shellcheck.net/) reads the project's shell scripts for mistakes.
