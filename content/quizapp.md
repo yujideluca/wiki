@@ -9,7 +9,7 @@ location: QuizApp:
 fed_by: [claude-code, project-template]
 feeds: [quizweb]
 sources: [QuizApp:DESIGN.md, QuizApp:CLAUDE.md, QuizApp:docs/adr, QuizApp:docs/REQUIREMENTS.md, QuizApp:tools/quality_gate.sh, QuizApp:app/build.gradle.kts]
-reviewed: 2026-11-06T23:20Z
+reviewed: 2026-11-07T00:37Z
 ---
 
 ## What it is

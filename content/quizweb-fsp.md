@@ -9,7 +9,7 @@ location: QuizWeb:src/fsp.js
 fed_by: [fsp-case]
 feeds: [quizweb-app, quizweb-content, quizweb-controller]
 sources: [QuizWeb:src/fsp.js, QuizWeb:tests/fsp.test.js, QuizWeb:tests/architecture.test.js, QuizWeb:src/app.js, QuizWeb:README.md]
-reviewed: 2026-11-06T23:20Z
+reviewed: 2026-11-07T00:37Z
 ---
 
 ## What it is
@@ -21,10 +21,10 @@ It grades a finished case from its score and never from time: at least 80 % of t
 ## How it does it
 Its functions are listed below. Other modules use it as follows: [[quizweb-content]] makes one card per case (`fspCaseCard`, id `fsp:<id>`, choices `bestanden` and `nicht bestanden`), [[quizweb-controller]] starts and grades a case (`startCase`, `finishCase`), and [[quizweb-app]] draws the case player and the result card. The dependency rules of `tests/architecture.test.js` allow `fsp.js` to import only `domain.js`; `content.js`, `controller.js` and `app.js` may import it.
 
-`tests/fsp.test.js` carries the requirement tags FS-1 to FS-5, SP-1, SP-2 and WB-1 of the app's list ([[quizapp-requirements]]; a requirement is a testable promise with an ID such as FS-4, and a tag `REQ <ID>` in a test file links the test to the promise it proves). It ports the app's `FspCaseTest` and `FspCaseControllerTest` in 16 tests: the mode is `fsp` and waits for a tap; one card per case in file order; areas never come back once left; every case in `vocab/fsp_cases.json` follows the template (16 + 7 + 11 steps, 5 of them Fachbegriffe, one right answer of 4); a step with the wrong shape is refused; the title never names the diagnosis; wrong picks and retries; a stable shuffled answer order; score and part scores; the grading boundaries (28 of 34 steps passes, 27 fails, because 80 % of 34 is 27.2); the grade override and its refusal of a grade that contradicts right or wrong; a passed case returns three days later however long it took; a failed one after ten minutes; a review case at 80 % is `HARD`; an unfinished or foreign case is ignored. A comment in the test says the app's test asserts that 27 of 34 passes; the app's `FspCaseTest` read on 2026-11-06 asserts the opposite (28 passes, 27 fails), so that comment is out of date. On 2026-11-06 `npm test` passed all 98 tests.
+`tests/fsp.test.js` carries the requirement tags FS-1 to FS-5, SP-1, SP-2 and WB-1 of the app's list ([[quizapp-requirements]]; a requirement is a testable promise with an ID such as FS-4, and a tag `REQ <ID>` in a test file links the test to the promise it proves). It ports the app's `FspCaseTest` and `FspCaseControllerTest` in 16 tests: the mode is `fsp` and waits for a tap; one card per case in file order; areas never come back once left; every case in `vocab/fsp_cases.json` follows the template (16 + 7 + 11 steps, 5 of them Fachbegriffe, one right answer of 4); a step with the wrong shape is refused; the title never names the diagnosis; wrong picks and retries; a stable shuffled answer order; score and part scores; the grading boundaries (28 of 34 steps passes, 27 fails, because 80 % of 34 is 27.2); the grade override and its refusal of a grade that contradicts right or wrong; a passed case returns three days later however long it took; a failed one after ten minutes; a review case at 80 % is `HARD`; an unfinished or foreign case is ignored.On 2026-11-06 `npm test` passed all 98 tests.
 
 ## Where it sits in the pipeline
-Between the shared case file `vocab/fsp_cases.json` (a copy of the app's, compared by [[check-web-sync]]) and the content, controller and screen modules of [[quizweb]]. The port is commit `fa59829` and waits on the git branch `web-2.8.0` (a separate line of work) until the Android version 2.8.0 is promoted from the beta channel to the stable one that users get; on 2026-11-06 the web `main` on GitHub was still at `4189b7a`.
+Between the shared case file `vocab/fsp_cases.json` (a copy of the app's, compared by [[check-web-sync]]) and the content, controller and screen modules of [[quizweb]]. The port (commits `fa59829` to `3cd443b`) waited on the git branch `web-2.8.0` (a separate line of work) while the Android version 2.8.0 was in beta, and reached GitHub's `main`, the live site, on 2026-11-06 when 2.8.0 was promoted to the stable channel that users get.
 
 ## Who receives its output
 [[quizweb-content]], [[quizweb-controller]] and [[quizweb-app]].

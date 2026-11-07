@@ -9,7 +9,7 @@ location: QuizApp:core/src/main/java/dev/yuji/quiz/content/FspCase.kt
 fed_by: [check-fsp-cases]
 feeds: [card-factory, quizweb-fsp, study-controller]
 sources: [QuizApp:core/src/main/java/dev/yuji/quiz/content/FspCase.kt, QuizApp:docs/adr/0014-fsp-case-simulations.md, QuizApp:docs/REQUIREMENTS.md, QuizApp:tools/data/fsp_cases.tsv, QuizApp:tools/data/fsp, QuizApp:app/src/main/assets/vocab/fsp_cases.json, QuizApp:app/src/main/java/dev/yuji/quiz/ui/FspCaseScreen.kt, QuizApp:core/src/test/java/dev/yuji/quiz/content/FspCaseTest.kt, QuizApp:app/src/test/java/dev/yuji/quiz/FspCaseControllerTest.kt, QuizApp:DESIGN.md]
-reviewed: 2026-11-06T23:20Z
+reviewed: 2026-11-07T00:37Z
 ---
 
 ## What it is
