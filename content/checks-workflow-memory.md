@@ -8,7 +8,7 @@ status: active
 fed_by: []
 feeds: []
 sources: [workflow-memory:tools/quality_gate.sh, workflow-memory:pipeline-check.toml, workflow-memory:.github/workflows/mem.yml, workflow-memory:.github/workflows/quality-gate.yml, workflow-memory:mem/validate.py, workflow-memory:docs/adr, workflow-memory:tests/test_tags.py]
-reviewed: 2026-11-05T04:03Z
+reviewed: 2026-11-07T22:06Z
 ---
 
 ## What it is

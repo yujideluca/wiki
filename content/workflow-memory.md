@@ -9,7 +9,7 @@ location: workflow-memory:
 fed_by: [claude-code, codex]
 feeds: [status-quo]
 sources: [workflow-memory:README.md, workflow-memory:docs/DESIGN.md, workflow-memory:mem/sync.py]
-reviewed: 2026-11-06T21:25Z
+reviewed: 2026-11-07T22:06Z
 ---
 
 ## What it is
@@ -68,7 +68,7 @@ ci -checks-> ev
 ci -rebuilds-> vw
 
 ## What it does
-It keeps preferences, facts, decisions and open items (things still to be done), and shows the relevant ones at the start of every chat as the [[session-brief]]. It is the only channel between the different Claude instances ([[claude-code]], the [[remote-assistant]] and the [[claude-app]]); this is decision ADR-0003 in [[memory-adrs]] (an ADR, "architecture decision record", is a short note that records one decision and its reasons).
+It keeps preferences, facts, decisions and open items (things still to be done), and at the start of every chat shows the [[session-brief]]: the open items and an index of rule tags, from which the chat loads the rules that fit each task ([[mem-rules]]). It is the only channel between the different Claude instances ([[claude-code]], the [[remote-assistant]] and the [[claude-app]]); this is decision ADR-0003 in [[memory-adrs]] (an ADR, "architecture decision record", is a short note that records one decision and its reasons).
 
 ## How it does it
 The memory is a log: every entry is one new file that is never edited afterwards, stored in [[events-log]]. One function, [[memory-fold]], reads the whole log and works out the current state (the latest ruling for each topic wins). A GitHub Action ([[mem-action]], an automatic job on GitHub) regenerates the readable files in [[memory-views]]. Claude Code writes with the command [[mem]] and with three hooks ([[hook-session-start]], [[hook-prompt]], [[hook-stop]]); the Claude app writes through [[mem-github-connector]]. The laptop's copy of the repository (its clone) is kept in step with GitHub by [[mem-sync]]: several sessions often start at the same moment on the same clone, so since 2026-11-06 only one sync at a time works on it (a lock file in the clone's `.git` folder; a sync waits for it at most 15 seconds before a download and 10 before an upload, then goes ahead anyway), and it downloads and moves forward without `git pull`, which failed when several downloads ran at once. Everything is written in plain Python (only its standard library), and [[mem-validator]] keeps secrets and other people's contact data out.
@@ -91,7 +91,7 @@ How this project follows the golden path of [[project-template]].
 6. **This repository is the only interface between the Claude instances**: no new protocol.
 
 ### Decisions
-Seven architecture decision records (ADRs, short notes that keep the reasons for a decision) in `docs/adr/`, [[memory-adrs]]: 0002 one append-only event log folded by a pure function, instead of a protocol; 0003 the roles of Giovanni and the Claude instances; 0004 a program measures and a skill judges; 0005 trim the startup brief and split memory by tool; 0006 an event is never later than the moment it is read; 0007 rules are fetched by the kind of task, so the start-up brief stays short. The design, the rules of the fold and the known limits are in `docs/DESIGN.md` (there is no root `DESIGN.md` with a decision log yet).
+Eight architecture decision records (ADRs, short notes that keep the reasons for a decision) in `docs/adr/`, [[memory-adrs]]: 0002 one append-only event log folded by a pure function, instead of a protocol; 0003 the roles of Giovanni and the Claude instances; 0004 a program measures and a skill judges; 0005 trim the startup brief and split memory by tool; 0006 an event is never later than the moment it is read; 0007 rules are fetched by the kind of task, so the start-up brief stays short; 0008 rules are modules and the one standing order is to route each message to its tags (no rule is printed at start). The design, the rules of the fold and the known limits are in `docs/DESIGN.md` (there is no root `DESIGN.md` with a decision log yet).
 
 ### Requirements
 There is no requirements list. The principles above are pinned by named tests in `tests/` (for example the order-independence, privacy and harvester tests), run by the gate.
