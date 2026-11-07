@@ -9,7 +9,7 @@ location: radiology-crawler:
 fed_by: []
 feeds: []
 sources: [radiology-crawler:DESIGN.md, radiology-crawler:CLAUDE.md, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/adr/0002-technology-and-languages.md, radiology-crawler:tools/quality_gate.sh, radiology-crawler:tools/check_dependencies.py, radiology-crawler:requirements.txt, radiology-crawler:requirements-optional.txt, radiology-crawler:.github/workflows/quality-gate.yml, radiology-crawler:site_src/build.py, radiology-crawler:run_all.sh, radiology-crawler:docs/modelling-directives.md, radiology-crawler:docs/analysis-status.json, radiology-crawler:AGENTS.md, radiology-crawler:analysis/__init__.py]
-reviewed: 2026-11-06T22:03Z
+reviewed: 2026-11-07T20:48Z
 ---
 
 ## What it is
@@ -123,4 +123,4 @@ Giovanni, through the plan website now and through the planned website later.
 ## Notes
 On 2026-11-02 the case translation pipeline was repaired: old progress writers omitted case counters, and interactive Codex documentation hooks replaced translation output with workflow messages. Calls now ignore interactive configuration (requirement TL-8); four workers keep translating downloaded cases into German and Portuguese. Saved translations were preserved and 93 pending missing-title failures were requeued with their prior counters saved locally. In a 274-second observation, 25 cases downloaded while 60 German and 62 Portuguese translations completed. This is a short observation, not a guarantee of future throughput. Analysis step L1d remains in progress: translated case sets, labels, split and per-language scores are still outstanding. See [[report-translator]] for the recovery details. On 2026-11-04 about 1,150 cases per language that had been set aside after three failed translations were requeued for another try by the Haiku workers; see [[report-translator]]. Since the same day the four translator services run on Claude Haiku instead of Codex.
 
-Version 2 has its own module reference: [[radiology-v2]].
+Update 2026-11-07: Codex finished version 2 (step C3): a word-matching model per language that also compares a report with the training cases of each diagnosis. On cases held back inside the tuning half its top-10 rate is 81 % (English), 75 % (German) and 79 % (Portuguese); these cases differ from those used for versions 1 and 4, so the versions are not yet comparable. Scoring version 2 on the same new cases (step S1) is still to do, and the work is committed locally but not yet pushed. Version 2 has its own module reference: [[radiology-v2]].
