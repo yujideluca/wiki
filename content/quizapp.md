@@ -9,7 +9,7 @@ location: QuizApp:
 fed_by: [claude-code, project-template]
 feeds: [quizweb]
 sources: [QuizApp:DESIGN.md, QuizApp:CLAUDE.md, QuizApp:docs/adr, QuizApp:docs/REQUIREMENTS.md, QuizApp:tools/quality_gate.sh, QuizApp:app/build.gradle.kts]
-reviewed: 2026-11-07T13:23Z
+reviewed: 2026-11-07T17:57Z
 ---
 
 ## What it is
@@ -78,7 +78,7 @@ da -reads and writes-> dl
 da -downloads from-> f
 
 ## What it does
-It offers six study modes ([[game-modes]]): five over a curated pool of B2 content, der/die/das, prepositions, plural forms, Präteritum (the German simple past) and "Fehler finden" (find the error), and since version 2.8.0 (2026-11-06) "FSP-Fälle": 58 simulated cases of the FSP (Fachsprachprüfung, the German medical-language exam that Giovanni takes after B2), each played step by step as one card ([[fsp-case]]). Version 2.9.0 (built 2026-11-07, on the beta channel; the stable release waits for Giovanni's OK) makes each case read like a written script of the exam and counts every solved step toward the daily goal and the streak. Wrong or slow answers return soon; known cards move out to days, weeks and months ([[spaced-repetition-scheduler]]). It has a daily goal and a streak calendar ([[daily-goal]], [[activity-calendar]]), a backup of progress ([[progress-backup]]) and updates from inside the app ([[update-client]]). Since 2026-10-22 the question pool can grow without a new app release: new [[question-pack]]s arrive from the update feed ([[question-pool-updater]], [[publish-content]]).
+It offers six study modes ([[game-modes]]): five over a curated pool of B2 content, der/die/das, prepositions, plural forms, Präteritum (the German simple past) and "Fehler finden" (find the error), and since version 2.8.0 (2026-11-06) "FSP-Fälle": 58 simulated cases of the FSP (Fachsprachprüfung, the German medical-language exam that Giovanni takes after B2), each played step by step as one card ([[fsp-case]]). Version 2.9.0 (stable since 2026-11-07) makes each case read like a written script of the exam and counts every solved step toward the daily goal and the streak. Wrong or slow answers return soon; known cards move out to days, weeks and months ([[spaced-repetition-scheduler]]). It has a daily goal and a streak calendar ([[daily-goal]], [[activity-calendar]]), a backup of progress ([[progress-backup]]) and updates from inside the app ([[update-client]]). Since 2026-10-22 the question pool can grow without a new app release: new [[question-pack]]s arrive from the update feed ([[question-pool-updater]], [[publish-content]]).
 
 ## How it does it
 It is written in [Kotlin](https://kotlinlang.org/) with [Jetpack Compose](https://developer.android.com/compose) (Android's modern way of drawing screens), split into two Gradle modules (parts built separately): [[quizapp-core]] (pure Kotlin logic: scheduler, grader, queue, session, content) and [[quizapp-app]] (Android screens, storage, updates). The content is built from tab-separated text files by [[build-vocab]]. Every change goes requirement → test → code, passes the [[quizapp-quality-gate]], and reaches the phone through the beta channel first ([[release-channels]], [[quizapp-release]]). The design and its decisions are in [[quizapp-design-doc]] and [[quizapp-adrs]].

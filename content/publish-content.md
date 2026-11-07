@@ -9,7 +9,7 @@ location: QuizApp:tools/publish_content.sh
 fed_by: []
 feeds: [quizweb-content, release-feed]
 sources: [QuizApp:tools/publish_content.sh, QuizApp:app/src/main/assets/content.json]
-reviewed: 2026-11-07T13:23Z
+reviewed: 2026-11-07T17:57Z
 ---
 
 ## What it is
@@ -19,7 +19,7 @@ reviewed: 2026-11-07T13:23Z
 `publish_content.sh beta` checks the committed pool and puts it in the `content/` folder of the [[release-feed]], on the `bleeding-edge` branch, where the beta app finds it. `publish_content.sh promote` (Giovanni's decision, just like for an APK) copies exactly that pack to the `main` branch for the stable app and puts the same files on the web version ([[quizweb]]).
 
 ## How it does it
-[Bash](https://www.gnu.org/software/bash/). The files it publishes are the ones listed in the manifest `app/src/main/assets/content.json` (read with a short Python command), so a new pool file can never be left out ([[content-manifest]]). Until 2026-11-06 the list was written into the script, and the new file of simulated exam cases `vocab/fsp_cases.json` was missing from it ([[fsp-case]]); commit `de3651c` changed that. The web step works in a temporary worktree (a second checked-out copy) of the web repository's `origin/main`, so a web port that is waiting on a `web-<version>` branch is not disturbed.
+[Bash](https://www.gnu.org/software/bash/). The files it publishes are the ones listed in the manifest `app/src/main/assets/content.json` (read with a short Python command), so a new pool file can never be left out ([[content-manifest]]). Until 2026-11-06 the list was written into the script, and the new file of simulated exam cases `vocab/fsp_cases.json` was missing from it ([[fsp-case]]); commit `de3651c` changed that. The web step works in a temporary worktree (a second checked-out copy) of the web repository's `origin/main`, so a web port that is waiting on a `web-<version>` branch is not disturbed. Known limit (seen 2026-11-07): the web step pushes straight to the web repository's `main`, which GitHub protects by requiring the `test` check, so that push is rejected. Pool 9 reached the web version through its `web-2.9.0` branch instead: push the branch, let CI (continuous integration) pass on it, then fast-forward `main` to it.
 
 ## Where it sits in the pipeline
 The content-only path of the [[quizapp-release]]: edit the TSV (tab-separated values) files → [[build-vocab]] → commit → this script.

@@ -9,7 +9,7 @@ location: QuizWeb:
 fed_by: [claude-code, quizapp]
 feeds: [check-web-sync, github-pages]
 sources: [QuizWeb:README.md, QuizWeb:src, QuizWeb:sw.js, QuizWeb:tests/fsp.test.js, QuizWeb:tests/bughunt.test.js, QuizWeb:pipeline-check.toml, QuizWeb:.github/workflows/test.yml]
-reviewed: 2026-11-07T13:23Z
+reviewed: 2026-11-07T17:57Z
 ---
 
 ## What it is
@@ -86,7 +86,7 @@ sv -writes to-> ls
 sw -keeps a copy of-> ui
 
 ## What it does
-It has the same six modes, scheduler, daily goal and streak calendar as [[quizapp]], and works offline. The port of the sixth mode, FSP-Fälle (simulated cases of the FSP, Fachsprachprüfung, the German medical-language exam; [[quizweb-fsp]]),went live on 2026-11-06 together with the stable Android release 2.8.0: GitHub's `main` (commit 3cd443b), which GitHub Pages serves, has it, and the live site served `sw.js` `v14` that day. The port of app 2.9.0 (script-style cases, each solved step counted for the day, `sw.js` `v15`) is committed on the local branch `web-2.9.0` and goes live with the stable app release. The progress lives in the browser of that device and is separate from the Android app; Settings > Backup saves and restores it.
+It has the same six modes, scheduler, daily goal and streak calendar as [[quizapp]], and works offline. The port of the sixth mode, FSP-Fälle (simulated cases of the FSP, Fachsprachprüfung, the German medical-language exam; [[quizweb-fsp]]),went live on 2026-11-06 together with the stable Android release 2.8.0: GitHub's `main` (commit 3cd443b), which GitHub Pages serves, has it, and the live site served `sw.js` `v14` that day. The port of app 2.9.0 (script-style cases, each solved step counted for the day, `sw.js` `v15`) went live on 2026-11-07 with the stable app release (commit 41b11f1 on `main`, live site served `v15`). The progress lives in the browser of that device and is separate from the Android app; Settings > Backup saves and restores it.
 
 ## How it does it
 It is plain JavaScript in ES modules (the standard way to split JavaScript into files), with no build step and no dependencies. The parts are: [[quizweb-domain]] (pure logic), [[quizweb-fsp]] (the FSP cases, pure too), [[quizweb-content]], [[quizweb-controller]], [[quizweb-store]] and [[quizweb-app]] (the last two are the only modules that touch the browser), plus the offline cache [[quizweb-service-worker]]. The test `tests/architecture.test.js` holds who may import whom, and [[quizweb-ci]] runs `npm test` and the limits of [[pipeline-check]] on every push.
