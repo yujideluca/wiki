@@ -9,7 +9,7 @@ location: QuizApp:tools/check_fsp_cases.py
 fed_by: [vocab-tsv]
 feeds: [build-vocab, fsp-case, quizapp-quality-gate]
 sources: [QuizApp:tools/check_fsp_cases.py, QuizApp:tools/build_vocab.py, QuizApp:tools/quality_gate.sh, QuizApp:docs/adr/0014-fsp-case-simulations.md]
-reviewed: 2026-11-06T23:20Z
+reviewed: 2026-11-07T13:22Z
 ---
 
 ## What it is
@@ -20,8 +20,8 @@ For each case file `tools/data/fsp/<id>.json` it checks:
 - the case has exactly the fields `id, area, title, diagnosis, source, bwReports, patient, steps`, in this order; the `id` equals the file name and appears in the case list `tools/data/fsp_cases.tsv`, and `area`, `source` and `bwReports` agree with that list; `source` is `reported_BW` or `common_FSP`;
 - the title does not give away the diagnosis: no word of six letters or more from the diagnosis may appear in the title, except "akute", "akuter", "akutes" and "chronische" (FS-5);
 - exactly 34 steps, each with the expected part and section name in the template's order (part 1, the doctor–patient conversation: 16 sections from "Begrüßung" (greeting) to "Weiteres Vorgehen" (next steps); part 2, the doctor's letter: 7 sections from "Einleitung" (opening) to "Procedere" (plan); part 3, the handover to a senior doctor: 6 sections from "Übergabe beginnen" (start the handover) to "Rückfrage" (answering the senior doctor's question), then 5 times "Fachbegriffe" (technical terms to explain in everyday German));
-- each step has the fields `part, section, situation, question, options, answer, feedback, reply` in this order, a non-empty question, 4 different non-empty answers of at most 420 characters, an `answer` from 0 to 3 and 4 explanations; only the explanation of the right answer starts with "Richtig";
-- a Fachbegriffe question reads exactly `Was bedeutet „<term>“?`;
+- each step has the fields `part, section, situation, options, answer, feedback, reply` in this order (since 2026-11-07 there is no `question` field: the case reads like a script), a non-empty situation that never asks the player anything (a `?` may only stand inside spoken words in „…“), a `reply` only on the last step of a part (steps 16, 23 and 34; inside a part the reply is the next step's situation), 4 different non-empty answers of at most 420 characters, an `answer` from 0 to 3 and 4 explanations; only the explanation of the right answer starts with "Richtig";
+- a Fachbegriffe situation shows the term in „…“ (the senior doctor points at it);
 - the right answer is the longest of the four in at most 60 % of the 29 steps before the Fachbegriffe, so a player cannot pass by always tapping the longest answer.
 
 Run without arguments it checks every case file and also reports cases in the list that have no file. It prints one line per problem and a summary, and exits with code 1 when there is any problem. On 2026-11-06 it printed `58 case file(s) checked, 0 problem(s)`.
