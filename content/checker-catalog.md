@@ -9,7 +9,7 @@ location: pipeline-check:src
 fed_by: []
 feeds: []
 sources: [pipeline-check:src/lib.rs, pipeline-check:src/traceability.rs, pipeline-check:src/shellcheck.rs, QuizApp:tools/quality_gate.sh, QuizWeb:tools/quality_gate.sh, wiki:tools/quality_gate.sh, workflow-memory:tools/quality_gate.sh, pipeline-check:tools/quality_gate.sh, codex-pbar:tools/quality_gate.sh, codex-skills:tools/quality_gate.sh, machine-bootstrap:tools/quality_gate.sh, remote-terminal:tools/quality_gate.sh, processing-sketches:tools/quality_gate.sh, radiology-crawler:tools/quality_gate.sh, status-quo:tools/quality_gate.sh, project-template:tools/quality_gate.sh, QuizApp:pipeline-check.toml, QuizWeb:pipeline-check.toml, wiki:pipeline-check.toml, workflow-memory:pipeline-check.toml, codex-pbar:pipeline-check.toml, machine-bootstrap:pipeline-check.toml, processing-sketches:pipeline-check.toml, remote-terminal:pipeline-check.toml, radiology-crawler:pipeline-check.toml, status-quo:pipeline-check.toml, pipeline-check:docs/REQUIREMENTS.md]
-reviewed: 2026-11-06T23:20Z
+reviewed: 2026-11-07T18:40Z
 ---
 
 ## What it is
@@ -27,6 +27,7 @@ Shared checkers (run by [[pipeline-check]]):
 - **Pre-push guard** (`[pre_push]`, [[branch-protection-explained]]): every project except [[checks-pipeline-check]].
 
 Checkers inside a project's own gate:
+- **Scratch-folder rule** ([[tmp-junk]], since 2026-11-07): [[checks-status-quo]], [[checks-pipeline-check]] and [[checks-quizapp]] fail when a test makes a temporary folder by hand instead of using the self-deleting helper (`crates/scratch.rs`, `tests/common/mod.rs`, JUnit `TemporaryFolder`), unless the line says `scratch-ok:` and why.
 - **Mutation check**: [[mutation-check]] in [[checks-quizapp]] (`tools/mutation_check.py`, run only with `tools/quality_gate.sh --mutation` and in the weekly CI run), `mutants.py` in [[checks-pipeline-check]], `tools/mutation_check.py` in [[checks-codex-pbar]] and [[checks-codex-skills]].
 - **Coverage thresholds**: 90 % of lines in the logic packages and no file below 80 % in [[checks-quizapp]]; at least 85 % in [[checks-codex-pbar]].
 - **Content rules**: `wiki check` in [[checks-wiki]]; the event validator in [[checks-workflow-memory]]; `mb scan` in [[checks-machine-bootstrap]]; `skillsctl check` in [[checks-codex-skills]]; `content_manifest.py --check` and, since 2026-11-06, `check_fsp_cases.py` (the 34-step template of the simulated FSP exam cases, FSP being the Fachsprachprüfung, the German medical-language exam; [[check-fsp-cases]]) in the gate of [[checks-quizapp]] (its web-sync check runs at `promote` time, not in the gate).

@@ -9,7 +9,7 @@ location: QuizApp:tools/check_fsp_cases.py
 fed_by: [vocab-tsv]
 feeds: [build-vocab, fsp-case, quizapp-quality-gate]
 sources: [QuizApp:tools/check_fsp_cases.py, QuizApp:tools/build_vocab.py, QuizApp:tools/quality_gate.sh, QuizApp:docs/adr/0014-fsp-case-simulations.md]
-reviewed: 2026-11-07T13:22Z
+reviewed: 2026-11-07T18:40Z
 ---
 
 ## What it is

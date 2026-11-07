@@ -10,7 +10,7 @@ location: status-quo:tools/install.sh
 fed_by: []
 feeds: [status-quo]
 sources: [status-quo:tools/install.sh, status-quo:crates/setup/Cargo.toml, status-quo:crates/desktop/src/doctor.rs, status-quo:crates/desktop/src/install.rs, status-quo:crates/desktop/tests/installer.rs, status-quo:crates/setup/src/main.rs, status-quo:crates/setup/build.rs, status-quo:.github/workflows/release.yml, status-quo:LICENSE, status-quo:docs/guide/install.md]
-reviewed: 2026-11-06T20:32Z
+reviewed: 2026-11-07T18:40Z
 ---
 
 ## What it is

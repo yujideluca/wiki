@@ -11,7 +11,7 @@ fed_by: []
 feeds: []
 sources: [project-template:CLAUDE.md, project-template:pipeline-check.toml, status-quo:README.md, status-quo:DESIGN.md, status-quo:Cargo.toml, status-quo:Cargo.lock, status-quo:.cargo/config.toml, status-quo:.gitignore, status-quo:crates/collector/Cargo.toml, status-quo:crates/collector/src/events.rs, status-quo:docs/2026-11-01-status-quo-design.md, status-quo:docs/REQUIREMENTS.md, status-quo:docs/TESTES-AUTOMATIZADOS.md, status-quo:docs/MAINTENANCE.md, status-quo:docs/adr/0004-host-compatibility-layer.md, status-quo:docs/adr/0005-free-canvas-layout.md, status-quo:tools/quality_gate.sh, status-quo:tools/ui_e2e.sh]
 memory: [#f1e117, #d975f2, #63efec, #c1f1f8]
-reviewed: 2026-11-06T22:36Z
+reviewed: 2026-11-07T18:40Z
 ---
 
 ## What it is
