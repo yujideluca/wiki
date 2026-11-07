@@ -9,7 +9,7 @@ location: QuizWeb:src/i18n.js
 fed_by: [gen-web-strings]
 feeds: [quizweb-app]
 sources: [QuizWeb:src/i18n.js, QuizWeb:src/strings.js, QuizWeb:i18n, QuizWeb:tests/i18n.test.js]
-reviewed: 2026-11-06T23:20Z
+reviewed: 2026-11-07T13:23Z
 ---
 
 ## What it is

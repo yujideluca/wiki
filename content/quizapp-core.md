@@ -9,7 +9,7 @@ location: QuizApp:core/src/main/java/dev/yuji/quiz
 fed_by: []
 feeds: [quizapp-app]
 sources: [QuizApp:core/src/main/java/dev/yuji/quiz]
-reviewed: 2026-11-06T23:20Z
+reviewed: 2026-11-07T13:23Z
 ---
 
 ## What it is
@@ -35,5 +35,5 @@ The inner layer: `ui → StudyController → domain/content/data`. Nothing in `:
 - `SchedulerConfig`, `GraderConfig`: the tunable numbers
 - `ContentTranslations`: English explanation text to de/pt/es
 - `FspCase`: the FSP cases, their play and their grading from the score ([[fsp-case]])
-- `ContentPack`: the question pack (schema 2, eight files, manifest, checksum check, `prefersDownloaded`: a downloaded pack replaces the built-in one only when newer)
+- `ContentPack`: the question pack (schema 3, eight files, manifest, checksum check, `prefersDownloaded`: a downloaded pack replaces the built-in one only when newer)
 - `VocabularyParsers`, `VocabularyModels`: JSON (JavaScript Object Notation) vocabulary to Kotlin objects

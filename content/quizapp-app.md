@@ -9,7 +9,7 @@ location: QuizApp:app/src/main/java/dev/yuji/quiz
 fed_by: [drachenkurve, quizapp-core]
 feeds: [phone]
 sources: [QuizApp:app/src/main/java/dev/yuji/quiz, QuizApp:app/src/debug]
-reviewed: 2026-11-07T00:37Z
+reviewed: 2026-11-07T13:23Z
 ---
 
 ## What it is

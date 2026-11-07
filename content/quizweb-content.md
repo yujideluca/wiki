@@ -9,7 +9,7 @@ location: QuizWeb:src/content.js
 fed_by: [build-vocab, publish-content, quizweb-fsp]
 feeds: [quizweb-app]
 sources: [QuizWeb:src/content.js, QuizWeb:vocab]
-reviewed: 2026-11-06T23:20Z
+reviewed: 2026-11-07T13:23Z
 ---
 
 ## What it is

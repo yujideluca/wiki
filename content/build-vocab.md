@@ -9,7 +9,7 @@ location: QuizApp:tools/build_vocab.py
 fed_by: [check-fsp-cases, vocab-tsv]
 feeds: [check-errors-languagetool, content-manifest, quizweb-content, vocab-assets]
 sources: [QuizApp:tools/build_vocab.py, QuizApp:tools/check_fsp_cases.py]
-reviewed: 2026-11-06T23:20Z
+reviewed: 2026-11-07T13:23Z
 ---
 
 ## What it is

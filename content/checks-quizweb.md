@@ -8,7 +8,7 @@ status: active
 fed_by: []
 feeds: []
 sources: [QuizWeb:tools/quality_gate.sh, QuizWeb:pipeline-check.toml, QuizWeb:.github/workflows/test.yml, QuizWeb:tests/architecture.test.js, QuizWeb:tests/fsp.test.js]
-reviewed: 2026-11-07T00:37Z
+reviewed: 2026-11-07T13:23Z
 ---
 
 ## What it is

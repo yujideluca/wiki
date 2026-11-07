@@ -9,7 +9,7 @@ location: QuizApp:tools/publish_content.sh
 fed_by: []
 feeds: [quizweb-content, release-feed]
 sources: [QuizApp:tools/publish_content.sh, QuizApp:app/src/main/assets/content.json]
-reviewed: 2026-11-06T23:20Z
+reviewed: 2026-11-07T13:23Z
 ---
 
 ## What it is

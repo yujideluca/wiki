@@ -9,7 +9,7 @@ location: QuizApp:app/src/main/assets
 fed_by: [build-vocab]
 feeds: [card-factory]
 sources: [QuizApp:app/src/main/assets, QuizApp:core/src/main/java/dev/yuji/quiz/content/ContentPack.kt]
-reviewed: 2026-11-06T23:20Z
+reviewed: 2026-11-07T13:23Z
 ---
 
 ## What it is

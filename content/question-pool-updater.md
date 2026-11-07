@@ -9,7 +9,7 @@ location: QuizApp:app/src/main/java/dev/yuji/quiz/data/ContentUpdater.kt
 fed_by: [question-pack, release-feed, update-client]
 feeds: [study-view-model]
 sources: [QuizApp:app/src/main/java/dev/yuji/quiz/data/ContentUpdater.kt, QuizApp:app/src/main/java/dev/yuji/quiz/data/ContentStore.kt, QuizApp:core/src/main/java/dev/yuji/quiz/content/ContentPack.kt, QuizApp:app/src/main/java/dev/yuji/quiz/ui/QuestionPool.kt]
-reviewed: 2026-11-06T23:20Z
+reviewed: 2026-11-07T13:23Z
 ---
 
 ## What it is

@@ -9,11 +9,11 @@ location: QuizApp:core/src/main/java/dev/yuji/quiz/domain/GameMode.kt
 fed_by: []
 feeds: [card-factory]
 sources: [QuizApp:core/src/main/java/dev/yuji/quiz/domain/GameMode.kt, QuizApp:DESIGN.md, QuizApp:app/src/main/assets/content.json, QuizApp:docs/adr/0014-fsp-case-simulations.md]
-reviewed: 2026-11-07T00:37Z
+reviewed: 2026-11-07T13:23Z
 ---
 
 ## What it is
-These are the six ways [[quizapp]] and [[quizweb]] quiz German. Five drill B2-level German from a curated pool of what every B2 speaker should know; the sixth, FSP-Fälle (FSP: Fachsprachprüfung, the German medical-language exam), added in app version 2.8.0 on 2026-11-06, prepares the medical German exam that follows B2. The pool can grow without an app update ([[question-pack]]); the numbers below are those of the pool built into version 2.8.0 (content version 8). A "game mode" is one kind of question.
+These are the six ways [[quizapp]] and [[quizweb]] quiz German. Five drill B2-level German from a curated pool of what every B2 speaker should know; the sixth, FSP-Fälle (FSP: Fachsprachprüfung, the German medical-language exam), added in app version 2.8.0 on 2026-11-06, prepares the medical German exam that follows B2. The pool can grow without an app update ([[question-pack]]); the numbers below are those of the pool built into version 2.8.0 (content version 8). In version 2.9.0 (2026-11-07, pool 9) the FSP cases read like a script and each solved step counts toward the daily goal. A "game mode" is one kind of question.
 
 ## What it does
 - **Der · Die · Das**: choose the article (the German word for "the", which depends on the noun's gender) of 484 nouns.

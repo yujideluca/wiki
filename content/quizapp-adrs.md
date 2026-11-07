@@ -9,14 +9,14 @@ location: QuizApp:docs/adr
 fed_by: []
 feeds: []
 sources: [QuizApp:docs/adr]
-reviewed: 2026-11-07T00:37Z
+reviewed: 2026-11-07T13:23Z
 ---
 
 ## What it is
 An ADR (architecture decision record) is a short note about one important decision: the context, the decision, the alternatives that were considered and the consequences. These are the ADRs of [[quizapp]], in the folder `docs/adr/`, one file per structural decision.
 
 ## What it does
-They record: 0001 record decisions · 0002 Kotlin + Compose · 0003 pure deterministic scheduler · 0004 update feed · 0005 release channels · 0006 web twin · 0007 spacing rules · 0008 requirements-first quality assurance · 0009 pure core module · 0010 progress backup · 0011 promote after updated tests · 0012 downloadable question pool ([[question-pack]]) · 0013 a program measures and a skill judges ([[maintenance-pipeline]]) · 0014 simulated FSP (Fachsprachprüfung, the German medical-language exam) cases as a sixth mode, one card per case, built from one fixed template (2026-11-06; [[fsp-case]]).The index `docs/adr/README.md` lists all fourteen.
+They record: 0001 record decisions · 0002 Kotlin + Compose · 0003 pure deterministic scheduler · 0004 update feed · 0005 release channels · 0006 web twin · 0007 spacing rules · 0008 requirements-first quality assurance · 0009 pure core module · 0010 progress backup · 0011 promote after updated tests · 0012 downloadable question pool ([[question-pack]]) · 0013 a program measures and a skill judges ([[maintenance-pipeline]]) · 0014 simulated FSP (Fachsprachprüfung, the German medical-language exam) cases as a sixth mode, one card per case, built from one fixed template (2026-11-06; amended 2026-11-07: cases read like a script and each solved step counts for the day; [[fsp-case]]).The index `docs/adr/README.md` lists all fourteen.
 
 ## How it does it
 They use the MADR format (Markdown Architectural Decision Records, in a trimmed form), starting from `docs/adr/0000-template.md`. A structural change gets its ADR in the same commit as the change, so the reason is never separated from the code.

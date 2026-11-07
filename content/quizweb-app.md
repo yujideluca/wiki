@@ -9,14 +9,14 @@ location: QuizWeb:src/app.js
 fed_by: [quizweb-content, quizweb-controller, quizweb-fsp, quizweb-i18n]
 feeds: [github-pages]
 sources: [QuizWeb:src/app.js, QuizWeb:index.html, QuizWeb:style.css]
-reviewed: 2026-11-07T00:37Z
+reviewed: 2026-11-07T13:23Z
 ---
 
 ## What it is
 `app.js` is the user-interface layer of [[quizweb]]: it draws the screens and connects taps to the controller. (Together with `index.html` and `style.css` it is what the browser actually shows.)
 
 ## What it does
-It shows the home screen (calendar, daily goal, modes), the questions with feedback and a 0.5-second automatic advance, the settings, the backup, and the list of removed cards with a search box. Since 2026-11-06 it also shows the case player of the FSP-Fälle mode (simulated cases of the FSP, Fachsprachprüfung, the German medical-language exam; [[quizweb-fsp]]): part and section, a progress bar, the question, 4 left-aligned answers that turn red with an explanation when wrong, the reply once solved, and at the end a result card with the score per part and the diagnosis. Like the app it keeps one case run per current card, and a finished run whose answer is no longer on screen starts afresh. At start it loads `vocab/fsp_cases.json` with the other word lists. The styles of the player (`fsp-*` classes) are in `style.css`.
+It shows the home screen (calendar, daily goal, modes), the questions with feedback and a 0.5-second automatic advance, the settings, the backup, and the list of removed cards with a search box. Since 2026-11-06 it also shows the case player of the FSP-Fälle mode (simulated cases of the FSP, Fachsprachprüfung, the German medical-language exam; [[quizweb-fsp]]): part and section, a progress bar, the player's last line and the scene (what the patient or senior doctor answers and does; since 2026-11-07 there is no quiz question), 4 left-aligned answers that turn red with an explanation when wrong, a closing reply at the end of a part, and at the end a result card with the score per part and the diagnosis. Like the app it keeps one case run per current card, and a finished run whose answer is no longer on screen starts afresh. At start it loads `vocab/fsp_cases.json` with the other word lists. The styles of the player (`fsp-*` classes) are in `style.css`.
 
 ## How it does it
 It works directly on the DOM (Document Object Model: the browser's live model of a web page, see [the documentation](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model)), with no framework. Together with the [[quizweb-store]] it is the only code that touches the browser, and an architecture test enforces that. All the logic lives in [[quizweb-domain]].

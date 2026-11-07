@@ -9,7 +9,7 @@ location: QuizApp:core/src/main/java/dev/yuji/quiz/content/CardFactory.kt
 fed_by: [distractor-factory, fsp-case, game-modes, vocab-assets]
 feeds: [study-controller, study-pipeline]
 sources: [QuizApp:core/src/main/java/dev/yuji/quiz/content/CardFactory.kt, QuizApp:core/src/main/java/dev/yuji/quiz/domain/Card.kt, QuizApp:core/src/main/java/dev/yuji/quiz/content/ContentPack.kt]
-reviewed: 2026-11-06T23:20Z
+reviewed: 2026-11-07T13:23Z
 ---
 
 ## What it is

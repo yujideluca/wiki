@@ -9,7 +9,7 @@ location: QuizApp:core/src/main/java/dev/yuji/quiz/domain/StudySession.kt
 fed_by: []
 feeds: [study-controller]
 sources: [QuizApp:core/src/main/java/dev/yuji/quiz/domain/StudySession.kt, QuizApp:tools/mutation_check.py]
-reviewed: 2026-11-06T23:20Z
+reviewed: 2026-11-07T13:23Z
 ---
 
 ## What it is
