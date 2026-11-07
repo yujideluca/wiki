@@ -9,7 +9,7 @@ location: workflow-memory:mem/sync.py
 fed_by: [hook-stop]
 feeds: [github, hook-session-start]
 sources: [workflow-memory:mem/sync.py, workflow-memory:tests/test_sync_views.py]
-reviewed: 2026-11-06T21:22Z
+reviewed: 2026-11-07T23:42Z
 ---
 
 ## What it is

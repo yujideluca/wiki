@@ -8,7 +8,7 @@ status: active
 fed_by: []
 feeds: []
 sources: [QuizApp:tools/publish_apk.sh, QuizApp:CLAUDE.md]
-reviewed: 2026-10-25T08:22Z
+reviewed: 2026-11-07T23:42Z
 ---
 
 ## What it is

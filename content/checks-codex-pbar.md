@@ -8,7 +8,7 @@ status: active
 fed_by: []
 feeds: []
 sources: [codex-pbar:tools/quality_gate.sh, codex-pbar:pipeline-check.toml, codex-pbar:CLAUDE.md, codex-pbar:tools/mutation_check.py]
-reviewed: 2026-11-06T21:24Z
+reviewed: 2026-11-07T23:42Z
 ---
 
 ## What it is

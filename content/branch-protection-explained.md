@@ -9,7 +9,7 @@ location: project-template:tools/hooks/pre-push
 fed_by: []
 feeds: []
 sources: [project-template:tools/hooks/pre-push, pipeline-check:src/lib.rs, workflow-memory:pipeline-check.toml, codex-pbar:pipeline-check.toml, machine-bootstrap:DESIGN.md]
-reviewed: 2026-11-06T21:24Z
+reviewed: 2026-11-07T23:42Z
 ---
 
 ## What it is

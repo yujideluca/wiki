@@ -8,7 +8,7 @@ status: active
 fed_by: []
 feeds: []
 sources: [machine-bootstrap:tools/quality_gate.sh, machine-bootstrap:pipeline-check.toml, machine-bootstrap:CLAUDE.md, machine-bootstrap:mb/scan.py, machine-bootstrap:tools/vm-test.sh, machine-bootstrap:docs/adr]
-reviewed: 2026-11-02T10:44Z
+reviewed: 2026-11-07T23:42Z
 ---
 
 ## What it is

@@ -9,7 +9,7 @@ location: codex-skills:README.md
 fed_by: []
 feeds: [codex]
 sources: [codex-skills:README.md, codex-skills:manifest.json, codex-skills:DESIGN.md, codex-skills:pipeline-check.version, codex-skills:docs/WORKFLOW-AUDIT.md]
-reviewed: 2026-11-06T22:03Z
+reviewed: 2026-11-07T23:42Z
 ---
 
 ## What it is
@@ -98,7 +98,7 @@ Three architecture decision records (ADRs, short notes that keep the reasons for
 The gate runs `skillsctl check`; the unit tests; a mutation check (faults planted on purpose must be caught); requirement traceability; and the fitness functions.
 
 ### Continuous integration
-Continuous integration (CI) means automatic checks on every push. The workflow `quality-gate.yml` runs the gate on GitHub for every push, through `pipeline-check` pinned in `pipeline-check.version` (v0.5.0 since 2026-11-06; it was v0.4.0).
+Continuous integration (CI) means automatic checks on every push. The workflow `quality-gate.yml` runs the gate on GitHub for every push, through `pipeline-check` pinned in `pipeline-check.version` (v0.8.0 since 2026-11-07; before v0.5.0 and v0.4.0).
 
 ### Maintenance
 Technical debt is tracked as GitHub issues labelled `debt` (P1 to P3) under the [[maintenance-policy]]. The [[monthly-architecture-review]] checks the project every month; the next is due 2026-11-22.

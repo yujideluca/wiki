@@ -9,7 +9,7 @@ location: QuizApp:
 fed_by: [claude-code, project-template]
 feeds: [quizweb]
 sources: [QuizApp:DESIGN.md, QuizApp:CLAUDE.md, QuizApp:docs/adr, QuizApp:docs/REQUIREMENTS.md, QuizApp:tools/quality_gate.sh, QuizApp:app/build.gradle.kts]
-reviewed: 2026-11-07T18:40Z
+reviewed: 2026-11-07T23:42Z
 ---
 
 ## What it is
@@ -104,7 +104,7 @@ How this project follows the golden path of [[project-template]].
 14 architecture decision records (ADRs, short notes that keep the reasons for a decision) in `docs/adr/`, [[quizapp-adrs]]: Kotlin with Jetpack Compose; a pure scheduler with an injected clock; an update feed with an in-app updater; two release channels (beta first); a web twin; spacing rules as requirements; requirements first; a pure core module; progress backup as one file; promotion after updated tests; a downloadable question pool; a program that measures and a skill that judges; simulated FSP cases as a sixth mode built from one template. `DESIGN.md` also holds the decision log.
 
 ### Requirements
-38 requirements in `docs/REQUIREMENTS.md` ([[quizapp-requirements]]), grouped by prefix (spacing rules SP, scheduling and daily goal DG, question pool QP, backup PE, updates UP, FSP cases FS and more). Each has a test tagged `REQ <ID>`, and the traceability check ([[check-traceability]]) fails when one has none.
+40 requirements in `docs/REQUIREMENTS.md` ([[quizapp-requirements]]), grouped by prefix (spacing rules SP, scheduling and daily goal DG, question pool QP, backup PE, updates UP, FSP cases FS and more). Each has a test tagged `REQ <ID>`, and the traceability check ([[check-traceability]]) fails when one has none.
 
 ### Quality gate
 [[quizapp-quality-gate]] is one script, seven steps, after a first check (since 2026-11-07) that tests make no temporary folder by hand ([[tmp-junk]]): core and app tests with coverage; coverage thresholds for the logic packages; the web tests; the conformance vectors identical in app and web; requirement traceability; Android lint; the fitness functions, the question pool manifest and the template check of the FSP cases ([[check-fsp-cases]]). Before a promotion a mutation check also runs (faults planted on purpose must be caught).

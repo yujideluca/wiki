@@ -9,7 +9,7 @@ location: project-template:
 fed_by: []
 feeds: []
 sources: [project-template:README.md, project-template:CLAUDE.md, project-template:pipeline-check.toml, project-template:tools/quality_gate.sh, project-template:.github/workflows/quality-gate.yml]
-reviewed: 2026-11-02T10:44Z
+reviewed: 2026-11-07T23:42Z
 ---
 
 ## What it is

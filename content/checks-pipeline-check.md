@@ -8,7 +8,7 @@ status: active
 fed_by: []
 feeds: []
 sources: [pipeline-check:tools/quality_gate.sh, pipeline-check:pipeline-check.toml, pipeline-check:CLAUDE.md, pipeline-check:.github/workflows/quality-gate.yml, pipeline-check:mutants.py, pipeline-check:docs/adr, pipeline-check:tests/common/mod.rs]
-reviewed: 2026-11-07T22:48Z
+reviewed: 2026-11-07T23:42Z
 ---
 
 ## What it is

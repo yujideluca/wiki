@@ -8,7 +8,7 @@ status: active
 fed_by: []
 feeds: []
 sources: [project-template:tools/quality_gate.sh, project-template:pipeline-check.toml, project-template:CLAUDE.md, project-template:docs/REQUIREMENTS.md]
-reviewed: 2026-11-02T10:44Z
+reviewed: 2026-11-07T23:42Z
 ---
 
 ## What it is
