@@ -9,7 +9,7 @@ location: pipeline-check:src
 fed_by: []
 feeds: []
 sources: [pipeline-check:src/lib.rs, pipeline-check:src/traceability.rs, pipeline-check:src/shellcheck.rs, QuizApp:tools/quality_gate.sh, QuizWeb:tools/quality_gate.sh, wiki:tools/quality_gate.sh, workflow-memory:tools/quality_gate.sh, pipeline-check:tools/quality_gate.sh, codex-pbar:tools/quality_gate.sh, codex-skills:tools/quality_gate.sh, machine-bootstrap:tools/quality_gate.sh, remote-terminal:tools/quality_gate.sh, processing-sketches:tools/quality_gate.sh, radiology-crawler:tools/quality_gate.sh, status-quo:tools/quality_gate.sh, project-template:tools/quality_gate.sh, QuizApp:pipeline-check.toml, QuizWeb:pipeline-check.toml, wiki:pipeline-check.toml, workflow-memory:pipeline-check.toml, codex-pbar:pipeline-check.toml, machine-bootstrap:pipeline-check.toml, processing-sketches:pipeline-check.toml, remote-terminal:pipeline-check.toml, radiology-crawler:pipeline-check.toml, status-quo:pipeline-check.toml, pipeline-check:docs/REQUIREMENTS.md]
-reviewed: 2026-11-07T18:40Z
+reviewed: 2026-11-07T22:48Z
 ---
 
 ## What it is
