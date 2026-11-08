@@ -8,8 +8,8 @@ status: active
 location: radiology-crawler:analysis/v3_model.py
 fed_by: []
 feeds: []
-sources: [radiology-crawler:analysis/v3_model.py, radiology-crawler:analysis/v3_run.py, radiology-crawler:analysis/v3_outer.py, radiology-crawler:tests/test_v3_model.py, radiology-crawler:tests/test_v3_outer.py, radiology-crawler:docs/v3-design.md, radiology-crawler:docs/v3-debate-codex-critique.md, radiology-crawler:docs/problem-formulation.md, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/v3-report.md, radiology-crawler:docs/articles-only-report.md, radiology-crawler:docs/modelling-directives.md]
-reviewed: 2026-11-08T07:29Z
+sources: [radiology-crawler:analysis/v3_model.py, radiology-crawler:analysis/v3_run.py, radiology-crawler:analysis/v3_outer.py, radiology-crawler:tests/test_v3_model.py, radiology-crawler:tests/test_v3_outer.py, radiology-crawler:docs/v3-design.md, radiology-crawler:docs/v3-debate-codex-critique.md, radiology-crawler:docs/problem-formulation.md, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/v3-report.md, radiology-crawler:docs/articles-only-report.md, radiology-crawler:docs/modelling-directives.md, radiology-crawler:docs/s1c-v3t-proposal-claude.md, radiology-crawler:docs/s1c-v3t-proposal-codex.md, radiology-crawler:docs/s1c-v3t-critique-by-claude.md, radiology-crawler:docs/s1c-v3t-critique-by-codex.md, radiology-crawler:docs/s1c-v3t-design.md, radiology-crawler:docs/s1c-v3t-agreement-claude.md]
+reviewed: 2026-11-08T19:35Z
 ---
 
 ## What it is
@@ -40,3 +40,5 @@ It reads the frozen article snapshots and case files under ignored `data/analysi
 
 ## Who receives its output
 Giovanni and step S1 (scoring all versions on the same test half) and S2 (comparing them and choosing a winner) of the [[radiology-report-matcher]] plan. Only aggregate hit rates are saved; no case text or case identifier is printed.
+
+Update 2026-11-08 (step S1c, version 3 with finding tags, "V3t"): the debate was run again under the articles-only rule. A fresh Claude session and a fresh Codex session each researched the literature and wrote a proposal (`docs/s1c-v3t-proposal-claude.md`, `docs/s1c-v3t-proposal-codex.md`); each critiqued the other's (`docs/s1c-v3t-critique-by-claude.md`, `docs/s1c-v3t-critique-by-codex.md`). A fresh Codex session merged them into a joint design with its grid of settings fixed before any run (`docs/s1c-v3t-design.md`), and a fresh Claude session agreed with no blocking objection (`docs/s1c-v3t-agreement-claude.md`). The design is frozen; the code (`analysis/v3_tagged.py`, requirements AN-54 to AN-56) is planned, not yet in the repository.
