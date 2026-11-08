@@ -8,7 +8,7 @@ status: active
 fed_by: []
 feeds: []
 sources: [radiology-crawler:tools/quality_gate.sh, radiology-crawler:pipeline-check.toml, radiology-crawler:CLAUDE.md, radiology-crawler:tools/check_dependencies.py, radiology-crawler:tests/test_cli_help.py, radiology-crawler:pipeline-check.version]
-reviewed: 2026-11-07T23:39Z
+reviewed: 2026-11-08T01:55Z
 ---
 
 ## What it is
