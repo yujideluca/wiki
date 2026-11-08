@@ -9,7 +9,7 @@ location: radiology-crawler:analysis/v3_model.py
 fed_by: []
 feeds: []
 sources: [radiology-crawler:analysis/v3_model.py, radiology-crawler:analysis/v3_run.py, radiology-crawler:analysis/v3_outer.py, radiology-crawler:tests/test_v3_model.py, radiology-crawler:tests/test_v3_outer.py, radiology-crawler:docs/v3-design.md, radiology-crawler:docs/v3-debate-codex-critique.md, radiology-crawler:docs/problem-formulation.md, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/v3-report.md, radiology-crawler:docs/articles-only-report.md, radiology-crawler:docs/modelling-directives.md]
-reviewed: 2026-11-08T06:50Z
+reviewed: 2026-11-08T07:29Z
 ---
 
 ## What it is
