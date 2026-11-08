@@ -8,8 +8,8 @@ status: active
 location: radiology-crawler:analysis/v2_model.py
 fed_by: []
 feeds: []
-sources: [radiology-crawler:analysis/v2_model.py, radiology-crawler:analysis/v2_run.py, radiology-crawler:tests/test_v2_model.py, radiology-crawler:tests/test_text_encoding.py, radiology-crawler:docs/v2-report.md, radiology-crawler:analysis/v2_outer.py, radiology-crawler:tests/test_v2_outer.py]
-reviewed: 2026-11-08T00:39Z
+sources: [radiology-crawler:analysis/v2_model.py, radiology-crawler:analysis/v2_run.py, radiology-crawler:tests/test_v2_model.py, radiology-crawler:tests/test_text_encoding.py, radiology-crawler:docs/v2-report.md, radiology-crawler:analysis/v2_outer.py, radiology-crawler:tests/test_v2_outer.py, radiology-crawler:docs/articles-only-report.md, radiology-crawler:docs/modelling-directives.md]
+reviewed: 2026-11-08T01:54Z
 ---
 
 ## What it is
@@ -28,6 +28,8 @@ Its requirements are AN-29 (per-language models, GPU agrees with CPU), AN-30 (tr
 On 2026-11-07 the real English GPU replay matched all six saved processor selection and audit rates exactly. German and Portuguese processor replays also matched their saved rates. Internal audit top-10 rates were 81.0732%, 75.4557% and 79.3340%, respectively. These are internal checks, not clinical validation or outer-test results. The synthetic GPU test compares all four score components and their mixture within a numerical tolerance.
 
 On 2026-11-07 version 2 was scored once on the outer halves by `python3 -m analysis.v2_outer --split test|new` (requirement AN-36, tests in `tests/test_v2_outer.py`). The script retrains version 2 on all of the roughly 22,700 tuning cases with the saved settings and changes nothing else. It refuses to run if the input files changed since tuning, if a scored case is also a training case, or if that half already has a version 2 result. On the test half, the right diagnosis was among the first 10 articles in 80.2% of English, 75.0% of German and 79.1% of Portuguese reports (versions 1 and 4: 64.7%, 52.8%, 62.3% and 56.6%, 46.0%, 54.3%). On the newer cases it was 76.5%, 69.7% and 75.3%. Version 2 learns from earlier teaching cases of the same diagnosis; versions 1 and 4 read only the articles. Version 2 also scored the 742 test cases the others left out because their diagnosis was outside their own list of possible answers.
+
+On 2026-11-08 Giovanni ruled that the models are built from the articles only: a case never enters a model, and the labelled cases of the tuning half (cases kept for choosing settings) only choose a few free numbers, while the test cases only score (`docs/modelling-directives.md`, principle 13 in the repository's CLAUDE.md). This version breaks it, because it learns from the tuning-case texts, so its results above are superseded. Its articles-only rebuild, V2a, keeps only its article parts; it is described on [[radiology-analysis]]. Under that rule, among versions 1 to 3 rebuilt from articles only, the order on the test half is V1a, then V3a, then V2a in every language (top-10, the share of cases whose true diagnosis is among the ten best: English 61.7 %, 56.0 %, 53.3 %; German 49.0 %, 44.2 %, 39.6 %; Portuguese 58.6 %, 53.0 %, 50.3 %), with version 4 at 56.6 %, 46.0 % and 54.3 %, unpaired (`docs/articles-only-report.md`).
 
 ## Functions
 - `vocabulary`, `counts`: extract Unicode letter words and form document-by-word counts in bounded batches.
