@@ -9,7 +9,7 @@ location: radiology-crawler:
 fed_by: []
 feeds: []
 sources: [radiology-crawler:docs/v3-design.md, radiology-crawler:docs/v3-report.md, radiology-crawler:docs/problem-formulation.md, radiology-crawler:docs/v3-research-codex-ir.md, radiology-crawler:docs/v3-research-codex-clinical.md, radiology-crawler:DESIGN.md, radiology-crawler:CLAUDE.md, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/adr/0002-technology-and-languages.md, radiology-crawler:tools/quality_gate.sh, radiology-crawler:tools/check_dependencies.py, radiology-crawler:requirements.txt, radiology-crawler:requirements-optional.txt, radiology-crawler:.github/workflows/quality-gate.yml, radiology-crawler:site_src/build.py, radiology-crawler:run_all.sh, radiology-crawler:docs/modelling-directives.md, radiology-crawler:docs/analysis-status.json, radiology-crawler:AGENTS.md, radiology-crawler:analysis/__init__.py, radiology-crawler:docs/articles-only-report.md, radiology-crawler:docs/finding-tags-pilot.md, radiology-crawler:docs/s1c-briefs.md, radiology-crawler:analysis/jobs.py, radiology-crawler:progress.py, radiology-crawler:site_src/build.py]
-reviewed: 2026-11-08T07:29Z
+reviewed: 2026-11-08T14:15Z
 ---
 
 ## What it is

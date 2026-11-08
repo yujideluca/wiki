@@ -9,7 +9,7 @@ location: radiology-crawler:analysis/v2_model.py
 fed_by: []
 feeds: []
 sources: [radiology-crawler:analysis/v2_model.py, radiology-crawler:analysis/v2_run.py, radiology-crawler:tests/test_v2_model.py, radiology-crawler:tests/test_text_encoding.py, radiology-crawler:docs/v2-report.md, radiology-crawler:analysis/v2_outer.py, radiology-crawler:tests/test_v2_outer.py, radiology-crawler:docs/articles-only-report.md, radiology-crawler:docs/modelling-directives.md]
-reviewed: 2026-11-08T06:50Z
+reviewed: 2026-11-08T14:15Z
 ---
 
 ## What it is
