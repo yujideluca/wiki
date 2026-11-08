@@ -9,7 +9,7 @@ location: QuizApp:DESIGN.md
 fed_by: []
 feeds: []
 sources: [QuizApp:DESIGN.md]
-reviewed: 2026-11-07T13:23Z
+reviewed: 2026-11-08T00:15Z
 ---
 
 ## What it is

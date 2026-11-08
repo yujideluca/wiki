@@ -9,7 +9,7 @@ location: radiology-crawler:crawl.py
 fed_by: []
 feeds: [report-translator, radiology-analysis]
 sources: [radiology-crawler:crawl.py, radiology-crawler:progress.py, radiology-crawler:run_all.sh]
-reviewed: 2026-11-01T18:11Z
+reviewed: 2026-11-08T00:15Z
 ---
 
 ## What it is
