@@ -10,7 +10,7 @@ fed_by: [claude-code, project-template]
 feeds: []
 sources: [wiki:docs/2026-10-22-wiki-design.md, wiki:DESIGN.md, wiki:docs/REQUIREMENTS.md, wiki:docs/adr]
 memory: [#f1e117]
-reviewed: 2026-11-06T21:25Z
+reviewed: 2026-11-08T21:05Z
 ---
 
 ## What it is
@@ -75,7 +75,7 @@ cli -reads and checks-> pg
 cli -builds-> st
 
 ## What it does
-It lets Giovanni answer an architecture question after one search and at most two clicks: search with suggestions while typing, hover over a dot on the map to see what it is in four boxes, click the dot for the full page ([[wiki-frontend]]). On a phone the map fills the screen with a search bar on top and tapping a dot opens a balloon with its description; on a desktop the map is seen through a lens and its dots stretch elastically when dragged ([[wiki-map-view]]). It is kept up to date automatically at the end of every task ([[end-of-task]]). For the whole system on one page, start with [[system-overview]].
+It lets Giovanni answer an architecture question after one search and at most two clicks: search with suggestions while typing, hover over a dot on the map to see what it is in four boxes, click the dot for the full page ([[wiki-frontend]]). On a phone the map fills the screen with a search bar on top and tapping a dot opens a balloon with its description; on a desktop the map is a globe seen in perspective and its dots stretch elastically when dragged ([[wiki-map-view]]). It is kept up to date automatically at the end of every task ([[end-of-task]]). For the whole system on one page, start with [[system-overview]].
 
 ## How it does it
 The content is Markdown text files, each with a small header ([[wiki-content]]); they are checked by [[wiki-check]] and turned into JSON (JavaScript Object Notation) data by [[wiki-build]]. The part you see is written in Elm ([[wiki-frontend]]); the server is written in Elixir ([[wiki-server]]) and lets in only one Google account, showing everyone else a decoy ([[wiki-router]], [[decoy-page]]). It is reachable on the internet through [[tailscale-funnel]]. The wiki is in English only.
@@ -100,7 +100,7 @@ How this project follows the golden path of [[project-template]].
 The design file `DESIGN.md` keeps the C4 diagrams and a decision log, newest first, each row with its maintenance type. Architecture decision records (ADRs, short notes that keep the reasons for a decision) in `docs/adr/`: 0002 Elm front end and Elixir back end; 0003 one login gate with a decoy page for everyone else; 0004 pages as Markdown with a header, checked before publishing; 0005 a program measures and a skill judges; 0006 the review time is kept in the page; 0007 the flowchart section; 0008 the architecture and practices sections on project pages; 0009 review claims are checked and the publish stamp is shared between sessions; 0010 the map is one camera on a globe; 0011 the wiki is English only. See also the [[monthly-architecture-review]].
 
 ### Requirements
-84 requirements in `docs/REQUIREMENTS.md`, grouped by a two-letter prefix (login AU, decoy DC, content CO, flowcharts FL, project pages PJ, map MP, phone layout MB and more). Each one has a test tagged `REQ <ID>`, and the traceability check ([[check-traceability]]) fails when one has none.
+85 requirements in `docs/REQUIREMENTS.md`, grouped by a two-letter prefix (login AU, decoy DC, content CO, flowcharts FL, project pages PJ, map MP, phone layout MB and more). MP-10 keeps text selection disabled inside the globe while article text remains selectable. Each one has a test tagged `REQ <ID>`, and the traceability check ([[check-traceability]]) fails when one has none.
 
 ### Quality gate
 [[wiki-quality-gate]] is one script, five steps: the Elixir tests; the Elm tests and the optimized build; requirement traceability; the content rules (`wiki check`); the fitness functions (largest file, gate time, bundle size).
