@@ -45,6 +45,15 @@ defmodule Wiki.MapCssTest do
     assert css =~ ~r/^svg\.map \{[^}]*will-change: transform;/m
   end
 
+  # REQ MP-10
+  test "globe labels cannot override the map's selection suppression" do
+    css = File.read!(@css)
+    assert css =~ ~r/^svg\.map \{[^}]*user-select: none;/m
+    assert css =~ ~r/^svg\.map \{[^}]*-webkit-user-select: none;/m
+    refute css =~ ~r/\.node \.label \{[^}]*user-select: text;/
+    refute css =~ ~r/\.node \.label \{[^}]*cursor: text;/
+  end
+
   # REQ MB-5
   test "the box around the step circles leaves room for the lit circle's growth and glow" do
     [_, rule] = Regex.run(~r/^\.chain\s*\{([^}]*)\}/m, File.read!(@css))

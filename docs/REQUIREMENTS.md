@@ -59,6 +59,7 @@ Source: G = stated by Giovanni, D = derived by Claude Code and accepted (design 
 | MP-7 | Hovering a node lights it, its neighbours and its edges within 80 ms: every transition on the map is at most 0.08 s | G |
 | MP-8 | A link to another site in an article opens in a new tab; a link to a wiki page stays in the tab | G |
 | MP-9 | The top bar of every screen links to the glossary page | G |
+| MP-10 | Text inside the globe cannot be selected by dragging or pressing its labels; article text remains selectable | G |
 | MB-1 | On a phone-width window (760 px or less) the map fills the whole screen and the search bar floats over its top with the menu button inside it | G |
 | MB-2 | On a phone, tapping a node opens a balloon over the lower part of the map with what it is, what it does, what feeds it, who receives its output and a link to its page; tapping a node never leaves the map by itself | G |
 | MB-3 | On a phone the balloon's neighbours are buttons that select that node, and the search selects the node it finds | D |

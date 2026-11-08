@@ -92,7 +92,7 @@ svg.map:active { cursor: grabbing; }
 .node { transition: opacity .07s; }
 .node .dot { stroke: rgba(0,0,0,.6); stroke-width: 1.5; }
 .node .halo { fill: none; stroke: var(--gold); stroke-width: 2; }
-.node .label { fill: #cfc9bb; user-select: text; -webkit-user-select: text; cursor: text; paint-order: stroke; stroke: var(--bg); stroke-width: 3px; }
+.node .label { fill: #cfc9bb; paint-order: stroke; stroke: var(--bg); stroke-width: 3px; }
 .node.active .label { fill: #fff; font-weight: 600; }
 .map.focus .node:not(.near) { opacity: .22; }
 .map.focus .node:not(.active) .label { pointer-events: none; }
