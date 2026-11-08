@@ -8,8 +8,8 @@ status: active
 location: radiology-crawler:analysis/v3_model.py
 fed_by: []
 feeds: []
-sources: [radiology-crawler:analysis/v3_model.py, radiology-crawler:analysis/v3_run.py, radiology-crawler:analysis/v3_outer.py, radiology-crawler:tests/test_v3_model.py, radiology-crawler:tests/test_v3_outer.py, radiology-crawler:docs/v3-design.md, radiology-crawler:docs/v3-debate-codex-critique.md, radiology-crawler:docs/problem-formulation.md, radiology-crawler:docs/REQUIREMENTS.md]
-reviewed: 2026-11-08T01:01Z
+sources: [radiology-crawler:analysis/v3_model.py, radiology-crawler:analysis/v3_run.py, radiology-crawler:analysis/v3_outer.py, radiology-crawler:tests/test_v3_model.py, radiology-crawler:tests/test_v3_outer.py, radiology-crawler:docs/v3-design.md, radiology-crawler:docs/v3-debate-codex-critique.md, radiology-crawler:docs/problem-formulation.md, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/v3-report.md]
+reviewed: 2026-11-08T01:23Z
 ---
 
 ## What it is
@@ -23,7 +23,7 @@ The word estimate for article d and word w is (case count of w + τ × article s
 
 Tuning uses only the tuning half of the cases, split the same way as version 2 (training about 50 %, selection 25 %, internal audit 25 %), so the two versions are measured on the same cases. The 54 settings tried were fixed before any run (τ 250/1000/4000, μ 500/2000, prior weight 0/0.02/0.05, closest-case weight 0/0.5/1). The setting with the best top-10 rate on selection is kept; the audit is scored once with it and never chooses. A top-10 rate is the share of reports whose recorded diagnosis is among the first ten articles. The outer script then scores the test half and the newer cases once each, after refitting on all tuning cases, and compares version 3 with version 2 case by case by replaying the saved version 2 on the same cases. It reports the difference with a 95 % interval from resampling diagnoses 2,000 times.
 
-Requirements AN-37 (the model), AN-38 (exact explanation), AN-39 (tuning only on the tuning half) and AN-40 (outer scoring once, paired with version 2) are checked by tagged tests in `tests/test_v3_model.py` and `tests/test_v3_outer.py`. Results: tuning was started on 2026-11-08; scores are not yet on this page.
+Requirements AN-37 (the model), AN-38 (exact explanation), AN-39 (tuning only on the tuning half) and AN-40 (outer scoring once, paired with version 2) are checked by tagged tests in `tests/test_v3_model.py` and `tests/test_v3_outer.py`. Results (2026-11-08, `docs/v3-report.md`): version 3 does not beat version 2. On the test half its top-10 rate is 79.3 % (English), 74.6 % (German) and 78.2 % (Portuguese), against 80.2 %, 75.0 % and 79.1 % for version 2; the paired difference is below zero with 95 % confidence in English and Portuguese. Its strength is diagnoses with no teaching case at all: among the newer cases (about 140 per language) it puts the right article in the first ten 24.3 %, 19.7 % and 16.2 % of the time, against 8.3 %, 7.7 % and 7.0 % for version 2. It is weaker than version 2 for diagnoses with two to four teaching cases in English and Portuguese. The prior got weight 0 in every language, and several chosen settings lie at the edge of the fixed grid. The report suggests combining the two versions in step S2.
 
 ## Functions
 - `V3Model.fit_cases`: add tuning-case evidence; refuses cases that are not tuning cases, duplicate identifiers and labels outside the article list.
