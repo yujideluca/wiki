@@ -9,7 +9,7 @@ location: radiology-crawler:docs/r1
 fed_by: []
 feeds: [radiology-report-matcher]
 sources: [radiology-crawler:docs/r1/r1-xray-chest.md, radiology-crawler:docs/r1/r1-xray-msk.md, radiology-crawler:docs/r1/r1-xray-abdomen-other.md, radiology-crawler:docs/r1/r1-xray-lexicons-and-test-sources.md, radiology-crawler:docs/assistant-problem-statement.md, radiology-crawler:docs/analysis-status.json]
-reviewed: 2026-11-09T17:26Z
+reviewed: 2026-11-09T18:22Z
 ---
 
 ## What it is
@@ -18,11 +18,13 @@ Four research documents in the folder `docs/r1/` of the radiology repository. Th
 ## What it does
 For each finding a document gives a definition in plain words, the descriptors with their allowed values, the findings it is easily confused with (which is what makes a finding "strict"), a rule for how specific a finding may be, the source, and German and Brazilian Portuguese terms. Every row carries a verification level: read in full, read in part, abstract only, or UNSOURCED (no open source supported it). Nothing was invented to fill a gap; UNSOURCED rows wait for Giovanni's decision. Counts after the verification pass of 2026-11-09:
 
-| Document | Findings | Read in full | Read in part | Abstract only | Unsourced |
-|---|---|---|---|---|---|
-| Chest | 70 | 39 | 15 | 0 | 16 |
-| Bones, joints, spine, skull | 91 | 0 | 62 | 5 | 24 |
-| Abdomen and other | 46 | 22 | 17 | 0 | 7 |
+| Document | Findings | With no source at all | Marked weak | Other detail |
+|---|---|---|---|---|
+| Chest | 70 | 2 | 4 | 39 read in full, 29 read in part |
+| Bones, joints, spine, skull | 91 | 0 | 7 | none read in full; 65 rows still carry at least one detail with no source |
+| Abdomen and other | 46 | 4 | 1 | 4 rows rest on abstracts only |
+
+A second source search on the same day, over the findings that first had no source, found an open source for most of them (14 of 16 chest findings, all 24 bone findings, 3 of 7 abdomen findings). Support is thin in places: the sources for the newly cited rows were read only in part, and the bone document still has 65 findings with at least one unsupported detail (for example, no open source defines dislocation as against subluxation). The search also corrected the draft: the diaphragm limit is more than 3 cm, and one source puts the apex of a sigmoid volvulus under the left diaphragm while another says the pelvis. "Weak" means the source lacks the key definition, is a single case report, or is based on CT rather than X-ray.
 
 The verification corrected several draft claims, for example the Meyerding grades, the Kellgren-Lawrence grades, the football-sign wording and the Naclerio V sign position. German terms found in open German articles: 26 of 70 chest, 22 of 45 bone-term rows, 14 of 34 abdomen rows; none is checked against a published glossary. Portuguese terms verified: 21 of 70 chest, 20 of 45 bone rows, 22 of 34 abdomen rows.
 
