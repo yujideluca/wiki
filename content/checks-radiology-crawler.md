@@ -8,7 +8,7 @@ status: active
 fed_by: []
 feeds: []
 sources: [radiology-crawler:tools/quality_gate.sh, radiology-crawler:pipeline-check.toml, radiology-crawler:CLAUDE.md, radiology-crawler:tools/check_dependencies.py, radiology-crawler:tests/test_cli_help.py, radiology-crawler:pipeline-check.version]
-reviewed: 2026-11-09T17:25Z
+reviewed: 2026-11-09T20:54Z
 ---
 
 ## What it is
@@ -25,3 +25,5 @@ It is a layer-3 page of [[code-security-pipeline]]: the shared ideas are in [[qu
 
 ## Who receives its output
 Readers who need to know what protects this project, and the session that changes it.
+
+Update 2026-11-09: the gate also compiles the new `assistant/` package, and two requirements (AN-61, FA-4) are tested by `tests/test_finding_inventory.py`; the four gate steps are unchanged.
