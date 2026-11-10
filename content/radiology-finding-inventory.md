@@ -9,7 +9,7 @@ location: radiology-crawler:assistant
 fed_by: [radiology-r1-xray-review]
 feeds: [radiology-report-matcher]
 sources: [radiology-crawler:assistant/inventory.py, radiology-crawler:assistant/__init__.py, radiology-crawler:assistant/modules/xray/chest.json, radiology-crawler:assistant/modules/xray/msk-trauma.json, radiology-crawler:assistant/modules/xray/msk-other.json, radiology-crawler:assistant/modules/xray/abdomen.json, radiology-crawler:tests/test_finding_inventory.py, radiology-crawler:docs/adr/0008-finding-inventory-format-and-module-layout.md, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/r1/gap-clusters.md, radiology-crawler:docs/r1/omitted-chest.md, radiology-crawler:docs/r1/omitted-msk-trauma.md, radiology-crawler:docs/r1/omitted-msk-other.md, radiology-crawler:docs/r1/omitted-abdomen.md]
-reviewed: 2026-11-09T23:33Z
+reviewed: 2026-11-10T00:55Z
 ---
 
 ## What it is
