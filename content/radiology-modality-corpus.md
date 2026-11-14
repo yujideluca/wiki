@@ -8,8 +8,8 @@ status: active
 location: radiology-crawler:analysis/modality_corpus.py
 fed_by: [radiology-finding-inventory]
 feeds: [radiology-finding-engine]
-sources: [radiology-crawler:analysis/modality_corpus.py, radiology-crawler:analysis/modality_inventory.py, radiology-crawler:tools/modality_corpus_run.sh, radiology-crawler:tests/test_modality_corpus.py, radiology-crawler:docs/training-corpus-manifest-ultrasound.json, radiology-crawler:docs/training-corpus-manifest-ct.json, radiology-crawler:docs/inventory-crosscheck-ultrasound.json, radiology-crawler:docs/inventory-crosscheck-ct.json, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:DESIGN.md, radiology-crawler:PLAN.md]
-reviewed: 2026-11-14T17:13Z
+sources: [radiology-crawler:analysis/modality_corpus.py, radiology-crawler:analysis/modality_inventory.py, radiology-crawler:tools/modality_corpus_run.sh, radiology-crawler:tests/test_modality_corpus.py, radiology-crawler:docs/training-corpus-manifest-ultrasound.json, radiology-crawler:docs/training-corpus-manifest-ct.json, radiology-crawler:docs/training-corpus-manifest-mri.json, radiology-crawler:docs/inventory-crosscheck-mri.json, radiology-crawler:docs/results-registry.json, radiology-crawler:docs/inventory-crosscheck-ultrasound.json, radiology-crawler:docs/inventory-crosscheck-ct.json, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:DESIGN.md, radiology-crawler:PLAN.md]
+reviewed: 2026-11-14T17:39Z
 memory: []
 ---
 
@@ -28,8 +28,8 @@ Results on 2026-11-14 (tuning half only, not a test score):
 
 - Ultrasound: 2,732 rows (1,395 quotes and 1,337 rewrites) for 338 of the 750 findings of its list; Radiopaedia 54 %, PubMed Central 38 %, IDKD books 8 %.
 - CT: 2,668 rows (1,376 quotes and 1,292 rewrites) for 493 of 1,180 findings; Radiopaedia 60 % after 135 rows were dropped to respect the limit, PubMed Central 32 %, IDKD books 8 %.
-- MRI: list of 1,107 findings built; its corpus was still being annotated when this page was reviewed.
-- Hit rate "right finding among three proposals", measured by five-fold cross-validation (the corpus is cut in five parts by diagnosis; four train, one is scored, in turn). The run of 14:07 UTC gave, for ultrasound, engine alone 71.5 % on quotes and 19.8 % on rewrites, engine plus learned matcher 77.3 % and 67.9 %; for CT, engine alone 77.9 % and 25.6 %, engine plus matcher 72.7 % and 56.2 %. These numbers are in the run log (`data/analysis/modality-corpus/run.log`, not in git), not yet in the results registry.
+- MRI: 3,419 rows (1,790 quotes and 1,629 rewrites) for 502 of 1,107 findings; Radiopaedia 60 % after 834 rows were dropped to respect the limit, PubMed Central 34 %, IDKD books 6 %.
+- Hit rate "right finding among three proposals", measured by five-fold cross-validation (the corpus is cut in five parts by diagnosis; four train, one is scored, in turn), with a simulated user for the rewrites. Engine alone, then engine plus learned matcher: ultrasound 71.5 % and 77.3 % on quotes, 19.8 % and 67.9 % on rewrites; CT 77.9 % and 72.7 % on quotes, 25.6 % and 56.2 % on rewrites; MRI 70.8 % and 74.9 % on quotes, 24.6 % and 60.7 % on rewrites. All are below the project targets (97 % on proper descriptions, 90 % on rewrites after questions), and in CT the matcher lowers the quotes: its weight is the X-ray value and is not tuned per method. The numbers are entry H10 of `docs/results-registry.json`.
 
 ## How it does it
 The steps run in order; each can be run again and continues where it stopped (for example after the account's usage limit). `tools/modality_corpus_run.sh` runs steps 4 to 9 for each method.
@@ -42,9 +42,9 @@ The steps run in order; each can be run again and continues where it stopped (fo
 6. A row exists only when both annotators state the same finding for the same text on the same list; its text is their quotes.
 7. `rewrite` (model): each agreed quote is rewritten the way a hurried non-expert would type it, and a second model checks that the rewrite still shows the finding; failed ones are dropped.
 8. `build`: writes the corpus and the manifest. It refuses rows that are not of the tuning half and articles of the held-out internet reports, and it drops whole texts of the largest source, in a fixed order, until that source holds at most 60 % of the rows (a corpus with a single source is refused).
-9. `crosscheck` (no model) counts, for each finding, in how many independent source families its name or a synonym occurs: article tags, literature link, RadLex (the radiology vocabulary of the Radiological Society of North America), IDKD books, PMC reports. For ultrasound 707 of 750 findings occur in two or more, for CT 1,115 of 1,180. `score` runs the cross-validation described above.
+9. `crosscheck` (no model) counts, for each finding, in how many independent source families its name or a synonym occurs: article tags, literature link, RadLex (the radiology vocabulary of the Radiological Society of North America), IDKD books, PMC reports. For ultrasound 707 of 750 findings occur in two or more, for CT 1,115 of 1,180, for MRI 1,039 of 1,107. `score` runs the cross-validation described above.
 
-Haiku is the second annotator, not Codex (OpenAI's coding agent, used elsewhere in the project): a Codex call measured about 15,000 tokens before any text, a Haiku call about 3,000. The cost is that the two annotators are less independent than two models of different makers. Measured token use per method, from the manifests: ultrasound about 5.4 million, CT about 5.5 million.
+Haiku is the second annotator, not Codex (OpenAI's coding agent, used elsewhere in the project): a Codex call measured about 15,000 tokens before any text, a Haiku call about 3,000. The cost is that the two annotators are less independent than two models of different makers. Measured token use per method, from the manifests: ultrasound about 5.4 million, CT about 5.5 million, MRI about 6.9 million.
 
 ## Functions
 - `modality_inventory.clusters(mod)`: clusters of equivalent wordings for a method from the finding tags.
@@ -57,7 +57,7 @@ Haiku is the second annotator, not Codex (OpenAI's coding agent, used elsewhere 
 - `load(mod)`: the corpus rows, after the checksum and tuning-half checks.
 
 ## Where it sits in the pipeline
-After the article finding tags and beside the X-ray inventory ([[radiology-finding-inventory]]); before the engine work on these methods. In the project plan (`PLAN.md`) it is the "corpus" lane, milestone M1.
+After the article finding tags and beside the X-ray inventory ([[radiology-finding-inventory]]); before the engine work on these methods. In the project plan (`PLAN.md`) it is the "corpus" lane, milestone M1, closed on 2026-11-14.
 
 ## Who receives its output
 The learned matcher of [[radiology-finding-engine]], which will train on these corpora, and Giovanni, who reads the manifests.
