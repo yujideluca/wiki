@@ -9,7 +9,7 @@ location: radiology-crawler:docs/r1
 fed_by: []
 feeds: [radiology-report-matcher, radiology-finding-inventory]
 sources: [radiology-crawler:docs/r1/foundational-candidates.md, radiology-crawler:docs/r1/foundational-chest.md, radiology-crawler:docs/r1/foundational-msk-1.md, radiology-crawler:docs/r1/foundational-msk-2.md, radiology-crawler:docs/r1/foundational-abdomen.md, radiology-crawler:docs/r1/r1-xray-chest.md, radiology-crawler:docs/r1/r1-xray-msk.md, radiology-crawler:docs/r1/r1-xray-abdomen-other.md, radiology-crawler:docs/r1/r1-xray-lexicons-and-test-sources.md, radiology-crawler:docs/assistant-problem-statement.md, radiology-crawler:docs/analysis-status.json]
-reviewed: 2026-11-10T17:04Z
+reviewed: 2026-11-14T04:47Z
 ---
 
 ## What it is
@@ -40,3 +40,5 @@ Step R1 of the finding assistant, after the problem statement (R0) and before th
 
 ## Who receives its output
 Step R2 of the finding assistant, and Giovanni for the decisions on UNSOURCED rows.
+
+Update 2026-11-14: the lexicons and licences document (`docs/r1/r1-xray-lexicons-and-test-sources.md`) now ends with a licence acceptance record: Giovanni told Claude to accept the RadLex License Agreement 2.1, a copy of the agreement ships with the synonym list, and informal-term sources that were tried and found unusable are listed there. The engine that uses it is described on [[radiology-finding-engine]].

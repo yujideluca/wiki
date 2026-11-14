@@ -8,8 +8,8 @@ status: active
 location: radiology-crawler:assistant/engine.py
 fed_by: [radiology-finding-inventory]
 feeds: [radiology-report-matcher]
-sources: [radiology-crawler:analysis/synonyms.py, radiology-crawler:assistant/lexicon/xray-synonyms-en.json, radiology-crawler:assistant/segment.py, radiology-crawler:assistant/engine.py, radiology-crawler:analysis/assistant_eval.py, radiology-crawler:tests/test_assistant_engine.py, radiology-crawler:docs/adr/0009-engine-retrieve-and-rerank.md, radiology-crawler:docs/REQUIREMENTS.md]
-reviewed: 2026-11-14T04:46Z
+sources: [radiology-crawler:assistant/lexicon/RadLex_License_2.1.pdf, radiology-crawler:analysis/synonyms.py, radiology-crawler:assistant/lexicon/xray-synonyms-en.json, radiology-crawler:assistant/segment.py, radiology-crawler:assistant/engine.py, radiology-crawler:analysis/assistant_eval.py, radiology-crawler:tests/test_assistant_engine.py, radiology-crawler:docs/adr/0009-engine-retrieve-and-rerank.md, radiology-crawler:docs/REQUIREMENTS.md]
+reviewed: 2026-11-14T04:47Z
 ---
 
 ## What it is
