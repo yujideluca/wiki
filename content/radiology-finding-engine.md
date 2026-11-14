@@ -6,7 +6,7 @@ kind: module
 project: radiology-report-matcher
 status: active
 location: radiology-crawler:assistant/engine.py
-fed_by: [radiology-finding-inventory]
+fed_by: [radiology-finding-inventory, radiology-modality-corpus]
 feeds: [radiology-report-matcher]
 sources: [radiology-crawler:analysis/training_corpus.py, radiology-crawler:analysis/books_corpus.py, radiology-crawler:docs/books-corpus-comparison.md, radiology-crawler:tests/test_training_corpus.py, radiology-crawler:docs/training-corpus-manifest.json, radiology-crawler:assistant/lexicon/xray-abbreviations-en.json, radiology-crawler:assistant/matcher.py, radiology-crawler:assistant/dialog.py, radiology-crawler:analysis/dialog_eval.py, radiology-crawler:tests/test_assistant_dialog.py, radiology-crawler:tests/test_assistant_matcher.py, radiology-crawler:analysis/fabricate.py, radiology-crawler:docs/r5-design-review.md, radiology-crawler:docs/r5-bottleneck-analysis.md, radiology-crawler:assistant/lexicon/RadLex_License_2.1.pdf, radiology-crawler:analysis/synonyms.py, radiology-crawler:assistant/lexicon/xray-synonyms-en.json, radiology-crawler:assistant/segment.py, radiology-crawler:assistant/engine.py, radiology-crawler:analysis/assistant_eval.py, radiology-crawler:tests/test_assistant_engine.py, radiology-crawler:docs/adr/0009-engine-retrieve-and-rerank.md, radiology-crawler:docs/REQUIREMENTS.md]
 reviewed: 2026-11-14T13:07Z
@@ -58,7 +58,7 @@ Each finding becomes a small weighted profile of words and word pairs; a BM25-st
 - Experiment of 2026-11-14, `analysis/books_corpus.py`: `analysis/books_corpus.py` builds a second training set from seven radiology books that are free to reuse (IDKD Springer series, licence CC BY 4.0), and compares it with the current corpus on the tuning half only. A sentence is labelled with every finding whose name or synonym it contains, which is a weak label. Result, in `docs/books-corpus-comparison.md`: the books alone score far below the current corpus (49.8 % against 89.1 % top-3 on quotes) and adding them to the current corpus does not help (rewrites drop from 83.4 % to 71.3 %). The current corpus stays; the books are better suited to the inventory than to training the matcher. Book text stays in `data/books-corpus` and out of git.
 
 ## Where it sits in the pipeline
-After the inventory and the frozen test sets (step R4) and before the sufficiency check and question chooser (steps R6, R7). Stage 2, a descriptor reader that re-scores the top candidates, is not built yet.
+The training texts for ultrasound, CT and MRI are built by [[radiology-modality-corpus]]. After the inventory and the frozen test sets (step R4) and before the sufficiency check and question chooser (steps R6, R7). Stage 2, a descriptor reader that re-scores the top candidates, is not built yet.
 
 ## Who receives its output
 The later steps of the finding assistant, and Giovanni, who reads the scores.
