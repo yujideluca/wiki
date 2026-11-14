@@ -9,7 +9,7 @@ location: radiology-crawler:assistant/engine.py
 fed_by: [radiology-finding-inventory]
 feeds: [radiology-report-matcher]
 sources: [radiology-crawler:assistant/engine.py, radiology-crawler:analysis/assistant_eval.py, radiology-crawler:tests/test_assistant_engine.py, radiology-crawler:docs/adr/0009-engine-retrieve-and-rerank.md, radiology-crawler:docs/REQUIREMENTS.md]
-reviewed: 2026-11-14T03:35Z
+reviewed: 2026-11-14T03:58Z
 ---
 
 ## What it is
@@ -18,7 +18,9 @@ The first slice of the program at the heart of the finding assistant described o
 ## What it does
 It reads a description clause by clause, sets apart words that a negation ("no", "without", "absent") covers and words that are hedged ("possibly"), and scores every finding of [[radiology-finding-inventory]] against the stated words. The scoring uses only the inventory (each finding's name, group and descriptor names and values), never text from the cases or articles, so the cases can still judge it fairly. The scorer `analysis/assistant_eval.py` counts a (text, target finding) pair as a hit only when the target is exactly one of the three proposed, resamples a 95 % interval by case, and refuses to score the test half of the data: that half is scored once, in step R8.
 
-Measured on the tuning half (1,453 agreed pairs from 718 cases): the right finding is among the three in 48 % of pairs (40 % before the free numbers were chosen) and is first in about 25 %. The target is 97 %. Two limits are known. A name match is most of the signal, and generic findings such as "opacity" and "atelectasis" are missed because texts use a more specific word. And because one case text states several findings (1.8 on average, up to 13) while only three are shown, this pair unit can reach at most 86 %; Giovanni still has to decide how to score it (per case, per sentence, or with the target marked).
+The unit of analysis is one structure (Giovanni, 2026-11-14): a text that describes several structures is analysed one structure at a time, each getting its own three suggestions, and several mentions of the same thing count as one structure. For the proper test set a structure is what the annotators quoted for a finding. My first measurement used a whole case text against all its findings with only three slots, which capped the score at 86 % and was the wrong unit; it was replaced.
+
+Measured on the tuning half per structure (1,453 pairs from 718 cases): the right finding is among the three in 40 % of pairs (95 % interval 38 to 43) and is first in 29 %. The target is 97 %. A name match is most of the signal, and generic findings such as "opacity" and "atelectasis" are missed because texts use a more specific word. Still to build: a segmenter that cuts a real description into structures, the fabricated and insufficiency test sets rebuilt per structure, and the descriptor reader that re-scores candidates.
 
 ## How it does it
 Each finding becomes a small weighted profile of words and word pairs; a BM25-style (a standard text-search weighting) matrix product on NumPy scores all findings at once, so the order does not depend on the number of threads, and ties go to the smaller finding id. Free numbers (name weight 12, descriptor weight 1, definition weight 0 and others) live in the `Params` class and were chosen on the tuning half. The method choice is decision record (architecture decision record, ADR) 0009; requirements FA-1, FA-6 and AN-65 are tested by `tests/test_assistant_engine.py`.
