@@ -8,8 +8,8 @@ status: active
 location: radiology-crawler:assistant/engine.py
 fed_by: [radiology-finding-inventory]
 feeds: [radiology-report-matcher]
-sources: [radiology-crawler:assistant/matcher.py, radiology-crawler:tests/test_assistant_matcher.py, radiology-crawler:analysis/fabricate.py, radiology-crawler:docs/r5-design-review.md, radiology-crawler:docs/r5-bottleneck-analysis.md, radiology-crawler:assistant/lexicon/RadLex_License_2.1.pdf, radiology-crawler:analysis/synonyms.py, radiology-crawler:assistant/lexicon/xray-synonyms-en.json, radiology-crawler:assistant/segment.py, radiology-crawler:assistant/engine.py, radiology-crawler:analysis/assistant_eval.py, radiology-crawler:tests/test_assistant_engine.py, radiology-crawler:docs/adr/0009-engine-retrieve-and-rerank.md, radiology-crawler:docs/REQUIREMENTS.md]
-reviewed: 2026-11-14T07:11Z
+sources: [radiology-crawler:assistant/matcher.py, radiology-crawler:assistant/dialog.py, radiology-crawler:analysis/dialog_eval.py, radiology-crawler:tests/test_assistant_dialog.py, radiology-crawler:tests/test_assistant_matcher.py, radiology-crawler:analysis/fabricate.py, radiology-crawler:docs/r5-design-review.md, radiology-crawler:docs/r5-bottleneck-analysis.md, radiology-crawler:assistant/lexicon/RadLex_License_2.1.pdf, radiology-crawler:analysis/synonyms.py, radiology-crawler:assistant/lexicon/xray-synonyms-en.json, radiology-crawler:assistant/segment.py, radiology-crawler:assistant/engine.py, radiology-crawler:analysis/assistant_eval.py, radiology-crawler:tests/test_assistant_engine.py, radiology-crawler:docs/adr/0009-engine-retrieve-and-rerank.md, radiology-crawler:docs/REQUIREMENTS.md]
+reviewed: 2026-11-14T07:14Z
 ---
 
 ## What it is
