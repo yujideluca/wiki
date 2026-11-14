@@ -9,7 +9,7 @@ location: radiology-crawler:docs/r1
 fed_by: []
 feeds: [radiology-report-matcher, radiology-finding-inventory]
 sources: [radiology-crawler:docs/r1/foundational-candidates.md, radiology-crawler:docs/r1/foundational-chest.md, radiology-crawler:docs/r1/foundational-msk-1.md, radiology-crawler:docs/r1/foundational-msk-2.md, radiology-crawler:docs/r1/foundational-abdomen.md, radiology-crawler:docs/r1/r1-xray-chest.md, radiology-crawler:docs/r1/r1-xray-msk.md, radiology-crawler:docs/r1/r1-xray-abdomen-other.md, radiology-crawler:docs/r1/r1-xray-lexicons-and-test-sources.md, radiology-crawler:legacy/docs/assistant-problem-statement.md, radiology-crawler:docs/plan.json]
-reviewed: 2026-11-14T17:53Z
+reviewed: 2026-11-14T18:26Z
 ---
 
 ## What it is
@@ -43,4 +43,4 @@ Step R2 of the finding assistant, and Giovanni for the decisions on UNSOURCED ro
 
 Update 2026-11-14: the lexicons and licences document (`docs/r1/r1-xray-lexicons-and-test-sources.md`) now ends with a licence acceptance record: Giovanni told Claude to accept the RadLex License Agreement 2.1, a copy of the agreement ships with the synonym list, and informal-term sources that were tried and found unusable are listed there. The engine that uses it is described on [[radiology-finding-engine]].
 
-Update 2026-11-14 (terms check): the R1 lexicon and test-source record now notes that the live Radiopaedia terms page could not be read (HTTP 402) and that a 2022 copy says the data is not meant for bulk machine-learning use; Giovanni reads the live terms before anything trained on its text is shipped.
+Update 2026-11-14 (terms check): the R1 lexicon and test-source record now notes that the live Radiopaedia terms page could not be read (HTTP 402) and that a 2022 copy says the data is not meant for bulk machine-learning use; Giovanni reads the live terms before anything trained on its text is shipped. Settled later on 2026-11-14: Giovanni read Radiopaedia's terms himself, and the rule now in force is that training never rests on Radiopaedia alone: its information is always crossed with other public sources (no source above 60 % of a corpus).
