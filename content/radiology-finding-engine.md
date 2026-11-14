@@ -7,7 +7,7 @@ project: radiology-report-matcher
 status: active
 location: radiology-crawler:assistant/engine.py
 fed_by: [radiology-finding-inventory, radiology-modality-corpus]
-feeds: [radiology-report-matcher]
+feeds: [radiology-report-matcher, radiology-website]
 sources: [radiology-crawler:analysis/training_corpus.py, radiology-crawler:analysis/books_corpus.py, radiology-crawler:docs/books-corpus-comparison.md, radiology-crawler:tests/test_training_corpus.py, radiology-crawler:docs/training-corpus-manifest.json, radiology-crawler:assistant/lexicon/xray-abbreviations-en.json, radiology-crawler:assistant/matcher.py, radiology-crawler:assistant/dialog.py, radiology-crawler:analysis/dialog_eval.py, radiology-crawler:tests/test_assistant_dialog.py, radiology-crawler:tests/test_assistant_matcher.py, radiology-crawler:analysis/fabricate.py, radiology-crawler:docs/r5-design-review.md, radiology-crawler:docs/r5-bottleneck-analysis.md, radiology-crawler:assistant/lexicon/RadLex_License_2.1.pdf, radiology-crawler:analysis/synonyms.py, radiology-crawler:assistant/lexicon/xray-synonyms-en.json, radiology-crawler:assistant/segment.py, radiology-crawler:assistant/engine.py, radiology-crawler:analysis/assistant_eval.py, radiology-crawler:tests/test_assistant_engine.py, radiology-crawler:docs/adr/0009-engine-retrieve-and-rerank.md, radiology-crawler:docs/REQUIREMENTS.md]
 reviewed: 2026-11-14T17:53Z
 ---
@@ -64,3 +64,5 @@ The training texts for ultrasound, CT and MRI are built by [[radiology-modality-
 The later steps of the finding assistant, and Giovanni, who reads the scores.
 
 Update 2026-11-14 (real reports and insufficiency set): `analysis/real_reports.py` has two commands. `label` keeps the (report, finding) pairs both annotators state in the first real report batch and writes them to `data/analysis/real-reports/batch1-labelled.jsonl`; `score` runs the hybrid on them but is not to be run before step R8, because the batch is held out and never trains the matcher. `analysis/fabricate.py insufficient` makes the per-structure insufficiency set of the test half (the deciding attribute deleted, kept only when the finding is no longer readable). Both are described on [[radiology-analysis]].
+
+Update 2026-11-14 (website): a first slice of a website calls this engine as it is, through one Python process, and changes none of its code; see [[radiology-website]].
