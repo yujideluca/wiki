@@ -6,10 +6,10 @@ kind: process
 project: radiology-report-matcher
 status: active
 location: radiology-crawler:analysis/real_reports.py
-fed_by: [radiology-analysis]
-feeds: [radiology-report-matcher]
+fed_by: [radiology-analysis, radiology-final-test-batch]
+feeds: [radiology-report-matcher, radiology-finding-inventory]
 sources: [radiology-crawler:analysis/real_reports.py, radiology-crawler:tests/test_real_reports.py, radiology-crawler:docs/real-reports-factcheck-batch1.json, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:DESIGN.md, radiology-crawler:PLAN.md]
-reviewed: 2026-11-14T18:50Z
+reviewed: 2026-11-14T23:13Z
 memory: []
 ---
 
@@ -90,10 +90,12 @@ Three requirements describe this, AN-76 to AN-78 (a requirement is a numbered pr
 2. The judge (a Claude session that works only on held-out data and never changes the assistant in the same session) reads open literature for each agreed label, each disputed label and each unlisted name. Output: the decision file in `data/`.
 3. The judge runs `factcheck`. Output: either a list of problems and no files, or the records, the gap list, the checked set and the manifest.
 4. The judge commits the manifest and records the milestone as done with the plan tool. Output for batch 1: commits `c953478` (code, tests, manifest) and `2160a8d` (plan) of 2026-11-14.
-5. The corpus session reads the gap list and decides, with its own sources, which gaps and defects change the list of findings. Not done yet on 2026-11-14.
+5. The corpus session reads the gap list and decides, with its own sources, which gaps and defects change the list of findings. Done for batch 1 on 2026-11-14 (commit `3575a75`): nine findings added, four duplicate entries merged into three; [[radiology-finding-inventory]] describes the change.
 
 ## Where it sits in the pipeline
-After the labelling of real reports by `analysis/real_reports.py label` ([[radiology-analysis]]) and before any scoring of the assistant on real reports. Scoring batch 1 is part of a later milestone ("X-ray: the one-time test"); the final test uses a new, untouched batch, which the plan says must be fact-checked by two checkers and the literature.
+After the labelling of real reports by `analysis/real_reports.py label` ([[radiology-analysis]]) and before any scoring of the assistant on real reports. Scoring batch 1 is part of a later milestone ("X-ray: the one-time test"); the final test uses a new, untouched batch, which the plan says must be fact-checked by two checkers and the literature. That batch, "batch 2", was collected and labelled on 2026-11-14 and is described on [[radiology-final-test-batch]]; it has not been fact-checked and not been scored.
+
+Since commit `7bbdaaa` of 2026-11-14 the command takes the batch and, for batch 2, the imaging method: `factcheck --real-batch 2 --method xray` (requirement AN-92). For batch 2 the committed manifest is sealed, meaning it holds only counts and checksums and no verdict, so that nothing about the held-out reports can be read from the repository. No batch-2 manifest of this kind existed at that commit.
 
 ## Who receives its output
 The session that builds the lists of findings ([[radiology-finding-inventory]]) receives the gap list. The later scoring step receives the checked set. Giovanni and any reader of the repository receive the manifest; the plan in [[radiology-report-matcher]] shows the milestone as done.

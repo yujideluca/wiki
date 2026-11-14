@@ -8,7 +8,7 @@ status: active
 fed_by: []
 feeds: []
 sources: [radiology-crawler:.github/workflows/quality-gate.yml, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:tests/test_web.py, radiology-crawler:tests/test_real_reports.py, radiology-crawler:tools/quality_gate.sh, radiology-crawler:pipeline-check.toml, radiology-crawler:CLAUDE.md, radiology-crawler:tools/check_dependencies.py, radiology-crawler:tests/test_cli_help.py, radiology-crawler:pipeline-check.version]
-reviewed: 2026-11-14T18:50Z
+reviewed: 2026-11-14T23:13Z
 ---
 
 ## What it is
@@ -35,3 +35,5 @@ Update 2026-11-14 (later): the gate now runs 363 tests and 101 requirements; `te
 Update 2026-11-14 (reorganisation): the gate now runs 175 tests and 58 requirements. The code of the old diagnosis ranker moved to the folder `legacy/` with its 19 test files and 44 requirement rows, which the gate no longer runs or checks; the four gate steps are unchanged.
 
 Update 2026-11-14 (website and real-report fact-check): the gate has a fifth step, "1b website", between the Python tests and the traceability step. It checks the first slice of the assistant's website ([[radiology-website]]): `mix format --check-formatted` and `mix test` for the back end written in Elixir (`mix` is Elixir's build tool), a compile of the page written in Elm, and `elm-test` for the page's tests. Where `mix`, `elm` or `elm-test` is not installed, that part is skipped and the gate prints a line starting with `NOTICE:` that says what was skipped, so a skip is never silent. The CI workflow now installs Elixir 1.18 with OTP (Open Telecom Platform, Elixir's runtime) 27 and Elm 0.19.1 with elm-test, so the step runs on GitHub. Step 1 also compiles `web/bridge`. The traceability step reads requirement tags only from the folder `tests/` (`pipeline-check.toml`), so the nine website requirements WS-6 to WS-14 are covered there by `tests/test_web.py`; the Elixir and Elm tests carry the same tags but are not counted. The three requirements of the literature fact-check of real reports, AN-76 to AN-78, are covered by six tests in `tests/test_real_reports.py` ([[radiology-real-report-factcheck]]). Numbers of the CI run on commit `600af44`: 215 Python tests, 11 Elixir tests and 10 Elm tests passed; `docs/REQUIREMENTS.md` has 75 rows.
+
+Update 2026-11-14 (commit `7bbdaaa`): in the continuous-integration run on this commit the gate passed with 265 Python tests, 11 ExUnit tests and 14 Elm tests, and the traceability step counted 102 requirements. The new rows cover the second slice of the website (WS-15 to WS-20), the descriptor schemas and related diagnoses, and the held-out batch of real reports. The rules file `CLAUDE.md` now tells every session to commit by path, after two commits that day carried another session's staged files ([[radiology-report-matcher]]).

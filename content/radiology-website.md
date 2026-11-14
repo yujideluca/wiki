@@ -1,22 +1,24 @@
 ---
 id: radiology-website
-title: Finding assistant website, first slice (web/)
+title: Finding assistant website (web/)
 aliases: [finding assistant website, web/, web/start.sh, FindingWeb, web/bridge/bridge.py, finding_web]
 kind: program
 project: radiology-report-matcher
 status: active
 location: radiology-crawler:web
-fed_by: [radiology-finding-engine]
+fed_by: [radiology-finding-engine, radiology-modality-corpus]
 feeds: [radiology-report-matcher]
 sources: [radiology-crawler:web/start.sh, radiology-crawler:web/mix.exs, radiology-crawler:web/mix.lock, radiology-crawler:web/lib/finding_web/application.ex, radiology-crawler:web/lib/finding_web/bridge.ex, radiology-crawler:web/lib/finding_web/router.ex, radiology-crawler:web/bridge/bridge.py, radiology-crawler:web/elm/src/Main.elm, radiology-crawler:web/elm/src/Api.elm, radiology-crawler:web/elm/elm.json, radiology-crawler:web/elm/tests/MainTest.elm, radiology-crawler:web/priv/static/index.html, radiology-crawler:web/priv/static/boot.js, radiology-crawler:web/test/router_test.exs, radiology-crawler:web/test/bridge_test.exs, radiology-crawler:tests/test_web.py, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:DESIGN.md, radiology-crawler:tools/quality_gate.sh, radiology-crawler:.github/workflows/quality-gate.yml, radiology-crawler:PLAN.md]
-reviewed: 2026-11-14T18:50Z
+reviewed: 2026-11-14T23:13Z
 memory: []
 ---
 
 ## What it is
-A web page through which a radiologist can use the finding assistant of [[radiology-report-matcher]] in a browser. The user types a loose description of one thing seen on an image. The page answers with three exact findings (a "finding" is one named observation on an image, such as a pneumothorax), marks the most likely one, says whether the description is enough, and asks up to three questions. It names findings; it does not diagnose.
+A web page through which a radiologist can use the finding assistant of [[radiology-report-matcher]] in a browser. The user types a loose description of one thing seen on an image. The page answers with three exact findings (a "finding" is one named observation on an image, such as a pneumothorax), marks the most likely one, says whether the description is enough, and asks up to three questions. Under each suggested finding it lists the diagnoses that the project's collected cases report together with that finding. It names findings; it does not diagnose the patient.
 
-This is a first working slice, built on 2026-11-14, and not the finished website. Three limits matter most: it runs only while someone has started it by hand with `web/start.sh` on Giovanni's laptop and can only be opened from that same computer; the part "related diagnoses" is an empty placeholder; and it is in English only. The plan lists the website milestone as in progress, with two open points: related diagnoses and a check with a radiologist.
+It was built on 2026-11-14 in two slices (a slice is a narrow but complete piece that works from the page down to the engine): the first gave findings, verdict and questions; the second, the same day (commit `bbfc3f1`), filled the part "related diagnoses" and made the questions usable on a phone. It is not the finished website. The limits that matter most: it runs only while someone has started it by hand with `web/start.sh` on Giovanni's laptop and can only be opened from that same computer; it is in English only; and few findings have related diagnoses yet (for X-ray 74 of 233, see [[radiology-modality-corpus]]). The plan lists the website milestone as in progress, with one open point: a check with a radiologist.
+
+Three decisions by Giovanni of 2026-11-14 shape it (decision log of the repository's `DESIGN.md`): all four imaging methods can be chosen, none is hidden until it reaches its accuracy target; the site is started by hand and has no automatic start; and everything the site shows comes from the corpus (the project's collection of training texts, its only database), never from a second data store kept by the site.
 
 ## Architecture
 ### Context
@@ -35,6 +37,7 @@ container br: Bridge — one long-running Python process that calls the engine
 external e: Finding engine | [[radiology-finding-engine]]
 store fl: Finding lists — names, descriptors and standard values per imaging method | [[radiology-finding-inventory]]
 store tc: Training file — optional, in the data folder outside version control
+store rd: Related-diagnoses tables — one per imaging method, built from the corpus | [[radiology-modality-corpus]]
 
 u -types into-> pg
 pg -sends the text and all answers so far to-> be
@@ -42,6 +45,7 @@ be -hands each request, one at a time, to-> br
 br -calls-> e
 br -reads names and question values from-> fl
 br -trains the learned matcher at first use from-> tc
+br -reads diagnosis names per finding from-> rd
 
 ## What it does
 What the user sees, in order:
@@ -49,8 +53,8 @@ What the user sees, in order:
 1. A choice of imaging method (X-ray, ultrasound, CT for computed tomography, MRI for magnetic resonance imaging) and a text box labelled "Description". The page says that loose words are fine.
 2. After "Suggest findings": one card per structure. A "structure" is one thing described; a text that describes several things gets several cards (at most 12). Each card shows up to three suggested findings, the first tagged "most likely".
 3. A verdict in words: "The description is sufficient", "The description is not sufficient" or "Fits no known finding".
-4. When the description is not sufficient, one question at a time, worded from the name of a descriptor (an attribute of a finding, such as its side), for example "What is the side?". The answers offered are the standard values of that descriptor plus "Don't know". The questions stop after three, or earlier when the description has become sufficient.
-5. Last on every card, the heading "Related diagnoses" with the sentence "Not available yet." The field exists so the layout is settled; nothing fills it yet.
+4. When the description is not sufficient, one question at a time, worded from the name of a descriptor (an attribute of a finding, such as its side), for example "What is the side?". Since the second slice the sentence is the one the engine provides. The answers offered are the standard values of that descriptor plus "Don't know". One kind of question offers findings by name instead; there the way out is "None of these", which sets the offered findings aside. Up to 8 answers are shown as one button each; more than 8 become one drop-down list ("Choose one of N…") with an "Answer" button, so that a long list fits a phone. The questions stop after three, or earlier when the description has become sufficient.
+5. Last on every card, the heading "Related diagnoses" with the sentence "Diagnoses that the collected cases report together with each suggested finding. This is not a diagnosis of the patient." Below it, one group per suggested finding, the most likely one opened, lists up to 10 diagnosis names under "Related diagnoses reported with this finding:". Names only: no count and no probability. A finding or a method without an entry shows "Not available yet for this method."; a card with no suggested finding shows "No finding was suggested, so there is nothing to relate."
 6. A "Clear" button that empties the page.
 
 When the file with the trained data is not on the computer, or is damaged, the site still answers, from the lists of findings alone, and shows a notice that the suggestions are less accurate.
@@ -77,35 +81,43 @@ Bad input gets a fixed sentence and a matching status number: an empty descripti
 
 Why the dialog lives in the page and not on the server: the decision log of the repository's `DESIGN.md` (2026-11-14) gives the reason that a server with no state is the simplest proof that nothing typed is stored. The same row records what was rejected: the larger web framework Phoenix (more packages than three addresses need), rewriting the matching code in Elixir (two copies of tuned mathematics), one Python process per request (slow start, retrains each time), and dialog state on the server (would keep typed text).
 
-What leaves the bridge is limited to finding names, descriptor names and standard values from the lists of findings, the user's own words and the site's fixed sentences. It sends no definition, no text of a teaching case, no score and no text from Radiopaedia (the reference site the project collects pages from).
+**Related diagnoses** come from one table per imaging method, `assistant/lexicon/<method>-related-diagnoses-en.json`, which the corpus work builds from the training texts ([[radiology-modality-corpus]] says how, and what a link rests on). The bridge only reads it. Per suggested finding it passes on at most 10 diagnosis names, the one with the most corpus rows first. The table's numbers stay in the bridge: they say how often the collected texts showed the pair, not how likely a diagnosis is. The bridge looks at the file on every request and reads it again only when it has changed, so a new table is used without a restart. When the table is missing, damaged or made for another method, the bridge reports "not available" and the rest of the site works.
+
+What leaves the bridge is limited to finding names, descriptor names and standard values from the lists of findings, diagnosis names from that table, the user's own words and the site's fixed sentences. It sends no definition, no text of a teaching case, no score and no text from Radiopaedia (the reference site the project collects pages from).
 
 ### Starting it
 `web/start.sh` compiles the page, fetches the Elixir packages and starts the server; it prints `Finding assistant: http://127.0.0.1:4107` and runs until Ctrl-C. There is no background service: when the script stops, the site is gone.
 
 ### Requirements and tests
-Nine requirements, WS-6 to WS-14 (a requirement is a numbered promise in `docs/REQUIREMENTS.md` that a test must check; a test names its requirement in a comment `REQ <ID>`):
+Fifteen requirements, WS-6 to WS-20 (a requirement is a numbered promise in `docs/REQUIREMENTS.md` that a test must check; a test names its requirement in a comment `REQ <ID>`):
 
 - WS-6: the bridge answers one JSON request per line, for a method given as a parameter.
 - WS-7: the back end serves the page and the three API addresses; a bad request gets a JSON error and the site keeps working.
 - WS-8: nothing typed is stored: no request log, file, database or cookie, and no dialog kept between requests.
 - WS-9: one question at a time with standard values and "Don't know", at most three.
 - WS-10: the site works without the trained data and says so.
-- WS-11: only terms of the lists of findings, the user's words and fixed sentences are shown.
+- WS-11: only terms of the lists of findings, diagnosis names of the corpus table, the user's words and fixed sentences are shown.
 - WS-12: the page works on a phone and a desktop with plain HTML and CSS.
-- WS-13: related diagnoses are shown last; until built, an empty placeholder that says "Not available yet".
+- WS-13: related diagnoses are shown last on every result.
 - WS-14: the server listens on this computer only.
+- WS-15: related diagnoses come from the corpus table only, up to 10 names per finding, never a count; a table that arrives later is used without a restart.
+- WS-16: the page lists them under each suggested finding, by name, and says they are not a diagnosis of the patient.
+- WS-17: a question with more than 8 answers is one drop-down list with an "Answer" button.
+- WS-18: each question uses the engine's sentence; where findings are offered by name the way out is "None of these", elsewhere "Don't know".
+- WS-19: the site is started by hand; the repository holds no service, timer or autostart entry for it.
+- WS-20: every imaging method that has a list of findings can be chosen, with or without trained data.
 
-Three sets of tests check them. `tests/test_web.py` (Python) tests the bridge and scans the site's source files for forbidden things, for example any call that writes a file or a log, any browser storage, a listening address open to other computers. One of its tests sends requests containing a marker word to a running bridge and checks that the word appears in no error output, no later answer and no file. `web/test/` (ExUnit, Elixir's test tool) tests the back end and its bridge process: 11 tests. `web/elm/tests/MainTest.elm` (elm-test) tests the page's logic: 10 tests.
+Three sets of tests check them. `tests/test_web.py` (Python, 25 tests) tests the bridge and scans the site's source files for forbidden things, for example any call that writes a file or a log, any browser storage, a listening address open to other computers. One of its tests sends requests containing a marker word to a running bridge and checks that the word appears in no error output, no later answer and no file. `web/test/` (ExUnit, Elixir's test tool) tests the back end and its bridge process: 11 tests. `web/elm/tests/MainTest.elm` (elm-test) tests the page's logic: 14 tests.
 
-The quality gate of the repository (the one script that decides whether the code passes, see [[checks-radiology-crawler]]) runs the Elixir and Elm tests in its step "1b website". On a computer without Elixir or Elm it skips that part with a visible notice. Continuous integration (CI, automatic checks on GitHub at every push) installs Elixir 1.18 with OTP (Open Telecom Platform, Elixir's runtime) 27 and Elm 0.19.1 so the step runs there. In the CI run on commit `600af44` of 2026-11-14 the step ran: 11 ExUnit tests and 10 Elm tests passed.
+The quality gate of the repository (the one script that decides whether the code passes, see [[checks-radiology-crawler]]) runs the Elixir and Elm tests in its step "1b website". On a computer without Elixir or Elm it skips that part with a visible notice. Continuous integration (CI, automatic checks on GitHub at every push) installs Elixir 1.18 with OTP (Open Telecom Platform, Elixir's runtime) 27 and Elm 0.19.1 so the step runs there. In the CI run on commit `7bbdaaa` of 2026-11-14 the step ran: 11 ExUnit tests and 14 Elm tests passed.
 
 ## Where it sits in the pipeline
-Last in the chain of the project: the lists of findings ([[radiology-finding-inventory]]) and the training data feed the engine ([[radiology-finding-engine]]); the website puts the engine in front of a person. It is the product of the plan milestone "Website" in [[radiology-report-matcher]].
+Last in the chain of the project: the lists of findings ([[radiology-finding-inventory]]) and the training data feed the engine ([[radiology-finding-engine]]); the corpus work also supplies the tables of related diagnoses ([[radiology-modality-corpus]]); the website puts both in front of a person. It is the product of the plan milestone "Website" in [[radiology-report-matcher]].
 
 ## Who receives its output
 Whoever sits at Giovanni's laptop while `web/start.sh` runs. Nobody else: the site is not published on the internet.
 
 ## Notes
-Not verified for this page: the site was not started in the session that wrote it (it was not running, and starting it writes build files into the repository). The behaviour described comes from the code, the tests and the CI run named above.
+Not verified for this page: the site was not started in the session that wrote it (it was not running, and starting it writes build files into the repository). The behaviour described comes from the code, the tests and the CI run named above. The page describes commit `7bbdaaa` of 2026-11-14.
 
 The website is a different thing from the "plan site", the offline pages that show the project plan and results (described on [[radiology-report-matcher]]). Requirements WS-1 to WS-5 belong to the plan site.
