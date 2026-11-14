@@ -9,7 +9,7 @@ location: radiology-crawler:assistant/engine.py
 fed_by: [radiology-finding-inventory]
 feeds: [radiology-report-matcher]
 sources: [radiology-crawler:analysis/training_corpus.py, radiology-crawler:tests/test_training_corpus.py, radiology-crawler:docs/training-corpus-manifest.json, radiology-crawler:assistant/lexicon/xray-abbreviations-en.json, radiology-crawler:assistant/matcher.py, radiology-crawler:assistant/dialog.py, radiology-crawler:analysis/dialog_eval.py, radiology-crawler:tests/test_assistant_dialog.py, radiology-crawler:tests/test_assistant_matcher.py, radiology-crawler:analysis/fabricate.py, radiology-crawler:docs/r5-design-review.md, radiology-crawler:docs/r5-bottleneck-analysis.md, radiology-crawler:assistant/lexicon/RadLex_License_2.1.pdf, radiology-crawler:analysis/synonyms.py, radiology-crawler:assistant/lexicon/xray-synonyms-en.json, radiology-crawler:assistant/segment.py, radiology-crawler:assistant/engine.py, radiology-crawler:analysis/assistant_eval.py, radiology-crawler:tests/test_assistant_engine.py, radiology-crawler:docs/adr/0009-engine-retrieve-and-rerank.md, radiology-crawler:docs/REQUIREMENTS.md]
-reviewed: 2026-11-14T12:18Z
+reviewed: 2026-11-14T12:26Z
 ---
 
 ## What it is
@@ -38,6 +38,8 @@ Abbreviations and device names (`assistant/lexicon/xray-abbreviations-en.json`, 
 
 The training corpus (`analysis/training_corpus.py`, requirement AN-68, decided by Giovanni on 2026-11-14) is the one formal database the learned matcher trains from. It has 2,832 rows of the tuning half only: 1,453 quotes that two independent annotators both chose for a finding, and 1,379 hurried-user rewrites of them that a second pass kept (718 cases, 482 diagnoses, 190 findings). Each row records its origin, case, diagnosis and finding. The finding comes from the literature-sourced inventory, so the corpus is the crossing of several sources rather than a copy of one site; the matcher is also calibrated with the synonym lists (RadLex, Consumer Health Vocabulary, article tags, abbreviations). The manifest `docs/training-corpus-manifest.json` is committed and holds counts, origins, licences and checksums of the corpus, the inventory and the lists, but no text; the text stays in `data/`. `load` refuses a file that does not match its checksum or holds any row of another half, and the cross-validation and dialog scorers train from it (their numbers did not change). The quotes are still words of Radiopaedia cases, so the origin stays recorded row by row, and any later decision on those terms can be applied by filtering on it.
 
+Insufficiency without model tokens (`python3 analysis/dialog_eval.py --insufficiency`, tuning half, 1,453 proper quotes): with the full quote 73 % get the verdict "sufficient" and 96 % of those have the right finding in the top three. With the words of the finding's own name deleted, only 37 % stay sufficient (54 % of those hit), "insufficient" rises from 27 % to 63 %, and 12 become "no fit". The verdict moves in the right direction but is still sure and wrong on 17 % of the degraded quotes, because the matcher recognises the rest of the description. The proper insufficiency set (a model deletes one deciding attribute per structure) is still needed for the test half, and the rewrites of the test half are being generated for it (text only, not scored).
+
 ## How it does it
 Each finding becomes a small weighted profile of words and word pairs; a BM25-style (a standard text-search weighting) matrix product on NumPy scores all findings at once, so the order does not depend on the number of threads, and ties go to the smaller finding id. Free numbers (name weight 12, descriptor weight 1, definition weight 0 and others) live in the `Params` class and were chosen on the tuning half. The method choice is decision record (architecture decision record, ADR) 0009; requirements FA-1, FA-6 and AN-65 are tested by `tests/test_assistant_engine.py`.
 
@@ -50,6 +52,7 @@ Each finding becomes a small weighted profile of words and word pairs; a BM25-st
 - `assistant_eval.breakdown` (`--breakdown`): hit rate by how much of the finding name the text contains, and the findings with most misses.
 - `dialog.Dialog` (`status`, `question`, `answer`, `ranking`): the sufficiency verdict, the next question and the effect of an answer on the ranking; `dialog.read_value` reads which standard value a text states.
 - `training_corpus.build`, `load`, `train`: write the corpus and its manifest, read it back with the checksum and split checks, fit the production matcher from it.
+- `dialog_eval.insufficiency`, `dialog_eval.delete_name`: verdicts on full quotes and on quotes without the finding's name words.
 - `dialog_eval.evaluate`: run the simulated user over the tuning-half rewrites and report top-3 before and after.
 - `assistant_eval.score`, `summarize`, `interval`: strict top-3 and top-1 hits and their intervals; `proper_pairs`, `fabricated_pairs` load the frozen sets and refuse the test half.
 
