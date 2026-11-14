@@ -153,6 +153,21 @@ defmodule Wiki.Content.BuildTest do
       assert Stale.hook_message(store, %{"session_id" => "later"}) =~ "new files no page covers: NEW.md"
     end
 
+    # REQ UP-9
+    test "a new file that was deleted again is not asked for", %{content: c, repo: repo} do
+      Stale.mark_published(System.os_time(:second) - 3600)
+      File.write!(Path.join(repo, "NEW.md"), "new")
+      File.write!(Path.join(repo, "GONE.md"), "new")
+      commit_all(repo, "new files", DateTime.utc_now() |> DateTime.add(-10) |> DateTime.to_iso8601())
+      File.rm!(Path.join(repo, "GONE.md"))
+      commit_all(repo, "remove one", DateTime.utc_now() |> DateTime.add(-5) |> DateTime.to_iso8601())
+      store = Store.load(c)
+
+      msg = Stale.hook_message(store, %{"session_id" => "s"})
+      assert msg =~ "new files no page covers: NEW.md"
+      refute msg =~ "GONE.md"
+    end
+
     # REQ UP-7
     test "a missing stamp is silent, a malformed one is reported visibly and never crashes", %{content: c} do
       store = Store.load(c)

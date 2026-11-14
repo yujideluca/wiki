@@ -283,6 +283,7 @@ defmodule Wiki.Content.Stale do
         |> Enum.uniq()
         |> Enum.reject(&ignored?(ignores, repo, &1))
         |> Enum.reject(&(own_repo?(store, repo) and String.starts_with?(&1, "content/")))
+        |> Enum.filter(&File.exists?(Path.join(dir, &1)))
         |> Enum.filter(&(hit.(&1) == []))
       {repo, stale, uncovered}
     end
