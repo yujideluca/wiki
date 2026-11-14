@@ -8,7 +8,7 @@ status: active
 fed_by: []
 feeds: []
 sources: [radiology-crawler:tools/quality_gate.sh, radiology-crawler:pipeline-check.toml, radiology-crawler:CLAUDE.md, radiology-crawler:tools/check_dependencies.py, radiology-crawler:tests/test_cli_help.py, radiology-crawler:pipeline-check.version]
-reviewed: 2026-11-09T20:54Z
+reviewed: 2026-11-14T06:14Z
 ---
 
 ## What it is
@@ -27,3 +27,5 @@ It is a layer-3 page of [[code-security-pipeline]]: the shared ideas are in [[qu
 Readers who need to know what protects this project, and the session that changes it.
 
 Update 2026-11-09: the gate also compiles the new `assistant/` package, and two requirements (AN-61, FA-4) are tested by `tests/test_finding_inventory.py`; the four gate steps are unchanged.
+
+Update 2026-11-14: the gate now runs 355 tests and 98 requirements, all covered by tagged tests. The finding assistant added tests for the engine, scorer, segmenter, synonym lexicon and learned matcher (`tests/test_assistant_engine.py`, `tests/test_assistant_matcher.py`), and the batched rewrite tests in `tests/test_fabricate.py`. One test guards the training policy: the matcher refuses any row that is not from the tuning half (requirement AN-66). The principle on case text (CLAUDE.md, principle 13) was amended for the finding assistant; the four gate steps are unchanged.
