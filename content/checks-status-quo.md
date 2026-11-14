@@ -8,7 +8,7 @@ status: active
 fed_by: []
 feeds: []
 sources: [status-quo:tools/quality_gate.sh, status-quo:pipeline-check.toml, status-quo:CLAUDE.md, status-quo:docs/REQUIREMENTS.md, status-quo:.github/workflows/quality-gate.yml, status-quo:tools/rust_architecture.rs, status-quo:docs/TESTES-AUTOMATIZADOS.md, status-quo:docs/TRACEABILITY.md, status-quo:docs/MAINTENANCE.md, status-quo:crates/widgets/tests/models.rs, status-quo:tools/ui_e2e.sh, status-quo:crates/desktop/tests/desktop_e2e.rs, status-quo:crates/desktop/tests/e2e/manual-baseline.json, status-quo:docs/adr/0001-record-decisions.md, status-quo:docs/adr/0003-program-measures-skill-judges.md, status-quo:tools/hooks/pre-push, status-quo:tools/pipeline-check.sh, status-quo:crates/collector/tests/transport.rs, status-quo:.github/workflows/quality-gate.yml, status-quo:crates/sources/tests/adapters.rs, status-quo:pipeline-check.version, status-quo:crates/scratch.rs]
-reviewed: 2026-11-14T14:02Z
+reviewed: 2026-11-14T17:35Z
 ---
 
 ## What it is
