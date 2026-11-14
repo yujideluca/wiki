@@ -8,8 +8,8 @@ status: active
 location: radiology-crawler:assistant/engine.py
 fed_by: [radiology-finding-inventory]
 feeds: [radiology-report-matcher]
-sources: [radiology-crawler:assistant/engine.py, radiology-crawler:analysis/assistant_eval.py, radiology-crawler:tests/test_assistant_engine.py, radiology-crawler:docs/adr/0009-engine-retrieve-and-rerank.md, radiology-crawler:docs/REQUIREMENTS.md]
-reviewed: 2026-11-14T03:58Z
+sources: [radiology-crawler:assistant/segment.py, radiology-crawler:assistant/engine.py, radiology-crawler:analysis/assistant_eval.py, radiology-crawler:tests/test_assistant_engine.py, radiology-crawler:docs/adr/0009-engine-retrieve-and-rerank.md, radiology-crawler:docs/REQUIREMENTS.md]
+reviewed: 2026-11-14T04:06Z
 ---
 
 ## What it is
@@ -20,7 +20,9 @@ It reads a description clause by clause, sets apart words that a negation ("no",
 
 The unit of analysis is one structure (Giovanni, 2026-11-14): a text that describes several structures is analysed one structure at a time, each getting its own three suggestions, and several mentions of the same thing count as one structure. For the proper test set a structure is what the annotators quoted for a finding. My first measurement used a whole case text against all its findings with only three slots, which capped the score at 86 % and was the wrong unit; it was replaced.
 
-Measured on the tuning half per structure (1,453 pairs from 718 cases): the right finding is among the three in 40 % of pairs (95 % interval 38 to 43) and is first in 29 %. The target is 97 %. A name match is most of the signal, and generic findings such as "opacity" and "atelectasis" are missed because texts use a more specific word. Still to build: a segmenter that cuts a real description into structures, the fabricated and insufficiency test sets rebuilt per structure, and the descriptor reader that re-scores candidates.
+Measured on the tuning half per structure (1,453 pairs from 718 cases): the right finding is among the three in 74.5 % of pairs (95 % interval 72 to 77) and is first in 57.7 %. The target is 97 %. A first run reported 40 % because the scorer reused the first structure's answer for every structure of a case; that bug is fixed and has a test. When the engine misses, the right finding is within its top ten in 80 % of cases: the gap is vocabulary the inventory lacks ("pleural fluid" or "hydrothorax" for pleural effusion), so the next steps are a literature-sourced synonym list per finding and a descriptor reader that re-scores candidates.
+
+The segmenter (`assistant/segment.py`, requirement FA-10) cuts a real description into structures using only the engine's scores: sentences are cut again where a list names different findings, a piece that starts with a back reference ("it", "this"), supports no finding or has the same best finding as the piece before joins it, and a piece scoring below a minimum is dropped. It is imprecise: it keeps 71 % of the true structures but proposes 4.7 per case where the annotators saw 2.0, because word matching cannot tell a finding from a mention of something unlisted. The fabricated and insufficiency test sets must still be rebuilt per structure.
 
 ## How it does it
 Each finding becomes a small weighted profile of words and word pairs; a BM25-style (a standard text-search weighting) matrix product on NumPy scores all findings at once, so the order does not depend on the number of threads, and ties go to the smaller finding id. Free numbers (name weight 12, descriptor weight 1, definition weight 0 and others) live in the `Params` class and were chosen on the tuning half. The method choice is decision record (architecture decision record, ADR) 0009; requirements FA-1, FA-6 and AN-65 are tested by `tests/test_assistant_engine.py`.
@@ -28,6 +30,7 @@ Each finding becomes a small weighted profile of words and word pairs; a BM25-st
 ## Functions
 - `Engine.rank`: up to three strict candidates for a text, the first highlighted.
 - `Engine.scores`, `Engine.read`: finding scores and the clause reading (stated, negated, hedged words).
+- `segment.segment`, `segment.analyse`: cut a text into structures and rank each one on its own.
 - `Engine.with_params`: a copy with other free numbers, used to tune on the tuning half.
 - `assistant_eval.score`, `summarize`, `interval`: strict top-3 and top-1 hits and their intervals; `proper_pairs`, `fabricated_pairs` load the frozen sets and refuse the test half.
 
