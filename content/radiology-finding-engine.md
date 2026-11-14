@@ -8,8 +8,8 @@ status: active
 location: radiology-crawler:assistant/engine.py
 fed_by: [radiology-finding-inventory]
 feeds: [radiology-report-matcher]
-sources: [radiology-crawler:assistant/lexicon/RadLex_License_2.1.pdf, radiology-crawler:analysis/synonyms.py, radiology-crawler:assistant/lexicon/xray-synonyms-en.json, radiology-crawler:assistant/segment.py, radiology-crawler:assistant/engine.py, radiology-crawler:analysis/assistant_eval.py, radiology-crawler:tests/test_assistant_engine.py, radiology-crawler:docs/adr/0009-engine-retrieve-and-rerank.md, radiology-crawler:docs/REQUIREMENTS.md]
-reviewed: 2026-11-14T04:53Z
+sources: [radiology-crawler:docs/r5-bottleneck-analysis.md, radiology-crawler:assistant/lexicon/RadLex_License_2.1.pdf, radiology-crawler:analysis/synonyms.py, radiology-crawler:assistant/lexicon/xray-synonyms-en.json, radiology-crawler:assistant/segment.py, radiology-crawler:assistant/engine.py, radiology-crawler:analysis/assistant_eval.py, radiology-crawler:tests/test_assistant_engine.py, radiology-crawler:docs/adr/0009-engine-retrieve-and-rerank.md, radiology-crawler:docs/REQUIREMENTS.md]
+reviewed: 2026-11-14T05:19Z
 ---
 
 ## What it is
@@ -26,6 +26,8 @@ Synonyms (`analysis/synonyms.py`, requirement FA-7, no model tokens): the engine
 
 The segmenter (`assistant/segment.py`, requirement FA-10) cuts a real description into structures using only the engine's scores: sentences are cut again where a list names different findings, a piece that starts with a back reference ("it", "this"), supports no finding or has the same best finding as the piece before joins it, and a piece scoring below a minimum is dropped. It is imprecise: it keeps 71 % of the true structures but proposes 4.7 per case where the annotators saw 2.0, because word matching cannot tell a finding from a mention of something unlisted. The fabricated and insufficiency test sets must still be rebuilt per structure.
 
+Where precision is lost (analysis of 2026-11-14, `docs/r5-bottleneck-analysis.md`): when the text contains the whole finding name the right finding is in the top three 98.6 % of the time, when it contains part of the name 82.5 %, and when the text only describes the finding without naming it only 26.6 % (244 of 1,453 structures, 54 % of all misses). The engine is a bag of words: it does not tell "nodular" from "nodule", does not know which structure a sentence is about or where in the body it is, and does not know what a finding looks like. Knowing the body region would add at most 3 points; more vocabulary, sub-class terms and better word forms add about nothing. Eight findings (opacity, orthopaedic implant, atelectasis, enteric tube, osteoarthritic joint change, soft-tissue calcification, pulmonary mass, endotracheal tube) carry 46 % of the misses. The next development steps are: a descriptor reader and semantic matcher (location, shape, density, device type scored against each finding's schema; a biomedical sentence-embedding model is the heavier option and needs Giovanni's approval), generic-finding and abbreviation logic, a body-region gate, an audit of how many wrong answers are defensible (the label ceiling), a more precise segmenter, and rebuilding the fabricated and insufficiency sets per structure.
+
 ## How it does it
 Each finding becomes a small weighted profile of words and word pairs; a BM25-style (a standard text-search weighting) matrix product on NumPy scores all findings at once, so the order does not depend on the number of threads, and ties go to the smaller finding id. Free numbers (name weight 12, descriptor weight 1, definition weight 0 and others) live in the `Params` class and were chosen on the tuning half. The method choice is decision record (architecture decision record, ADR) 0009; requirements FA-1, FA-6 and AN-65 are tested by `tests/test_assistant_engine.py`.
 
@@ -35,6 +37,7 @@ Each finding becomes a small weighted profile of words and word pairs; a BM25-st
 - `segment.segment`, `segment.analyse`: cut a text into structures and rank each one on its own.
 - `synonyms.build` (`python3 -I analysis/synonyms.py build`): rebuild the added-synonym list from RadLex, MeSH and the finding tags.
 - `Engine.with_params`: a copy with other free numbers, used to tune on the tuning half.
+- `assistant_eval.breakdown` (`--breakdown`): hit rate by how much of the finding name the text contains, and the findings with most misses.
 - `assistant_eval.score`, `summarize`, `interval`: strict top-3 and top-1 hits and their intervals; `proper_pairs`, `fabricated_pairs` load the frozen sets and refuse the test half.
 
 ## Where it sits in the pipeline
