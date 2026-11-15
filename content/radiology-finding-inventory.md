@@ -9,7 +9,7 @@ location: radiology-crawler:assistant
 fed_by: [radiology-r1-xray-review, radiology-real-report-factcheck]
 feeds: [radiology-report-matcher, radiology-finding-engine, radiology-modality-corpus]
 sources: [radiology-crawler:assistant/inventory.py, radiology-crawler:assistant/__init__.py, radiology-crawler:assistant/modules/xray/chest.json, radiology-crawler:assistant/modules/xray/msk-trauma.json, radiology-crawler:assistant/modules/xray/msk-other.json, radiology-crawler:assistant/modules/xray/abdomen.json, radiology-crawler:tests/test_finding_inventory.py, radiology-crawler:docs/adr/0008-finding-inventory-format-and-module-layout.md, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/r1/gap-clusters.md, radiology-crawler:docs/r1/omitted-chest.md, radiology-crawler:docs/r1/omitted-msk-trauma.md, radiology-crawler:docs/r1/omitted-msk-other.md, radiology-crawler:docs/r1/omitted-abdomen.md, radiology-crawler:analysis/finding_links.py, radiology-crawler:tests/test_finding_links.py, radiology-crawler:docs/real-reports-factcheck-batch1.json, radiology-crawler:DESIGN.md, radiology-crawler:docs/training-corpus-manifest.json, radiology-crawler:analysis/training_corpus.py]
-reviewed: 2026-11-15T17:57Z
+reviewed: 2026-11-15T21:31Z
 ---
 
 ## What it is
@@ -37,7 +37,7 @@ Changes of 2026-11-15 (commits `c0cd88b` and `7b8d190`):
 
 Later on 2026-11-15 (commits `004903b` and `952d328`, requirement AN-124) the lists of the other three imaging methods grew in the way the X-ray list had grown the day before: the fact-check of an open development batch of real reports named findings those lists lacked, and all of them were added, 11 for ultrasound, 14 for CT (computed tomography) and 8 for MRI (magnetic resonance imaging), each with sources read as the full text of the article ([[radiology-modality-corpus]]). The X-ray files did not change in those commits.
 
-This part of the project is still being extended by the session that builds the lists (the "corpus lane"); this page describes commit `33d7776` of 2026-11-15.
+Later commits of that day, up to `c1bc2c9`, raised the training corpora of those three methods (ultrasound 3,523 rows, CT 6,112, MRI 6,695) and repeated the literature check of their descriptors; the counts are on [[radiology-modality-corpus]]. The X-ray files did not change in them. This page describes commit `c1bc2c9` of 2026-11-15.
 
 ## How it does it
 `python3 -I assistant/inventory.py check assistant/modules/xray/*.json` validates the files and prints the counts. The checker needs only the Python standard library. The requirements AN-61 and FA-4 are tested by `tests/test_finding_inventory.py`, including a test over the real X-ray files, and the quality gate (the one script that decides whether the code passes) compiles the package. AN-86, AN-87 and AN-105 are tested in `tests/test_finding_links.py`, against the committed X-ray files.
