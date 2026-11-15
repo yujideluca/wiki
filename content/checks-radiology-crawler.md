@@ -8,7 +8,7 @@ status: active
 fed_by: []
 feeds: []
 sources: [radiology-crawler:.github/workflows/quality-gate.yml, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:tests/test_web.py, radiology-crawler:tests/test_real_reports.py, radiology-crawler:tools/quality_gate.sh, radiology-crawler:pipeline-check.toml, radiology-crawler:CLAUDE.md, radiology-crawler:tools/check_dependencies.py, radiology-crawler:tests/test_cli_help.py, radiology-crawler:pipeline-check.version]
-reviewed: 2026-11-15T17:31Z
+reviewed: 2026-11-15T17:57Z
 ---
 
 ## What it is
@@ -39,3 +39,5 @@ Update 2026-11-14 (website and real-report fact-check): the gate has a fifth ste
 Update 2026-11-14 (commit `7bbdaaa`): in the continuous-integration run on this commit the gate passed with 265 Python tests, 11 ExUnit tests and 14 Elm tests, and the traceability step counted 102 requirements. The new rows cover the second slice of the website (WS-15 to WS-20), the descriptor schemas and related diagnoses, and the held-out batch of real reports. The rules file `CLAUDE.md` now tells every session to commit by path, after two commits that day carried another session's staged files ([[radiology-report-matcher]]).
 
 Update 2026-11-15 (commit `33d7776`): `docs/REQUIREMENTS.md` has 135 rows (counted in the file): 77 for analysis and data, 17 for the finding assistant, 20 for the two websites, 7 for the crawler, 9 for the translator, 4 for the translation check and 1 for dependencies. The newest rows are AN-123 to AN-125 (a check against the literature rests on full texts, never on abstracts) and AN-133 to AN-137 (the full-text resolver, [[radiology-fulltext-resolver]]). The resolver's rows repeat, for journal sites, the rule the crawler already follows: it obeys `robots.txt`, names itself honestly and stops at a refusal; `tests/test_fulltext.py` checks this without touching the network. The five gate steps are unchanged, and the pinned `pipeline-check` version is still v0.8.0. The gate was not run for this update, so no new count of tests is given.
+
+Update 2026-11-15 (commit `b3d9362`): `docs/REQUIREMENTS.md` has 138 rows (counted in the file). The three new rows, AN-138 to AN-140, cover the resolver's commands `text`, `find` and `convert`; `tests/test_fulltext.py` checks them, and its 41 cases passed when run alone. `CLAUDE.md` has one new technical rule: a model session (a run of a language model) never opens an article page or a whole article file; it asks the resolver for the matching passages with `find`, reads the clean text file only when that is not enough, and passes a hand-saved file through `convert` first ([[radiology-fulltext-resolver]]). The whole gate was not run for this update.

@@ -9,7 +9,7 @@ location: radiology-crawler:analysis/real_reports.py
 fed_by: [radiology-analysis]
 feeds: [radiology-real-report-factcheck, radiology-report-matcher]
 sources: [radiology-crawler:analysis/real_reports.py, radiology-crawler:tests/test_real_reports_batch2.py, radiology-crawler:docs/real-reports-batch2.json, radiology-crawler:docs/real-reports-factcheck-batch2-xray.json, radiology-crawler:docs/real-reports-factcheck-batch2-ultrasound.json, radiology-crawler:docs/real-reports-factcheck-batch2-ct.json, radiology-crawler:docs/real-reports-factcheck-batch2-mri.json, radiology-crawler:analysis/second_check.py, radiology-crawler:tests/test_second_check.py, radiology-crawler:DESIGN.md, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:PLAN.md, radiology-crawler:docs/plan.json]
-reviewed: 2026-11-15T17:31Z
+reviewed: 2026-11-15T17:57Z
 memory: []
 ---
 

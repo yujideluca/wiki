@@ -9,7 +9,7 @@ location: radiology-crawler:web
 fed_by: [radiology-finding-engine, radiology-modality-corpus]
 feeds: [radiology-report-matcher]
 sources: [radiology-crawler:web/start.sh, radiology-crawler:web/mix.exs, radiology-crawler:web/mix.lock, radiology-crawler:web/lib/finding_web/application.ex, radiology-crawler:web/lib/finding_web/bridge.ex, radiology-crawler:web/lib/finding_web/router.ex, radiology-crawler:web/bridge/bridge.py, radiology-crawler:web/elm/src/Main.elm, radiology-crawler:web/elm/src/Api.elm, radiology-crawler:web/elm/elm.json, radiology-crawler:web/elm/tests/MainTest.elm, radiology-crawler:web/priv/static/index.html, radiology-crawler:web/priv/static/boot.js, radiology-crawler:web/priv/static/style.css, radiology-crawler:web/.formatter.exs, radiology-crawler:web/.gitignore, radiology-crawler:web/test/test_helper.exs, radiology-crawler:web/test/router_test.exs, radiology-crawler:web/test/bridge_test.exs, radiology-crawler:tests/test_web.py, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:DESIGN.md, radiology-crawler:tools/quality_gate.sh, radiology-crawler:.github/workflows/quality-gate.yml, radiology-crawler:PLAN.md]
-reviewed: 2026-11-15T17:31Z
+reviewed: 2026-11-15T17:57Z
 memory: []
 ---
 
