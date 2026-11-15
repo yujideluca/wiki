@@ -9,12 +9,12 @@ location: radiology-crawler:web
 fed_by: [radiology-finding-engine, radiology-modality-corpus]
 feeds: [radiology-report-matcher]
 sources: [radiology-crawler:web/start.sh, radiology-crawler:web/mix.exs, radiology-crawler:web/mix.lock, radiology-crawler:web/lib/finding_web/application.ex, radiology-crawler:web/lib/finding_web/bridge.ex, radiology-crawler:web/lib/finding_web/router.ex, radiology-crawler:web/bridge/bridge.py, radiology-crawler:web/elm/src/Main.elm, radiology-crawler:web/elm/src/Api.elm, radiology-crawler:web/elm/elm.json, radiology-crawler:web/elm/tests/MainTest.elm, radiology-crawler:web/priv/static/index.html, radiology-crawler:web/priv/static/boot.js, radiology-crawler:web/test/router_test.exs, radiology-crawler:web/test/bridge_test.exs, radiology-crawler:tests/test_web.py, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:DESIGN.md, radiology-crawler:tools/quality_gate.sh, radiology-crawler:.github/workflows/quality-gate.yml, radiology-crawler:PLAN.md]
-reviewed: 2026-11-14T23:13Z
+reviewed: 2026-11-15T11:51Z
 memory: []
 ---
 
 ## What it is
-A web page through which a radiologist can use the finding assistant of [[radiology-report-matcher]] in a browser. The user types a loose description of one thing seen on an image. The page answers with three exact findings (a "finding" is one named observation on an image, such as a pneumothorax), marks the most likely one, says whether the description is enough, and asks up to three questions. Under each suggested finding it lists the diagnoses that the project's collected cases report together with that finding. It names findings; it does not diagnose the patient.
+A web page through which a radiologist can use the finding assistant of [[radiology-report-matcher]] in a browser. The user types a loose description of one thing seen on an image. The page answers with three exact findings (a "finding" is one named observation on an image, such as a pneumothorax), marks the most likely one, says whether the description is enough, and asks up to five questions (three until 2026-11-15). Under each suggested finding it lists the diagnoses that the project's collected cases report together with that finding. It names findings; it does not diagnose the patient.
 
 It was built on 2026-11-14 in two slices (a slice is a narrow but complete piece that works from the page down to the engine): the first gave findings, verdict and questions; the second, the same day (commit `bbfc3f1`), filled the part "related diagnoses" and made the questions usable on a phone. It is not the finished website. The limits that matter most: it runs only while someone has started it by hand with `web/start.sh` on Giovanni's laptop and can only be opened from that same computer; it is in English only; and few findings have related diagnoses yet (for X-ray 74 of 233, see [[radiology-modality-corpus]]). The plan lists the website milestone as in progress, with one open point: a check with a radiologist.
 
@@ -94,7 +94,7 @@ Fifteen requirements, WS-6 to WS-20 (a requirement is a numbered promise in `doc
 - WS-6: the bridge answers one JSON request per line, for a method given as a parameter.
 - WS-7: the back end serves the page and the three API addresses; a bad request gets a JSON error and the site keeps working.
 - WS-8: nothing typed is stored: no request log, file, database or cookie, and no dialog kept between requests.
-- WS-9: one question at a time with standard values and "Don't know", at most three.
+- WS-9: one question at a time with standard values and "Don't know", at most five (three until 2026-11-15).
 - WS-10: the site works without the trained data and says so.
 - WS-11: only terms of the lists of findings, diagnosis names of the corpus table, the user's words and fixed sentences are shown.
 - WS-12: the page works on a phone and a desktop with plain HTML and CSS.
@@ -118,6 +118,8 @@ Last in the chain of the project: the lists of findings ([[radiology-finding-inv
 Whoever sits at Giovanni's laptop while `web/start.sh` runs. Nobody else: the site is not published on the internet.
 
 ## Notes
-Not verified for this page: the site was not started in the session that wrote it (it was not running, and starting it writes build files into the repository). The behaviour described comes from the code, the tests and the CI run named above. The page describes commit `7bbdaaa` of 2026-11-14.
+Update 2026-11-15 (five questions; commit `f4408cc`): Giovanni decided that the assistant asks at most five questions per description instead of three. The limit is one constant of the engine, `MAX_QUESTIONS` in `assistant/dialog.py`; the bridge reads it and reports it to the page as `max_questions`, so the website followed without a logic change of its own. In the folder `web/` only three things changed: the sentence at the top of the page now says "up to five questions", and the tests of the back end expect the limit of five. The Python test of the bridge (`tests/test_web.py`) also checks that no question is asked twice within the five, except the one that offers findings by name, which may come again with names not shown before. The effect of five questions on the engine's measured numbers (tuning data, simulated user) is on [[radiology-finding-engine]]. Nothing else in `web/` changed between commits `7bbdaaa` and `ee38d77`. The site was not started for this update either.
+
+Not verified for this page: the site was not started in the session that wrote it (it was not running, and starting it writes build files into the repository). The behaviour described comes from the code, the tests and the CI run named above. Apart from the update above, the page describes commit `7bbdaaa` of 2026-11-14.
 
 The website is a different thing from the "plan site", the offline pages that show the project plan and results (described on [[radiology-report-matcher]]). Requirements WS-1 to WS-5 belong to the plan site.
