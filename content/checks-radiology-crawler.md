@@ -7,8 +7,8 @@ project: none
 status: active
 fed_by: []
 feeds: []
-sources: [radiology-crawler:.github/workflows/quality-gate.yml, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:tests/test_web.py, radiology-crawler:tests/test_real_reports.py, radiology-crawler:tools/quality_gate.sh, radiology-crawler:pipeline-check.toml, radiology-crawler:CLAUDE.md, radiology-crawler:tools/check_dependencies.py, radiology-crawler:tests/test_cli_help.py, radiology-crawler:pipeline-check.version]
-reviewed: 2026-11-15T17:57Z
+sources: [radiology-crawler:.github/workflows/quality-gate.yml, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:tests/test_web.py, radiology-crawler:tests/test_real_reports.py, radiology-crawler:tools/quality_gate.sh, radiology-crawler:pipeline-check.toml, radiology-crawler:CLAUDE.md, radiology-crawler:tools/check_dependencies.py, radiology-crawler:tests/test_cli_help.py, radiology-crawler:pipeline-check.version, radiology-crawler:web/test/browser/site_check.mjs]
+reviewed: 2026-11-16T00:11Z
 ---
 
 ## What it is
@@ -16,6 +16,8 @@ These are the checkers of the radiology crawler repository (`radiology-crawler`,
 
 ## What it does
 The gate has five steps; the four listed here, and step 1b for the website, which the last update below describes: (0) `check_dependencies.py`: every third-party import appears in `requirements.txt` (or in `requirements-optional.txt` when it is used only inside a try block with a fallback), and every `pip install` in a workflow is `pip install -r requirements.txt` (rule in `CLAUDE.md`, added after a CI (continuous integration) run failed on a missing package); (1) `compileall` and the tests with pytest, among them `tests/test_cli_help.py`, which runs every runnable script in `analysis/` and `tools/` with `--help` and with an unknown option and fails when one does real work (exit code other than 0 for `--help` or 2 for the unknown option, or a tracked file changed; added 2026-11-06 after `--help` overwrote a report); (2) requirement traceability (AN, CW, DP, FA, TC, TL, WS groups); (3) fitness limits: no Python file over 800 lines, the gate at most 1200 seconds. Rules in `CLAUDE.md`, each with the tests that check it: the crawler obeys `robots.txt` (CW-1 to CW-3); each Codex call is a fresh session under 250,000 tokens (TL-2, TL-5); no personal or patient data in the repository or logs; downloaded pages and databases never go into git; the status of the statistical analysis is kept in `docs/plan.json`.
+
+**Website checks added, 2026-11-15.** The source tests now cover the result’s group, variant and literature-source fields, the guided try-out, and phone behaviour. A separate hand-run Chrome script, `web/test/browser/site_check.mjs`, checks the running site at phone width and looks for typed text in browser storage and watched output. It is not part of the quality gate.
 
 ## How it does it
 CI installs from `requirements.txt` and runs `pipeline-check --mode ci` (60 minutes at most), at the version pinned in `pipeline-check.version` (v0.8.0 since 2026-11-07, before v0.7.0, v0.6.0, v0.5.0 and v0.4.0). Its `pipeline-check.toml` has no GitHub section, so branch protection is not read there. Eleven files are in `docs/adr/` (architecture decision records, ADRs: short notes that keep the reasons for one structural decision).

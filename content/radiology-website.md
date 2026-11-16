@@ -8,15 +8,15 @@ status: active
 location: radiology-crawler:web
 fed_by: [radiology-finding-engine, radiology-modality-corpus]
 feeds: [radiology-report-matcher]
-sources: [radiology-crawler:web/start.sh, radiology-crawler:web/mix.exs, radiology-crawler:web/mix.lock, radiology-crawler:web/lib/finding_web/application.ex, radiology-crawler:web/lib/finding_web/bridge.ex, radiology-crawler:web/lib/finding_web/router.ex, radiology-crawler:web/bridge/bridge.py, radiology-crawler:web/elm/src/Main.elm, radiology-crawler:web/elm/src/Api.elm, radiology-crawler:web/elm/elm.json, radiology-crawler:web/elm/tests/MainTest.elm, radiology-crawler:web/priv/static/index.html, radiology-crawler:web/priv/static/boot.js, radiology-crawler:web/priv/static/style.css, radiology-crawler:web/.formatter.exs, radiology-crawler:web/.gitignore, radiology-crawler:web/test/test_helper.exs, radiology-crawler:web/test/router_test.exs, radiology-crawler:web/test/bridge_test.exs, radiology-crawler:tests/test_web.py, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:DESIGN.md, radiology-crawler:tools/quality_gate.sh, radiology-crawler:.github/workflows/quality-gate.yml, radiology-crawler:PLAN.md]
-reviewed: 2026-11-15T17:57Z
+sources: [radiology-crawler:web/start.sh, radiology-crawler:web/mix.exs, radiology-crawler:web/mix.lock, radiology-crawler:web/lib/finding_web/application.ex, radiology-crawler:web/lib/finding_web/bridge.ex, radiology-crawler:web/lib/finding_web/router.ex, radiology-crawler:web/bridge/bridge.py, radiology-crawler:web/elm/src/Main.elm, radiology-crawler:web/elm/src/Api.elm, radiology-crawler:web/elm/elm.json, radiology-crawler:web/elm/tests/MainTest.elm, radiology-crawler:web/priv/static/index.html, radiology-crawler:web/priv/static/boot.js, radiology-crawler:web/priv/static/style.css, radiology-crawler:web/.formatter.exs, radiology-crawler:web/.gitignore, radiology-crawler:web/test/test_helper.exs, radiology-crawler:web/test/router_test.exs, radiology-crawler:web/test/bridge_test.exs, radiology-crawler:tests/test_web.py, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:DESIGN.md, radiology-crawler:tools/quality_gate.sh, radiology-crawler:.github/workflows/quality-gate.yml, radiology-crawler:PLAN.md, radiology-crawler:web/priv/static/tryout.json, radiology-crawler:web/test/browser/site_check.mjs]
+reviewed: 2026-11-16T00:11Z
 memory: []
 ---
 
 ## What it is
-A web page through which a radiologist can use the finding assistant of [[radiology-report-matcher]] in a browser. The user types a loose description of one thing seen on an image. The page answers with three exact findings (a "finding" is one named observation on an image, such as a pneumothorax), marks the most likely one, says whether the description is enough, and asks up to five questions (three until 2026-11-15). Under each suggested finding it lists the diagnoses that the project's collected cases report together with that finding. It names findings; it does not diagnose the patient.
+A web page through which a radiologist can use the finding assistant of [[radiology-report-matcher]] in a browser. The user types a loose description of one thing seen on an image. The page answers with three exact findings (a "finding" is one named observation on an image, such as a pneumothorax), marks the most likely one, says whether the description is enough, and asks up to five questions (three until 2026-11-15). Under each suggested finding it lists the diagnoses that the project's collected cases report together with that finding. It names visible findings; it does not diagnose the patient.
 
-It was built on 2026-11-14 in two slices (a slice is a narrow but complete piece that works from the page down to the engine): the first gave findings, verdict and questions; the second, the same day (commit `bbfc3f1`), filled the part "related diagnoses" and made the questions usable on a phone. It is not the finished website. The limits that matter most: it runs only while someone has started it by hand with `web/start.sh` on Giovanni's laptop and can only be opened from that same computer; it is in English only; and few findings have related diagnoses yet (for X-ray 74 of 233, see [[radiology-modality-corpus]]). The plan lists the website milestone as in progress, with one open point: a check with a radiologist.
+It was built on 2026-11-14 in two slices (a slice is a narrow but complete piece that works from the page down to the engine): the first gave findings, verdict and questions; the second, the same day (commit `bbfc3f1`), filled the part "related diagnoses" and made the questions usable on a phone. The later guided try-out and phone-first changes are described below. The limits that matter most: it runs only while someone has started it by hand with `web/start.sh` on Giovanni's laptop and can only be opened from that same computer; it is in English only; and few findings have related diagnoses yet (for X-ray 74 of 233, see [[radiology-modality-corpus]]). The plan lists the website milestone as in progress, with a check by a radiologist still open.
 
 Three decisions by Giovanni of 2026-11-14 shape it (decision log of the repository's `DESIGN.md`): all four imaging methods can be chosen, none is hidden until it reaches its accuracy target; the site is started by hand and has no automatic start; and everything the site shows comes from the corpus (the project's collection of training texts, its only database), never from a second data store kept by the site.
 
@@ -61,6 +61,8 @@ When the file with the trained data is not on the computer, or is damaged, the s
 
 Nothing typed is stored. The page tells the user so: "Nothing you type is stored: it is analysed on this computer and forgotten."
 
+**Site update, 2026-11-15.** The result now shows each proposed finding’s plain group name, variants from the same imaging method, and an allowed literature source with its quoted passage where available. Radiopaedia text is not shown. At 360 pixels wide, the method switches and results are arranged for a phone; changing method asks again, and a user can take back the last answer. `web/priv/static/tryout.json` supplies 12 guided tasks, three per method. Right, wrong or confusing marks and notes stay in the page until reload or deletion and can be copied as text. The hand-run Chrome check in `web/test/browser/site_check.mjs` exercises the four methods at phone width and checks that typed text is absent from browser storage and watched output. This page does not claim that a radiologist has accepted the site.
+
 ## How it does it
 The site has three parts in three languages, each chosen earlier by Giovanni for its role.
 
@@ -83,7 +85,7 @@ Why the dialog lives in the page and not on the server: the decision log of the 
 
 **Related diagnoses** come from one table per imaging method, `assistant/lexicon/<method>-related-diagnoses-en.json`, which the corpus work builds from the training texts ([[radiology-modality-corpus]] says how, and what a link rests on). The bridge only reads it. Per suggested finding it passes on at most 10 diagnosis names, the one with the most corpus rows first. The table's numbers stay in the bridge: they say how often the collected texts showed the pair, not how likely a diagnosis is. The bridge looks at the file on every request and reads it again only when it has changed, so a new table is used without a restart. When the table is missing, damaged or made for another method, the bridge reports "not available" and the rest of the site works.
 
-What leaves the bridge is limited to finding names, descriptor names and standard values from the lists of findings, diagnosis names from that table, the user's own words and the site's fixed sentences. It sends no definition, no text of a teaching case, no score and no text from Radiopaedia (the reference site the project collects pages from).
+What leaves the bridge is limited to finding names, group names, variant names, descriptor names and standard values from the lists of findings, allowed literature citations and passages from those lists, diagnosis names from the corpus table, the user's own words and the site's fixed sentences. It sends no teaching-case text, score or Radiopaedia passage (Radiopaedia is one reference site the project collects pages from).
 
 ### Starting it
 `web/start.sh` compiles the page, fetches the Elixir packages and starts the server; it prints `Finding assistant: http://127.0.0.1:4107` and runs until Ctrl-C. There is no background service: when the script stops, the site is gone.
@@ -91,13 +93,13 @@ What leaves the bridge is limited to finding names, descriptor names and standar
 ### Other files in the folder
 Four small files of `web/` hold settings and no logic:
 
-- `web/priv/static/style.css` is the page's style sheet, 146 lines, written by hand without a CSS framework. It gives one column on a phone and a wider column on a screen at least 60 rem wide (a rem is the height of the page's base letter size), and a second set of colours that the browser uses when the device is set to dark mode.
+- `web/priv/static/style.css` is the page's style sheet, written by hand without a CSS framework. It gives one column on a phone and a wider column on a screen at least 60 rem wide (a rem is the height of the page's base letter size), and a second set of colours that the browser uses when the device is set to dark mode.
 - `web/.formatter.exs` tells `mix format`, Elixir's code formatter, which files to format (the build file and everything under `lib/` and `test/`) and sets the line length to 120 characters. The quality gate fails when a file is not formatted this way.
 - `web/.gitignore` keeps build output out of git, the version-control system: the compiled back end (`_build/`), the fetched packages (`deps/`), Elm's work folder and the compiled page `priv/static/app.js`, which `web/start.sh` builds again at every start.
 - `web/test/test_helper.exs` is one line, `ExUnit.start()`, which starts Elixir's test tool before the tests of `web/test/` run.
 
 ### Requirements and tests
-Fifteen requirements, WS-6 to WS-20 (a requirement is a numbered promise in `docs/REQUIREMENTS.md` that a test must check; a test names its requirement in a comment `REQ <ID>`):
+Twenty-one requirements, WS-6 to WS-26 (a requirement is a numbered promise in `docs/REQUIREMENTS.md` that a test must check; a test names its requirement in a comment `REQ <ID>`):
 
 - WS-6: the bridge answers one JSON request per line, for a method given as a parameter.
 - WS-7: the back end serves the page and the three API addresses; a bad request gets a JSON error and the site keeps working.
@@ -114,8 +116,12 @@ Fifteen requirements, WS-6 to WS-20 (a requirement is a numbered promise in `doc
 - WS-18: each question uses the engine's sentence; where findings are offered by name the way out is "None of these", elsewhere "Don't know".
 - WS-19: the site is started by hand; the repository holds no service, timer or autostart entry for it.
 - WS-20: every imaging method that has a list of findings can be chosen, with or without trained data.
+- WS-21 to WS-23: each result shows its group, same-method variants and allowed literature support where present.
+- WS-24: phone layout, clear method switches and the ability to take back an answer.
+- WS-25: a hand-run Chrome check exercises the site and checks that typed text is not retained.
+- WS-26: twelve guided tasks collect marks and notes in the page only, with delete and copy controls.
 
-Three sets of tests check them. `tests/test_web.py` (Python, 25 tests) tests the bridge and scans the site's source files for forbidden things, for example any call that writes a file or a log, any browser storage, a listening address open to other computers. One of its tests sends requests containing a marker word to a running bridge and checks that the word appears in no error output, no later answer and no file. `web/test/` (ExUnit, Elixir's test tool) tests the back end and its bridge process: 11 tests. `web/elm/tests/MainTest.elm` (elm-test) tests the page's logic: 14 tests.
+Three sets of automated tests check them. `tests/test_web.py` (Python) tests the bridge and scans the site's source files for forbidden things, for example file writes, browser storage and a listening address open to other computers. One test sends a marker word to a running bridge and checks that it appears in no error output, later answer or file. `web/test/` (ExUnit, Elixir's test tool) tests the back end and its bridge process. `web/elm/tests/MainTest.elm` (elm-test) tests the page's logic. The hand-run browser check is a further check of the running page.
 
 The quality gate of the repository (the one script that decides whether the code passes, see [[checks-radiology-crawler]]) runs the Elixir and Elm tests in its step "1b website". On a computer without Elixir or Elm it skips that part with a visible notice. Continuous integration (CI, automatic checks on GitHub at every push) installs Elixir 1.18 with OTP (Open Telecom Platform, Elixir's runtime) 27 and Elm 0.19.1 so the step runs there. In the CI run on commit `7bbdaaa` of 2026-11-14 the step ran: 11 ExUnit tests and 14 Elm tests passed.
 

@@ -9,7 +9,7 @@ location: radiology-crawler:analysis/one_time_test.py
 fed_by: [radiology-finding-engine, radiology-real-report-factcheck]
 feeds: [radiology-report-matcher]
 sources: [radiology-crawler:analysis/one_time_test.py, radiology-crawler:tests/test_one_time_test.py, radiology-crawler:docs/one-time-test.json, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:PLAN.md, radiology-crawler:docs/plan.json]
-reviewed: 2026-11-15T17:57Z
+reviewed: 2026-11-16T00:11Z
 memory: []
 ---
 
@@ -18,13 +18,13 @@ The command that will measure, a single time, how well the finding assistant wor
 
 The project split its teaching cases in two halves. The "tuning half" may train and tune the assistant, and every number published so far was measured on it ([[radiology-finding-engine]]). The other half, the "test half", is frozen: its files were written once and are not opened. A number measured on the test half is honest only if nothing is changed afterwards because of it, so the test half can be scored exactly once. This page describes the program that does that scoring and the guards that keep it from happening by accident or twice.
 
-State on 2026-11-15 (commit `ee38d77` of the repository `~/dev/radiology-crawler`): the command is **ready and has not been run**. The record file `docs/one-time-test.json` says `"state": "ready"`. No description of the test half has been scored, so there is no test result of any kind. The run waits for Giovanni's go, and for his decision on one open parameter, the "parent rule" described below.
+State on 2026-11-15 (commit `ee38d77` of the repository `~/dev/radiology-crawler`): the command is **ready and has not been run**. The record file `docs/one-time-test.json` says `"state": "ready"`. No description of the test half has been scored, so there is no test result of any kind. Giovanni gave the go and chose the strict parent rule. The run is blocked until the X-ray list contains findings only and the engine is retuned.
 
 ## Flow
 trigger t1: The X-ray tuning half reached its targets, so the single scoring of the test half is next | [[radiology-finding-engine]]
 step s1: prepare records the checksum of every frozen file, without scoring anything
 step s2: rehearse runs the same code on the tuning half with scratch records
-decide d1: Has Giovanni chosen the parent rule and typed the confirmation sentence?
+decide d1: Has the X-ray list been corrected and the engine retuned, and was the confirmation given?
 product p0: Nothing runs; the state stays "ready"
 step s3: run checks every guard: not spent, files unchanged, code committed
 decide d2: Does any guard refuse?
@@ -57,7 +57,9 @@ The record file holds counts of the frozen sets, not results: read on the findin
 - `strict`: only the labelled finding itself counts. Every tuning number was measured this way.
 - `parent_counts`: the labelled finding or its generic parent counts.
 
-The record currently says `strict`. That is the default, not Giovanni's decision: the plan note of 2026-11-15 says "Giovanni decides the rule and gives the go". Both values are tested code. The rule can be set only while the state is "ready" (`python3 -I analysis/one_time_test.py rule --parent-rule strict`), it is written into the result, and an unknown value stops the run before the test half is opened.
+The record says `strict`, and Giovanni chose that rule. The current plan blocks the run until the X-ray list holds visible findings only and the engine is retuned. Both values are tested code. The rule can be set only while the state is "ready" (`python3 -I analysis/one_time_test.py rule --parent-rule strict`), it is written into the result, and an unknown value stops the run before the test half is opened.
+
+**Current gate.** The plan marks this milestone blocked. The stored state remains `ready` because the one-time test has not run; `ready` describes the command record, not permission to score the test half now. The list still contains diagnosis-like labels such as fracture.
 
 ## How it does it
 The program is `analysis/one_time_test.py`, run as `python3 -I analysis/one_time_test.py COMMAND`. Its commands are `status`, `prepare`, `rule`, `rehearse` and `run`.
