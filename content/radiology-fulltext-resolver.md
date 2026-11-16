@@ -7,9 +7,9 @@ project: radiology-report-matcher
 status: active
 location: radiology-crawler:analysis/fulltext.py
 fed_by: []
-feeds: [radiology-real-report-factcheck, radiology-textbook-foundation]
+feeds: [radiology-real-report-factcheck, radiology-textbook-foundation, radiology-observable-descriptions]
 sources: [radiology-crawler:analysis/fulltext.py, radiology-crawler:analysis/fulltext_text.py, radiology-crawler:CLAUDE.md, radiology-crawler:tests/test_fulltext.py, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/TRACEABILITY.md]
-reviewed: 2026-11-16T12:29Z
+reviewed: 2026-11-16T17:11Z
 memory: []
 ---
 

@@ -1,191 +1,175 @@
 ---
 id: radiology-textbook-foundation
-title: Textbook foundation (analysis/books_fetch.py, books_ground.py and books_mine.py)
-aliases: [textbook foundation, open radiology books, analysis/books_fetch.py, analysis/books_ground.py, analysis/books_mine.py, books_mine.py, books_fetch.py, books_ground.py, docs/books-manifest.json, docs/foundational-sources.json, foundational sources, grounding in textbooks]
+title: Textbook tools for the finding lists (analysis/books_fetch.py, books_ground.py, books_mine.py, books_bought.py)
+aliases: [textbook foundation, textbook tools, open radiology books, analysis/books_fetch.py, analysis/books_ground.py, analysis/books_mine.py, analysis/books_bought.py, books_mine.py, books_fetch.py, books_ground.py, books_bought.py, docs/foundational-sources.json, foundational sources, grounding in textbooks, bought textbooks]
 kind: module
 project: radiology-report-matcher
 status: active
 location: radiology-crawler:analysis/books_fetch.py
 fed_by: [radiology-fulltext-resolver]
-feeds: [radiology-finding-inventory]
-sources: [radiology-crawler:analysis/books_fetch.py, radiology-crawler:analysis/books_ground.py, radiology-crawler:docs/books-manifest.json, radiology-crawler:docs/foundational-sources.json, radiology-crawler:tests/test_books_fetch.py, radiology-crawler:tests/test_books_ground.py, radiology-crawler:analysis/books_mine.py, radiology-crawler:tests/test_books_mine.py, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/finding-list-restructure.json]
-reviewed: 2026-11-16T12:29Z
+feeds: [radiology-finding-inventory, radiology-observable-descriptions]
+sources: [radiology-crawler:analysis/books_fetch.py, radiology-crawler:analysis/books_ground.py, radiology-crawler:docs/foundational-sources.json, radiology-crawler:tests/test_books_fetch.py, radiology-crawler:tests/test_books_ground.py, radiology-crawler:analysis/books_mine.py, radiology-crawler:tests/test_books_mine.py, radiology-crawler:analysis/books_bought.py, radiology-crawler:tests/test_books_bought.py, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/finding-list-restructure.json, radiology-crawler:PLAN.md]
+reviewed: 2026-11-16T17:11Z
 memory: []
 ---
 
 ## What it is
-Two programs and two record files that tie the entries of the project's finding lists to radiology textbooks. They belong to the finding assistant project ([[radiology-report-matcher]]), a program that turns a loose description of something seen on a medical image into standard radiological terms. A "finding" is what is seen on the image, named in descriptive terms, such as a pleural effusion; the project keeps one list of findings per imaging method (X-ray, ultrasound, computed tomography or CT, magnetic resonance imaging or MRI), described on [[radiology-finding-inventory]].
+Four programs that take what radiology textbooks say about how a finding looks and bring it into the finding lists of the radiology finding assistant ([[radiology-report-matcher]]). The assistant turns a loose description of something seen on a medical image into standard radiological terms. A "finding" is what is seen on the image, named in descriptive terms, such as a pleural effusion; the project keeps one list of findings per imaging method (X-ray, ultrasound, computed tomography or CT, magnetic resonance imaging or MRI), described on [[radiology-finding-inventory]].
 
-The reason, given by Giovanni on 2026-11-15 and written at the head of the first program: the description of some findings is stated by no current journal article, because it was settled in the early days of radiology (the example in the code is the greenstick fracture). Such an entry must rest on the basic body of literature, which is in textbooks. So the project needs a collection of textbooks it may lawfully read with a program, and a way to find and check passages in them.
+Why textbooks: the description of some findings is stated by no current journal article, because it was settled in the early days of radiology (the example in the code is the greenstick fracture). Such an entry must rest on the basic literature, which is in textbooks (Giovanni, the physician who owns the project, 2026-11-15). The lists are built by the "corpus lane", the Claude session that owns the finding lists and their training texts; the project's tasks are in its plan file `PLAN.md`.
 
-The parts, all in the repository `~/dev/radiology-crawler`, added on 2026-11-15 and 2026-11-16 (commits `8ac0fc0`, `780123d`, `1e5780e`, `17ee7c8`, `661fa0b`, `d1e981c` and `09eb852`; this page describes commit `3c3cdb8` of 2026-11-16):
+How the project treats the books (Giovanni, 2026-11-16): a book, like an article or a case website, is not part of the project. It only feeds the finding lists and the example texts, and each list entry keeps a short source field saying where its wording comes from. So this page describes the tools and what they put into the lists, not the books.
 
-- `analysis/books_fetch.py` finds free books, downloads them, cuts them into chapters of plain text and searches them.
-- `analysis/books_ground.py` looks up list entries in those books and records what the books say ("grounding").
-- `analysis/books_mine.py` reads the oldest books from start to end and keeps what they say about how a finding looks (see "Mining the historical books in full").
-- `docs/books-manifest.json` lists the fetched books, with counts and licences only.
-- `docs/foundational-sources.json` holds the result of the grounding.
+The programs, all in the repository `~/dev/radiology-crawler` (this page describes commit `5183ef3` of 2026-11-16):
 
-Books Giovanni bought (2026-11-16). Giovanni bought the paid radiology textbooks the project had listed and saved them on the laptop. He decided that these books are not part of the project: they only feed information into the finding lists and their example texts. Their text stays in the git-ignored `data/` folder and is never committed or sent to an outside service. What is taken from them enters a list entry as our own short wording, with the book and page in the entry's source field. No manifest, count or record about the bought books themselves is kept.
-
-State at this commit: 88 books are fetched. The grounding has been run for all 122 X-ray entries (62 grounded, 48 weak, 12 not found) for all 231 CT entries (101 grounded, 109 weak, 21 not found) for all 161 ultrasound entries (74 grounded, 80 weak, 7 not found) and for all 214 MRI entries (113 grounded, 78 weak, 23 not found): 728 entries, none left unsearched. These programs change no finding list: the file is a record beside the lists. Since commit `17ee7c8` the session that builds the lists has copied some of its results into the ultrasound and CT lists, and since commit `4355e36` into the MRI list (see "Who receives its output").
+- `analysis/books_fetch.py` finds books that are free to read, downloads them, cuts them into chapters of plain text and searches them.
+- `analysis/books_ground.py` looks up list entries in those books and records whether the books state what characterises them ("grounding").
+- `analysis/books_mine.py` reads the oldest, public-domain books from start to end and keeps what they say about how a finding looks.
+- `analysis/books_bought.py` reads the textbooks Giovanni bought and prepares, for the session that builds the lists, short lines in the project's own words.
 
 ## What it does
-### Which books are taken
-A book is taken only when its licence makes it free to read and to process (requirement AN-166; a requirement is a numbered promise in `docs/REQUIREMENTS.md` that a test must check). A licence is the set of terms under which a text may be used. The accepted ones are the Creative Commons licences CC BY, CC BY-SA, CC BY-NC, CC BY-NC-SA and CC BY-NC-ND (standard public licences; the letters after "CC" name the conditions: attribution, share alike, non-commercial, no derivatives), CC0 (the author gives up all rights) and the public domain (no copyright: a public-domain mark, or a book published in 1929 or earlier). A book whose licence forbids derivatives is marked "quote only". Every other licence, and a book that states none, is refused.
+### Which books may be read
+`books_fetch.py` takes a book only when its licence makes it free to read and to process (requirement AN-166; a requirement is a numbered promise in `docs/REQUIREMENTS.md` that a test checks). A licence is the set of terms under which a text may be used. Accepted are the Creative Commons licences CC BY, CC BY-SA, CC BY-NC, CC BY-NC-SA and CC BY-NC-ND (standard public licences; the letters name the conditions: attribution, share alike, non-commercial, no derivatives), CC0 (the author gives up all rights) and the public domain (a public-domain mark, or a book published in 1929 or earlier). A book whose licence forbids derivatives is "quote only": a short quote with its reference may be recorded, but no line may be written from it. Every other licence, and a book that states none, is refused.
 
-Two kinds of site are refused by name before any request is sent: "shadow libraries", sites that hand out pirated copies of books (a fixed list in the code), and Radiopaedia, a reference site whose text the product never shows.
+Two kinds of site are refused by name before any request: "shadow libraries", sites that hand out pirated copies (a fixed list in the code), and Radiopaedia, a reference site whose text the assistant and its website never show. The program keeps the same manners as the article fetcher [[radiology-fulltext-resolver]], whose network code it uses: one fixed client name without personal data, at least one second between two requests to a site, and a site that refuses (a login page, a robot test, or the answer codes 401, 403 and 429) is left alone for the rest of the run (AN-169).
 
-The same manners hold as for journal articles ([[radiology-fulltext-resolver]], whose network code this program uses): one fixed client name without personal data, at least one second between two requests to the same site, and a site that refuses (a login page, a test whether the visitor is a robot, or the answer codes 401, 403 and 429) is written down and left alone for the rest of the run. Nothing is tried in another guise (requirement AN-169).
+It searches four public catalogues (`discover`): the open-access part of the book archive of the US National Center for Biotechnology Information (NCBI Bookshelf), the scholarly registry Crossref for open books and chapters, the Internet Archive for public-domain scans, and Wikibooks. A hand-saved file can be added with `add`.
 
-### Where the books come from
-Four public catalogues are searched (`discover`):
+A fetched book is stored as chapters of titled text sections with page range and licence (AN-168); images are never kept. The text stays in `data/analysis/books/`, which git (the version-control system of the repository) does not track. A book of 2015 or later counts as the "current" layer; a public-domain classic as the "historical" layer and is always flagged as such (AN-175). A chapter counts for an imaging method when it names that method at least three times.
 
-- NCBI Bookshelf, the book archive of the US National Center for Biotechnology Information (NCBI): its open-access subset;
-- Crossref, the registry of scholarly publications: books and chapters under an open licence from the publishers Springer and IntechOpen;
-- the Internet Archive, a library of scanned books: old radiology books in the public domain;
-- Wikibooks, the textbook project of the Wikimedia Foundation.
+`python3 -I analysis/books_fetch.py find greenstick cortex --method xray` prints the passages that hold all the given terms, each with its reference and licence (AN-170).
 
-A hand-saved file can be added with `add`, with its title, year, licence and address.
+### Grounding: does a book state what characterises an entry?
+`books_ground.py` works per imaging method, on that method's own list and on the chapters that count for that method; nothing is pooled. A quote whose passage speaks only of another imaging method counts only as a mention. It takes these kinds of entry:
 
-From `docs/books-manifest.json` (generated 2026-11-16): 88 books with 3,491 chapters and about 103 million bytes of text. By licence: 71 under CC BY (63 recorded as "CC BY", 8 as "CC BY 4.0"), 14 in the public domain, 2 under CC BY-NC-ND 4.0, 1 under CC BY-SA 4.0. By catalogue: 63 through Crossref, 14 from the Internet Archive, 10 from Bookshelf, 1 from Wikibooks. Five books that were found were not fetched, each because no open licence was stated.
-
-Books are sorted into layers by year (requirement AN-175). A book of 2015 or later is the "current" layer, the source of today's descriptive vocabulary: 74 books. A public-domain classic is the "historical" layer and is always flagged as such: 14 books. A book in between would be "older"; the manifest lists none.
-
-A chapter counts for an imaging method when it names that method at least three times. By that count the manifest gives: X-ray 37 books (23 of them current) and 1,145 chapters; ultrasound 40 books and 1,387 chapters; CT 41 and 1,718; MRI 51 and 1,694. A chapter can count for several methods.
-
-### What is stored
-A fetched book is stored as chapters; a chapter is a set of titled text sections with its page range and licence (requirement AN-168). Images are never kept. A chapter without an open licence is dropped. Of a large reference work only the chapters about imaging are kept. The text stays in the folder `data/analysis/books/`, which is not in git (the version-control system that holds the code), so no book text enters the repository. The committed manifest holds, per book: title, edition, year, publisher, licence, address, layer, catalogue, chapters per imaging method, number of chapters, bytes, and how it was fetched (requirement AN-167).
-
-### Searching the books
-`python3 -I analysis/books_fetch.py find greenstick cortex --method xray` prints the passages that hold all the given terms, each with book, edition, year, chapter, section, pages and licence (requirement AN-170). `--method` keeps to chapters of one imaging method, `--layer` to one layer, and `--max-chars` caps the printed text (default 3,000 characters). The search cuts and ranks passages the same way as the article search of the full-text resolver.
-
-### Grounding list entries
-"Grounding" an entry means finding a textbook passage that states what characterises the finding on the image. `books_ground.py` does this per imaging method, on that method's own list and on the chapters that count for that method; nothing is pooled across methods. Since commit `1e5780e` a quote whose passage speaks only of another imaging method no longer counts as characterising: it is set down to a mention, by code. It takes these kinds of entry:
-
-- **finding**: a list entry marked foundational (basic radiology that textbooks teach, kept without an article citation), or one whose only sources are abstracts or missing (X-ray);
-- **target**: a visible sign proposed to replace an entry that names a diagnosis. The project decided on 2026-11-15 that its lists hold findings only; the proposals are in `docs/finding-list-restructure.json` ([[radiology-finding-inventory]]);
-- **sign**: for ultrasound, CT and MRI, the visible sign of a family of diagnosis-like entries, worded for that method;
-- **descriptor**: a descriptor (an attribute of a finding, such as its margin, with standard values) for which an earlier literature check found no sentence ([[radiology-modality-corpus]]);
-- **borderline**: an entry that is a standard radiological term but also names a disease or condition. By Giovanni's rule of 2026-11-15 it stays a finding only with a defining description of the image, and a definition that rests on a measurement taken on the image must state that measurement;
+- **finding**: an entry marked foundational (basic radiology taught without an article citation), or one whose only sources are abstracts;
+- **target**: a visible sign proposed to replace an entry that names a diagnosis (the lists hold findings only since 2026-11-15, see [[radiology-finding-inventory]]);
+- **sign**: for ultrasound, CT and MRI, the visible sign of a family of diagnosis-like entries;
+- **descriptor**: an attribute of a finding with standard values (such as its margin) for which an earlier check found no sentence;
+- **borderline**: a standard term that also names a disease. By Giovanni's rule it stays a finding only with a defining description of the image, and with the measurement when the definition rests on one;
 - **measured**: a finding whose name or definition names a measurement.
 
-The result per entry in `docs/foundational-sources.json` (requirement AN-171): a status, the characterising principle in one sentence, and up to three short quotes (at most 300 characters each) with book, year, chapter, place in the chapter, licence and layer. The statuses:
+The result goes to `docs/foundational-sources.json`, a record beside the lists (AN-171): per entry a status, the characterising principle in one sentence, and up to three short quotes with their reference. The statuses:
 
-- **grounded**: at least one quote that characterises the finding; the number of independent books is given;
+- **grounded**: at least one quote that characterises the finding;
 - **weak**: the books mention the finding and do not characterise it;
 - **not found**: no passage;
-- **not searched**: the grounding has not been run for this entry.
+- **not searched**: the entry has not been looked up yet.
 
-A borderline or measured entry also carries its defining description (a quote with its reference) and its measurements: what to measure, how, the criterion and the unit (requirement AN-174). When two books give different thresholds both are recorded and the difference is written down. A borderline entry that the open books do not define is marked so.
+A borderline or measured entry also gets its defining description and its measurements: what to measure, how, the criterion and the unit (AN-174). When two books give different thresholds, both are kept and the difference is written down.
 
-X-ray result, from the file (checked 2026-11-16):
+Result per method, from the file at commit `5183ef3` (729 entries; unchanged since `fa70aa2`):
 
-| Kind | Grounded | Weak | Not found |
-|---|---|---|---|
-| finding | 1 | 3 | 2 |
-| target | 18 | 13 | 0 |
-| descriptor | 18 | 19 | 9 |
-| borderline | 12 | 6 | 0 |
-| measured | 13 | 7 | 1 |
-| All (122) | 62 | 48 | 12 |
-
-Twelve of the 18 X-ray borderline entries have a defining description from the open books and 6 do not. Sixteen entries carry measurements. In three entries the books disagree on a threshold (for example "more than 10 degrees" against "at least 10 degrees"), and the file says so. The 122 entries carry 176 quotes: 103 from books under CC BY-NC-ND 4.0, 59 under CC BY, 14 from public-domain books. The first run (commit `780123d`) counted 66 grounded and 44 weak; four entries went from grounded to weak when quotes about another imaging method stopped counting.
-
-The other methods, each on its own list and chapters (file of commit `d1e981c`, 2026-11-16, in which all four methods are searched in full: 728 entries, none left unsearched):
-
-| Method | Entries listed | Grounded | Weak | Not found | Not searched |
+| Method | Entries | Grounded | Weak | Not found | Not searched |
 |---|---|---|---|---|---|
+| X-ray | 123 | 75 | 30 | 12 | 6 |
 | Ultrasound | 161 | 74 | 80 | 7 | 0 |
 | CT | 231 | 101 | 109 | 21 | 0 |
 | MRI | 214 | 113 | 78 | 23 | 0 |
 
-Before commit `d1e981c` only the borderline entries of ultrasound and MRI had been searched; that commit added their signs, descriptors and measured entries. The file counts 58 borderline entries with a defining description for ultrasound, 81 for CT and 91 for MRI (here an article source on the list entry counts as well as a book); 20 ultrasound, 28 CT and 25 MRI entries carry measurements; the books disagree on a threshold in one ultrasound and two CT entries and in no MRI entry. Ultrasound carries 210 quotes, CT 298 and MRI 339.
+X-ray by kind: borderline 14 grounded and 3 weak; measured 18 grounded, 2 weak, 1 not found; targets 24 grounded, 7 weak, 4 not searched; descriptors 17 grounded, 16 weak, 9 not found, 2 not searched; other findings 2, 2 and 2. Fifteen of the 75 grounded X-ray entries are grounded only by the historical layer (see the next part). The six not searched are entries added after the last grounding run, four of them visible signs of the split post-operative entry ([[radiology-finding-inventory]]).
+
+### Mining the historical books
+`books_mine.py` (requirements AN-176 to AN-178) goes the other way: it reads each public-domain classic from start to end and keeps what it says about how a finding looks. Each of these books speaks of X-ray only, so its passages are mapped to the X-ray list only. The steps are described under "How it does it".
+
+Result, written on 2026-11-16 (commit `fa70aa2`) as the section `historical_mining` of `docs/foundational-sources.json`: 3,079 text blocks read, 2,714 quotes retained, 91 list entries with at least one retained quote, 480 candidate gaps (visible signs the list lacks, handed to the session that builds the lists), 42 contradictions with a current book (recorded, the modern passage preferred), and 15 entries that were weak or not found now grounded by the historical layer only, flagged so.
+
+### The textbooks Giovanni bought
+`books_bought.py` (commit `f35556a`, requirements AN-190 to AN-193) reads the radiology textbooks Giovanni bought, which are copyrighted copies on his laptop. The rules written into the program:
+
+- The book text, the quotes and the results stay in the git-ignored folder `data/analysis/books/bought/`, a store of its own that no other program of the project reads. Nothing about these books is committed. The text goes to no outside service: the models run as local command-line sessions.
+- What may reach a list is a candidate line in the project's own words: at most 25 words, never a run of 6 words copied from the book (checked by code), with a short source field (book and page). A word-for-word quote stays in the work files only, as proof.
+- A line is kept only when its quote stands word for word in the passage, it holds neither the value's term nor the finding's name, and a second model reads the quote as stating it, as seen on the image and about the item (AN-191).
+- Each imaging method is read on its own list and only in the chapters and passages that speak of it (AN-192). For a brighter, equal or darker value the line keeps the tissue the book compares with as its reference.
+
+It asks four kinds of question per list entry (AN-193): a defining description for a finding that has none (and for a borderline entry pending one); an observable line for a descriptor value that has none ([[radiology-observable-descriptions]]); for a measured entry, what, how, the criterion and the unit; and, for an entry the open books left weak or not found, whether it is grounded.
+
+State at commit `5183ef3`: the program and its tests are committed; the run has not produced its candidates file yet, so nothing from these books is in the lists. Mining them is plan task T24 of the corpus lane.
 
 ## How it does it
-Commands of the fetcher, run in the repository:
+**Fetcher.** `discover [--source bookshelf|crossref|archive|wikibooks]` searches the catalogues; `fetch [--book ID] [--limit N]` downloads and resumes where it stopped, down to a partial download. From Bookshelf it takes a book's archive file through that site's documented bulk service and keeps only the chapter files in XML (Extensible Markup Language, a text format with named parts); from the Internet Archive the text of a scan; from Wikibooks a page through its API (application programming interface, an address a program calls); an open chapter comes through the full-text resolver. `status` prints what is fetched.
 
-- `python3 -I analysis/books_fetch.py discover [--source bookshelf|crossref|archive|wikibooks]` searches the catalogues and records what it finds.
-- `python3 -I analysis/books_fetch.py fetch [--book ID] [--limit N]` downloads. It can be stopped and started again: it resumes at the book, the chapter and even the partial download where it stopped. From Bookshelf it takes the archive file of a book through that site's documented bulk service and keeps only the chapter files in XML (Extensible Markup Language, a text format with named parts); from the Internet Archive the text file of a scan; from Wikibooks a page through its API (application programming interface, an address a program calls instead of a person); an open chapter comes through the full-text resolver.
-- `status` prints what is recorded and fetched; `manifest` writes `docs/books-manifest.json`.
-- `find` and `add` are described above.
-
-The grounding runs in steps, each of which can be stopped and resumed; its work files are in `data/analysis/books/grounding/<method>/`:
+**Grounding**, steps that can each be stopped and resumed, work files in `data/analysis/books/grounding/<method>/`:
 
 1. **items**: the entries of the kinds above, each with search terms.
-2. **candidates**, by code: the passages that hold the terms, those that read like a definition first, at most three per book and seven per entry.
-3. **extract**: a first language model (Sonnet, a model of the Claude family) reads only those passages and returns the principle, up to three quotes and, for borderline and measured entries, the defining description and the measurements.
-4. **verify**, in two parts. By code: every quote must stand word for word in the stored text of the named chapter, or it is dropped before anything is written (requirement AN-172). Then a second, different model (Haiku) reads each remaining quote and says what it claims: it characterises the finding, only mentions it, or is unrelated. An entry is grounded only when the second model reads a quote as characterising (requirement AN-173). A batch that fails stays open for the next run.
+2. **candidates**, by code: passages that hold the terms, definitions first, at most three per book and seven per entry.
+3. **extract**: a first language model (Sonnet, a model of the Claude family) reads only those passages and returns the principle, up to three quotes and, where needed, the defining description and the measurements.
+4. **verify**: code drops every quote that does not stand word for word in the stored chapter (AN-172); then a second model (Haiku) says whether each quote characterises the finding, only mentions it, or is unrelated. Only "characterises" grounds an entry (AN-173).
 5. **write**: the status per entry.
 
-The book passages are treated as untrusted text: both prompts say so, and the models are given no tools.
+Commands: `python3 -I analysis/books_ground.py run --method xray [--kind borderline] [--limit N]`, then `write` and `status`.
 
-Commands: `python3 -I analysis/books_ground.py run --method xray [--kind borderline] [--limit N]`, then `write`, and `status`.
+**Mining** (`books_mine.py`), work files in `data/analysis/books/mining/`:
 
-**Tests.** `tests/test_books_fetch.py` holds 14 tests and `tests/test_books_ground.py` 9, for the requirements AN-166 to AN-175; `tests/test_books_mine.py` holds 8 for AN-176 to AN-178 (two of them read the committed files and are skipped while the result file has no mining section). They use invented samples and a simulated web and model; none touches the network. One test compares every quote of the committed file with the stored books, and can do so only on a computer where the books are stored. On a copy of commit `af3afc6` without the books, both files passed when this page was written; they were not run again for `661fa0b`, which changed only the record. On 2026-11-16, in the working copy at commit `3c3cdb8` on the computer that stores the books, the three test files gave 41 passed and 2 skipped.
+1. **blocks**, by code: the book is cut into text blocks; a block without any word of shape or appearance is skipped and counted; an earlier edition of a book held in a later edition is not read.
+2. **extract**: a first model (Haiku) keeps short quotes that state what is seen (lines, cortex, density, margins, alignment, displacement, shape, a measurement and its criterion). Treatment, cause, clinical course, old technique and normal anatomy are dropped and counted.
+3. **check**, by code: a quote stays only when it stands word for word in the stored text.
+4. **verify**: a second model (Sonnet) maps each quote to one entry or descriptor of the X-ray list, or names the visible sign the list lacks (a candidate gap). A sign found by examining the patient (touch, movement, pain) and not seen on the image is dropped here. The program never edits the lists.
+5. **compare**: where a current open book also characterises the entry, a model says whether the old statement contradicts it.
+6. **write**: the section `historical_mining`.
+
+Commands: `python3 -I analysis/books_mine.py run [--book ID] [--limit N]`, then `write`.
+
+**Bought books** (`books_bought.py`), work files in `data/analysis/books/bought/work/<method>/`:
+
+1. **convert**, by code, one file at a time, holding the project's lock file for heavy jobs (`/tmp/radiology-heavy.lock`, so that only one long job runs on the laptop at a time): a PDF (Portable Document Format) file page by page (a page without a text layer is read by optical character recognition, the program tesseract), an EPUB electronic book chapter by chapter with sections at its page markers, or an HTML (HyperText Markup Language, the format of web pages) file.
+2. **candidates**, by code: the passages that hold the item's words, defining ones first, two per book at most.
+3. **extract**: a first model (Sonnet) writes the line and gives the words it rests on; code checks the quote, the length, the absent term and the absence of a copied run.
+4. **verify**: a second model (Haiku) checks the line against the quote.
+5. **write**: `data/analysis/books/bought/candidates.json`, per method and per list entry, for the session that builds the lists.
+
+Commands: `python3 -I analysis/books_bought.py convert [--book KEY]`, `run [--method M] [--limit N]`, `write`, `status`.
+
+In all four programs the book text is untrusted input: the prompts say so and the models get no tools.
+
+**Tests.** `tests/test_books_fetch.py` (14 tests) and `tests/test_books_ground.py` (9) for AN-166 to AN-175; `tests/test_books_mine.py` (8) for AN-176 to AN-178; `tests/test_books_bought.py` (6) for AN-190 to AN-193. They use invented samples and a simulated web and model; none touches the network or a real book. On 2026-11-16, in the working copy at commit `f35556a`, the files for mining and bought books passed together with the other new test files (63 passed).
 
 ### Known limits
-- **Searched is not grounded.** All four methods are searched in full, but 315 of the 728 entries are only mentioned by the books (weak) and 63 were not found.
-- **The mining of the old books has no committed result yet.** The program and its tests are committed (`09eb852`); the file `docs/foundational-sources.json` at commit `3c3cdb8` holds no section `historical_mining`.
-- **Only part of it has reached the lists.** The defining descriptions and measurements of the X-ray list cite that list's own article sources, not this file. For ultrasound and CT, the borderline entries that had no article definition took a quote from this file (10 and 16 entries), and the measurements the passages state were copied (15 and 22 entries). For MRI, commit `4355e36` did the same: 20 borderline entries without an article definition took a quote from this file, and 19 kept borderline entries got measurements from its passages. Targets, signs and descriptors have not been taken over ([[radiology-finding-inventory]]).
-- **"Grounded" rests on two models and a word-for-word check.** The code proves that the quote is in the book. That the quote characterises the finding is the reading of one model, checked by a second. No radiologist has read the result.
-- **Old scans are machine-read.** The text of an Internet Archive scan comes from optical character recognition, so words may be misread (the manifest says so for each such book), and a correct quote can fail the word-for-word check.
-- **Old books carry old knowledge.** The historical layer is flagged so that a reader can tell a passage of 1917 from one of 2023.
-- **Most quotes come from a licence that forbids derivatives.** Those books are marked "quote only"; the file holds short quotes with their reference.
-- **Free books are not all books.** The standard commercial textbooks are not among them, so "not found" means not found in these 88 books.
-- Not verified for this page: the programs were not run and the stored books were not opened. The counts are those of the two committed files.
-
-### Mining the historical books in full
-The grounding above looks a list entry up in the books. A third program, `analysis/books_mine.py` (commit `09eb852`, 2026-11-16, requirements AN-176 to AN-178), goes the other way for the 14 public-domain classics: it reads each book from start to end and keeps what the book says about how a finding looks. Each of these books speaks of one imaging method, and its passages are mapped to that method's list only.
-
-Its steps, each of which can be stopped and resumed (work files in `data/analysis/books/mining/`, which git does not track):
-
-1. **blocks**, by code. The book is cut into text blocks. A block without any word of shape or appearance is skipped and counted. An earlier edition of a book that is also held in a later edition is not read twice.
-2. **extract**. A first model (Haiku) reads the blocks and keeps short quotes that state what is seen: lines, cortex, density, margins, alignment, displacement, shape, a measurement and its criterion. Treatment, cause, clinical course, old technique and normal anatomy are dropped and counted.
-3. **check**, by code. A quote stays only when it stands word for word in the stored text of the book.
-4. **verify**. A second, different model (Sonnet) maps each quote to one entry or descriptor of the method's list, or names the visible sign the list lacks. Such a sign is recorded as a candidate gap for the session that builds the lists; the program does not edit the lists.
-5. **compare**. Where a current open book also characterises the entry, a model says whether the old statement contradicts the modern one. A contradicted quote is recorded with both passages, the modern one preferred, and grounds nothing.
-6. **write**. `python3 -I analysis/books_mine.py write` adds a section `historical_mining` to `docs/foundational-sources.json`. An entry that was weak or not found and that a mined quote characterises becomes grounded, with the flag `upgraded_by_historical_mining`, so a reader sees that only an old book stands behind it. The manifest then counts retained quotes, gaps and contradictions per historical book.
-
-The book text is treated as untrusted input: the prompts say so and the models get no tools. Not verified for this page: the mining was not run, and at commit `3c3cdb8` the committed file holds no `historical_mining` section, so no counts are given here.
+- **Searched is not grounded.** Of the 729 entries, 297 are only mentioned by the books (weak), 63 were not found and 6 not yet searched.
+- **Only part of it has reached the lists.** For ultrasound, CT and MRI, borderline entries without an article definition took a quote from the grounding file as their defining description, and kept borderline entries took the measurements those passages state. The X-ray defining descriptions mostly come from the list's own full-text definitions ([[radiology-observable-descriptions]]). Targets, signs and the historical results have not been taken over.
+- **"Grounded" rests on two models and a word-for-word check.** The code proves the quote is in the book; that it characterises the finding is one model's reading, checked by a second. No radiologist has read the result.
+- **Old scans are machine-read**, so a correct quote can fail the word-for-word check; and old books carry old knowledge, which is why the historical layer is flagged and a contradicted quote grounds nothing.
+- **The bought books have produced nothing yet.** Their lines will be the project's own short wording; no text of them appears on this page or in the repository.
+- Not verified for this page: the programs were not run. The counts are those of the committed record file.
 
 ## Functions
+In `analysis/books_bought.py`:
+
+- `convert(key)`: convert one bought book (or all, one at a time) into the private store.
+- `items_of(method)`: the questions to ask for one method: define, value, measure, ground.
+- `candidates(corpus, item)`: the passages offered to the first model.
+- `copied(line, text, run)`: whether a line repeats 6 or more words in a row of the book.
+- `holds_term(line, item)`: whether a line names the term or the finding.
+- `line_problem(line, item, passage)`: why a line cannot be shown, or none.
+- `run(method, limit)`: candidates, extract, code checks and verify, resumable.
+- `cite(store, src)`: the short source field (book and page).
+- `write()`: the candidates file in `data/`.
+
 In `analysis/books_mine.py`:
 
-- `blocks_of(store, only)`: every block of every historical book to read, and the counts per book.
+- `blocks_of(store, only)`: every block of every historical book to read.
 - `later_edition(books)`: which book is also held in a later edition.
 - `targets_of(method)`: the list entries and descriptors a quote can be mapped to.
-- `run(book, limit)`: the steps blocks, extract, check, verify and compare.
-- `mined(store)`: every checked and mapped quote.
-- `for_entries(method)`: per entry, the quotes that may ground it (characterising, of this method's books, not contradicted).
-- `section(store)`: the `historical_mining` section of the result file.
-- `summary()`: the counts for the manifest, without text.
+- `run(book, limit)`: blocks, extract, check, verify and compare.
+- `for_entries(method)`: per entry, the quotes that may ground it.
+- `section(store)`: the `historical_mining` section.
 
 In `analysis/books_fetch.py`:
 
-- `licence_code(text)`, `refuse(book)`, `blocked_site(url)`: read a licence, and refuse a book without a free licence or an address of a refused site.
-- `Fetcher.discover_bookshelf` and its siblings for Crossref, the Internet Archive and Wikibooks: record the books a catalogue offers.
-- `Fetcher` (download part), `download(url, dest)`: fetch a book, resumable.
-- `sections_from_bits(xml)`, `sections_from_scan(text)`: the sections of a Bookshelf chapter file and of the text of a scan.
-- `Store`, `chapter_record(...)`: the catalogue and the chapters on disk.
-- `add_local(...)`: add a hand-saved file.
-- `layer_of(year)`: current, older or historical.
-- `Corpus.search`: the passages that hold the terms.
-- `quote_present(corpus, book_id, chapter, quote)`: whether a quote stands word for word in a stored chapter.
-- `manifest(store)`: write the manifest.
+- `licence_code(text)`, `refuse(book)`, `blocked_site(url)`: read a licence; refuse a book without a free licence or from a refused site.
+- `Fetcher`: discover and download, resumable.
+- `sections_from_bits(xml)`, `sections_from_scan(text)`: the sections of a Bookshelf chapter and of a scan.
+- `Store`, `add_local(...)`, `layer_of(year)`: the books on disk, a hand-saved file, the layer.
+- `Corpus.search`, `quote_present(...)`: find passages; check that a quote stands word for word.
 
 In `analysis/books_ground.py`:
 
-- `build_items(method)`: the entries to ground, by kind.
-- `candidates(corpus, item)`: the passages offered to the first model.
-- `run(method, kind, limit)`: the steps extract and verify, resumable.
-- `check_quotes(corpus, quotes)`: drop every quote that is not in the book.
-- `own_method_only(store, method, quotes)`: set a quote about another imaging method down to a mention.
-- `decide(item, principle, quotes)`: grounded, weak or not found.
-- `write()`: the file `docs/foundational-sources.json`.
+- `build_items(method)`, `candidates(corpus, item)`, `run(method, kind, limit)`: the grounding steps.
+- `check_quotes(corpus, quotes)`, `own_method_only(store, method, quotes)`: drop quotes not in the book; set quotes about another method down to a mention.
+- `decide(item, principle, quotes)`, `write()`: the status, and the record file.
 
 ## Where it sits in the pipeline
-Beside the building of the finding lists ([[radiology-finding-inventory]]), after the classification of every entry as finding, diagnosis-like or borderline, which names the entries that need a textbook basis. It uses the network code and the passage search of [[radiology-fulltext-resolver]]. It is listed among the analysis tools on [[radiology-analysis]].
+Beside the building of the finding lists ([[radiology-finding-inventory]]): it supplies passages for the observable lines and defining descriptions ([[radiology-observable-descriptions]]) and grounding for entries without an article source. It uses the network code and passage search of [[radiology-fulltext-resolver]]. It is listed among the analysis tools on [[radiology-analysis]].
 
 ## Who receives its output
-The session that builds the finding lists, which the project calls the "corpus lane": it reads `docs/foundational-sources.json` when it rewords an entry or adds a defining description and measurements. In commit `17ee7c8` of 2026-11-16 it did so for ultrasound and CT: a borderline entry without a definition from an article got a short word-for-word quote from a book as its `defining_description`, with the book chapter added to the list file's sources, and so stays a finding (ultrasound 10 entries, CT 16). Kept borderline entries got the measurements those passages state (ultrasound 15 entries, CT 22), each with its book source; where books give different thresholds both are kept and flagged. Three records that are not measured on the image (for example a time course in days) were left out. Any session of the project may search the books with `find`. Giovanni reads the two record files.
+The session that builds the finding lists (the "corpus lane"). It reads the grounding file when it adds a defining description or measurements, with the book and chapter as the entry's source; it will read the bought-book candidates file in the same way. Any session of the project may search the open books with `find`.
