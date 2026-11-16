@@ -8,8 +8,8 @@ status: active
 location: radiology-crawler:analysis/real_reports.py
 fed_by: [radiology-analysis]
 feeds: [radiology-real-report-factcheck, radiology-report-matcher]
-sources: [radiology-crawler:analysis/real_reports.py, radiology-crawler:tests/test_real_reports_batch2.py, radiology-crawler:docs/real-reports-batch2.json, radiology-crawler:docs/real-reports-factcheck-batch2-xray.json, radiology-crawler:docs/real-reports-factcheck-batch2-ultrasound.json, radiology-crawler:docs/real-reports-factcheck-batch2-ct.json, radiology-crawler:docs/real-reports-factcheck-batch2-mri.json, radiology-crawler:analysis/second_check.py, radiology-crawler:tests/test_second_check.py, radiology-crawler:DESIGN.md, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:PLAN.md, radiology-crawler:docs/plan.json]
-reviewed: 2026-11-16T00:11Z
+sources: [radiology-crawler:analysis/real_reports.py, radiology-crawler:tests/test_real_reports_batch2.py, radiology-crawler:docs/real-reports-batch2.json, radiology-crawler:docs/real-reports-factcheck-batch2-xray.json, radiology-crawler:docs/real-reports-factcheck-batch2-ultrasound.json, radiology-crawler:docs/real-reports-factcheck-batch2-ct.json, radiology-crawler:docs/real-reports-factcheck-batch2-mri.json, radiology-crawler:analysis/second_check.py, radiology-crawler:tests/test_second_check.py, radiology-crawler:DESIGN.md, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:PLAN.md, radiology-crawler:docs/plan.json, radiology-crawler:analysis/relabel.py, radiology-crawler:tests/test_relabel.py]
+reviewed: 2026-11-16T06:11Z
 memory: []
 ---
 
@@ -102,7 +102,9 @@ How far the literature carries each decision was graded by the first checker as 
 
 No verdict changed in any method: the confirmed and rejected counts, the checked sets and their checksums are the same as before the re-check. For CT one label had only an abstract after the first pass of the re-check and was recorded as `unverified` (commit `cc4feff`); a full text was then found for it (commit `8f61f60`). The manifests also count how many decisions name the place in the text that carries them: 52, 46, 52 and 68. "Rests on a full text" is what the checker recorded; the program checks that the reading level is stated, and no human took part.
 
-**What is still open.** The single scoring. `score2 --confirm "score batch 2 once"` runs the assistant on each of the four methods. It has not been run, and Giovanni decides when.
+**On hold since the change of scope** (2026-11-15, requirements AN-161 to AN-165, commits `976c81a` and `ad929e1`). That day Giovanni decided that the project's finding lists hold only what is seen on the image; an entry that names a diagnosis, such as "fracture", is to be replaced by its visible signs. The labels of batch 2 were made on the earlier lists, so some point to entries that will go. Since those commits `score2` refuses, before anything is opened, while a label of the batch points to such an entry without an agreed new label, and `status2` shows this hold. The remedy is a blind relabel: two annotators read the wording again with the corrected list, without seeing the old label; only a sign both agree on replaces the label, and everything else is set aside. The tool is `analysis/relabel.py`; the rule and its commands are on [[radiology-one-time-test]]. The texts and the map of the relabel stay in the sealed folder, and only counts may be committed. At commit `af3afc6` of 2026-11-16 the X-ray list is corrected and the ultrasound, CT and MRI lists are not ([[radiology-finding-inventory]]); no relabel has run and no count is committed.
+
+**What is still open.** The correction of the lists, the relabel, and then the single scoring. `score2 --confirm "score batch 2 once"` runs the assistant on each of the four methods. It has not been run, and Giovanni decides when.
 
 ## How it does it
 Everything is in the program `analysis/real_reports.py`, run as `python3 -I analysis/real_reports.py COMMAND`, plus `analysis/second_check.py` for the second checker.
@@ -134,7 +136,8 @@ Twelve requirements describe this: AN-79 and AN-80 (collection and overlap), AN-
 6. For each method, the second checker judges every agreed label blind (`second_check.py run`); the judge resolves each disagreement, runs `record` and joins the fact-check again. Output: the second-check counts in the manifests. Done for all four methods on 2026-11-15.
 7. The judge runs `status2`. Output: the list of guards, each "ok" or the reason it would refuse.
 8. For each method, the judge reads every agreed label again against the full text of an article, records how each source was read, and joins the fact-check again. Output: the counts per reading level in the manifests. Done for all four methods on 2026-11-15.
-9. Not done: Giovanni gives the go and `score2 --confirm "score batch 2 once"` runs once. Output: one result per method in the results registry of [[radiology-analysis]].
+9. Not done (X-ray list corrected on 2026-11-16, the other three not): the lists are corrected to findings only and the pending labels of batch 2 are relabelled blind (`relabel.py`, see above).
+10. Not done: Giovanni gives the go and `score2 --confirm "score batch 2 once"` runs once. Output: one result per method in the results registry of [[radiology-analysis]].
 
 ## Where it sits in the pipeline
 At the end of the project's chain: after the lists of findings and the engine ([[radiology-finding-engine]]) exist, and before the single final measurement. It is separate from the one-time test of the X-ray milestone, which scores the frozen test half of the simulated data and batch 1 and has not been run either ([[radiology-one-time-test]]). It is also separate from the open "development batch" of real reports for ultrasound, CT and MRI, which may be looked at and is never a test ([[radiology-real-report-factcheck]]); the collection of that batch excludes every article of batch 2.

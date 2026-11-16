@@ -1,15 +1,15 @@
 ---
 id: radiology-finding-inventory
 title: Finding inventory and its checker (assistant/)
-aliases: [finding inventory, assistant/inventory.py, X-ray inventory]
+aliases: [finding inventory, analysis/finding_restructure.py, finding_restructure.py, docs/finding-list-restructure.json, finding-list restructure, list restructure, diagnosis-like entry, borderline entry, assistant/inventory.py, X-ray inventory]
 kind: module
 project: radiology-report-matcher
 status: active
 location: radiology-crawler:assistant
-fed_by: [radiology-r1-xray-review, radiology-real-report-factcheck]
+fed_by: [radiology-r1-xray-review, radiology-real-report-factcheck, radiology-textbook-foundation]
 feeds: [radiology-report-matcher, radiology-finding-engine, radiology-modality-corpus]
-sources: [radiology-crawler:assistant/inventory.py, radiology-crawler:assistant/__init__.py, radiology-crawler:assistant/modules/xray/chest.json, radiology-crawler:assistant/modules/xray/msk-trauma.json, radiology-crawler:assistant/modules/xray/msk-other.json, radiology-crawler:assistant/modules/xray/abdomen.json, radiology-crawler:tests/test_finding_inventory.py, radiology-crawler:docs/adr/0008-finding-inventory-format-and-module-layout.md, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/r1/gap-clusters.md, radiology-crawler:docs/r1/omitted-chest.md, radiology-crawler:docs/r1/omitted-msk-trauma.md, radiology-crawler:docs/r1/omitted-msk-other.md, radiology-crawler:docs/r1/omitted-abdomen.md, radiology-crawler:analysis/finding_links.py, radiology-crawler:tests/test_finding_links.py, radiology-crawler:docs/real-reports-factcheck-batch1.json, radiology-crawler:DESIGN.md, radiology-crawler:docs/training-corpus-manifest.json, radiology-crawler:analysis/training_corpus.py, radiology-crawler:analysis/finding_restructure.py, radiology-crawler:docs/finding-list-restructure.json, radiology-crawler:tests/test_finding_restructure.py, radiology-crawler:docs/SCOPE.md]
-reviewed: 2026-11-16T00:11Z
+sources: [radiology-crawler:assistant/inventory.py, radiology-crawler:assistant/__init__.py, radiology-crawler:assistant/modules/xray/chest.json, radiology-crawler:assistant/modules/xray/msk-trauma.json, radiology-crawler:assistant/modules/xray/msk-other.json, radiology-crawler:assistant/modules/xray/abdomen.json, radiology-crawler:tests/test_finding_inventory.py, radiology-crawler:docs/adr/0008-finding-inventory-format-and-module-layout.md, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/r1/gap-clusters.md, radiology-crawler:docs/r1/omitted-chest.md, radiology-crawler:docs/r1/omitted-msk-trauma.md, radiology-crawler:docs/r1/omitted-msk-other.md, radiology-crawler:docs/r1/omitted-abdomen.md, radiology-crawler:analysis/finding_links.py, radiology-crawler:tests/test_finding_links.py, radiology-crawler:docs/real-reports-factcheck-batch1.json, radiology-crawler:DESIGN.md, radiology-crawler:docs/training-corpus-manifest.json, radiology-crawler:analysis/training_corpus.py, radiology-crawler:analysis/finding_restructure.py, radiology-crawler:docs/finding-list-restructure.json, radiology-crawler:tests/test_finding_restructure.py, radiology-crawler:docs/SCOPE.md, radiology-crawler:docs/foundational-sources.json, radiology-crawler:analysis/restructure_xray.py, radiology-crawler:assistant/lexicon/xray-diagnosis-words-en.json]
+reviewed: 2026-11-16T06:11Z
 ---
 
 ## What it is
@@ -39,7 +39,39 @@ Later on 2026-11-15 (commits `004903b` and `952d328`, requirement AN-124) the li
 
 Later commits of that day, up to `c1bc2c9`, raised the training corpora of those three methods (ultrasound 3,523 rows, CT 6,112, MRI 6,695) and repeated the literature check of their descriptors; the counts are on [[radiology-modality-corpus]]. The X-ray files did not change in them. This page describes commit `c1bc2c9` of 2026-11-15.
 
-**Finding-only scope and proposed cleanup, 2026-11-15.** The scope now excludes disease, injury and cause names from suggestions. `analysis/finding_restructure.py classify` writes `docs/finding-list-restructure.json` but changes no finding list. The committed classification marks 173 of 232 X-ray entries as findings, 41 as diagnosis-like and 18 as borderline. It marks the ultrasound, CT and MRI entries separately; these are proposed actions, not applied changes. The X-ray one-time test waits for the list to contain visible findings only and for engine retuning. The checker still reports the current list, including entries awaiting this cleanup.
+**Findings-only scope and the classification of every entry, 2026-11-15** (requirement AN-150, commit `5fc5bbe`; `docs/SCOPE.md`; decision log of `DESIGN.md`, a row marked corrective). Giovanni decided that the assistant suggests radiological findings and never a diagnosis. A finding is what is seen on the image, in standard descriptive terms: a cortical discontinuity, a pleural effusion, a ground-glass opacity. A disease, an injury or a cause is a diagnosis. So the lists are to hold findings only: a diagnosis-like name such as fracture, dislocation or hernia leaves the list and its visible signs stand in its place (a lucent line, a cortical step, loss of joint congruity). This replaces the rule of 2026-11-10 that kept generic entries such as "fracture", and it reverses part of the correction of 2026-11-14 above.
+
+`python3 -I analysis/finding_restructure.py classify` wrote `docs/finding-list-restructure.json`. It gives every entry of the four lists one of three classes and a proposed action, and changes no list:
+
+- **finding** (F): the entry names what is seen; it stays.
+- **diagnosis-like** (D): the entry names a disease, an injury or a cause. Proposed actions: reword it as its sign, split it into several signs, merge it into an existing sign entry, or move its content to the entries that hold the signs.
+- **borderline** (B): a standard radiological term that also names a condition, such as scoliosis. By Giovanni's rule of the same day it stays a finding only when it has a description of the image that defines it; when that definition rests on a measurement on the image (an angle, a distance), the entry must say what to measure and the criterion.
+
+Counts of that first classification (commit `5fc5bbe`), per imaging method and never pooled:
+
+| Method | Entries | Finding | Diagnosis-like | Borderline |
+|---|---|---|---|---|
+| X-ray | 232 | 173 | 41 | 18 |
+| Ultrasound | 761 | 549 | 70 | 142 |
+| CT | 1,194 | 830 | 167 | 197 |
+| MRI | 1,115 | 772 | 146 | 197 |
+
+The X-ray list was decided entry by entry; the other three by 13 word families (for example names of injuries, of inflammations or of tumours). The file names its sources for the line between finding and diagnosis: the project's scope rule and the RadLex lexicon (the Radiological Society of North America's vocabulary), read through an open article about it. Two further sources, a glossary of the Fleischner Society and the lexicons of the American College of Radiology, are recorded in the file as not verified, because their full text could not be read.
+
+**The X-ray list holds visible signs only since 2026-11-16** (commit `af3afc6`, requirements AN-150 to AN-153; `python3 -I analysis/finding_restructure.py apply xray`, with the replacements written out in `analysis/restructure_xray.py`). What changed, from the commit and the committed files:
+
+- The 41 diagnosis-like entries were retired: 18 merged into an existing sign entry, 11 reworded, 6 split into several signs, 6 moved out. Fifteen visible-sign findings were added, among them lucent line through a bone, cortical discontinuity, fragment displacement, loss of joint congruity, vertebral height loss and disc space narrowing. A new entry takes its sources and descriptors from the entries it replaces, so no new claim is made.
+- The list went from 232 to 206 entries: chest 75, the former fracture file 32 (its group is now named "Bone continuity and shape"), other bone, joint, spine and skull findings 54, abdomen and other plain films 45. The checker prints, on the committed files: 202 sourced and 4 foundational, 32 marked weak, 793 descriptors of which 88 are foundational; German terms verified 29 of 137, Portuguese 51 of 128.
+- Every old identifier still resolves: the entry that stands for a retired one names it in `replaces`. "Fracture", for example, now resolves to "lucent line through a bone", and the record names two more signs it can stand for.
+- No entry is borderline any more. All 18 former borderline entries were kept as findings, each with a field `defining_description` (text, source, and how the source was read: 17 full text, 1 marked "not verified (abstract only)"). Eleven entries carry `measurements` (what to measure, how, the criterion, the unit and the source). Scoliosis, for example, names the Cobb angle, how it is drawn, and the criterion "10 degrees or more".
+- Words: the X-ray synonym and abbreviation lists now name listed findings only. A new file, `assistant/lexicon/xray-diagnosis-words-en.json`, maps the words of each of the 41 retired entries (such as "fracture" or "broken bone") to the signs they stand for. It is an internal map: its words are never proposed or shown.
+- Training texts: a text labelled with a retired entry is not handed to the successor automatically, because a text that only says "fracture" describes no sign. Those rows were dropped, so the X-ray training corpus fell from 2,982 to 2,527 rows (1,297 quotes and 1,230 hurried rewrites, for 158 findings). Their 215 quotes are to be labelled again by two annotators against the new list; the manifest records all 215 as not yet labelled.
+
+**Ultrasound, CT and MRI are classified and not yet corrected** (state at commit `5d36ad7` of 2026-11-16, from the committed record). Their lists still hold their diagnosis-like entries: 84 of 761 for ultrasound, 208 of 1,194 for CT, 194 of 1,115 for MRI (the record marks these methods "applied: false"). The borderline class is resolved there too: an entry with a sourced defining description was kept as a finding and got the field `defining_description` (128, 156 and 149 entries), and the others now count as diagnosis-like (14, 41 and 48). For ultrasound and CT, 10 and 16 of those definitions are quotes from open textbooks (commit `17ee7c8`, [[radiology-textbook-foundation]]); the textbook search has not run for MRI. Measurements are carried by 15 ultrasound and 22 CT entries and by no MRI entry. Training rows that hang on the diagnosis-like entries: 224, 672 and 680.
+
+**What still waits.** The engine was tuned on the earlier X-ray list and has not been retuned on the new one ([[radiology-finding-engine]]). The labels of the held-out sets that point to retired entries must be relabelled blind before the single scoring of the X-ray test half ([[radiology-one-time-test]]) and of the final batch of real reports ([[radiology-final-test-batch]]). The commit message names one test that fails at this commit: a test of the one-time test still expects an old identifier to resolve to a retired entry. The counts in the paragraphs above this section describe the list before the correction.
+
+**A textbook basis for entries without a current article** (2026-11-15). Replacement signs, borderline entries and measurement-defined findings often rest on basic radiology that no recent article states. A separate tool looks them up in openly licensed textbooks and records quotes, defining descriptions and measurements in `docs/foundational-sources.json`. It has done so for the X-ray entries and for the borderline entries of ultrasound and CT; MRI is not searched. See [[radiology-textbook-foundation]].
 
 ## How it does it
 `python3 -I assistant/inventory.py check assistant/modules/xray/*.json` validates the files and prints the counts. The checker needs only the Python standard library. The requirements AN-61 and FA-4 are tested by `tests/test_finding_inventory.py`, including a test over the real X-ray files, and the quality gate (the one script that decides whether the code passes) compiles the package. AN-86, AN-87 and AN-105 are tested in `tests/test_finding_links.py`, against the committed X-ray files.
@@ -47,7 +79,7 @@ Later commits of that day, up to `c1bc2c9`, raised the training corpora of those
 ## Functions
 - `inventory.validate`: return the problems of one area file: missing fields, entries that are neither sourced nor foundational, unknown source keys, foundational counts below 3, missing English names, malformed German or Portuguese terms, duplicate ids, unknown references.
 - `inventory.report`: count findings by support, weak marks, descriptors and verified terms per language.
-- `finding_restructure.classify` (in `analysis/finding_restructure.py`): write a per-method classification and proposed action for every current list entry, without editing the lists.
+- `finding_restructure.classify`, `apply(method)`, `borderline(method)`, `remap_lexicons(method)` (in `analysis/finding_restructure.py`): write the class and action of every list entry; apply the replacements to one method's list (X-ray so far); write the defining descriptions of kept borderline entries; make the word lists name listed findings only. Tested by `tests/test_finding_restructure.py` (seven tests).
 - `finding_links.aliases` (in `analysis/finding_links.py`): the map from a merged finding's old identifier to the surviving one, read from the `replaces` fields.
 - `inventory.load`, `inventory.main`: read several area files, check references across them, and run the check from the command line (exit code 1 when anything is refused).
 

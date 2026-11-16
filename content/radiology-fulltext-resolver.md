@@ -7,9 +7,9 @@ project: radiology-report-matcher
 status: active
 location: radiology-crawler:analysis/fulltext.py
 fed_by: []
-feeds: [radiology-real-report-factcheck]
+feeds: [radiology-real-report-factcheck, radiology-textbook-foundation]
 sources: [radiology-crawler:analysis/fulltext.py, radiology-crawler:analysis/fulltext_text.py, radiology-crawler:CLAUDE.md, radiology-crawler:tests/test_fulltext.py, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/TRACEABILITY.md]
-reviewed: 2026-11-16T00:11Z
+reviewed: 2026-11-16T06:11Z
 memory: []
 ---
 
@@ -116,4 +116,4 @@ A network error or a refusal ends one route, never the whole run: the next route
 Beside the fact-check of real reports ([[radiology-real-report-factcheck]]), which since requirement AN-123 counts a decision as supported only when a source was read in full text. The resolver is one way to get that full text; the commit message of `e0a94e6` records one fact-check decision whose source, a guideline, was read through it. It is listed among the analysis tools on [[radiology-analysis]]. It takes nothing from another program of the project: its input is an identifier typed by a person or a session.
 
 ## Who receives its output
-The session that checks labels against the literature (the project calls it the "judge": a Claude session that works only on the data kept for testing) and any other session of the project that needs an article body: they read passages with `find`, or the text file, instead of the article page. Giovanni receives the list `papers-to-fetch.md`, which names the papers only a person can fetch. When this page was written the list held no open paper.
+The session that checks labels against the literature (the project calls it the "judge": a Claude session that works only on the data kept for testing) and any other session of the project that needs an article body: they read passages with `find`, or the text file, instead of the article page. Since 2026-11-15 the tool that fetches open textbooks ([[radiology-textbook-foundation]]) uses the resolver's network code, its client name and its passage search, and fetches open book chapters through it. Giovanni receives the list `papers-to-fetch.md`, which names the papers only a person can fetch. When this page was written the list held no open paper.
