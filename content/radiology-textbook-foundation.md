@@ -9,7 +9,7 @@ location: radiology-crawler:analysis/books_fetch.py
 fed_by: [radiology-fulltext-resolver]
 feeds: [radiology-finding-inventory, radiology-observable-descriptions]
 sources: [radiology-crawler:analysis/books_fetch.py, radiology-crawler:analysis/books_ground.py, radiology-crawler:docs/foundational-sources.json, radiology-crawler:tests/test_books_fetch.py, radiology-crawler:tests/test_books_ground.py, radiology-crawler:analysis/books_mine.py, radiology-crawler:tests/test_books_mine.py, radiology-crawler:analysis/books_bought.py, radiology-crawler:tests/test_books_bought.py, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/finding-list-restructure.json, radiology-crawler:PLAN.md]
-reviewed: 2026-11-16T22:55Z
+reviewed: 2026-11-16T23:24Z
 memory: []
 ---
 
@@ -86,6 +86,8 @@ It asks four kinds of question per list entry (AN-193): a defining description f
 
 State at commit `7c520f6` (2026-11-16, work paused at Giovanni's request): all bought books are converted to text, with text recognition (OCR) for scanned pages that had no text layer; only a 32-item X-ray trial of the model step has run, so nothing from these books is in the lists yet. The full run is plan task T27 of the corpus lane, first in its queue. Candidates are read by a person or the corpus lane before they enter the lists.
 
+Update 2026-11-16, night: the full run went through all four methods (about 3,500 items). The candidates file then held 1,211 lines (X-ray 212, ultrasound 271, CT 353, MRI 375, counting defining descriptions and value lines). A sample read by the corpus lane found most right but about one in ten wrong for its entry, or tied to one organ although a value line joins every finding with that value. So commit `11e4961` added a third model as a review (requirement AN-194), and the list writer now takes reviewed lines only where no open source describes the value or finding (AN-195, [[radiology-observable-descriptions]]). The review was running when this was written.
+
 ## How it does it
 **Fetcher.** `discover [--source bookshelf|crossref|archive|wikibooks]` searches the catalogues; `fetch [--book ID] [--limit N]` downloads and resumes where it stopped, down to a partial download. From Bookshelf it takes a book's archive file through that site's documented bulk service and keeps only the chapter files in XML (Extensible Markup Language, a text format with named parts); from the Internet Archive the text of a scan; from Wikibooks a page through its API (application programming interface, an address a program calls); an open chapter comes through the full-text resolver. `status` prints what is fetched.
 
@@ -116,20 +118,21 @@ Commands: `python3 -I analysis/books_mine.py run [--book ID] [--limit N]`, then 
 2. **candidates**, by code: the passages that hold the item's words, defining ones first, two per book at most.
 3. **extract**: a first model (Sonnet) writes the line and gives the words it rests on; code checks the quote, the length, the absent term and the absence of a copied run.
 4. **verify**: a second model (Haiku) checks the line against the quote.
-5. **write**: `data/analysis/books/bought/candidates.json`, per method and per list entry, for the session that builds the lists.
+5. **review** (since commit `11e4961`, AN-194): a third model (Opus) reads each kept line without the book, together with the finding's name and list definition, or, for a value line, the findings it would join. It keeps the line only when the line is right for the item on that imaging method, true for every finding listed, and names no diagnosis. `run` ends with this step, and a line is reviewed once.
+6. **write**: `data/analysis/books/bought/candidates.json`, per method and per list entry, for the session that builds the lists; it holds reviewed lines only.
 
 Commands: `python3 -I analysis/books_bought.py convert [--book KEY]`, `run [--method M] [--limit N]`, `write`, `status`.
 
 In all four programs the book text is untrusted input: the prompts say so and the models get no tools.
 
-**Tests.** `tests/test_books_fetch.py` (14 tests) and `tests/test_books_ground.py` (9) for AN-166 to AN-175; `tests/test_books_mine.py` (8) for AN-176 to AN-178; `tests/test_books_bought.py` (6) for AN-190 to AN-193. They use invented samples and a simulated web and model; none touches the network or a real book. On 2026-11-16, in the working copy at commit `f35556a`, the files for mining and bought books passed together with the other new test files (63 passed).
+**Tests.** `tests/test_books_fetch.py` (14 tests) and `tests/test_books_ground.py` (9) for AN-166 to AN-175; `tests/test_books_mine.py` (8) for AN-176 to AN-178; `tests/test_books_bought.py` (7) for AN-190 to AN-194; AN-195 is tested in `tests/test_observable.py`. They use invented samples and a simulated web and model; none touches the network or a real book. On 2026-11-16, in the working copy at commit `f35556a`, the files for mining and bought books passed together with the other new test files (63 passed).
 
 ### Known limits
 - **Searched is not grounded.** Of the 729 entries, 297 are only mentioned by the books (weak), 63 were not found and 6 not yet searched.
 - **Only part of it has reached the lists.** For ultrasound, CT and MRI, borderline entries without an article definition took a quote from the grounding file as their defining description, and kept borderline entries took the measurements those passages state. The X-ray defining descriptions mostly come from the list's own full-text definitions ([[radiology-observable-descriptions]]). Targets, signs and the historical results have not been taken over.
 - **"Grounded" rests on two models and a word-for-word check.** The code proves the quote is in the book; that it characterises the finding is one model's reading, checked by a second. No radiologist has read the result.
 - **Old scans are machine-read**, so a correct quote can fail the word-for-word check; and old books carry old knowledge, which is why the historical layer is flagged and a contradicted quote grounds nothing.
-- **The bought books have produced nothing yet.** Their lines will be the project's own short wording; no text of them appears on this page or in the repository.
+- **The bought books reach the lists only through the review.** Their lines are the project's own short wording, cited by book and page; no text of the books appears on this page or in the repository. Three models read each line, but no radiologist has.
 - Not verified for this page: the programs were not run. The counts are those of the committed record file.
 
 ## Functions
@@ -141,7 +144,8 @@ In `analysis/books_bought.py`:
 - `copied(line, text, run)`: whether a line repeats 6 or more words in a row of the book.
 - `holds_term(line, item)`: whether a line names the term or the finding.
 - `line_problem(line, item, passage)`: why a line cannot be shown, or none.
-- `run(method, limit)`: candidates, extract, code checks and verify, resumable.
+- `run(method, limit)`: candidates, extract, code checks, verify and review, resumable.
+- `review(method, items)`: the third model's reading of every line not yet reviewed (`reviewed.jsonl`).
 - `cite(store, src)`: the short source field (book and page).
 - `write()`: the candidates file in `data/`.
 
