@@ -9,7 +9,7 @@ location: radiology-crawler:analysis/books_fetch.py
 fed_by: [radiology-fulltext-resolver]
 feeds: [radiology-finding-inventory, radiology-observable-descriptions]
 sources: [radiology-crawler:analysis/books_fetch.py, radiology-crawler:analysis/books_ground.py, radiology-crawler:docs/foundational-sources.json, radiology-crawler:tests/test_books_fetch.py, radiology-crawler:tests/test_books_ground.py, radiology-crawler:analysis/books_mine.py, radiology-crawler:tests/test_books_mine.py, radiology-crawler:analysis/books_bought.py, radiology-crawler:tests/test_books_bought.py, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/finding-list-restructure.json, radiology-crawler:PLAN.md]
-reviewed: 2026-11-16T17:11Z
+reviewed: 2026-11-16T17:30Z
 memory: []
 ---
 
@@ -84,7 +84,7 @@ Result, written on 2026-11-16 (commit `fa70aa2`) as the section `historical_mini
 
 It asks four kinds of question per list entry (AN-193): a defining description for a finding that has none (and for a borderline entry pending one); an observable line for a descriptor value that has none ([[radiology-observable-descriptions]]); for a measured entry, what, how, the criterion and the unit; and, for an entry the open books left weak or not found, whether it is grounded.
 
-State at commit `5183ef3`: the program and its tests are committed; the run has not produced its candidates file yet, so nothing from these books is in the lists. Mining them is plan task T24 of the corpus lane.
+State at commit `7c520f6` (2026-11-16, work paused at Giovanni's request): all bought books are converted to text, with text recognition (OCR) for scanned pages that had no text layer; only a 32-item X-ray trial of the model step has run, so nothing from these books is in the lists yet. The full run is plan task T27 of the corpus lane, first in its queue. Candidates are read by a person or the corpus lane before they enter the lists.
 
 ## How it does it
 **Fetcher.** `discover [--source bookshelf|crossref|archive|wikibooks]` searches the catalogues; `fetch [--book ID] [--limit N]` downloads and resumes where it stopped, down to a partial download. From Bookshelf it takes a book's archive file through that site's documented bulk service and keeps only the chapter files in XML (Extensible Markup Language, a text format with named parts); from the Internet Archive the text of a scan; from Wikibooks a page through its API (application programming interface, an address a program calls); an open chapter comes through the full-text resolver. `status` prints what is fetched.

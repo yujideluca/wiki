@@ -9,7 +9,7 @@ location: radiology-crawler:analysis/observable.py
 fed_by: [radiology-fulltext-resolver, radiology-textbook-foundation]
 feeds: [radiology-finding-inventory, radiology-finding-engine]
 sources: [radiology-crawler:analysis/observable.py, radiology-crawler:tests/test_observable.py, radiology-crawler:docs/observable-descriptors.json, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:assistant/dialog.py, radiology-crawler:assistant/modules/xray/msk-trauma.json, radiology-crawler:PLAN.md]
-reviewed: 2026-11-16T17:11Z
+reviewed: 2026-11-16T17:30Z
 memory: []
 ---
 
