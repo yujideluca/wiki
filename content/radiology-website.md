@@ -9,7 +9,7 @@ location: radiology-crawler:web
 fed_by: [radiology-finding-engine]
 feeds: [radiology-report-matcher]
 sources: [radiology-crawler:tests/test_web_questions.py, radiology-crawler:web/start.sh, radiology-crawler:web/mix.exs, radiology-crawler:web/mix.lock, radiology-crawler:web/lib/finding_web/application.ex, radiology-crawler:web/lib/finding_web/bridge.ex, radiology-crawler:web/lib/finding_web/router.ex, radiology-crawler:web/bridge/bridge.py, radiology-crawler:web/elm/src/Main.elm, radiology-crawler:web/elm/src/Api.elm, radiology-crawler:web/elm/elm.json, radiology-crawler:web/elm/tests/MainTest.elm, radiology-crawler:web/priv/static/index.html, radiology-crawler:web/priv/static/boot.js, radiology-crawler:web/priv/static/style.css, radiology-crawler:web/.formatter.exs, radiology-crawler:web/.gitignore, radiology-crawler:web/test/test_helper.exs, radiology-crawler:web/test/router_test.exs, radiology-crawler:web/test/bridge_test.exs, radiology-crawler:tests/test_web.py, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:DESIGN.md, radiology-crawler:tools/quality_gate.sh, radiology-crawler:.github/workflows/quality-gate.yml, radiology-crawler:PLAN.md, radiology-crawler:web/priv/static/tryout.json, radiology-crawler:web/test/browser/site_check.mjs]
-reviewed: 2026-11-16T17:11Z
+reviewed: 2026-11-16T17:32Z
 memory: []
 ---
 
