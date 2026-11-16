@@ -9,7 +9,7 @@ location: radiology-crawler:analysis/real_reports.py
 fed_by: [radiology-analysis]
 feeds: [radiology-real-report-factcheck, radiology-report-matcher]
 sources: [radiology-crawler:analysis/real_reports.py, radiology-crawler:tests/test_real_reports_batch2.py, radiology-crawler:docs/real-reports-batch2.json, radiology-crawler:docs/real-reports-factcheck-batch2-xray.json, radiology-crawler:docs/real-reports-factcheck-batch2-ultrasound.json, radiology-crawler:docs/real-reports-factcheck-batch2-ct.json, radiology-crawler:docs/real-reports-factcheck-batch2-mri.json, radiology-crawler:analysis/second_check.py, radiology-crawler:tests/test_second_check.py, radiology-crawler:DESIGN.md, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:PLAN.md, radiology-crawler:docs/plan.json, radiology-crawler:analysis/relabel.py, radiology-crawler:tests/test_relabel.py, radiology-crawler:docs/held-out-relabel.json]
-reviewed: 2026-11-16T21:31Z
+reviewed: 2026-11-16T21:47Z
 memory: []
 ---
 
@@ -138,7 +138,7 @@ Twelve requirements describe this: AN-79 and AN-80 (collection and overlap), AN-
 6. For each method, the second checker judges every agreed label blind (`second_check.py run`); the judge resolves each disagreement, runs `record` and joins the fact-check again. Output: the second-check counts in the manifests. Done for all four methods on 2026-11-15.
 7. The judge runs `status2`. Output: the list of guards, each "ok" or the reason it would refuse.
 8. For each method, the judge reads every agreed label again against the full text of an article, records how each source was read, and joins the fact-check again. Output: the counts per reading level in the manifests. Done for all four methods on 2026-11-15.
-9. Done for X-ray on 2026-11-16, not done for ultrasound, CT and MRI: the lists are corrected to findings only and the pending labels of batch 2 are relabelled blind (`relabel.py`, see above).
+9. Done for X-ray on 2026-11-16, not done for ultrasound, CT and MRI: the lists are corrected to findings only and the pending labels of batch 2 are relabelled blind (`relabel.py`, see above). The first half holds since commits `4c7ebed` and `ed564e1` of 2026-11-16 (all three lists hold visible signs only, [[radiology-finding-inventory]]); the blind relabel is plan task T8 of the judge lane and has not run.
 10. Not done: Giovanni gives the go and `score2 --confirm "score batch 2 once"` runs once. Output: one result per method in the results registry of [[radiology-analysis]].
 
 ## Where it sits in the pipeline

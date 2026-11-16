@@ -9,7 +9,7 @@ location: radiology-crawler:analysis/one_time_test.py
 fed_by: [radiology-finding-engine, radiology-real-report-factcheck]
 feeds: [radiology-report-matcher]
 sources: [radiology-crawler:analysis/one_time_test.py, radiology-crawler:tests/test_one_time_test.py, radiology-crawler:docs/one-time-test.json, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:PLAN.md, radiology-crawler:docs/plan.json, radiology-crawler:analysis/relabel.py, radiology-crawler:tests/test_relabel.py, radiology-crawler:docs/SCOPE.md, radiology-crawler:docs/finding-list-restructure.json, radiology-crawler:docs/held-out-relabel.json]
-reviewed: 2026-11-16T21:31Z
+reviewed: 2026-11-16T21:47Z
 memory: []
 ---
 
@@ -66,7 +66,7 @@ The record says `strict`, and Giovanni chose that rule. The current plan blocks 
 - A label is **pending** when its entry is classed as diagnosis-like in `docs/finding-list-restructure.json` (the classification described on [[radiology-finding-inventory]]), or classed as borderline and no longer in the list. An entry that the corrected list has retired counts as diagnosis-like, and an alias never rescues its label.
 - Each pending label is annotated again by two annotators (language models of two different makers, named `sonnet` and `codex` in the command). They work **blind**: they see only the wording of the text and the new findings-only list, never the old label. Each gives one verdict: the text describes a sign that the list names (with the entry), the text names only a diagnosis, or the text describes a sign the list lacks.
 - A label is read as a sign only when both annotators name the same entry. A label both call "diagnosis only", a sign missing from the list, and every disagreement are **set aside**: left out of the scoring. The agreement between the two is reported.
-- The annotation refuses to start while the list of that method still holds a diagnosis-like entry, so it cannot run before the lists are corrected.
+- The annotation refuses to start while the list of that method still holds a diagnosis-like entry, so it cannot run before the lists are corrected. Since commits `4c7ebed` and `ed564e1` of 2026-11-16 the ultrasound, CT and MRI lists hold no diagnosis-like entry, so this guard no longer blocks them; their relabel (plan task T8) has not run.
 - The texts, the annotations and the resulting map stay in a sealed folder outside git. The committed record is to hold counts only (pending, agreement, relabelled, set aside by cause) and the checksum of the map.
 - **The hold.** While a label of a set is pending without an agreed relabel, or the map is not the one whose counts were recorded, or the classification does not cover the method, the scoring of that set refuses before anything is opened. `python3 -I analysis/one_time_test.py status` shows the hold without opening or writing anything.
 
