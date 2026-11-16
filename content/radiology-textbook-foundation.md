@@ -9,7 +9,7 @@ location: radiology-crawler:analysis/books_fetch.py
 fed_by: [radiology-fulltext-resolver]
 feeds: [radiology-finding-inventory]
 sources: [radiology-crawler:analysis/books_fetch.py, radiology-crawler:analysis/books_ground.py, radiology-crawler:docs/books-manifest.json, radiology-crawler:docs/foundational-sources.json, radiology-crawler:tests/test_books_fetch.py, radiology-crawler:tests/test_books_ground.py, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/finding-list-restructure.json]
-reviewed: 2026-11-16T06:11Z
+reviewed: 2026-11-16T06:15Z
 memory: []
 ---
 
@@ -18,14 +18,14 @@ Two programs and two record files that tie the entries of the project's finding 
 
 The reason, given by Giovanni on 2026-11-15 and written at the head of the first program: the description of some findings is stated by no current journal article, because it was settled in the early days of radiology (the example in the code is the greenstick fracture). Such an entry must rest on the basic body of literature, which is in textbooks. So the project needs a collection of textbooks it may lawfully read with a program, and a way to find and check passages in them.
 
-The parts, all in the repository `~/dev/radiology-crawler`, added on 2026-11-15 and 2026-11-16 (commits `8ac0fc0`, `780123d`, `1e5780e` and `17ee7c8`; this page describes commit `5d36ad7` of 2026-11-16):
+The parts, all in the repository `~/dev/radiology-crawler`, added on 2026-11-15 and 2026-11-16 (commits `8ac0fc0`, `780123d`, `1e5780e`, `17ee7c8` and `661fa0b`; this page describes commit `661fa0b` of 2026-11-16):
 
 - `analysis/books_fetch.py` finds free books, downloads them, cuts them into chapters of plain text and searches them.
 - `analysis/books_ground.py` looks up list entries in those books and records what the books say ("grounding").
 - `docs/books-manifest.json` lists the fetched books, with counts and licences only.
 - `docs/foundational-sources.json` holds the result of the grounding.
 
-State at this commit: 88 books are fetched. The grounding has been run for all 122 X-ray entries (62 grounded, 48 weak, 12 not found) and for the borderline entries of ultrasound (142 entries: 63 grounded, 74 weak, 5 not found) and of CT (190 searched: 81 grounded, 94 weak, 15 not found). The remaining entries of ultrasound and CT (19 and 40) and all 214 MRI entries are listed with the status "not searched". These programs change no finding list: the file is a record beside the lists. Since commit `17ee7c8` the session that builds the lists has copied some of its results into the ultrasound and CT lists (see "Who receives its output").
+State at this commit: 88 books are fetched. The grounding has been run for all 122 X-ray entries (62 grounded, 48 weak, 12 not found) for all 231 CT entries (101 grounded, 109 weak, 21 not found) and for the borderline entries of ultrasound (142 entries: 63 grounded, 74 weak, 5 not found) and of MRI (197 entries: 100 grounded, 77 weak, 20 not found). The remaining entries of ultrasound and MRI (19 and 17: measured findings, signs and descriptors) are listed with the status "not searched". These programs change no finding list: the file is a record beside the lists. Since commit `17ee7c8` the session that builds the lists has copied some of its results into the ultrasound and CT lists (see "Who receives its output").
 
 ## What it does
 ### Which books are taken
@@ -94,10 +94,10 @@ The other methods at the same commit, each on its own list and chapters:
 | Method | Entries listed | Grounded | Weak | Not found | Not searched |
 |---|---|---|---|---|---|
 | Ultrasound | 161 | 63 | 74 | 5 | 19 |
-| CT | 231 | 81 | 94 | 16 | 40 |
-| MRI | 214 | 0 | 0 | 0 | 214 |
+| CT | 231 | 101 | 109 | 21 | 0 |
+| MRI | 214 | 100 | 77 | 20 | 17 |
 
-For ultrasound and CT only the borderline entries were searched (one CT descriptor apart). Of them the open books define 58 for ultrasound and 78 for CT; 19 ultrasound and 26 CT entries carry measurements; the books disagree on a threshold in one ultrasound and two CT entries. Ultrasound carries 181 quotes and CT 243.
+For ultrasound and MRI only the borderline entries were searched; CT is searched in full since commit `661fa0b`, which also ran MRI for the first time. The file counts 58 borderline entries with a defining description for ultrasound, 81 for CT and 91 for MRI (here an article source on the list entry counts as well as a book); 19 ultrasound, 28 CT and 23 MRI entries carry measurements; the books disagree on a threshold in one ultrasound and two CT entries and in no MRI entry. Ultrasound carries 181 quotes, CT 298 and MRI 304.
 
 ## How it does it
 Commands of the fetcher, run in the repository:
@@ -119,11 +119,11 @@ The book passages are treated as untrusted text: both prompts say so, and the mo
 
 Commands: `python3 -I analysis/books_ground.py run --method xray [--kind borderline] [--limit N]`, then `write`, and `status`.
 
-**Tests.** `tests/test_books_fetch.py` holds 14 tests and `tests/test_books_ground.py` 9, for the requirements AN-166 to AN-175. They use invented samples and a simulated web and model; none touches the network. One test compares every quote of the committed file with the stored books, and can do so only on a computer where the books are stored. On a copy of commit `af3afc6` without the books, both files passed when this page was written.
+**Tests.** `tests/test_books_fetch.py` holds 14 tests and `tests/test_books_ground.py` 9, for the requirements AN-166 to AN-175. They use invented samples and a simulated web and model; none touches the network. One test compares every quote of the committed file with the stored books, and can do so only on a computer where the books are stored. On a copy of commit `af3afc6` without the books, both files passed when this page was written; they were not run again for `661fa0b`, which changed only the record.
 
 ### Known limits
-- **Not every method is grounded.** X-ray is complete; for ultrasound and CT only the borderline entries were searched; MRI is listed and not searched.
-- **Only part of it has reached the lists.** The defining descriptions and measurements of the X-ray list cite that list's own article sources, not this file. For ultrasound and CT, the borderline entries that had no article definition took a quote from this file (10 and 16 entries), and the measurements the passages state were copied (15 and 22 entries). Targets, signs and descriptors have not been taken over, and MRI not at all ([[radiology-finding-inventory]]).
+- **Not every method is grounded.** X-ray and CT are complete; for ultrasound and MRI only the borderline entries were searched.
+- **Only part of it has reached the lists.** The defining descriptions and measurements of the X-ray list cite that list's own article sources, not this file. For ultrasound and CT, the borderline entries that had no article definition took a quote from this file (10 and 16 entries), and the measurements the passages state were copied (15 and 22 entries). Targets, signs and descriptors have not been taken over, and nothing for MRI, whose grounding is newer than the last change of the lists ([[radiology-finding-inventory]]).
 - **"Grounded" rests on two models and a word-for-word check.** The code proves that the quote is in the book. That the quote characterises the finding is the reading of one model, checked by a second. No radiologist has read the result.
 - **Old scans are machine-read.** The text of an Internet Archive scan comes from optical character recognition, so words may be misread (the manifest says so for each such book), and a correct quote can fail the word-for-word check.
 - **Old books carry old knowledge.** The historical layer is flagged so that a reader can tell a passage of 1917 from one of 2023.

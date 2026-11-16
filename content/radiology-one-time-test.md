@@ -9,7 +9,7 @@ location: radiology-crawler:analysis/one_time_test.py
 fed_by: [radiology-finding-engine, radiology-real-report-factcheck]
 feeds: [radiology-report-matcher]
 sources: [radiology-crawler:analysis/one_time_test.py, radiology-crawler:tests/test_one_time_test.py, radiology-crawler:docs/one-time-test.json, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:PLAN.md, radiology-crawler:docs/plan.json, radiology-crawler:analysis/relabel.py, radiology-crawler:tests/test_relabel.py, radiology-crawler:docs/SCOPE.md, radiology-crawler:docs/finding-list-restructure.json]
-reviewed: 2026-11-16T06:11Z
+reviewed: 2026-11-16T06:15Z
 memory: []
 ---
 
@@ -95,7 +95,7 @@ The program is `analysis/one_time_test.py`, run as `python3 -I analysis/one_time
 
 **Result.** A real run writes two entries to the results registry (`docs/results-registry.json`, the project's list of scored tests): one for the test half and one for batch 1, each with the commit, the date, the parent rule and how the labels were read. Detailed outcomes go to the folder `data/`, which is not in git.
 
-Requirements AN-98 to AN-100, AN-110 and AN-161 to AN-165 describe this. `tests/test_one_time_test.py` holds nine tests on small invented examples; none opens a frozen file. At commit `af3afc6` one of them fails, as that commit's message says: it expects the old identifier of a rib fracture to resolve to an entry that the corrected list retired (it now resolves to "cortical discontinuity"). The test belongs to the judge session and was not yet adapted.
+Requirements AN-98 to AN-100, AN-110 and AN-161 to AN-165 describe this. `tests/test_one_time_test.py` holds nine tests on small invented examples; none opens a frozen file. At commit `af3afc6` one of them failed, because it expected the old identifier of a rib fracture to resolve to an entry that the corrected list had retired. Commit `cc58042` of 2026-11-16 adapted it: the engine may read a retired diagnosis identifier as the sign that replaced it, but a held-out label on such an identifier is never read through that alias. It stays pending until two annotators agree on the sign (`relabel.py`). The adapted test was read, not run, for this page.
 
 ## Steps
 1. The judge session (a Claude session that works only on held-out data and never changes the assistant in the same session) runs `prepare`. Output: the checksums and label counts in `docs/one-time-test.json`, state "ready". Done on 2026-11-14.
