@@ -9,7 +9,7 @@ location: radiology-crawler:analysis/real_reports.py
 fed_by: [radiology-analysis, radiology-final-test-batch, radiology-fulltext-resolver]
 feeds: [radiology-report-matcher, radiology-finding-inventory, radiology-modality-corpus, radiology-one-time-test]
 sources: [radiology-crawler:analysis/real_reports.py, radiology-crawler:tests/test_real_reports.py, radiology-crawler:docs/real-reports-factcheck-batch1.json, radiology-crawler:analysis/second_check.py, radiology-crawler:tests/test_second_check.py, radiology-crawler:analysis/dev_batch.py, radiology-crawler:tests/test_dev_batch.py, radiology-crawler:docs/real-reports-dev1.json, radiology-crawler:docs/real-reports-factcheck-dev1-ultrasound.json, radiology-crawler:docs/real-reports-factcheck-dev1-ct.json, radiology-crawler:docs/real-reports-factcheck-dev1-mri.json, radiology-crawler:docs/real-reports-factcheck-batch2-xray.json, radiology-crawler:docs/real-reports-factcheck-batch2-ultrasound.json, radiology-crawler:docs/real-reports-factcheck-batch2-ct.json, radiology-crawler:docs/real-reports-factcheck-batch2-mri.json, radiology-crawler:docs/real-reports-batch2.json, radiology-crawler:tests/test_real_reports_batch2.py, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:DESIGN.md, radiology-crawler:PLAN.md, radiology-crawler:tests/test_dev_batch_score.py, radiology-crawler:docs/results-registry.json, radiology-crawler:docs/held-out-relabel.json]
-reviewed: 2026-11-16T22:55Z
+reviewed: 2026-11-16T23:38Z
 memory: []
 ---
 

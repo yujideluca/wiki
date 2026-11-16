@@ -8,7 +8,7 @@ status: active
 fed_by: []
 feeds: []
 sources: [radiology-crawler:.github/workflows/quality-gate.yml, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:tests/test_web.py, radiology-crawler:tests/test_real_reports.py, radiology-crawler:tools/quality_gate.sh, radiology-crawler:pipeline-check.toml, radiology-crawler:CLAUDE.md, radiology-crawler:tools/check_dependencies.py, radiology-crawler:tests/test_cli_help.py, radiology-crawler:pipeline-check.version, radiology-crawler:web/test/browser/site_check.mjs]
-reviewed: 2026-11-16T21:31Z
+reviewed: 2026-11-16T23:38Z
 ---
 
 ## What it is
@@ -53,3 +53,5 @@ State of the gate at that commit. On this laptop it passed at commit `043d41a` (
 Update 2026-11-16, evening (commit `5183ef3`): `docs/REQUIREMENTS.md` has 223 rows (counted in the file): 129 for analysis and data, 34 for the finding assistant, 39 for the two websites, 7 for the crawler, 9 for the translator, 4 for the translation check and 1 for dependencies. The new rows are FA-37 (the bench scores only texts whose label is on the current list, `tests/test_assistant_questions.py`) and AN-190 to AN-193 (the program for the textbooks Giovanni bought, `tests/test_books_bought.py`, with a simulated model and no real book; [[radiology-textbook-foundation]]). The tests of AN-159, AN-160 and AN-181 to AN-185 arrived in commit `574b961` (`tests/test_observable.py`, `tests/test_restructure_modalities.py`; [[radiology-observable-descriptions]]), and the CI run on that commit passed. The four later commits, `f35556a` to `5183ef3`, were not yet pushed when this was written, so CI has not run on them. For this page the new and changed test files were run in the working copy (63 passed at `f35556a`, the two list-tool files again at `5183ef3`); the whole gate was not run.
 
 Update 2026-11-16, night (commit `4c7ebed`): the whole gate passed on the laptop before the commit, with 503 Python tests, and the traceability step counted 223 requirements, all covered by tagged tests. The push ran the gate again and went through. Requirement AN-182 was reworded: every diagnosis-like entry leaves the list, a defining description notwithstanding ([[radiology-finding-inventory]]).
+
+Update 2026-11-16, later that night (commits `11e4961` and `97e3a55`): requirements AN-194 and AN-195 were added (the review of bought-book lines by a third model, and the list writer taking them only into gaps; [[radiology-textbook-foundation]]). The gate passed with 505 Python tests and 225 requirements, all covered by tagged tests.
