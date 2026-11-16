@@ -9,7 +9,7 @@ location: radiology-crawler:analysis/observable.py
 fed_by: [radiology-fulltext-resolver, radiology-textbook-foundation]
 feeds: [radiology-finding-inventory, radiology-finding-engine]
 sources: [radiology-crawler:analysis/observable.py, radiology-crawler:tests/test_observable.py, radiology-crawler:docs/observable-descriptors.json, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:assistant/dialog.py, radiology-crawler:assistant/modules/xray/msk-trauma.json, radiology-crawler:PLAN.md]
-reviewed: 2026-11-16T21:23Z
+reviewed: 2026-11-16T21:45Z
 memory: []
 ---
 
@@ -46,7 +46,7 @@ The first run, at commit `574b961`, had given 375 values and 167 findings a line
 - Ultrasound: of 120 distinct values, 29 have a line and 91 do not. Value slots: 261 plain words, 136 from an open textbook passage, 5 from the full text of a cited article, 990 without. Of 711 findings, 158 have a defining description (128 kept from an earlier step, 22 from an open textbook passage, 8 from full text) and 553 have none.
 - CT: of 146 distinct values, 35 have a line and 111 do not. Value slots: 369 plain words, 110 from an open textbook passage, 1,704 without. Of 1,082 findings, 217 have a defining description (156 kept from an earlier step, 49 from an open textbook passage, 12 from full text) and 865 have none.
 
-Most values of these two methods, then, still have no line, so the assistant cannot yet offer them. MRI was being processed at the time of that commit.
+Most values of these two methods, then, still have no line, so the assistant cannot yet offer them. MRI followed in commit `ed564e1`: of 132 distinct values, 31 have a line and 101 do not (value slots: 276 plain words, 39 from an open textbook passage, 1,395 without); of 1,000 findings, 218 have a defining description (169 kept from an earlier step, 44 from an open textbook passage, 5 from full text) and 782 have none.
 
 ## How it does it
 Steps, each of which can be stopped and resumed. Work files are kept in `data/analysis/observable/<method>/`, which git (the version-control system of the repository) does not track.
