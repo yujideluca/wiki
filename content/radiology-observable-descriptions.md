@@ -9,7 +9,7 @@ location: radiology-crawler:analysis/observable.py
 fed_by: [radiology-fulltext-resolver, radiology-textbook-foundation]
 feeds: [radiology-finding-inventory, radiology-finding-engine]
 sources: [radiology-crawler:analysis/observable.py, radiology-crawler:tests/test_observable.py, radiology-crawler:docs/observable-descriptors.json, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:assistant/dialog.py, radiology-crawler:assistant/modules/xray/msk-trauma.json, radiology-crawler:PLAN.md]
-reviewed: 2026-11-16T17:56Z
+reviewed: 2026-11-16T21:23Z
 memory: []
 ---
 
@@ -41,7 +41,12 @@ The counts go to `docs/observable-descriptors.json`, per method, with the values
 - Distinct values: 1,120, of which 493 have a line and 627 do not (774 before the place-name rule). The descriptors with the most values left without a line are type, extent, pattern and shape; graded scales (for example the grades of a vertebral height loss) are among them too.
 - Findings: 205, of which 163 have a defining description (145 from the list's own full-text definition, 17 kept from an earlier step, 1 from an open textbook passage) and 42 have none.
 
-The first run, at commit `574b961`, had given 375 values and 167 findings a line; the lines that copied their source were removed by the new rule and will be written again in own words on the next run. Ultrasound, CT and MRI have no lines yet; their lists come next (task T1 of the project plan `PLAN.md`, for the "corpus lane", the Claude session that builds the lists and their training texts).
+The first run, at commit `574b961`, had given 375 values and 167 findings a line; the lines that copied their source were removed by the new rule and will be written again in own words on the next run. Ultrasound and CT have had their first run, on their visible-sign lists (commit `4c7ebed` of 2026-11-16; the lists are described on [[radiology-finding-inventory]]). From `docs/observable-descriptors.json` at that commit:
+
+- Ultrasound: of 120 distinct values, 29 have a line and 91 do not. Value slots: 261 plain words, 136 from an open textbook passage, 5 from the full text of a cited article, 990 without. Of 711 findings, 158 have a defining description (128 kept from an earlier step, 22 from an open textbook passage, 8 from full text) and 553 have none.
+- CT: of 146 distinct values, 35 have a line and 111 do not. Value slots: 369 plain words, 110 from an open textbook passage, 1,704 without. Of 1,082 findings, 217 have a defining description (156 kept from an earlier step, 49 from an open textbook passage, 12 from full text) and 865 have none.
+
+Most values of these two methods, then, still have no line, so the assistant cannot yet offer them. MRI was being processed at the time of that commit.
 
 ## How it does it
 Steps, each of which can be stopped and resumed. Work files are kept in `data/analysis/observable/<method>/`, which git (the version-control system of the repository) does not track.
