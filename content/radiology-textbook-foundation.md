@@ -1,15 +1,15 @@
 ---
 id: radiology-textbook-foundation
-title: Textbook foundation (analysis/books_fetch.py and books_ground.py)
-aliases: [textbook foundation, open radiology books, analysis/books_fetch.py, analysis/books_ground.py, books_fetch.py, books_ground.py, docs/books-manifest.json, docs/foundational-sources.json, foundational sources, grounding in textbooks]
+title: Textbook foundation (analysis/books_fetch.py, books_ground.py and books_mine.py)
+aliases: [textbook foundation, open radiology books, analysis/books_fetch.py, analysis/books_ground.py, analysis/books_mine.py, books_mine.py, books_fetch.py, books_ground.py, docs/books-manifest.json, docs/foundational-sources.json, foundational sources, grounding in textbooks]
 kind: module
 project: radiology-report-matcher
 status: active
 location: radiology-crawler:analysis/books_fetch.py
 fed_by: [radiology-fulltext-resolver]
 feeds: [radiology-finding-inventory]
-sources: [radiology-crawler:analysis/books_fetch.py, radiology-crawler:analysis/books_ground.py, radiology-crawler:docs/books-manifest.json, radiology-crawler:docs/foundational-sources.json, radiology-crawler:tests/test_books_fetch.py, radiology-crawler:tests/test_books_ground.py, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/finding-list-restructure.json]
-reviewed: 2026-11-16T06:15Z
+sources: [radiology-crawler:analysis/books_fetch.py, radiology-crawler:analysis/books_ground.py, radiology-crawler:docs/books-manifest.json, radiology-crawler:docs/foundational-sources.json, radiology-crawler:tests/test_books_fetch.py, radiology-crawler:tests/test_books_ground.py, radiology-crawler:analysis/books_mine.py, radiology-crawler:tests/test_books_mine.py, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/finding-list-restructure.json]
+reviewed: 2026-11-16T12:05Z
 memory: []
 ---
 
@@ -18,14 +18,15 @@ Two programs and two record files that tie the entries of the project's finding 
 
 The reason, given by Giovanni on 2026-11-15 and written at the head of the first program: the description of some findings is stated by no current journal article, because it was settled in the early days of radiology (the example in the code is the greenstick fracture). Such an entry must rest on the basic body of literature, which is in textbooks. So the project needs a collection of textbooks it may lawfully read with a program, and a way to find and check passages in them.
 
-The parts, all in the repository `~/dev/radiology-crawler`, added on 2026-11-15 and 2026-11-16 (commits `8ac0fc0`, `780123d`, `1e5780e`, `17ee7c8` and `661fa0b`; this page describes commit `661fa0b` of 2026-11-16):
+The parts, all in the repository `~/dev/radiology-crawler`, added on 2026-11-15 and 2026-11-16 (commits `8ac0fc0`, `780123d`, `1e5780e`, `17ee7c8`, `661fa0b`, `d1e981c` and `09eb852`; this page describes commit `3c3cdb8` of 2026-11-16):
 
 - `analysis/books_fetch.py` finds free books, downloads them, cuts them into chapters of plain text and searches them.
 - `analysis/books_ground.py` looks up list entries in those books and records what the books say ("grounding").
+- `analysis/books_mine.py` reads the oldest books from start to end and keeps what they say about how a finding looks (see "Mining the historical books in full").
 - `docs/books-manifest.json` lists the fetched books, with counts and licences only.
 - `docs/foundational-sources.json` holds the result of the grounding.
 
-State at this commit: 88 books are fetched. The grounding has been run for all 122 X-ray entries (62 grounded, 48 weak, 12 not found) for all 231 CT entries (101 grounded, 109 weak, 21 not found) and for the borderline entries of ultrasound (142 entries: 63 grounded, 74 weak, 5 not found) and of MRI (197 entries: 100 grounded, 77 weak, 20 not found). The remaining entries of ultrasound and MRI (19 and 17: measured findings, signs and descriptors) are listed with the status "not searched". These programs change no finding list: the file is a record beside the lists. Since commit `17ee7c8` the session that builds the lists has copied some of its results into the ultrasound and CT lists (see "Who receives its output").
+State at this commit: 88 books are fetched. The grounding has been run for all 122 X-ray entries (62 grounded, 48 weak, 12 not found) for all 231 CT entries (101 grounded, 109 weak, 21 not found) for all 161 ultrasound entries (74 grounded, 80 weak, 7 not found) and for all 214 MRI entries (113 grounded, 78 weak, 23 not found): 728 entries, none left unsearched. These programs change no finding list: the file is a record beside the lists. Since commit `17ee7c8` the session that builds the lists has copied some of its results into the ultrasound and CT lists, and since commit `4355e36` into the MRI list (see "Who receives its output").
 
 ## What it does
 ### Which books are taken
@@ -89,15 +90,15 @@ X-ray result, from the file (checked 2026-11-16):
 
 Twelve of the 18 X-ray borderline entries have a defining description from the open books and 6 do not. Sixteen entries carry measurements. In three entries the books disagree on a threshold (for example "more than 10 degrees" against "at least 10 degrees"), and the file says so. The 122 entries carry 176 quotes: 103 from books under CC BY-NC-ND 4.0, 59 under CC BY, 14 from public-domain books. The first run (commit `780123d`) counted 66 grounded and 44 weak; four entries went from grounded to weak when quotes about another imaging method stopped counting.
 
-The other methods at the same commit, each on its own list and chapters:
+The other methods, each on its own list and chapters (file of commit `d1e981c`, 2026-11-16, in which all four methods are searched in full: 728 entries, none left unsearched):
 
 | Method | Entries listed | Grounded | Weak | Not found | Not searched |
 |---|---|---|---|---|---|
-| Ultrasound | 161 | 63 | 74 | 5 | 19 |
+| Ultrasound | 161 | 74 | 80 | 7 | 0 |
 | CT | 231 | 101 | 109 | 21 | 0 |
-| MRI | 214 | 100 | 77 | 20 | 17 |
+| MRI | 214 | 113 | 78 | 23 | 0 |
 
-For ultrasound and MRI only the borderline entries were searched; CT is searched in full since commit `661fa0b`, which also ran MRI for the first time. The file counts 58 borderline entries with a defining description for ultrasound, 81 for CT and 91 for MRI (here an article source on the list entry counts as well as a book); 19 ultrasound, 28 CT and 23 MRI entries carry measurements; the books disagree on a threshold in one ultrasound and two CT entries and in no MRI entry. Ultrasound carries 181 quotes, CT 298 and MRI 304.
+Before commit `d1e981c` only the borderline entries of ultrasound and MRI had been searched; that commit added their signs, descriptors and measured entries. The file counts 58 borderline entries with a defining description for ultrasound, 81 for CT and 91 for MRI (here an article source on the list entry counts as well as a book); 20 ultrasound, 28 CT and 25 MRI entries carry measurements; the books disagree on a threshold in one ultrasound and two CT entries and in no MRI entry. Ultrasound carries 210 quotes, CT 298 and MRI 339.
 
 ## How it does it
 Commands of the fetcher, run in the repository:
@@ -119,11 +120,12 @@ The book passages are treated as untrusted text: both prompts say so, and the mo
 
 Commands: `python3 -I analysis/books_ground.py run --method xray [--kind borderline] [--limit N]`, then `write`, and `status`.
 
-**Tests.** `tests/test_books_fetch.py` holds 14 tests and `tests/test_books_ground.py` 9, for the requirements AN-166 to AN-175. They use invented samples and a simulated web and model; none touches the network. One test compares every quote of the committed file with the stored books, and can do so only on a computer where the books are stored. On a copy of commit `af3afc6` without the books, both files passed when this page was written; they were not run again for `661fa0b`, which changed only the record.
+**Tests.** `tests/test_books_fetch.py` holds 14 tests and `tests/test_books_ground.py` 9, for the requirements AN-166 to AN-175; `tests/test_books_mine.py` holds 8 for AN-176 to AN-178 (two of them read the committed files and are skipped while the result file has no mining section). They use invented samples and a simulated web and model; none touches the network. One test compares every quote of the committed file with the stored books, and can do so only on a computer where the books are stored. On a copy of commit `af3afc6` without the books, both files passed when this page was written; they were not run again for `661fa0b`, which changed only the record. On 2026-11-16, in the working copy at commit `3c3cdb8` on the computer that stores the books, the three test files gave 41 passed and 2 skipped.
 
 ### Known limits
-- **Not every method is grounded.** X-ray and CT are complete; for ultrasound and MRI only the borderline entries were searched.
-- **Only part of it has reached the lists.** The defining descriptions and measurements of the X-ray list cite that list's own article sources, not this file. For ultrasound and CT, the borderline entries that had no article definition took a quote from this file (10 and 16 entries), and the measurements the passages state were copied (15 and 22 entries). Targets, signs and descriptors have not been taken over, and nothing for MRI, whose grounding is newer than the last change of the lists ([[radiology-finding-inventory]]).
+- **Searched is not grounded.** All four methods are searched in full, but 315 of the 728 entries are only mentioned by the books (weak) and 63 were not found.
+- **The mining of the old books has no committed result yet.** The program and its tests are committed (`09eb852`); the file `docs/foundational-sources.json` at commit `3c3cdb8` holds no section `historical_mining`.
+- **Only part of it has reached the lists.** The defining descriptions and measurements of the X-ray list cite that list's own article sources, not this file. For ultrasound and CT, the borderline entries that had no article definition took a quote from this file (10 and 16 entries), and the measurements the passages state were copied (15 and 22 entries). For MRI, commit `4355e36` did the same: 20 borderline entries without an article definition took a quote from this file, and 19 kept borderline entries got measurements from its passages. Targets, signs and descriptors have not been taken over ([[radiology-finding-inventory]]).
 - **"Grounded" rests on two models and a word-for-word check.** The code proves that the quote is in the book. That the quote characterises the finding is the reading of one model, checked by a second. No radiologist has read the result.
 - **Old scans are machine-read.** The text of an Internet Archive scan comes from optical character recognition, so words may be misread (the manifest says so for each such book), and a correct quote can fail the word-for-word check.
 - **Old books carry old knowledge.** The historical layer is flagged so that a reader can tell a passage of 1917 from one of 2023.
@@ -131,7 +133,32 @@ Commands: `python3 -I analysis/books_ground.py run --method xray [--kind borderl
 - **Free books are not all books.** The standard commercial textbooks are not among them, so "not found" means not found in these 88 books.
 - Not verified for this page: the programs were not run and the stored books were not opened. The counts are those of the two committed files.
 
+### Mining the historical books in full
+The grounding above looks a list entry up in the books. A third program, `analysis/books_mine.py` (commit `09eb852`, 2026-11-16, requirements AN-176 to AN-178), goes the other way for the 14 public-domain classics: it reads each book from start to end and keeps what the book says about how a finding looks. Each of these books speaks of one imaging method, and its passages are mapped to that method's list only.
+
+Its steps, each of which can be stopped and resumed (work files in `data/analysis/books/mining/`, which git does not track):
+
+1. **blocks**, by code. The book is cut into text blocks. A block without any word of shape or appearance is skipped and counted. An earlier edition of a book that is also held in a later edition is not read twice.
+2. **extract**. A first model (Haiku) reads the blocks and keeps short quotes that state what is seen: lines, cortex, density, margins, alignment, displacement, shape, a measurement and its criterion. Treatment, cause, clinical course, old technique and normal anatomy are dropped and counted.
+3. **check**, by code. A quote stays only when it stands word for word in the stored text of the book.
+4. **verify**. A second, different model (Sonnet) maps each quote to one entry or descriptor of the method's list, or names the visible sign the list lacks. Such a sign is recorded as a candidate gap for the session that builds the lists; the program does not edit the lists.
+5. **compare**. Where a current open book also characterises the entry, a model says whether the old statement contradicts the modern one. A contradicted quote is recorded with both passages, the modern one preferred, and grounds nothing.
+6. **write**. `python3 -I analysis/books_mine.py write` adds a section `historical_mining` to `docs/foundational-sources.json`. An entry that was weak or not found and that a mined quote characterises becomes grounded, with the flag `upgraded_by_historical_mining`, so a reader sees that only an old book stands behind it. The manifest then counts retained quotes, gaps and contradictions per historical book.
+
+The book text is treated as untrusted input: the prompts say so and the models get no tools. Not verified for this page: the mining was not run, and at commit `3c3cdb8` the committed file holds no `historical_mining` section, so no counts are given here.
+
 ## Functions
+In `analysis/books_mine.py`:
+
+- `blocks_of(store, only)`: every block of every historical book to read, and the counts per book.
+- `later_edition(books)`: which book is also held in a later edition.
+- `targets_of(method)`: the list entries and descriptors a quote can be mapped to.
+- `run(book, limit)`: the steps blocks, extract, check, verify and compare.
+- `mined(store)`: every checked and mapped quote.
+- `for_entries(method)`: per entry, the quotes that may ground it (characterising, of this method's books, not contradicted).
+- `section(store)`: the `historical_mining` section of the result file.
+- `summary()`: the counts for the manifest, without text.
+
 In `analysis/books_fetch.py`:
 
 - `licence_code(text)`, `refuse(book)`, `blocked_site(url)`: read a licence, and refuse a book without a free licence or an address of a refused site.

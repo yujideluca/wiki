@@ -8,8 +8,8 @@ status: active
 location: radiology-crawler:analysis/one_time_test.py
 fed_by: [radiology-finding-engine, radiology-real-report-factcheck]
 feeds: [radiology-report-matcher]
-sources: [radiology-crawler:analysis/one_time_test.py, radiology-crawler:tests/test_one_time_test.py, radiology-crawler:docs/one-time-test.json, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:PLAN.md, radiology-crawler:docs/plan.json, radiology-crawler:analysis/relabel.py, radiology-crawler:tests/test_relabel.py, radiology-crawler:docs/SCOPE.md, radiology-crawler:docs/finding-list-restructure.json]
-reviewed: 2026-11-16T06:15Z
+sources: [radiology-crawler:analysis/one_time_test.py, radiology-crawler:tests/test_one_time_test.py, radiology-crawler:docs/one-time-test.json, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:PLAN.md, radiology-crawler:docs/plan.json, radiology-crawler:analysis/relabel.py, radiology-crawler:tests/test_relabel.py, radiology-crawler:docs/SCOPE.md, radiology-crawler:docs/finding-list-restructure.json, radiology-crawler:docs/held-out-relabel.json]
+reviewed: 2026-11-16T12:08Z
 memory: []
 ---
 
@@ -59,7 +59,7 @@ The record file holds counts of the frozen sets, not results: read on the findin
 
 The record says `strict`, and Giovanni chose that rule. The current plan blocks the run until the X-ray list holds visible findings only and the engine is retuned. Both values are tested code. The rule can be set only while the state is "ready" (`python3 -I analysis/one_time_test.py rule --parent-rule strict`), it is written into the result, and an unknown value stops the run before the test half is opened.
 
-**Current gate.** The plan marks this milestone blocked. The stored state remains `ready` because the one-time test has not run; `ready` describes the command record, not permission to score the test half now. The list still contains diagnosis-like labels such as fracture.
+**Current gate** (commit `3c3cdb8` of 2026-11-16). The plan marks this milestone blocked. The stored state remains `ready` because the one-time test has not run; `ready` describes the command record, not permission to score the test half now. The X-ray list holds visible signs only and the held-out labels are relabelled, so the program's own hold is lifted (`status` prints `"scope_hold": null`). What the plan still waits for: the engine reaches 90 % on hurried descriptions of the tuning half on the new list (it stands at 87.2 % without the pick question, a tuning-half number with a simulated user, see [[radiology-finding-engine]]), and Giovanni confirms.
 
 **The hold after the change of scope** (requirements AN-161 to AN-165; `analysis/relabel.py`, commits `976c81a` and `ad929e1` of 2026-11-15). On 2026-11-15 Giovanni decided that the finding lists hold only what is seen on the image. A diagnosis-like entry such as "fracture" is to be replaced by its visible signs (a lucent line, a cortical step), and the old name is kept as an alias, a second name that points to the new entry. The labels of the held-out sets were made on the old lists, so some of them point to entries that will go. The old name must not turn into a sign by itself: a text that only says "fracture of the radius" describes no sign. The tool `relabel.py` handles this, for four held-out sets: the test half, batch 1 of the real reports, the open development batch and the sealed batch 2 ([[radiology-final-test-batch]]).
 
@@ -72,7 +72,19 @@ The record says `strict`, and Giovanni chose that rule. The current plan blocks 
 
 Commands: `python3 -I analysis/relabel.py count` (labels per set and method by class of their entry; counts only, no finding name, text or item), `hold --set test --method xray` (why a scoring must wait), `annotate --set SET --method METHOD --engine sonnet` and then `--engine codex`, and `join --set SET --method METHOD`.
 
-State at commit `af3afc6` of 2026-11-16: the procedure and the hold are committed and tested (`tests/test_relabel.py`, six tests on invented examples). The corrected X-ray list was committed in that commit (41 diagnosis-like entries retired, see [[radiology-finding-inventory]]), so the X-ray annotation may now start. It has not run: the record of counts (`docs/held-out-relabel.json`) does not exist in git, so no number of pending labels can be given here.
+State at commit `af3afc6` of 2026-11-16: the procedure and the hold are committed and tested (`tests/test_relabel.py`, six tests on invented examples). The corrected X-ray list was committed in that commit (41 diagnosis-like entries retired, see [[radiology-finding-inventory]]), so the X-ray annotation may now start. It had not run at that commit.
+
+**The X-ray relabel is done** (commits `bb76b36`, `d9a3760` and `ee7d438` of 2026-11-16; record `docs/held-out-relabel.json`, which holds counts and checksums only: no finding name, no text, no label). Two models read each pending wording again, blind, with the corrected list. The pair in force is Sonnet and Opus; a first pair, Sonnet and Haiku, agreed less often, and its counts are kept beside in the record (`earlier_pairs`). `join --engines A B` names the two annotators and refuses two that are the same model. Counts for X-ray, pair in force:
+
+| Set | Pending labels | Both agree | Relabelled as a sign | Set aside: only a diagnosis | Set aside: sign not in the list | Set aside: annotators disagree |
+|---|---|---|---|---|---|---|
+| Test half | 184 | 155 (84 %) | 45 | 108 | 2 | 29 |
+| Batch 1 of real reports | 8 | 8 (100 %) | 2 | 6 | 0 | 0 |
+| Batch 2 of real reports | 15 | 12 (80 %) | 1 | 11 | 0 | 3 |
+
+With the first pair the agreement was 77 %, 38 % and 27 %. These are counts of labels, not scores: nothing was scored. A set-aside label is left out of the scoring; a relabelled one is read as its agreed sign. Ultrasound, CT and MRI have no relabel yet, because their lists still hold diagnosis-like entries.
+
+Two corrections came with it (requirements AN-162 and AN-164). The relabel and the run now read the test half "as labelled": the reader that the engine uses turns an old identifier into its successor through the alias, and that would have turned a diagnosis label into a sign without any annotator reading the wording. And when a relabel gives a structure the same sign that another label of the same structure already has, it is counted once (`same_structure_twice`).
 
 ## How it does it
 The program is `analysis/one_time_test.py`, run as `python3 -I analysis/one_time_test.py COMMAND`. Its commands are `status`, `prepare`, `rule`, `rehearse` and `run`.
@@ -95,15 +107,15 @@ The program is `analysis/one_time_test.py`, run as `python3 -I analysis/one_time
 
 **Result.** A real run writes two entries to the results registry (`docs/results-registry.json`, the project's list of scored tests): one for the test half and one for batch 1, each with the commit, the date, the parent rule and how the labels were read. Detailed outcomes go to the folder `data/`, which is not in git.
 
-Requirements AN-98 to AN-100, AN-110 and AN-161 to AN-165 describe this. `tests/test_one_time_test.py` holds nine tests on small invented examples; none opens a frozen file. At commit `af3afc6` one of them failed, because it expected the old identifier of a rib fracture to resolve to an entry that the corrected list had retired. Commit `cc58042` of 2026-11-16 adapted it: the engine may read a retired diagnosis identifier as the sign that replaced it, but a held-out label on such an identifier is never read through that alias. It stays pending until two annotators agree on the sign (`relabel.py`). The adapted test was read, not run, for this page.
+Requirements AN-98 to AN-100, AN-110 and AN-161 to AN-165 describe this. `tests/test_one_time_test.py` holds nine tests on small invented examples; none opens a frozen file. At commit `af3afc6` one of them failed, because it expected the old identifier of a rib fracture to resolve to an entry that the corrected list had retired. Commit `cc58042` of 2026-11-16 adapted it: the engine may read a retired diagnosis identifier as the sign that replaced it, but a held-out label on such an identifier is never read through that alias. It stays pending until two annotators agree on the sign (`relabel.py`). On 2026-11-16, in the working copy at commit `3c3cdb8`, `tests/test_one_time_test.py` and `tests/test_relabel.py` passed (15 tests, all on invented examples).
 
 ## Steps
 1. The judge session (a Claude session that works only on held-out data and never changes the assistant in the same session) runs `prepare`. Output: the checksums and label counts in `docs/one-time-test.json`, state "ready". Done on 2026-11-14.
 2. The judge runs `rehearse`. Output: scratch records that show the command completes and refuses a second run. Done on 2026-11-14.
 3. Giovanni decides the parent rule. Done on 2026-11-15: `strict`, which is what the record already said.
-4. The session that builds the finding lists (the "corpus lane") corrects the X-ray list to findings only. Done on 2026-11-16 (commit `af3afc6`). The engine is then retuned on the tuning half: not done.
-5. The judge relabels the pending labels of the test half and batch 1 with `relabel.py annotate` (twice) and `join`, and commits the counts. Not done.
-6. Giovanni has given the go. Once steps 4 and 5 are done, the judge runs `run --confirm "score the xray test half once"`. Output: the scores printed once, two registry entries, state "spent". Not done.
+4. The session that builds the finding lists (the "corpus lane") corrects the X-ray list to findings only. Done on 2026-11-16 (commit `af3afc6`). The engine is then retuned on the tuning half: measured again, at 87.2 % for hurried descriptions without the pick question (tuning half, simulated user), below the 90 % target; not done.
+5. The judge relabels the pending labels of the test half and batch 1 with `relabel.py annotate` (twice) and `join`, and commits the counts. Done for X-ray on 2026-11-16 (pair in force: Sonnet and Opus).
+6. Giovanni gave the go on 2026-11-15; the plan of 2026-11-16 asks for his confirmation again once X-ray is back at 90 %. Once steps 4 and 5 are done, the judge runs `run --confirm "score the xray test half once"`. Output: the scores printed once, two registry entries, state "spent". Not done.
 7. The judge commits the registry and the record and sets the plan milestone "X-ray: the one-time test" to done with the plan tool. Not done.
 
 ## Where it sits in the pipeline
@@ -113,4 +125,4 @@ After the engine reached its X-ray targets on the tuning half ([[radiology-findi
 Giovanni and any reader of the plan on [[radiology-report-matcher]], through the results registry. Nothing measured here may flow back into the engine: after the run nothing is tuned on the test half.
 
 ## Notes
-The frozen test-half files and everything under `data/` were not opened for this page. Everything here comes from the programs, their tests, the committed record, the requirement rows and the plan. The relabel tool was not run for this page, because even its `count` command reads held-out files; its tests passed on a copy of commit `af3afc6`.
+The frozen test-half files and everything under `data/` were not opened for this page. Everything here comes from the programs, their tests, the committed record, the requirement rows and the plan. The relabel tool was not run for this page, because even its `count` command reads held-out files. `python3 -I analysis/one_time_test.py status` was run on 2026-11-16; it prints the record and the hold and scores nothing.
