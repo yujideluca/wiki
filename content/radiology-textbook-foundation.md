@@ -26,6 +26,8 @@ The parts, all in the repository `~/dev/radiology-crawler`, added on 2026-11-15 
 - `docs/books-manifest.json` lists the fetched books, with counts and licences only.
 - `docs/foundational-sources.json` holds the result of the grounding.
 
+Books Giovanni bought (2026-11-16). Giovanni bought the paid radiology textbooks the project had listed and saved them on the laptop. He decided that these books are not part of the project: they only feed information into the finding lists and their example texts. Their text stays in the git-ignored `data/` folder and is never committed or sent to an outside service. What is taken from them enters a list entry as our own short wording, with the book and page in the entry's source field. No manifest, count or record about the bought books themselves is kept.
+
 State at this commit: 88 books are fetched. The grounding has been run for all 122 X-ray entries (62 grounded, 48 weak, 12 not found) for all 231 CT entries (101 grounded, 109 weak, 21 not found) for all 161 ultrasound entries (74 grounded, 80 weak, 7 not found) and for all 214 MRI entries (113 grounded, 78 weak, 23 not found): 728 entries, none left unsearched. These programs change no finding list: the file is a record beside the lists. Since commit `17ee7c8` the session that builds the lists has copied some of its results into the ultrasound and CT lists, and since commit `4355e36` into the MRI list (see "Who receives its output").
 
 ## What it does
