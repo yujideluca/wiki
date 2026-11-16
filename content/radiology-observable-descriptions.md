@@ -9,7 +9,7 @@ location: radiology-crawler:analysis/observable.py
 fed_by: [radiology-fulltext-resolver, radiology-textbook-foundation]
 feeds: [radiology-finding-inventory, radiology-finding-engine]
 sources: [radiology-crawler:analysis/observable.py, radiology-crawler:tests/test_observable.py, radiology-crawler:docs/observable-descriptors.json, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:assistant/dialog.py, radiology-crawler:assistant/modules/xray/msk-trauma.json, radiology-crawler:PLAN.md]
-reviewed: 2026-11-16T17:30Z
+reviewed: 2026-11-16T17:56Z
 memory: []
 ---
 
@@ -28,17 +28,17 @@ The program is `analysis/observable.py` in the repository `~/dev/radiology-crawl
 ## What it does
 For every value and every finding of one imaging method, on that method's own list (nothing is pooled across methods), it decides which line may stand:
 
-- **Plain words.** A value that is no term needs no source: every word is a plain word of place, side, presence, number or size ("right", "absent", "proximal"), or the value asks for a number. Its line is the value itself, at the level "plain words".
+- **Plain words.** A value that is no term needs no source: every word is a plain word of place, side, presence, number or size ("right", "absent", "proximal"), or the value asks for a number. Since commit `0f2188e` (Giovanni's rule of 2026-11-16, plan task T31) an anatomical or site name is plain too, when it is the value of a place descriptor (site, location, bone, level, segment, region and similar: `PLACE_DESCRIPTORS`), for example "right iliac fossa", "tentorium" or "C5"; the same word under another descriptor stays a term, and a value that names a disease (a word of the diagnosis-word list, or words such as malformation, tumour, cyst, nodule, mass) is never plain. Its line is the value itself, without any bracket ("joint (CPPD)" is shown as "joint"), at the level "plain words".
 - **From a passage.** Any other value gets a line only when a passage of a source states it. A passage counts only from the body of an article the entry cites (never its abstract) or from a current open textbook ([[radiology-textbook-foundation]]); Radiopaedia, a reference website whose text the product never shows, is never used (AN-181). The first model writes the line in its own short technical wording and names the words of the passage it rests on (the quote). The quote must stand word for word in the passage; the line must not share six or more words in a row with it; and a second, different language model must read the quote as stating the line and the line as something seen on the image. A passage whose licence allows no derivative text feeds no line at all. Why: Giovanni's scope rule of 2026-11-16 that every source only feeds a body of knowledge in the project's own words, with no copied text (`PLAN.md`, scope line 6).
 - **The list's own definition** (X-ray only). A finding whose list definition was written from sources read in full text keeps that definition as its defining description.
 - **None.** Otherwise the value or the finding gets no line and the assistant cannot offer it.
 
 A line never holds the value's term or the finding's name, nor a diagnosis word (a word that names a disease, an injury or a cause, from the method's internal word list `assistant/lexicon/<method>-diagnosis-words-en.json`, which is never shown). Code cuts a line before the first clause that holds such a word, and drops it when fewer than four words remain.
 
-The counts go to `docs/observable-descriptors.json`, per method, with the values and findings still without a line. At commit `5183ef3` only X-ray has been processed:
+The counts go to `docs/observable-descriptors.json`, per method, with the values and findings still without a line. At commit `0f2188e` only X-ray has been processed:
 
-- Descriptor value slots (a value counted once for each finding that uses it): 2,122. Of these 652 are plain words, 39 have a line from an open textbook passage, 37 a line from the body of a cited article, and 1,394 have none.
-- Distinct values: 1,120, of which 346 have a line and 774 do not. The descriptors with the most values left without a line are site, type, location, extent, pattern and shape; graded scales (for example the grades of a vertebral height loss) are among them too.
+- Descriptor value slots (a value counted once for each finding that uses it): 2,122. Of these 855 are plain words, 39 have a line from an open textbook passage, 36 a line from the body of a cited article, and 1,192 have none (before the place-name rule: 652 plain, 1,394 none).
+- Distinct values: 1,120, of which 493 have a line and 627 do not (774 before the place-name rule). The descriptors with the most values left without a line are type, extent, pattern and shape; graded scales (for example the grades of a vertebral height loss) are among them too.
 - Findings: 205, of which 163 have a defining description (145 from the list's own full-text definition, 17 kept from an earlier step, 1 from an open textbook passage) and 42 have none.
 
 The first run, at commit `574b961`, had given 375 values and 167 findings a line; the lines that copied their source were removed by the new rule and will be written again in own words on the next run. Ultrasound, CT and MRI have no lines yet; their lists come next (task T1 of the project plan `PLAN.md`, for the "corpus lane", the Claude session that builds the lists and their training texts).
@@ -58,16 +58,17 @@ The program is run by hand, one imaging method at a time. Commands: `python3 -I 
 
 How the assistant uses the result: `assistant/dialog.py` offers a value only when its line has a text and either a source or the level "plain words"; a line from an abstract only does not count. A value written as a brightness term (for example "hyperechoic" in ultrasound or "T2 hyperintense" in MRI) can also be offered in its relative form, "brighter", "equal" or "darker" than the neighbouring tissue, without a line ([[radiology-finding-engine]]).
 
-**Tests.** `tests/test_observable.py` holds 6 tests for AN-159, AN-160 and AN-181, on invented lists and passages. On 2026-11-16 they passed in the working copy at commit `f35556a`, and they passed again at commit `5183ef3`.
+**Tests.** `tests/test_observable.py` holds 7 tests for AN-159, AN-160 and AN-181, on invented lists and passages. On 2026-11-16 they passed in the working copy at commit `f35556a`, and they passed again at commits `5183ef3` and `0f2188e` (with the full quality gate).
 
 ### Known limits
 - **Other list text may still be copied.** The own-words check above covers the lines this program writes. Plan task T26 of the corpus lane is to find any committed list text (defining descriptions, lines, measurements) copied word for word from any source, Radiopaedia included, and rewrite it; it is not done. This includes the list definitions that X-ray findings keep as their defining description.
-- Only X-ray has lines. Of its distinct values, two thirds still have none, so many X-ray questions can offer only plain words or relative forms.
+- Only X-ray has lines. Of its distinct values, more than half still have none, so many X-ray questions can offer only plain words or relative forms.
 - "Stated by the passage" is the reading of one model, checked by a second. The word-for-word check proves only that the quote is in the passage. No radiologist has read the lines.
 - Not verified for this page: the program was not run. The counts are those of the committed file.
 
 ## Functions
-- `plain(value)`: whether a value is no term (plain words of place, side, presence, number or size, or a number to give).
+- `plain(value, descriptor, banned)`: whether a value is no term (plain words of place, side, presence, number or size, a number to give, or the site name of a place descriptor).
+- `place(value, descriptor, banned)`: whether a value of a place descriptor names a site and no disease.
 - `items(method)`: what needs a line: each term value of a descriptor and each finding without a defining description.
 - `definition_fits(finding)`: whether the list's own definition can stand as the defining description.
 - `fetch(method)`: download the cited article bodies not yet cached.
