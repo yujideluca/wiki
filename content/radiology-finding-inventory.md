@@ -9,7 +9,7 @@ location: radiology-crawler:assistant
 fed_by: [radiology-r1-xray-review, radiology-real-report-factcheck, radiology-textbook-foundation]
 feeds: [radiology-report-matcher, radiology-finding-engine, radiology-modality-corpus]
 sources: [radiology-crawler:assistant/inventory.py, radiology-crawler:assistant/__init__.py, radiology-crawler:assistant/modules/xray/chest.json, radiology-crawler:assistant/modules/xray/msk-trauma.json, radiology-crawler:assistant/modules/xray/msk-other.json, radiology-crawler:assistant/modules/xray/abdomen.json, radiology-crawler:tests/test_finding_inventory.py, radiology-crawler:docs/adr/0008-finding-inventory-format-and-module-layout.md, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/r1/gap-clusters.md, radiology-crawler:docs/r1/omitted-chest.md, radiology-crawler:docs/r1/omitted-msk-trauma.md, radiology-crawler:docs/r1/omitted-msk-other.md, radiology-crawler:docs/r1/omitted-abdomen.md, radiology-crawler:analysis/finding_links.py, radiology-crawler:tests/test_finding_links.py, radiology-crawler:docs/real-reports-factcheck-batch1.json, radiology-crawler:DESIGN.md, radiology-crawler:docs/training-corpus-manifest.json, radiology-crawler:analysis/training_corpus.py, radiology-crawler:analysis/finding_restructure.py, radiology-crawler:docs/finding-list-restructure.json, radiology-crawler:tests/test_finding_restructure.py, radiology-crawler:docs/SCOPE.md, radiology-crawler:docs/foundational-sources.json, radiology-crawler:analysis/restructure_xray.py, radiology-crawler:assistant/lexicon/xray-diagnosis-words-en.json]
-reviewed: 2026-11-16T12:13Z
+reviewed: 2026-11-16T12:29Z
 ---
 
 ## What it is
