@@ -9,7 +9,7 @@ location: radiology-crawler:analysis/observable.py
 fed_by: [radiology-fulltext-resolver, radiology-textbook-foundation]
 feeds: [radiology-finding-inventory, radiology-finding-engine]
 sources: [radiology-crawler:analysis/observable.py, radiology-crawler:tests/test_observable.py, radiology-crawler:analysis/plain_judge.py, radiology-crawler:tests/test_plain_judge.py, radiology-crawler:docs/observable-descriptors.json, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:assistant/dialog.py, radiology-crawler:assistant/modules/xray/msk-trauma.json, radiology-crawler:PLAN.md]
-reviewed: 2026-11-17T13:15Z
+reviewed: 2026-11-17T13:45Z
 memory: []
 ---
 
@@ -63,7 +63,7 @@ Most values of these two methods, then, still have no line, so the assistant can
 2. **judge**: the first model (Sonnet) says for each item whether it is plain in that context, with a reason of at most ten words, and for a name writes a yes/no question of at most eight words. Code keeps the question only when it holds every word of the name and at most four others.
 3. **check**: the second model (Haiku) judges the same item again without seeing the first answer.
 
-Only items both models accept are used. `write` then gives a name its `question` at a level starting "plain words: the descriptor name is ordinary words ..." and a value the line "the value itself" at a level starting "plain words: a broad word that, in this finding, says itself what is seen ...", both with no source. They never replace a sourced line and are taken back when no longer accepted. Work files: `data/analysis/observable/<method>/plain-judged.jsonl` and `plain-checked.jsonl`. Items at launch: X-ray 58 names and 783 values, ultrasound 690 values, CT 1,446, MRI 975 (a value counted once per finding). Command: `python3 -I analysis/plain_judge.py judge xray`, then the same command with check, then `analysis/observable.py write xray`. The first run started on 2026-11-17; its counts are not yet on this page. Tests: `tests/test_plain_judge.py` (2 tests).
+Only items both models accept are used. `write` then gives a name its `question` at a level starting "plain words: the descriptor name is ordinary words ..." and a value the line "the value itself" at a level starting "plain words: a broad word that, in this finding, says itself what is seen ...", both with no source. They never replace a sourced line and are taken back when no longer accepted. Work files: `data/analysis/observable/<method>/plain-judged.jsonl` and `plain-checked.jsonl`. Items at launch: X-ray 58 names and 783 values, ultrasound 690 values, CT 1,446, MRI 975 (a value counted once per finding). Command: `python3 -I analysis/plain_judge.py judge xray`, then the same command with check, then `analysis/observable.py write xray`. First run, 2026-11-17 (commit `81f6855`): Sonnet accepted 2,214 of 3,940 items and Haiku agreed on 1,476 of those. Value slots still without a line, before to after: X-ray 815 to 674, ultrasound 690 to 379, CT 1,446 to 813, MRI 975 to 596. Twelve more X-ray present/absent names are now asked in their own words (for example "Is there a chest drain?"); 48 of 60 names still have no question, mostly named signs, eponyms and technical words such as "air bronchograms" or "periosteal reaction". Accepted words are mostly size and shape words (dilated, thinned, widened), density words (hypodense, lytic) and extent words (focal, diffuse); words such as "abnormal", "visible" or "preserved" were refused. No radiologist has read the judgements. Tests: `tests/test_plain_judge.py` (2 tests).
 
 ## How it does it
 Steps, each of which can be stopped and resumed. Work files are kept in `data/analysis/observable/<method>/`, which git (the version-control system of the repository) does not track.
@@ -84,7 +84,7 @@ How the assistant uses the result: `assistant/dialog.py` offers a value only whe
 
 ### Known limits
 - **Other list text may still be copied.** The own-words check above covers the lines this program writes. Plan task T26 of the corpus lane is to find any committed list text (defining descriptions, lines, measurements) copied word for word from any source, Radiopaedia included, and rewrite it; it is not done. This includes the list definitions that X-ray findings keep as their defining description.
-- All four methods have lines now, but many values still have none (X-ray 507 of 1,120, ultrasound 67 of 120, CT 90 of 146, MRI 71 of 132), so many questions can offer only plain words or relative forms.
+- All four methods have lines now, but many values still have none (distinct values after the AN-199 run: X-ray 404 of 1,120, ultrasound 64 of 120, CT 86 of 146, MRI 60 of 132), so many questions can offer only plain words or relative forms.
 - "Stated by the passage" is the reading of one model, checked by a second. The word-for-word check proves only that the quote is in the passage. No radiologist has read the lines.
 - Not verified for this page: the program was not run. The counts are those of the committed file.
 
