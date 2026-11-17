@@ -9,7 +9,7 @@ location: radiology-crawler:legacy/analysis/v3_model.py
 fed_by: []
 feeds: []
 sources: [radiology-crawler:legacy/analysis/v3_model.py, radiology-crawler:legacy/analysis/v3_run.py, radiology-crawler:legacy/analysis/v3_outer.py, radiology-crawler:legacy/tests/test_v3_model.py, radiology-crawler:legacy/tests/test_v3_outer.py, radiology-crawler:legacy/docs/v3-design.md, radiology-crawler:legacy/docs/v3-debate-codex-critique.md, radiology-crawler:legacy/docs/problem-formulation.md, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:legacy/docs/v3-report.md, radiology-crawler:legacy/docs/articles-only-report.md, radiology-crawler:legacy/docs/modelling-directives.md, radiology-crawler:legacy/docs/s1c-v3t-proposal-claude.md, radiology-crawler:legacy/docs/s1c-v3t-proposal-codex.md, radiology-crawler:legacy/docs/s1c-v3t-critique-by-claude.md, radiology-crawler:legacy/docs/s1c-v3t-critique-by-codex.md, radiology-crawler:legacy/docs/s1c-v3t-design.md, radiology-crawler:legacy/docs/s1c-v3t-agreement-claude.md, radiology-crawler:legacy/analysis/v3_tagged.py, radiology-crawler:legacy/analysis/v3t_run.py, radiology-crawler:legacy/docs/s1c-v3t-report-provisional.md, radiology-crawler:docs/adr/0006-v3t-frozen-retrieval.md]
-reviewed: 2026-11-16T23:38Z
+reviewed: 2026-11-17T00:39Z
 ---
 
 ## What it is
