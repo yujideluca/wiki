@@ -9,7 +9,7 @@ location: radiology-crawler:analysis/fulltext.py
 fed_by: []
 feeds: [radiology-real-report-factcheck, radiology-textbook-foundation, radiology-observable-descriptions]
 sources: [radiology-crawler:analysis/fulltext.py, radiology-crawler:analysis/fulltext_text.py, radiology-crawler:CLAUDE.md, radiology-crawler:tests/test_fulltext.py, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/TRACEABILITY.md]
-reviewed: 2026-11-17T00:39Z
+reviewed: 2026-11-17T06:33Z
 memory: []
 ---
 

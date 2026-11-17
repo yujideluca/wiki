@@ -9,7 +9,7 @@ location: radiology-crawler:analysis/observable.py
 fed_by: [radiology-fulltext-resolver, radiology-textbook-foundation]
 feeds: [radiology-finding-inventory, radiology-finding-engine]
 sources: [radiology-crawler:analysis/observable.py, radiology-crawler:tests/test_observable.py, radiology-crawler:docs/observable-descriptors.json, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:assistant/dialog.py, radiology-crawler:assistant/modules/xray/msk-trauma.json, radiology-crawler:PLAN.md]
-reviewed: 2026-11-17T00:39Z
+reviewed: 2026-11-17T06:33Z
 memory: []
 ---
 
@@ -53,11 +53,13 @@ Most values of these two methods, then, still have no line, so the assistant can
 
 **Lines from the bought textbooks** (commit `97e3a55` of 2026-11-16, from `docs/observable-descriptors.json`). Of 1,211 candidate lines from the textbooks Giovanni bought, 594 passed the third model's review and filled gaps no open source covered, counted in the report under "purchased textbook". Before to after: X-ray: values with a line 493 to 583 of 1,120, findings with a defining description 163 to 175 of 205; ultrasound 29 to 42 of 120 and 158 to 259 of 711; CT 35 to 47 of 146 and 217 to 343 of 1,082; MRI 31 to 54 of 132 and 218 to 325 of 1,000. Most of the lines the review refused were value lines tied to one organ or case. Since commit `4778a77`, 9 reviewed measurements from these books were added to findings that had none (X-ray 4, ultrasound 1, CT 3, MRI 1), cited the same way and counted as `measurements_from_purchased_textbook`; a finding's own measurement always wins.
 
+**Open terminology sources and definition-first ranking** (night of 2026-11-17, commits `012f8df` and `ac373ef`, requirement AN-197). Giovanni asked for more openly licensed sources for the words still without a line. A search found 25 (24 review and consensus articles from Europe PMC, an open archive of medical papers, and one open ultrasound physics book); a second search added 34 bone, joint and spine reviews. All are CC BY, read in each article's own licence statement; none is Radiopaedia. They sit in the open-book store of [[radiology-textbook-foundation]], so this program reads them like the other current open books. The first run gained little: definitions such as "anechoic (completely black)" sit in long sentences that list many terms, which were dropped or cut, and sentences that only mention a finding ranked higher. Now a sentence that glosses the term in brackets ranks first, and a long sentence is split at its semicolons, each part keeping its lead-in. A newer set of sentences that gives an item no accepted line also no longer removes the line accepted earlier. Before to after the night, from `docs/observable-descriptors.json`: values with a line: X-ray 583 to 613 of 1,120, ultrasound 43 to 53 of 120, CT 47 to 56 of 146, MRI 54 to 61 of 132; findings with a defining description: X-ray 175 to 179 of 205, ultrasound 260 to 273 of 711, CT 343 to 371 of 1,082, MRI 325 to 354 of 1,000. Most values still without a line are broad words (thickened, cystic, distended, lytic, ill-defined): the first model finds no sentence that defines them, or the second model rejects the line. Whether such words count as plain words is a question for Giovanni.
+
 ## How it does it
 Steps, each of which can be stopped and resumed. Work files are kept in `data/analysis/observable/<method>/`, which git (the version-control system of the repository) does not track.
 
 1. **fetch**: the bodies of the cited articles from PubMed Central (the free full-text archive of the US National Library of Medicine) into the full-text cache of [[radiology-fulltext-resolver]].
-2. **candidates**, by code: per value or finding, up to seven sentences that hold its wording, first from the bodies of the articles it cites, then from the current open textbooks (only chapters that speak of the method).
+2. **candidates**, by code: per value or finding, up to seven sentences that hold its wording, first from the bodies of the articles it cites, then from the current open textbooks (only chapters that speak of the method). A sentence that glosses the term in brackets ranks first; a long sentence listing several terms is split at its semicolons.
 3. **describe**: a first model (Sonnet, a model of the Claude family) writes the line from one sentence and names the words of the sentence it rests on. Code then checks that those words stand word for word in the sentence, that the line copies no run of six words of it, and that the line does not hold the term.
 4. **verify**: a second model (Haiku, a smaller model of the same family) says whether the quote states the line and whether the line is something seen on the image.
 5. **write**: the list files get the fields (never a quote, never a line from a no-derivatives source); the counts file is written.
@@ -68,11 +70,11 @@ The program is run by hand, one imaging method at a time. Commands: `python3 -I 
 
 How the assistant uses the result: `assistant/dialog.py` offers a value only when its line has a text and either a source or the level "plain words"; a line from an abstract only does not count. A value written as a brightness term (for example "hyperechoic" in ultrasound or "T2 hyperintense" in MRI) can also be offered in its relative form, "brighter", "equal" or "darker" than the neighbouring tissue, without a line ([[radiology-finding-engine]]).
 
-**Tests.** `tests/test_observable.py` holds 7 tests for AN-159, AN-160 and AN-181, on invented lists and passages. On 2026-11-16 they passed in the working copy at commit `f35556a`, and they passed again at commits `5183ef3` and `0f2188e` (with the full quality gate).
+**Tests.** `tests/test_observable.py` holds 11 tests for AN-159, AN-160, AN-181, AN-195 to AN-197, on invented lists and passages. On 2026-11-16 they passed in the working copy at commit `f35556a`, and they passed again at commits `5183ef3` and `0f2188e` (with the full quality gate).
 
 ### Known limits
 - **Other list text may still be copied.** The own-words check above covers the lines this program writes. Plan task T26 of the corpus lane is to find any committed list text (defining descriptions, lines, measurements) copied word for word from any source, Radiopaedia included, and rewrite it; it is not done. This includes the list definitions that X-ray findings keep as their defining description.
-- Only X-ray has lines. Of its distinct values, more than half still have none, so many X-ray questions can offer only plain words or relative forms.
+- All four methods have lines now, but many values still have none (X-ray 507 of 1,120, ultrasound 67 of 120, CT 90 of 146, MRI 71 of 132), so many questions can offer only plain words or relative forms.
 - "Stated by the passage" is the reading of one model, checked by a second. The word-for-word check proves only that the quote is in the passage. No radiologist has read the lines.
 - Not verified for this page: the program was not run. The counts are those of the committed file.
 
