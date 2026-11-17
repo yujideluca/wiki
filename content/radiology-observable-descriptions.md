@@ -9,7 +9,7 @@ location: radiology-crawler:analysis/observable.py
 fed_by: [radiology-fulltext-resolver, radiology-textbook-foundation]
 feeds: [radiology-finding-inventory, radiology-finding-engine]
 sources: [radiology-crawler:analysis/observable.py, radiology-crawler:tests/test_observable.py, radiology-crawler:docs/observable-descriptors.json, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:assistant/dialog.py, radiology-crawler:assistant/modules/xray/msk-trauma.json, radiology-crawler:PLAN.md]
-reviewed: 2026-11-17T06:33Z
+reviewed: 2026-11-17T07:33Z
 memory: []
 ---
 
@@ -55,6 +55,8 @@ Most values of these two methods, then, still have no line, so the assistant can
 
 **Open terminology sources and definition-first ranking** (night of 2026-11-17, commits `012f8df` and `ac373ef`, requirement AN-197). Giovanni asked for more openly licensed sources for the words still without a line. A search found 25 (24 review and consensus articles from Europe PMC, an open archive of medical papers, and one open ultrasound physics book); a second search added 34 bone, joint and spine reviews. All are CC BY, read in each article's own licence statement; none is Radiopaedia. They sit in the open-book store of [[radiology-textbook-foundation]], so this program reads them like the other current open books. The first run gained little: definitions such as "anechoic (completely black)" sit in long sentences that list many terms, which were dropped or cut, and sentences that only mention a finding ranked higher. Now a sentence that glosses the term in brackets ranks first, and a long sentence is split at its semicolons, each part keeping its lead-in. A newer set of sentences that gives an item no accepted line also no longer removes the line accepted earlier. Before to after the night, from `docs/observable-descriptors.json`: values with a line: X-ray 583 to 613 of 1,120, ultrasound 43 to 53 of 120, CT 47 to 56 of 146, MRI 54 to 61 of 132; findings with a defining description: X-ray 175 to 179 of 205, ultrasound 260 to 273 of 711, CT 343 to 371 of 1,082, MRI 325 to 354 of 1,000. Most values still without a line are broad words (thickened, cystic, distended, lytic, ill-defined): the first model finds no sentence that defines them, or the second model rejects the line. Whether such words count as plain words is a question for Giovanni.
 
+**Questions for present/absent descriptors** (commit `1adbbef`, requirement AN-198, plan task T13). The assistant asks a descriptor that only says whether something is there (present or absent) only in the list's own short wording, its `question`, because its bare name may be the term the user is looking for. This program now writes that field: each such descriptor name is an item, the first model writes a yes/no question of at most eight words about what is seen, code checks the form and that the term is absent, the second model reads it against the quote, and the list gets `question`, `question_source` and `question_level`. Only X-ray has such descriptors (94, under 60 distinct names). Two got a question (for example "Is there a concave upward-sloping fluid edge?"): 38 names occur in no open source sentence, the first model found nothing for 16 more, and the second model refused 4 of 6 questions. Whether a name that is already plain words ("gas in rectum", "chest drain") may be asked as it is, is plan task T38, for Giovanni.
+
 ## How it does it
 Steps, each of which can be stopped and resumed. Work files are kept in `data/analysis/observable/<method>/`, which git (the version-control system of the repository) does not track.
 
@@ -70,7 +72,7 @@ The program is run by hand, one imaging method at a time. Commands: `python3 -I 
 
 How the assistant uses the result: `assistant/dialog.py` offers a value only when its line has a text and either a source or the level "plain words"; a line from an abstract only does not count. A value written as a brightness term (for example "hyperechoic" in ultrasound or "T2 hyperintense" in MRI) can also be offered in its relative form, "brighter", "equal" or "darker" than the neighbouring tissue, without a line ([[radiology-finding-engine]]).
 
-**Tests.** `tests/test_observable.py` holds 11 tests for AN-159, AN-160, AN-181, AN-195 to AN-197, on invented lists and passages. On 2026-11-16 they passed in the working copy at commit `f35556a`, and they passed again at commits `5183ef3` and `0f2188e` (with the full quality gate).
+**Tests.** `tests/test_observable.py` holds 12 tests for AN-159, AN-160, AN-181, AN-195 to AN-198, on invented lists and passages. On 2026-11-16 they passed in the working copy at commit `f35556a`, and they passed again at commits `5183ef3` and `0f2188e` (with the full quality gate).
 
 ### Known limits
 - **Other list text may still be copied.** The own-words check above covers the lines this program writes. Plan task T26 of the corpus lane is to find any committed list text (defining descriptions, lines, measurements) copied word for word from any source, Radiopaedia included, and rewrite it; it is not done. This includes the list definitions that X-ray findings keep as their defining description.
