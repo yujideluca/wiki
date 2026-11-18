@@ -9,7 +9,7 @@ location: workflow-memory:bin/mem
 fed_by: [claude-code, codex, giovanni, remote-assistant]
 feeds: [events-log]
 sources: [workflow-memory:bin/mem, workflow-memory:mem/__main__.py, workflow-memory:mem/install.py, workflow-memory:mem/cli.py, workflow-memory:mem/tags.py, workflow-memory:docs/adr/0008-router-rules-as-modules.md]
-reviewed: 2026-11-07T23:47Z
+reviewed: 2026-11-18T14:23Z
 ---
 
 ## What it is
@@ -53,7 +53,7 @@ ev -writes and reads-> lg
 fo -writes-> vw
 
 ## What it does
-It writes one new event file per change ([[mem-add]], [[mem-use]], [[mem-task]], and also feedback, forget, done, claim and similar), prints the brief, searches the memory ([[mem-search]]), checks files for problems, builds the readable files in [[memory-views]], synchronises with GitHub, and installs its own Claude Code hooks.
+It writes one new event file per change ([[mem-add]], [[mem-use]], [[mem-task]], and also feedback, forget, done, claim and similar), prints the brief, searches the memory ([[mem-search]]), checks files for problems, builds the readable files in [[memory-views]], synchronises with GitHub, and installs its own Claude Code hooks. Since 2026-11-18 it also encrypts private entries (open items, use notes, notes; see [[events-log]]): `mem key init` makes the key once, `mem key status` says whether the key works and how many private entries cannot be read here. Where the key is missing, `mem` refuses to write a private entry instead of writing it in plain text.
 
 ## How it does it
 The file `mem/cli.py` reads the command line and calls the modules: `events.py` (writing and reading event files), [[memory-fold]] (`core.py`), [[mem-validator]], [[mem-harvester]], [[mem-pendency]], `search.py`, `project.py`, [[mem-sync]] and `install.py`.

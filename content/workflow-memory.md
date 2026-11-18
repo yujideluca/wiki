@@ -9,7 +9,7 @@ location: workflow-memory:
 fed_by: [claude-code, codex]
 feeds: [status-quo, repo-sync-hook]
 sources: [workflow-memory:mem/__init__.py, workflow-memory:quarantine, workflow-memory:mem/validate.py, workflow-memory:scripts/calibrate.py, workflow-memory:scripts/migrate_legacy.py, workflow-memory:CLAUDE.md, workflow-memory:mem.json, workflow-memory:.gitignore, workflow-memory:pipeline-check.version, workflow-memory:docs/OPEN-QUESTIONS.md, workflow-memory:docs/TESTES-AUTOMATIZADOS.md, workflow-memory:mem/project.py, workflow-memory:README.md, workflow-memory:docs/DESIGN.md, workflow-memory:mem/sync.py, workflow-memory:AGENTS.md]
-reviewed: 2026-11-14T18:10Z
+reviewed: 2026-11-18T14:23Z
 ---
 
 ## What it is
@@ -68,7 +68,7 @@ ci -checks-> ev
 ci -rebuilds-> vw
 
 ## What it does
-It keeps preferences, facts, decisions and open items (things still to be done), and at the start of every chat shows the [[session-brief]]: the open items and an index of rule tags, from which the chat loads the rules that fit each task ([[mem-rules]]). It is the only channel between the different Claude instances ([[claude-code]], the [[remote-assistant]] and the [[claude-app]]); this is decision ADR-0003 in [[memory-adrs]] (an ADR, "architecture decision record", is a short note that records one decision and its reasons).
+It keeps preferences, facts, decisions and open items (things still to be done), and at the start of every chat shows the [[session-brief]]: the open items and an index of rule tags, from which the chat loads the rules that fit each task ([[mem-rules]]). It is the only channel between the different Claude instances ([[claude-code]], the [[remote-assistant]] and the [[claude-app]]); this is decision ADR-0003 in [[memory-adrs]] (an ADR, "architecture decision record", is a short note that records one decision and its reasons). Since 2026-11-18 the text of private entries (open items, use notes, notes) is encrypted in the files, because the repository is public; rules stay readable (see [[events-log]]).
 
 ## How it does it
 The memory is a log: every entry is one new file that is never edited afterwards, stored in [[events-log]]. One function, [[memory-fold]], reads the whole log and works out the current state (the latest ruling for each topic wins). A GitHub Action ([[mem-action]], an automatic job on GitHub) regenerates the readable files in [[memory-views]]. Claude Code writes with the command [[mem]] and with three hooks ([[hook-session-start]], [[hook-prompt]], [[hook-stop]]); the Claude app writes through [[mem-github-connector]]. The laptop's copy of the repository (its clone) is kept in step with GitHub by [[mem-sync]]: several sessions often start at the same moment on the same clone, so since 2026-11-06 only one sync at a time works on it (a lock file in the clone's `.git` folder; a sync waits for it at most 15 seconds before a download and 10 before an upload, then goes ahead anyway), and it downloads and moves forward without `git pull`, which failed when several downloads ran at once. Everything is written in plain Python (only its standard library), and [[mem-validator]] keeps secrets and other people's contact data out.

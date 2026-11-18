@@ -9,7 +9,7 @@ location: workflow-memory:views
 fed_by: [mem-action, memory-fold]
 feeds: [claude-app, giovanni]
 sources: [workflow-memory:mem/project.py, workflow-memory:mem/tags.py, workflow-memory:docs/adr/0008-router-rules-as-modules.md]
-reviewed: 2026-11-07T23:44Z
+reviewed: 2026-11-18T14:23Z
 ---
 
 ## What it is
@@ -19,7 +19,7 @@ The `views/` folder contains the readable summaries of [[workflow-memory]]. They
 BRIEF holds the router (the order to classify each request into tags and fetch their rules first; no rule is printed in BRIEF itself), an index of the kinds of task (tags), the open items and, at the end, instructions on how a chat records a correction. A chat that is about to do a task of one kind fetches `rules/TAG.md` for that tag, the same way the [[mem-rules]] command serves Claude Code. REVIEW lists everything that needs a human decision: conflicts between writers, entries marked wrong, quarantined files, proposals made by the automatic harvester, and warnings (for example a rule that has no tag).
 
 ## How it does it
-The files are rebuilt by `mem build` and by [[mem-action]] on every push and once a day. Continuous integration (CI, automatic checks on every push) fails if somebody edited a view by hand, using `build --check`, which rebuilds and compares.
+The files are rebuilt by `mem build` and by [[mem-action]] on every push and once a day. Continuous integration (CI, automatic checks on every push) fails if somebody edited a view by hand, using `build --check`, which rebuilds and compares. Since 2026-11-18 the views are always built from the masked form of private entries (see [[events-log]]): an open item shows as a placeholder line, never as its text, whether or not the builder has the key. So the laptop and the CI job produce the same files, and nothing private reaches a view.
 
 ## Where it sits in the pipeline
 The output side of the memory.

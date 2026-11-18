@@ -8,7 +8,7 @@ status: active
 fed_by: []
 feeds: []
 sources: [workflow-memory:mem/privacy-patterns.tsv, workflow-memory:mem/validate.py, wiki:server/lib/wiki/content/privacy.ex, wiki:docs/adr/0003-login-gate-and-decoy.md, wiki:docs/REQUIREMENTS.md, machine-bootstrap:mb/scan.py, machine-bootstrap:docs/adr/0004-allow-list-and-scanner.md, machine-bootstrap:docs/adr/0005-secrets-passphrase-two-places.md, workflow-memory:.github/workflows/mem.yml, radiology-crawler:tools/check_dependencies.py]
-reviewed: 2026-11-18T05:58Z
+reviewed: 2026-11-18T14:23Z
 ---
 
 ## What it is
@@ -40,7 +40,7 @@ d1 -yes-> p1
 d1 -no-> p2
 
 ## What it does
-The layers, from the most to the least specific:
+The layers, from the most to the least specific: Since 2026-11-18 there is one more layer for the public memory repository: private entries are encrypted before they are written (see [[events-log]]).
 1. **Default deny on the web** ([[wiki-router]]). Without a session of Giovanni's verified Google account, every page path answers a decoy page and the data paths answer 404 (requirements AU-1 to AU-6, DC-1). Every response is marked not to be cached and carries security headers; the decoy's content security policy forbids network requests. OAuth (Open Authorization, the standard behind "sign in with Google") state and nonce are checked, and the Google client allows only one test user.
 2. **One list of privacy patterns**. `mem/privacy-patterns.tsv` in [[workflow-memory]] lists 12 secret shapes (private-key block, GitHub, GitLab, Slack, Telegram, Google and AWS keys, bearer tokens, password assignments), 2 phone shapes and 1 Brazilian CPF (Cadastro de Pessoas Físicas, the taxpayer number) shape. The memory moves an event that matches one into `quarantine/` with a reason ([[mem-validator]]); the wiki runs the same list in `wiki check` and refuses to publish a page that matches (CO-4), and also refuses any e-mail address except Giovanni's and Anthropic's no-reply address. The wiki keeps a copy and its gate fails if the two files differ on the laptop.
 3. **Allow-list capture and a scanner in machine-bootstrap**. Only the files named in `mb.toml` are ever read; each is scanned for seven secret shapes and a flagged file is refused by name, never by content; the gate scans `state/` again (`python3 -m mb scan`). Real secrets travel only in a passphrase-encrypted archive made with `gpg` and kept in two places ([[checks-machine-bootstrap]]).

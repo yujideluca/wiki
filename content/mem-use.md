@@ -9,7 +9,7 @@ location: workflow-memory:mem/cli.py
 fed_by: []
 feeds: [events-log]
 sources: [workflow-memory:mem/cli.py, workflow-memory:mem/core.py]
-reviewed: 2026-11-07T23:44Z
+reviewed: 2026-11-18T14:23Z
 ---
 
 ## What it is
@@ -19,7 +19,7 @@ reviewed: 2026-11-07T23:44Z
 Each reported use makes the entry fade more slowly: its "half-life" (the time after which its weight in the brief halves) is stretched by the factor `1 + log2(1 + uses)`. Rules that are really used therefore stay high in the full ranked list that `mem brief --full` prints ([[mem]]), and unused ones gradually drop out (the start-up brief itself prints no rule, only the tag index, see [[mem-rules]]). For an open item, it also records when and how it was last checked. It is also the point at which the wiki update is triggered ([[end-of-task]]).
 
 ## How it does it
-It writes a `use` event listing the entries as `target: ref1, ref2` and one short line of note (the note has a length limit).
+It writes a `use` event listing the entries as `target: ref1, ref2` and one short line of note (the note has a length limit). Since 2026-11-18 the note is written encrypted (see [[events-log]]); the list of entries it refers to stays readable, because the CI (continuous integration) job on GitHub counts uses from it.
 
 ## Where it sits in the pipeline
 The very last step of every task, right after `wiki publish`.
