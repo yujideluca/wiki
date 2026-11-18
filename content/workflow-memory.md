@@ -9,7 +9,7 @@ location: workflow-memory:
 fed_by: [claude-code, codex]
 feeds: [status-quo, repo-sync-hook]
 sources: [workflow-memory:mem/__init__.py, workflow-memory:quarantine, workflow-memory:mem/validate.py, workflow-memory:scripts/calibrate.py, workflow-memory:scripts/migrate_legacy.py, workflow-memory:CLAUDE.md, workflow-memory:mem.json, workflow-memory:.gitignore, workflow-memory:pipeline-check.version, workflow-memory:docs/OPEN-QUESTIONS.md, workflow-memory:docs/TESTES-AUTOMATIZADOS.md, workflow-memory:mem/project.py, workflow-memory:README.md, workflow-memory:docs/DESIGN.md, workflow-memory:mem/sync.py, workflow-memory:AGENTS.md]
-reviewed: 2026-11-18T14:23Z
+reviewed: 2026-11-18T22:02Z
 ---
 
 ## What it is
