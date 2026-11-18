@@ -8,8 +8,8 @@ status: active
 location: german-quiz-releases:
 fed_by: [publish-apk, publish-content]
 feeds: [question-pool-updater, update-client]
-sources: [german-quiz-releases:latest.json, german-quiz-releases:content/content.json]
-reviewed: 2026-11-07T00:37Z
+sources: [german-quiz-releases:latest.json, german-quiz-releases:content/content.json, QuizApp:tools/check_feed.py, QuizApp:tools/test_check_feed.py]
+reviewed: 2026-11-18T06:24Z
 ---
 
 ## What it is
@@ -20,6 +20,8 @@ It is what the apps read when they check for updates. There are two branches: `m
 
 ## How it does it
 It is written only by [[publish-apk]] (the APK) and [[publish-content]] (the question pack), so nothing else can change what the apps download.
+
+A push to the feed is checked before it leaves the laptop (since 2026-11-18). The publish scripts always ran the gate first, but a push made any other way was unchecked. `tools/check_feed.py` in the QuizApp repository reads the commit being pushed and refuses it when a file that is not a release file is in it, when the sha256 (a fingerprint of a file's content) in `latest.json` is not that of the APK in the same commit, when a question-pool file differs from the fingerprint that `content/content.json` states, or when `versionCode` or `contentVersion` would be lower than on the remote branch. It is installed as `.git/hooks/pre-push` in the laptop's clone of the feed and not committed there, because the feed's branches hold release files only; a fresh clone needs the three-line hook again (the script's first lines say how). Six tests (`tools/test_check_feed.py`, run by step 7 of [[quizapp-quality-gate]]) build small invented feeds.
 
 ## Where it sits in the pipeline
 Between [[publish-apk]] on the laptop and the [[update-client]] on the phone.

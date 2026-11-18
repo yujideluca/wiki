@@ -8,7 +8,7 @@ status: active
 fed_by: []
 feeds: []
 sources: [pipeline-check:tools/quality_gate.sh, pipeline-check:pipeline-check.toml, pipeline-check:CLAUDE.md, pipeline-check:.github/workflows/quality-gate.yml, pipeline-check:mutants.py, pipeline-check:docs/adr, pipeline-check:tests/common/mod.rs]
-reviewed: 2026-11-07T23:42Z
+reviewed: 2026-11-18T06:23Z
 ---
 
 ## What it is
@@ -18,7 +18,7 @@ These are the checks that guard [[pipeline-check]] itself, the Rust program that
 The gate has three steps, after a first check (step 0, since 2026-11-07) that every test folder deletes itself: tests take their folders from `Scratch` in `tests/common/mod.rs`, which removes the folder when the test ends, also when it fails (set `KEEP_SCRATCH=1` to keep them), and any other `temp_dir()` line fails the gate unless it says `scratch-ok:` and why. Before that, each test built a `/tmp/name-PID` folder by hand and never removed it, and 1,411 folders had piled up ([[tmp-junk]]). The steps: (1) `cargo test`, with test files for end-to-end runs, the pre-push mode, ShellCheck, traceability and a bug-hunt set; (2) requirement traceability by running its own `--traceability` over `src` and `tests` (the PC requirements) with the committed matrix; (3) a hand-made mutation check: `mutants.py` plants faults and the gate fails if any one survives. Its principles: the program measures and a skill judges (ADR-0002 (an architecture decision record)), and a tool used by more than one project lives once and is consumed by pinned version (ADR-0003).
 
 ## How it does it
-The CI (continuous integration) job `gate` runs `tools/quality_gate.sh` directly (30 minutes at most). Its `pipeline-check.toml` sets no fitness limits, no GitHub section and no pre-push guard; it has the traceability and ShellCheck sections. Three ADRs exist in its `docs/adr`.
+The CI (continuous integration) job `gate` runs `tools/quality_gate.sh` directly (30 minutes at most). Its `pipeline-check.toml` sets no fitness limits, no GitHub section and no pre-push guard (an empty guard means every push of `main` is checked). Since 2026-11-18 the repository has its own git hook, `tools/hooks/pre-push`: before `main` is pushed it builds the working copy and runs its own `--pre-push` mode, so the gate also runs on a push made by hand; `main` is not protected on GitHub. It is switched on per clone with `git config core.hooksPath tools/hooks` (done on the laptop). The hook is not in the `[shellcheck] extra_files` list of `pipeline-check.toml`, a file only Giovanni changes; it has the traceability and ShellCheck sections. Three ADRs exist in its `docs/adr`.
 
 ## Where it sits in the pipeline
 It is a layer-3 page of [[code-security-pipeline]]: the shared ideas are in [[quality-gate-explained]] and the whole list is in [[checker-catalog]].
