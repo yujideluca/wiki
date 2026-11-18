@@ -10,14 +10,14 @@ fed_by: []
 feeds: [codex, codex-pbar]
 sources: [home:.codex/AGENTS.md]
 memory: [3f1e29]
-reviewed: 2026-11-06T18:12Z
+reviewed: 2026-11-18T20:40Z
 ---
 
 ## What it is
 `~/.codex/AGENTS.md` is Giovanni's plain-text instruction file for Codex, the programming assistant. It describes how the assistant works on the laptop, protects existing work and proves its results. It is separate from Claude's global instructions in [[global-claude-md]].
 
 ## What it does
-The file connects Codex to [[workflow-memory]], the shared record of preferences and unfinished tasks, and the wiki closing process ([[end-of-task]]). Memory provides defaults, never authorization. The opening instructions describe recording corrections, reporting the entries used and keeping private information out of memory; generated memory folders are managed through commands rather than edited by hand.
+The file connects Codex to [[workflow-memory]], the shared record of preferences and unfinished tasks, and the wiki closing process ([[end-of-task]]). Memory provides defaults, never authorization. The opening instructions describe recording corrections, reporting the entries used and keeping private information out of memory; generated memory folders are managed through commands rather than edited by hand. Since 2026-11-18 its first lines say that the memory repository is public: open items and notes are encrypted there ([[events-log]]), rules are readable by anyone, so no private detail goes into a rule. It also carries the rule that only a real run is proof: "works", "fixed" or "done" may be said only after the real command was run in the real target environment and its outcome was seen; otherwise the report starts with "NOT proven".
 
 The `Terminal task progress` section describes the fixed footer in [[codex-pbar]]: the assistant records completed steps and estimates the remaining time. Only completed work advances the counter. Blocked tasks pause the countdown, and automatic documentation follow-ups retain the original task counter. The separate native display [[codex-status-line]] shows usage allowances (remaining account budgets) and context size (the amount of text the model can use at once).
 
