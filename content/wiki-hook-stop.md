@@ -8,8 +8,8 @@ status: active
 location: wiki:server/lib/wiki/content/stale.ex
 fed_by: [claude-code-settings]
 feeds: [claude-code]
-sources: [wiki:server/lib/wiki/content/stale.ex, wiki:server/lib/wiki/content/memo.ex, wiki:server/test/memo_test.exs, wiki:server/test/build_test.exs, wiki:docs/REQUIREMENTS.md, wiki:docs/adr/0009-stale-review-claims-and-shared-publish-stamp.md, home:.claude/settings.json, home:.codex/hooks.json]
-reviewed: 2026-11-14T18:07Z
+sources: [wiki:server/lib/wiki/content/stale.ex, wiki:server/lib/wiki/content/memo.ex, wiki:server/lib/wiki/content/hold.ex, wiki:server/test/memo_test.exs, wiki:server/test/hold_test.exs, wiki:server/test/build_test.exs, wiki:docs/REQUIREMENTS.md, wiki:docs/adr/0009-stale-review-claims-and-shared-publish-stamp.md, home:.claude/settings.json, home:.codex/hooks.json]
+reviewed: 2026-11-18T04:00Z
 ---
 
 ## What it is
@@ -24,6 +24,10 @@ It uses read-only git, and keeps its state in `~/.local/state/wiki/` (the time o
 New files (requirement UP-9, a numbered promise in the wiki's `docs/REQUIREMENTS.md` that a test checks): a file added since the last publish is listed as "no page covers" only while it still exists in its repository; a file that was added and then deleted or moved is left out, because no page can be written for it. The test is in `server/test/build_test.exs`.
 
 Speed (requirement UP-8): one run asks the same questions many times, because many pages share sources. While the hook runs, a small cache (`Wiki.Content.Memo`) keeps each answer to a git query or a "where does this path really point" question, so each is asked once; outside the hook nothing is cached. Paths are resolved inside the program with the same answers as the `realpath -m` command, instead of starting that command each time. This cut a run from about 4,500 started programs and 22 to 28 seconds (the hook's time limit is 30 seconds) to about 1,250 git calls and 11 seconds, with the same message.
+
+Holds (requirements UP-10 and UP-11): a project in the middle of a milestone should not be asked for pages after every commit, because its pages are written once, when the milestone closes. `wiki hold PROJECT -m "reason"` writes a small marker file, `holds/PROJECT.json` in the state folder, with the reason, the start time and an expiry (12 hours by default, at most 72; `--hours N` changes it). While the marker is active, the hook does not demand pages for the code of that project (PROJECT is the repository folder name under `~/dev`) and, instead, prints one line naming the project, when the hold started and ends, the reason and how many pages it holds back. Other projects are demanded as usual, and the line is added to their message. A hold only changes what the hook says: the publish stamp does not move and a `wiki publish` still keeps it where it is while those pages are behind, so the pages stay pending and come back by themselves after `wiki release PROJECT` or at the expiry. That expiry is also what recovers a session that crashed without releasing. A marker is written by rename; a missing, empty, torn, foreign or unreadable marker holds nothing, so a broken file can only cost a reminder, never hide an obligation. `wiki hold` with no project lists the markers (active, expired, unreadable), and a hold for a name no page uses as a source is refused, because it would change nothing. The hold is set by hand; no tool sets it automatically.
+
+Speed, second round (requirement UP-12): measured on the real tree on 2026-11-18, one run still started about 1,950 git programs and took 18 seconds on an idle laptop (about 4 seconds of that was the hook's own work, the rest waiting for git), so a busy machine could pass the 30-second limit; nine runs were cancelled by the limit between 2026-11-14 and 2026-11-16. Half of those programs were `git rev-parse --show-toplevel`, asked once per source although many sources share a folder. The hook now finds the top folder of a git working tree by walking up to the nearest `.git` entry (a folder, or a file in a linked worktree), and starts the independent `git log` questions of all pages together (eight at a time) and files the answers in the same cache. The message is byte for byte the same as before; a run takes about 2.5 seconds.
 
 ## Where it sits in the pipeline
 It runs at the end of every turn, next to the memory's [[hook-stop]].

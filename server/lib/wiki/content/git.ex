@@ -4,13 +4,36 @@ defmodule Wiki.Content.Git do
   @doc "Env that unsets the repository variables git exports inside hooks, so a call acts on the repo it is given."
   def env, do: [{"GIT_DIR", nil}, {"GIT_WORK_TREE", nil}, {"GIT_INDEX_FILE", nil}]
 
-  def cmd(dir, args) do
-    Wiki.Content.Memo.fetch({:git, dir, args}, fn ->
-      case System.cmd("git", ["-C", dir | args], env: env(), stderr_to_stdout: true) do
-        {out, 0} -> String.trim(out)
-        _ -> nil
-      end
-    end)
+  def cmd(dir, args), do: Wiki.Content.Memo.fetch({:git, dir, args}, fn -> run(dir, args) end)
+
+  defp run(dir, args) do
+    case System.cmd("git", ["-C", dir | args], env: env(), stderr_to_stdout: true) do
+      {out, 0} -> String.trim(out)
+      _ -> nil
+    end
+  end
+
+  @doc """
+  Asks several independent read-only git questions at the same time and files the answers in the running `Memo`
+  cache, so the later `cmd/2` calls for the same `{dir, args}` cost nothing (UP-12). The answers are the ones
+  `cmd/2` would give; outside `Memo.run/1`, or when a helper fails, nothing happens and `cmd/2` asks on its own.
+  """
+  def prefetch(calls) do
+    alias Wiki.Content.Memo
+
+    if Memo.active?() do
+      todo = calls |> Enum.uniq() |> Enum.reject(fn {d, a} -> Memo.cached?({:git, d, a}) end)
+
+      todo
+      |> Task.async_stream(fn {d, a} -> {{:git, d, a}, run(d, a)} end,
+        max_concurrency: 8, timeout: 60_000, on_timeout: :kill_task, ordered: false)
+      |> Enum.each(fn
+        {:ok, {key, value}} -> Memo.put(key, value)
+        _ -> :ok
+      end)
+    end
+
+    :ok
   end
 
   @doc "Date (YYYY-MM-DD) of the first commit that added the path."

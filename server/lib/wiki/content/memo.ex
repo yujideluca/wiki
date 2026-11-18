@@ -40,4 +40,21 @@ defmodule Wiki.Content.Memo do
         end
     end
   end
+
+  @doc "True while a `run/1` is active in this process."
+  def active?, do: Process.get(@key) != nil
+
+  @doc "Stores an answer computed elsewhere (for example in a helper process); does nothing outside `run/1`."
+  def put(key, value) do
+    if cache = Process.get(@key), do: Process.put(@key, Map.put(cache, key, value))
+    :ok
+  end
+
+  @doc "True when `key` already has an answer in the running cache."
+  def cached?(key) do
+    case Process.get(@key) do
+      nil -> false
+      cache -> Map.has_key?(cache, key)
+    end
+  end
 end

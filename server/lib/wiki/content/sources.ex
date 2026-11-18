@@ -154,11 +154,43 @@ defmodule Wiki.Content.Sources do
     with {_, dir, path} <- resolve(source),
          full = real(Path.join(dir, path)),
          base = if(File.dir?(full), do: full, else: Path.dirname(full)),
-         {top, 0} <- System.cmd("git", ["-C", base, "rev-parse", "--show-toplevel"], env: Wiki.Content.Git.env(), stderr_to_stdout: true) do
-      top = String.trim(top)
+         top when is_binary(top) <- toplevel(base) do
       {top, Path.relative_to(full, top)}
     else
       _ -> nil
     end
+  end
+
+  # The top folder of the git working tree that holds `base`: the nearest folder upward with a `.git` entry (a folder,
+  # or a file in a linked worktree), as `git rev-parse --show-toplevel` answers, found without starting a program
+  # (UP-12). `base` is already a real path. nil when `base` does not exist or lies in no working tree.
+  defp toplevel(base) do
+    if File.dir?(base), do: Memo.fetch({:toplevel, base}, fn -> walk_up(base) end)
+  end
+
+  defp walk_up(dir) do
+    cond do
+      File.exists?(Path.join(dir, ".git")) -> dir
+      Path.basename(dir) == ".git" -> nil
+      dir == "/" -> nil
+      true -> walk_up(Path.dirname(dir))
+    end
+  end
+
+  @doc """
+  Starts, in parallel, the `git log` questions `Stale.pages/2` is about to ask for these sources (when no commit
+  bound `at` is given), so that they are answered at once and cached (UP-12). `page_files` are `{source list,
+  page file}` pairs.
+  """
+  def prefetch_changes(sources, wiki_repo) do
+    calls =
+      for source <- sources,
+          {repo, path} <- [git_location(source)] |> Enum.reject(&is_nil/1) do
+        if repo == wiki_repo and Regex.match?(~r{^content/[^/]+\.md$}, path),
+          do: {repo, ["log", "-60", "--format=%ct %H"] ++ ["--", path]},
+          else: {repo, ["log", "-1", "--format=%ct %H"] ++ ["--", path]}
+      end
+
+    Git.prefetch(calls)
   end
 end

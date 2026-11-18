@@ -72,12 +72,28 @@ defmodule Wiki.Content.Stale do
 
   def pages(store, opts \\ []) do
     ctx = context(store, opts)
+    if opts[:as_of] == nil, do: prefetch(ctx, store)
 
     for {id, page} <- Enum.sort(store.pages),
         sources = Page.list(page, "sources"),
         sources != [],
         entry = stale_entry(ctx, id, page, sources),
         do: entry
+  end
+
+  # Answers the `git log` questions of every reviewed page's sources at once (UP-12); the loop below then finds them cached.
+  defp prefetch(ctx, store) do
+    pages = for {_id, page} <- store.pages, Page.list(page, "sources") != [], Page.reviewed_at(page) != nil, do: page
+    Sources.prefetch_changes(Enum.flat_map(pages, &Page.list(&1, "sources")), ctx.repo)
+
+    if ctx.repo do
+      Git.prefetch(
+        for page <- pages do
+          rel = Path.relative_to(real(Path.join(store.dir, page.file)), ctx.repo)
+          {ctx.repo, ["log", "-1", "--format=%H", "-G^reviewed:", "--", rel]}
+        end
+      )
+    end
   end
 
   @doc """
@@ -298,30 +314,79 @@ defmodule Wiki.Content.Stale do
     end
   end
 
+  @doc "The Stop hook's message to block the stop with, or nil. See `hook_result/2` for the notice about holds."
   def hook_message(store, payload) do
+    case hook_result(store, payload) do
+      {:block, msg} -> msg
+      _ -> nil
+    end
+  end
+
+  @doc """
+  `{:block, message}` (exit 2), `{:notice, line}` (exit 0: pending work is held back by a hold, UP-10) or `:ok`.
+  A hold (`Wiki.Content.Hold`) removes the repository it names from the demand only; the publish stamp and every
+  other repository are untouched, and an expired or unreadable marker holds nothing.
+  """
+  def hook_result(store, payload) do
     session = payload["session_id"] || "unknown"
 
     cond do
-      payload["stop_hook_active"] == true -> nil
+      payload["stop_hook_active"] == true -> :ok
       true ->
-        case last_published() do
-          nil ->
-            # Never published (or the state was deleted): without a baseline the pages that are behind are the obligation.
-            case pages(store) do
-              [] -> nil
-              behind -> once_per_session(session, [{:stamp, "is missing", behind}], &format_invalid/1)
-            end
+        holds = Wiki.Content.Hold.active()
+        held = MapSet.new(holds, & &1["project"])
+        {demand, held_count} = demand(store, held)
+        notice = if holds != [] and map_size(held_count) > 0, do: Wiki.Content.Hold.notice(holds, held_count)
 
-          {:invalid, reason} ->
-            once_per_session(session, [{:stamp, reason, pages(store)}], &format_invalid/1)
+        message =
+          case demand do
+            {:invalid, reason, behind} -> once_per_session(session, [{:stamp, reason, behind}], &format_invalid/1)
+            [] -> nil
+            changes -> once_per_session(session, changes, &format/1)
+          end
 
-          since ->
-            case changes(store, since) do
-              [] -> nil
-              changes -> once_per_session(session, changes, &format/1)
-            end
+        cond do
+          message -> {:block, if(notice, do: message <> "\n" <> notice, else: message)}
+          notice -> {:notice, notice}
+          true -> :ok
         end
     end
+  end
+
+  # What is demanded now, without the held repositories, and how many pending pages and new files each hold kept out.
+  defp demand(store, held) do
+    case last_published() do
+      nil ->
+        # Never published (or the state was deleted): without a baseline the pages that are behind are the obligation.
+        {open, held_n} = split_pages(store, pages(store), held)
+        {if(open == [], do: [], else: {:invalid, "is missing", open}), held_n}
+
+      {:invalid, reason} ->
+        {open, held_n} = split_pages(store, pages(store), held)
+        {{:invalid, reason, open}, held_n}
+
+      since ->
+        {open, kept} = Enum.split_with(changes(store, since), fn {repo, _, _} -> not MapSet.member?(held, repo) end)
+        {open, Map.new(kept, fn {repo, stale, uncovered} -> {repo, length(stale) + length(uncovered)} end)}
+    end
+  end
+
+  # A page is held when every source repository it names is held (a page that also depends on other code stays demanded).
+  defp split_pages(store, behind, held) do
+    repos = fn id ->
+      case Map.get(store.pages, id) do
+        nil -> []
+        page -> for s <- Page.list(page, "sources"), [repo, _] <- [String.split(s, ":", parts: 2)], do: repo
+      end
+    end
+
+    {kept, open} =
+      Enum.split_with(behind, fn %{id: id} -> (r = repos.(id)) != [] and Enum.all?(r, &MapSet.member?(held, &1)) end)
+
+    counts =
+      Enum.reduce(kept, %{}, fn %{id: id}, acc -> Enum.reduce(Enum.uniq(repos.(id)), acc, &Map.update(&2, &1, 1, fn n -> n + 1 end)) end)
+
+    {open, counts}
   end
 
   defp format_invalid([{:stamp, reason, behind}]) do

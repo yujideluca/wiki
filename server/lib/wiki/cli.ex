@@ -10,9 +10,14 @@ defmodule Wiki.CLI do
                              comes only from --co-author or $WIKI_CO_AUTHOR (the committing session
                              supplies it), never a fixed name
       wiki hook-stop         Claude Code Stop hook (reads the hook JSON on stdin)
+      wiki hold PROJECT -m REASON [--hours N]
+                             tell the hook that PROJECT is inside a milestone: its pages are not demanded
+                             until `wiki release PROJECT` or the expiry (default 12 hours, at most 72)
+      wiki release PROJECT   end the hold of PROJECT; its pending pages are demanded again
+      wiki hold              list the holds (active, expired, unreadable)
       wiki help | --help     print this text and do nothing else
   """
-  alias Wiki.Content.{Store, Check, Build, Stale}
+  alias Wiki.Content.{Store, Check, Build, Stale, Hold}
 
   def main(args), do: System.halt(exec(args))
 
@@ -24,7 +29,7 @@ defmodule Wiki.CLI do
   def exec(args) do
     {opts, rest, invalid} =
       OptionParser.parse(args,
-        strict: [local: :boolean, message: :string, co_author: :string, help: :boolean],
+        strict: [local: :boolean, message: :string, co_author: :string, help: :boolean, hours: :float],
         aliases: [m: :message, h: :help]
       )
 
@@ -109,9 +114,63 @@ defmodule Wiki.CLI do
     end
 
     # One run asks the same git and path questions many times; the memo asks each once (UP-8).
-    case Wiki.Content.Memo.run(fn -> Stale.hook_message(Store.load(content_dir()), payload) end) do
-      nil -> 0
-      msg -> IO.puts(:stderr, msg) && 2
+    case Wiki.Content.Memo.run(fn -> Stale.hook_result(Store.load(content_dir()), payload) end) do
+      {:block, msg} -> IO.puts(:stderr, msg) && 2
+      {:notice, line} -> IO.puts(line) && 0
+      :ok -> 0
+    end
+  end
+
+  def run(["hold"], _opts) do
+    case Wiki.Content.Hold.all() do
+      [] -> IO.puts("no holds")
+      all ->
+        for entry <- all do
+          case entry do
+            {:active, h} -> IO.puts("active   #{h["project"]}: since #{Hold.stamp(h["started"])}, until #{Hold.stamp(h["expires"])}: #{h["reason"]}")
+            {:expired, h} -> IO.puts("expired  #{h["project"]}: ended #{Hold.stamp(h["expires"])} (ignored)")
+            {:broken, p} -> IO.puts("broken   #{p}: unreadable marker (ignored; `wiki release #{p}` removes it)")
+          end
+        end
+    end
+
+    0
+  end
+
+  def run(["hold", project], opts) do
+    hours = opts[:hours] || Hold.default_hours()
+
+    cond do
+      not Hold.valid_project?(project) ->
+        IO.puts(:stderr, "not a project name: #{project}")
+        2
+
+      hours <= 0 or hours > Hold.max_hours() ->
+        IO.puts(:stderr, "--hours must be above 0 and at most #{Hold.max_hours()}")
+        2
+
+      project not in Stale.covered_repos(Store.load(content_dir())) ->
+        IO.puts(:stderr, "no page names #{project} as a source repository, so a hold would change nothing")
+        1
+
+      true ->
+        case Hold.set(project, opts[:message], hours: hours) do
+          {:ok, h} ->
+            IO.puts("holding #{project} until #{Hold.stamp(h["expires"])}; `wiki release #{project}` ends it")
+            0
+
+          {:error, why} ->
+            IO.puts(:stderr, why)
+            1
+        end
+    end
+  end
+
+  def run(["release", project], _opts) do
+    case Hold.release(project) do
+      :ok -> IO.puts("released #{project}") && 0
+      :none -> IO.puts("no hold on #{project}") && 0
+      {:error, why} -> IO.puts(:stderr, why) && 1
     end
   end
 
