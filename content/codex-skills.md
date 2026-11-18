@@ -9,7 +9,7 @@ location: codex-skills:README.md
 fed_by: []
 feeds: [codex]
 sources: [codex-skills:README.md, codex-skills:manifest.json, codex-skills:DESIGN.md, codex-skills:pipeline-check.version, codex-skills:docs/WORKFLOW-AUDIT.md]
-reviewed: 2026-11-07T23:42Z
+reviewed: 2026-11-18T23:10Z
 ---
 
 ## What it is
@@ -68,7 +68,7 @@ ct -validates-> sk
 ct -installs, with backups-> lv
 
 ## What it does
-Keeps 25 adaptations, complete source baselines and content fingerprints. A fingerprint is a calculated value that detects changed files. Reports source changes without overwriting adaptations. Vendor document skills remain under their existing owners. On 2026-11-06 the adaptations of wiki-page-writer and skill-forge were updated by hand (the wiki is English only) without refreshing their source baselines (the recorded copies of the Claude originals), so `skillsctl status` reports them, and reparo-kubuntu, as `changed` until they are reviewed.
+Keeps 25 adaptations, complete source baselines and content fingerprints. A fingerprint is a calculated value that detects changed files. Reports source changes without overwriting adaptations. Vendor document skills remain under their existing owners. On 2026-11-06 the adaptations of wiki-page-writer and skill-forge were updated by hand (the wiki is English only) without refreshing their source baselines (the recorded copies of the Claude originals), so `skillsctl status` reports them as `changed` until they are reviewed; on 2026-11-18 it reports the same for google-workspace, reparo-kubuntu and revisao-manutencao, whose Claude originals changed. On 2026-11-18 the adaptation of the ownership protocol of the [[retired-workflow-pipeline]] was removed (its original was removed from the Claude app), which left 25, and deutsch-gespraech-memory was brought to the app's version 2 with a refreshed baseline.
 
 ## How it does it
 Repository: `yujideluca/codex-skills`; folder: `~/dev/codex-skills`. Python manages validation and reversible installation through [[codex-skillsctl]]. The quality gate, a command that decides whether a change passes, is `tools/quality_gate.sh`; GitHub runs it on every push. Start with README.md and AGENTS.md.

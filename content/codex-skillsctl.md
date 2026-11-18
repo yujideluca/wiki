@@ -9,7 +9,7 @@ location: codex-skills:tools/skillsctl.py
 fed_by: []
 feeds: []
 sources: [codex-skills:tools/skillsctl.py, codex-skills:manifest.json, codex-skills:DESIGN.md]
-reviewed: 2026-11-06T22:03Z
+reviewed: 2026-11-18T23:10Z
 ---
 
 ## What it is
