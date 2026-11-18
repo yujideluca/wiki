@@ -9,7 +9,7 @@ location: wiki:server/lib/wiki/cli.ex
 fed_by: [wiki-build, wiki-check, wiki-stale]
 feeds: [github]
 sources: [wiki:server/lib/wiki/cli.ex, wiki:server/lib/wiki/content/memo.ex]
-reviewed: 2026-11-06T21:25Z
+reviewed: 2026-11-18T03:57Z
 ---
 
 ## What it is
@@ -28,7 +28,7 @@ w -pushes to-> h
 
 ### Containers
 person c: Claude Code | [[claude-code]]
-container pa: Command parser — publish, check, build, hook-stop
+container pa: Command parser — publish, check, build, hook-stop, hold, release
 container ch: Check — runs in local mode first | [[wiki-check]]
 container bu: Build — turns pages into data files | [[wiki-build]]
 container gi: Git helper — commits only content/, never force-pushes
@@ -51,7 +51,7 @@ gi -commits-> pg
 gi -pushes to-> h
 
 ## What it does
-`wiki publish` is the end-of-task step. It runs [[wiki-check]] in local mode, then [[wiki-build]], then commits only the `content/` folder (so unrelated work in the repository is never swept in) and pushes it to the public repository on [[github]], and finally records the time of the publish for the [[wiki-hook-stop]]. It refuses on any failure. Every `git` command it runs first unsets `GIT_DIR`, `GIT_WORK_TREE` and `GIT_INDEX_FILE` (variables that git itself sets inside hooks such as pre-push), so the command always acts on the repository it was given and never on the one that started the hook.
+`wiki publish` is the end-of-task step. It runs [[wiki-check]] in local mode, then [[wiki-build]], then commits only the `content/` folder (so unrelated work in the repository is never swept in) and pushes it to the public repository on [[github]], and finally records the time of the publish for the [[wiki-hook-stop]]. It refuses on any failure. Two small commands belong to the Stop hook: `wiki hold PROJECT -m "reason" [--hours N]` tells the hook that a project is inside an open milestone, so its pages are not demanded until `wiki release PROJECT` or the expiry (12 hours by default, 72 at most), and `wiki hold` alone lists the holds ([[wiki-hook-stop]]). Every `git` command it runs first unsets `GIT_DIR`, `GIT_WORK_TREE` and `GIT_INDEX_FILE` (variables that git itself sets inside hooks such as pre-push), so the command always acts on the repository it was given and never on the one that started the hook.
 
 ## How it does it
 It is built with `mix escript.build` from the server project; the variable `WIKI_ROOT` points at the repository (default `~/dev/wiki`). It never force-pushes. The commit's `Co-Authored-By` line (the git trailer that names a co-author of the commit) comes only from the session that publishes: `--co-author "Name <email>"` or the variable `WIKI_CO_AUTHOR`. With neither there is no such line, and a value that is not a single `Name <email>` line is refused. Until 2026-10-26 the command added a fixed "Claude Opus 5.5" line to every publish, which was wrong for commits made by Codex, Sonnet or Giovanni; the command cannot detect the model itself, so each session passes the attribution line it was given.
