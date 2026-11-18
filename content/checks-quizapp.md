@@ -7,8 +7,8 @@ project: quizapp
 status: active
 fed_by: []
 feeds: []
-sources: [QuizApp:tools/quality_gate.sh, QuizApp:tools/check_fsp_cases.py, QuizApp:pipeline-check.toml, QuizApp:CLAUDE.md, QuizApp:.github/workflows/quality-gate.yml, QuizApp:tools/check_coverage.py, QuizApp:tools/mutation_check.py, QuizApp:tools/check_tests_updated.sh, QuizApp:tools/check_web_sync.sh]
-reviewed: 2026-11-18T14:23Z
+sources: [QuizApp:tools/quality_gate.sh, QuizApp:tools/push_main.sh, QuizApp:tools/check_fsp_cases.py, QuizApp:pipeline-check.toml, QuizApp:CLAUDE.md, QuizApp:.github/workflows/quality-gate.yml, QuizApp:tools/check_coverage.py, QuizApp:tools/mutation_check.py, QuizApp:tools/check_tests_updated.sh, QuizApp:tools/check_web_sync.sh]
+reviewed: 2026-11-18T14:26Z
 ---
 
 ## What it is
