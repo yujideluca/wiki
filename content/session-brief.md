@@ -8,7 +8,7 @@ status: active
 fed_by: [hook-session-start, mem-pendency, memory-fold, mem-rules]
 feeds: [claude-code, remote-assistant]
 sources: [workflow-memory:mem/hooks.py, workflow-memory:mem/project.py, workflow-memory:mem/tags.py, workflow-memory:mem/tags.toml, workflow-memory:docs/adr/0008-router-rules-as-modules.md, workflow-memory:mem/cli.py]
-reviewed: 2026-11-07T23:44Z
+reviewed: 2026-11-18T05:58Z
 ---
 
 ## What it is
