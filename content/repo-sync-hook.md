@@ -9,7 +9,7 @@ location: workflow-memory:scripts/repo_sync.py
 fed_by: [claude-code-settings, workflow-memory]
 feeds: [claude-code]
 sources: [workflow-memory:scripts/repo_sync.py, workflow-memory:tests/test_repo_sync.py]
-reviewed: 2026-11-18T06:30Z
+reviewed: 2026-11-18T13:49Z
 memory: []
 ---
 
@@ -26,7 +26,7 @@ For each folder in `~/dev` that is a git repository it reports: no remote at all
 Last line of defence after the work: the wiki hook says which pages are behind, this one says which repositories are behind.
 
 ## Notes
-Since 2026-11-18 the same command is also a Stop hook of Codex (`~/.codex/hooks.json`, 20 seconds at most). Whether Codex shows a `systemMessage` on its screen was not checked. Repositories that are shared by several concurrent sessions show other sessions' unfinished files; the age hint is the only way to tell them apart.
+Since 2026-11-18 the same command is also a Stop hook of Codex (`~/.codex/hooks.json`, 20 seconds at most). It is the last Stop entry there on purpose: Codex records its trust in each hook by position (`hooks.state` in `~/.codex/config.toml`), so a new entry in the middle would shift a trusted hook to an untrusted place. The new entry has no trust record yet; whether Codex runs it before Giovanni approves it, and whether it shows a `systemMessage` on its screen, was not checked. Repositories that are shared by several concurrent sessions show other sessions' unfinished files; the age hint is the only way to tell them apart.
 
 ## Who receives its output
 Giovanni, on the screen of the session that is stopping. The assistant itself does not receive the text (only a hook that blocks the stop can speak to the assistant); it runs `repo_sync.py report` at the end of a task because the memory rule `git.sync-check` says so.
