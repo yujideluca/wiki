@@ -9,7 +9,7 @@ location: workflow-memory:bin/mem
 fed_by: [claude-code, codex, giovanni, remote-assistant]
 feeds: [events-log]
 sources: [workflow-memory:bin/mem, workflow-memory:mem/__main__.py, workflow-memory:mem/install.py, workflow-memory:mem/cli.py, workflow-memory:mem/tags.py, workflow-memory:docs/adr/0008-router-rules-as-modules.md]
-reviewed: 2026-11-18T14:23Z
+reviewed: 2026-11-18T21:59Z
 ---
 
 ## What it is
@@ -67,7 +67,7 @@ It is the door through which the memory is written on the laptop. The hooks call
 ## Functions
 - `mem add --type pref --owner user --key topic "rule"`: record a correction or lasting preference
 - `mem feedback REF wrong|stale|helpful|not_helpful`: rate an entry
-- `mem forget REF`, `mem done REF`, `mem archive REF`, `mem reopen REF`: delete, solve, park, bring back
+- `mem forget REF`, `mem done REF`, `mem archive REF`, `mem reopen REF`: delete, solve, park, bring back Since 2026-11-18 these commands (and `mem claim`, `mem feedback`) are refused when REF names no entry or when several entries end with it, which happens with entries the harvester wrote for the same key; the refusal lists the full names, and the full name of one entry is then given instead of REF. Before that date such a command wrote an event that changed nothing and said nothing.
 - `mem claim REF`: claim a task (the earliest claim wins)
 - `mem pending`, `mem scope`: list and scope open items
 - `mem brief`, `mem search "words"`: print the brief (the router, the tag index and the open items; `--full` prints the old ranked list of rules), full-text search
