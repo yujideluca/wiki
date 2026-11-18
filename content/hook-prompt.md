@@ -9,7 +9,7 @@ location: workflow-memory:mem/hooks.py
 fed_by: [claude-code-settings]
 feeds: [mem-harvester]
 sources: [workflow-memory:mem/hooks.py, workflow-memory:docs/adr/0008-router-rules-as-modules.md, workflow-memory:mem/tags.py]
-reviewed: 2026-11-18T06:24Z
+reviewed: 2026-11-18T14:01Z
 ---
 
 ## What it is
@@ -19,7 +19,7 @@ A hook is a small program that [[claude-code]] runs automatically at a certain e
 It passes the text of the message to the [[mem-harvester]], which looks for a preference that Giovanni has stated and records it, so that a rule said once is not forgotten. Since 2026-11-07 the hook also prints one line for every message, the router reminder: "mem router: first classify this message into tags (deploy, outward, …) and run mem rules TAG [TAG ...] for tags not loaded yet in this conversation, before skills, files or other commands." Whatever a hook prints here goes into the model's context, so the reminder reaches the chat even days after it started, when the start-up text is long gone. The harvesting itself stays silent.
 
 ## How it does it
-It is designed never to get in the way. Any error goes to the hook log, and the program always ends with exit code 0 (the number a program returns to say "all fine"), so a failure here can never block a message from reaching Claude. Messages longer than 1500 characters are not read for preferences, because they are pasted documents or prompts written by a program.
+It is designed never to get in the way. Any error goes to the hook log, and the program always ends with exit code 0 (the number a program returns to say "all fine"), so a failure here can never block a message from reaching Claude. Messages longer than 1500 characters are not read for preferences, because they are pasted documents or prompts written by a program. A message that is not text at all (a number, a list, nothing) is skipped too; until 2026-11-18 it made the preference reading fail with an error in the log, 45 times.
 
 ## Where it sits in the pipeline
 Between Giovanni's message and the model: the message is read on the way through.

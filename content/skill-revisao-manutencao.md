@@ -9,7 +9,7 @@ location: home:.claude/skills/revisao-manutencao
 fed_by: [pipeline-check]
 feeds: [monthly-architecture-review, skill-gerar-teste-automatizado]
 sources: [home:.claude/skills/revisao-manutencao/SKILL.md, home:.agents/skills/revisao-manutencao/SKILL.md]
-reviewed: 2026-10-25T20:41Z
+reviewed: 2026-11-18T14:01Z
 ---
 
 ## What it is
@@ -63,6 +63,8 @@ Never measure by hand: no `wc`, no `git log` counting, no re-running the gate to
 7. **Output.** Reply in the language of Giovanni's message. Lead with the verdict (how many failures, warnings, skipped), then the proposal table, then the "machine cannot see" findings, then what needs a decision from Giovanni. Define each technical term on first use.
 
 ## Notes
+Changed on 2026-11-18 after an audit of the hooks and the CI: a folder Giovanni declared local-only is not a gap; an unprotected `main` is a P1 only for a public repository, because a private one cannot be protected on the free GitHub plan and relies on its pre-push hook; and the repo-sync report names a clone whose hook is switched off. The Codex adaptation below still has the earlier wording.
+
 
 Codex now uses the independently maintained version in [[codex-skills]]. Its complete source below includes the Codex-specific execution rules; the Claude procedure above remains the Claude version. Browser, memory and connector behavior can differ between versions.
 
@@ -72,7 +74,7 @@ The following blocks contain the complete original `SKILL.md` files, including t
 
 #### Claude: `home:.claude/skills/revisao-manutencao/SKILL.md`
 
-```skill-source home:.claude/skills/revisao-manutencao/SKILL.md 2a5174eb299fddbe05f8431f1e8a14a3c6ecb1ee8edbd9ba31706d706b34a4f8
+```skill-source home:.claude/skills/revisao-manutencao/SKILL.md 4951ae3394917153042903b5783953cc929d20f8d09523838fda76d9f515a6a6
 ---
 name: revisao-manutencao
 description: "Use in Claude Code for the monthly architecture review of Giovanni's software projects (open item in workflow-memory, #4dcb2c) and at the end of a task in a software project (revisão mensal, revisão de manutenção, dívida técnica, debt, pipeline-check, report.json). Runs pipeline-check, reads its report.json, proposes debt issues P1-P3 and a Preventive decision-log row. Not for writing code, not for a single bug, not for non-software work."
@@ -91,9 +93,9 @@ The program measures, this skill judges (ADR-0013). **Never measure by hand**: n
 ## Steps (per project; at the monthly review, every project in `~/dev` and the program repository `pipeline-check` itself)
 
 1. **Run and read.** `tools/pipeline-check.sh` in the project (local mode), then read `build/pipeline-check/report.json`. Quote the mode that ran. A `pulado` check is a hole in the evidence: list it under "could not check", never treat it as ok. Project without `pipeline-check.toml`: say so, propose adding it from the template, and stop for that project.
-   Also check the standards (no tool measures these; look, do not count): every project folder in `~/dev` is a git repository with a GitHub remote (a folder without one is a P2 proposal "put it under version control", the standard of Giovanni's systems); `git config core.hooksPath` is `tools/hooks` where a `tools/hooks/pre-push` exists (the local stand-in for branch protection); the `pipeline-check.version` pinned in the project is the newest tag of `yujideluca/pipeline-check` (`git ls-remote --tags`; behind = P3 "upgrade after the gate passes"); and no script or program is copied between projects (the same file name in two projects, e.g. `check_traceability.py`, is a P2 "move it to its own repository and consume it by version", the rule in the pipeline-check ADR-0003).
+   Also check the standards (no tool measures these; look, do not count): every project folder in `~/dev` is a git repository with a GitHub remote (a folder without one is a P2 proposal "put it under version control", the standard of Giovanni's systems; not a gap when Giovanni declared it local-only, which shows as `git config repo-sync.local` in that folder); `git config core.hooksPath` is `tools/hooks` where a `tools/hooks/pre-push` exists (the local stand-in for branch protection; `python3 -I ~/dev/workflow-memory/scripts/repo_sync.py report` lists a clone where it is off); the `pipeline-check.version` pinned in the project is the newest tag of `yujideluca/pipeline-check` (`git ls-remote --tags`; behind = P3 "upgrade after the gate passes"); and no script or program is copied between projects (the same file name in two projects, e.g. `check_traceability.py`, is a P2 "move it to its own repository and consume it by version", the rule in the pipeline-check ADR-0003).
 2. **One proposal per `aviso` or `falha`.** Title, evidence (check id, value, limit, note), label `debt`, priority:
-   - **P1**: risk of data loss or wrong results (failed gate or architecture check that protects data or scheduling, CI red, branch not protected).
+   - **P1**: risk of data loss or wrong results (failed gate or architecture check that protects data or scheduling, CI red, a public repository whose `main` is not protected; a private repository cannot be protected on the free GitHub plan, so there the P1 is a `tools/hooks/pre-push` that is missing or switched off).
    - **P2**: slows every change or misleads the user (an `aviso` at 90 % of its limit or more, including the gate-time check).
    - **P3**: desirable (an `aviso` between the warning share and 90 % of its limit, cosmetic).
    A `falha` is never below P2. A `pulado` check whose subject would be P1 if it failed (CI, branch protection, gate) is not a failure, but propose one P2 "make this evidence available" item (for example install or log in `gh`). Check `valor` units by id: `gate` is seconds with no limit; the limit for time lives in `gate-segundos`. Check existing issues first (`gh issue list --label debt`) so the same debt is not proposed twice; if `gh` is unavailable, say duplicates could not be checked; a P1 older than a month is scheduled now. Format the list as a table: issue title | priority | evidence | proposed fix.
