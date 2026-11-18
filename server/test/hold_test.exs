@@ -114,6 +114,26 @@ defmodule Wiki.HoldTest do
   end
 
   # REQ UP-11
+  test "a marker that would hold longer than the maximum, or starts in the future, holds nothing", %{dev: dev, store: store} do
+    change(dev, "r1")
+    File.mkdir_p!(Hold.dir())
+    file = Path.join(Hold.dir(), "r1.json")
+    now = System.os_time(:second)
+    too_long = Hold.max_hours() * 3600 + 1
+
+    for {started, expires} <- [{now - 10, now + 10 * 365 * 86_400}, {now, now + too_long}, {now + 3600, now + 7200}] do
+      File.write!(file, JSON.encode!(%{"project" => "r1", "reason" => "x", "started" => started, "expires" => expires}))
+      assert [{:broken, "r1"}] = Hold.all(), "#{started}..#{expires}"
+      assert {:block, msg} = ask(store, "long-#{expires}")
+      assert msg =~ "update pages a"
+    end
+
+    File.write!(file, JSON.encode!(%{"project" => "r1", "reason" => "x", "started" => now, "expires" => now + Hold.max_hours() * 3600}))
+    assert [{:active, _}] = Hold.all()
+    assert {:error, _} = Hold.set("r1", "x", hours: Hold.max_hours() + 1)
+  end
+
+  # REQ UP-11
   test "two sessions at once, one holding: nothing is overwritten and hook_blocked stays whole", %{dev: dev, store: store} do
     change(dev, "r1")
     change(dev, "r2")

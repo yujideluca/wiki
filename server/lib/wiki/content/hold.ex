@@ -6,7 +6,7 @@ defmodule Wiki.Content.Hold do
   session that crashes without releasing is recovered by the expiry alone.
 
   A marker is written to a temporary file and renamed (a reader never sees half of it). A missing, empty, torn or
-  otherwise unreadable marker is never honoured: the hook then behaves exactly as if there were no hold, so a broken
+  otherwise unreadable marker, and one that spans more than the maximum (72 hours) or starts in the future, is never honoured: the hook then behaves exactly as if there were no hold, so a broken
   file can only ever cost a reminder, never hide an obligation (UP-11). A hold never moves the publish stamp or
   clears anything: the pages stay pending and are demanded again when the hold is released or expires.
   """
@@ -34,7 +34,7 @@ defmodule Wiki.Content.Hold do
 
     cond do
       not valid_project?(project) -> {:error, "not a project name: #{inspect(project)}"}
-      not (is_number(hours) and hours > 0) -> {:error, "the hours must be a positive number"}
+      not (is_number(hours) and hours > 0 and hours <= @max_hours) -> {:error, "the hours must be above 0 and at most #{@max_hours}"}
       true ->
         hold = %{"project" => project, "reason" => reason || "", "started" => started, "expires" => started + round(hours * 3600)}
         tmp = file(project) <> ".tmp#{System.pid()}.#{System.unique_integer([:positive])}"
@@ -83,7 +83,10 @@ defmodule Wiki.Content.Hold do
          {:ok, raw} <- File.read(file(project)),
          true <- String.valid?(raw),
          {:ok, %{"project" => ^project, "started" => s, "expires" => e} = hold} <- JSON.decode(raw),
-         true <- is_integer(s) and is_integer(e) and e > s do
+         true <- is_integer(s) and is_integer(e) and e > s,
+         # A marker no command could have written (longer than the maximum, or starting in the future) is not
+         # honoured: a hand-made or damaged file must not silence the hook for years.
+         true <- e - s <= @max_hours * 3600 and s <= now + 60 do
       if e > now, do: {:active, hold}, else: {:expired, hold}
     else
       _ -> {:broken, project}
