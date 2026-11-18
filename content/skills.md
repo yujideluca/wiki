@@ -9,7 +9,7 @@ location: home:.claude/skills
 fed_by: []
 feeds: []
 sources: [home:.claude/skills, machine-bootstrap:mb.toml]
-reviewed: 2026-11-18T23:10Z
+reviewed: 2026-11-18T23:31Z
 ---
 
 ## What it is
