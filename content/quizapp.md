@@ -9,7 +9,7 @@ location: QuizApp:
 fed_by: [claude-code, project-template]
 feeds: [quizweb]
 sources: [QuizApp:DESIGN.md, QuizApp:CLAUDE.md, QuizApp:docs/adr, QuizApp:docs/REQUIREMENTS.md, QuizApp:tools/quality_gate.sh, QuizApp:app/build.gradle.kts]
-reviewed: 2026-11-08T00:15Z
+reviewed: 2026-11-18T06:30Z
 ---
 
 ## What it is
@@ -107,7 +107,7 @@ How this project follows the golden path of [[project-template]].
 40 requirements in `docs/REQUIREMENTS.md` ([[quizapp-requirements]]), grouped by prefix (spacing rules SP, scheduling and daily goal DG, question pool QP, backup PE, updates UP, FSP cases FS and more). Each has a test tagged `REQ <ID>`, and the traceability check ([[check-traceability]]) fails when one has none.
 
 ### Quality gate
-[[quizapp-quality-gate]] is one script, seven steps, after a first check (since 2026-11-07) that tests make no temporary folder by hand ([[tmp-junk]]): core and app tests with coverage; coverage thresholds for the logic packages; the web tests; the conformance vectors identical in app and web; requirement traceability; Android lint; the fitness functions, the question pool manifest and the template check of the FSP cases ([[check-fsp-cases]]). Before a promotion a mutation check also runs (faults planted on purpose must be caught).
+[[quizapp-quality-gate]] is one script, seven steps, after a first check (since 2026-11-07) that tests make no temporary folder by hand ([[tmp-junk]]): core and app tests with coverage; coverage thresholds for the logic packages; the web tests; the conformance vectors identical in app and web; requirement traceability; Android lint; the fitness functions, the question pool manifest, the template check of the FSP cases ([[check-fsp-cases]]) and the tests of the pre-push check of the public feed ([[release-feed]]). Before a promotion a mutation check also runs (faults planted on purpose must be caught).
 
 ### Continuous integration
 Continuous integration (CI) means automatic checks on every push. The workflow `quality-gate.yml` runs the gate on GitHub for every push ([[quizapp-ci]]); after pushing, the run must be green.

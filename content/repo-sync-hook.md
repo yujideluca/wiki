@@ -9,7 +9,7 @@ location: workflow-memory:scripts/repo_sync.py
 fed_by: [claude-code-settings, workflow-memory]
 feeds: [claude-code]
 sources: [workflow-memory:scripts/repo_sync.py, workflow-memory:tests/test_repo_sync.py]
-reviewed: 2026-11-18T06:23Z
+reviewed: 2026-11-18T06:30Z
 memory: []
 ---
 

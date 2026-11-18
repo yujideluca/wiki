@@ -7,8 +7,8 @@ project: none
 status: active
 fed_by: []
 feeds: []
-sources: [pipeline-check:tools/quality_gate.sh, pipeline-check:pipeline-check.toml, pipeline-check:CLAUDE.md, pipeline-check:.github/workflows/quality-gate.yml, pipeline-check:mutants.py, pipeline-check:docs/adr, pipeline-check:tests/common/mod.rs]
-reviewed: 2026-11-18T06:23Z
+sources: [pipeline-check:tools/quality_gate.sh, pipeline-check:tools/hooks/pre-push, pipeline-check:pipeline-check.toml, pipeline-check:CLAUDE.md, pipeline-check:.github/workflows/quality-gate.yml, pipeline-check:mutants.py, pipeline-check:docs/adr, pipeline-check:tests/common/mod.rs]
+reviewed: 2026-11-18T06:30Z
 ---
 
 ## What it is

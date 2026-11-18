@@ -10,7 +10,7 @@ location: status-quo:crates/scratch.rs
 fed_by: []
 feeds: []
 sources: [status-quo:crates/scratch.rs, status-quo:tools/quality_gate.sh, pipeline-check:tests/common/mod.rs, pipeline-check:tools/quality_gate.sh, QuizApp:tools/quality_gate.sh, QuizApp:app/src/test/java/dev/yuji/quiz/data/ContentUpdaterTest.kt, wiki-bench:map_bench.py]
-reviewed: 2026-11-07T18:36Z
+reviewed: 2026-11-18T06:30Z
 ---
 
 ## What it is

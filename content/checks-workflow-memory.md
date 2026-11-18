@@ -8,7 +8,7 @@ status: active
 fed_by: []
 feeds: []
 sources: [workflow-memory:tests, workflow-memory:tools/hooks/pre-push, workflow-memory:tools/pipeline-check.sh, workflow-memory:tests/__init__.py, workflow-memory:tests/test_hermetic.py, workflow-memory:tools/quality_gate.sh, workflow-memory:pipeline-check.toml, workflow-memory:.github/workflows/mem.yml, workflow-memory:.github/workflows/quality-gate.yml, workflow-memory:mem/validate.py, workflow-memory:docs/adr, workflow-memory:tests/test_tags.py]
-reviewed: 2026-11-18T06:23Z
+reviewed: 2026-11-18T06:30Z
 ---
 
 ## What it is
