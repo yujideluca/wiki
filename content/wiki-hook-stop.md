@@ -9,7 +9,7 @@ location: wiki:server/lib/wiki/content/stale.ex
 fed_by: [claude-code-settings]
 feeds: [claude-code]
 sources: [wiki:server/lib/wiki/content/stale.ex, wiki:server/lib/wiki/content/memo.ex, wiki:server/lib/wiki/content/hold.ex, wiki:server/test/memo_test.exs, wiki:server/test/hold_test.exs, wiki:server/test/build_test.exs, wiki:docs/REQUIREMENTS.md, wiki:docs/adr/0009-stale-review-claims-and-shared-publish-stamp.md, home:.claude/settings.json, home:.codex/hooks.json]
-reviewed: 2026-11-18T03:57Z
+reviewed: 2026-11-18T05:33Z
 ---
 
 ## What it is
