@@ -9,7 +9,7 @@ location: codex-skills:skills/deutsch-gespraech-memory/SKILL.md
 fed_by: []
 feeds: []
 sources: [codex-skills:skills/deutsch-gespraech-memory/SKILL.md, codex-skills:sources/deutsch-gespraech-memory/SKILL.md]
-reviewed: 2026-10-25T20:41Z
+reviewed: 2026-11-18T22:56Z
 ---
 
 ## What it is
@@ -57,7 +57,7 @@ Codex and the user receive the result. Connected services receive only explicitl
 ## Notes
 The blocks retain the complete original sources, including descriptions, workflow, examples and limits. Referenced auxiliary resources are not embedded.
 
-````skill-source codex-skills:sources/deutsch-gespraech-memory/SKILL.md 10edd1cdc00c74be7faa3c01782010fd5d7f953813d57a312ef5fe6f94a49bc1
+````skill-source codex-skills:sources/deutsch-gespraech-memory/SKILL.md 3b172a9d541956c75e789385cb87d21eb5a9ec6e33de8a514a7faff6f76a5c46
 ---
 name: "deutsch-gespraech-memory"
 description: "Memory for Giovanni's Deutsch-Gespräch project only: at the first message of every chat in that project, load the conversation state from the Google Doc 'deutsch-gespraech-state'; on 'Ende' save the session there; on 'Gedächtnis?' or 'Vergiss …' show or delete stored items. Not for correcting German texts, exercises or exam simulations outside that project (alemao-goethe-fsp)."
@@ -67,7 +67,7 @@ description: "Memory for Giovanni's Deutsch-Gespräch project only: at the first
 
 Lineage: origin=gui; base=new (2026-10-12, Drive version)
 
-Interop: role = domain (narrow); owns = the state Doc, its format and writes, the "Ende"/"Gedächtnis?"/"Vergiss" commands; defers to = google-workspace (Docs editing rules), gui-code-protocol (safety rules section 8; the GitHub copy is made by the app's daily sync, never by a chat), alemao-goethe-fsp (Leitner log alemao-erros.jsonl, full corrections after "erklär"/"Übung"); honors = reply-language rule (chat in German unless he writes Portuguese/English), flags !! *** ...
+Interop: role = domain (narrow); owns = the state Doc, its format and writes, the "Ende"/"Gedächtnis?"/"Vergiss" commands; defers to = google-workspace (Docs editing rules), alemao-goethe-fsp (Leitner log alemao-erros.jsonl, full corrections after "erklär"/"Übung"); honors = reply-language rule (chat in German unless he writes Portuguese/English), flags !! *** ...
 
 Store: Google Doc `deutsch-gespraech-state`, documentId `1loDsj3hUAfup3yTuzI2dNA_i2UpY8v-EkSsl2vcgUm4`. If that ID fails, Drive search `title = 'deutsch-gespraech-state'`; if several match, ask him which one.
 The persona is in the project knowledge (persona.md), already in context: do not load it.
@@ -86,7 +86,7 @@ No tool calls for memory. Keep a private running list: topics, target structure 
 
 ## 3. "Ende" (or "Tschüss, speichern")
 1. German wrap-up: max 5 corrected patterns as `falsch → richtig`, plus the target structure of the day.
-2. Filter before writing (stricter rule wins, gui-code-protocol section 8). Never store: health or body data (weight, injuries, symptoms, mood), finances, CV/application documents or their details, real exam scores, passwords/tokens/IDs, private details about other people. A neutral topic label may stay ("Bewerbung in Deutschland"), never its details.
+2. Filter before writing. Never store: health or body data (weight, injuries, symptoms, mood), finances, CV/application documents or their details, real exam scores, passwords/tokens/IDs, private details about other people. A neutral topic label may stay ("Bewerbung in Deutschland"), never its details.
 3. Build the new state: `sessionsTotal`+1; prepend the session to `sessions`; merge errors into `recurringErrors` (same `padrao` → count+1); update `targetStructures`, `topicsDone` and the fact/joke/thread lists; rewrite `summary` (German, ≤ 600 characters, what a friend would remember).
 4. Caps: `sessions` ≤ 10 (older ones live on only in `summary`), `topicsDone` ≤ 20, `aboutGiovanni` ≤ 15, `runningJokes` ≤ 5, `openThreads` ≤ 3 (drop resolved), `recurringErrors` ≤ 10 by count. Whole line < 12 KB.
 5. Write, guarded (google-workspace rule): `read_doc` again → take `revisionId` and the body's last `endIndex` (E). One `update_doc` batch with `writeControl.requiredRevisionId` = that revisionId:
@@ -115,7 +115,7 @@ No tool calls for memory. Keep a private running list: topics, target structure 
 `padrao` and `categoria` use alemao-goethe-fsp's labels so the logs merge.
 ````
 
-````skill-source codex-skills:skills/deutsch-gespraech-memory/SKILL.md c684c7b81f055b3005374a05f81a425e6aec2c721e07bf43a27cb35fb50308cf
+````skill-source codex-skills:skills/deutsch-gespraech-memory/SKILL.md 49d5a014ce02d1e8b3a94a0fc60cc1bd602015bc9d84157e9c5e5a07c64d478e
 ---
 name: "deutsch-gespraech-memory"
 description: "Memory for Giovanni's Deutsch-Gespräch project only: at the first message of every chat in that project, load the conversation state from the Google Doc 'deutsch-gespraech-state'; on 'Ende' save the session there; on 'Gedächtnis?' or 'Vergiss …' show or delete stored items. Not for correcting German texts, exercises or exam simulations outside that project (alemao-goethe-fsp)."
@@ -123,9 +123,9 @@ description: "Memory for Giovanni's Deutsch-Gespräch project only: at the first
 
 # Deutsch-Gespräch: memory
 
-Lineage: origin=claude; base=sha256:10edd1cdc00c74be7faa3c01782010fd5d7f953813d57a312ef5fe6f94a49bc1; adaptation=codex
+Lineage: origin=claude; base=sha256:3b172a9d541956c75e789385cb87d21eb5a9ec6e33de8a514a7faff6f76a5c46; adaptation=codex
 
-Interop: role = domain (narrow); owns = the state Doc, its format and writes, the "Ende"/"Gedächtnis?"/"Vergiss" commands; defers to = google-workspace (Docs editing rules), gui-code-protocol (safety rules section 8; Claude backups remain owned by Claude; Codex never writes them), alemao-goethe-fsp (Leitner log alemao-erros.jsonl, full corrections after "erklär"/"Übung"); honors = reply-language rule (chat in German unless he writes Portuguese/English), flags !! *** ...
+Interop: role = domain (narrow); owns = the state Doc, its format and writes, the "Ende"/"Gedächtnis?"/"Vergiss" commands; defers to = google-workspace (Docs editing rules), alemao-goethe-fsp (Leitner log alemao-erros.jsonl, full corrections after "erklär"/"Übung"); honors = reply-language rule (chat in German unless he writes Portuguese/English), flags !! *** ...
 
 Store: Google Doc `deutsch-gespraech-state`, documentId `1loDsj3hUAfup3yTuzI2dNA_i2UpY8v-EkSsl2vcgUm4`. If that ID fails, Drive search `title = 'deutsch-gespraech-state'`; if several match, ask him which one.
 Use persona.md only if it is actually present in the active project or provided in context; do not assume project knowledge was loaded.
@@ -144,7 +144,7 @@ No tool calls for memory. Keep a private running list: topics, target structure 
 
 ## 3. "Ende" (or "Tschüss, speichern")
 1. German wrap-up: max 5 corrected patterns as `falsch → richtig`, plus the target structure of the day.
-2. Filter before writing (stricter rule wins, gui-code-protocol section 8). Never store: health or body data (weight, injuries, symptoms, mood), finances, CV/application documents or their details, real exam scores, passwords/tokens/IDs, private details about other people. A neutral topic label may stay ("Bewerbung in Deutschland"), never its details.
+2. Filter before writing. Never store: health or body data (weight, injuries, symptoms, mood), finances, CV/application documents or their details, real exam scores, passwords/tokens/IDs, private details about other people. A neutral topic label may stay ("Bewerbung in Deutschland"), never its details.
 3. Build the new state: `sessionsTotal`+1; prepend the session to `sessions`; merge errors into `recurringErrors` (same `padrao` → count+1); update `targetStructures`, `topicsDone` and the fact/joke/thread lists; rewrite `summary` (German, ≤ 600 characters, what a friend would remember).
 4. Caps: `sessions` ≤ 10 (older ones live on only in `summary`), `topicsDone` ≤ 20, `aboutGiovanni` ≤ 15, `runningJokes` ≤ 5, `openThreads` ≤ 3 (drop resolved), `recurringErrors` ≤ 10 by count. Whole line < 12 KB.
 5. Write, guarded (google-workspace rule): the discovered Docs structural-read tool again → take `revisionId` and the body's last `endIndex` (E). One the discovered Docs batch-edit tool batch with `writeControl.requiredRevisionId` = that revisionId:

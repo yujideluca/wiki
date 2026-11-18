@@ -94,7 +94,6 @@ Codex-owned adaptations live in [[codex-skills]] and are installed by [[codex-sk
 | [[skill-deutsch-gespraech-memory]] | Codex |
 | [[skill-gerar-teste-automatizado]] | Codex |
 | [[skill-google-workspace]] | Codex |
-| [[skill-gui-code-protocol]] | Codex |
 | [[skill-import-memory]] | Codex |
 | [[skill-ligamagic-listas]] | Codex |
 | [[skill-ligamagic-replicar-carrinho-nas-lojas]] | Codex |
