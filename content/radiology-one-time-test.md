@@ -9,7 +9,7 @@ location: radiology-crawler:analysis/one_time_test.py
 fed_by: [radiology-finding-engine, radiology-real-report-factcheck]
 feeds: [radiology-report-matcher]
 sources: [radiology-crawler:analysis/one_time_test.py, radiology-crawler:tests/test_one_time_test.py, radiology-crawler:docs/one-time-test.json, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:PLAN.md, radiology-crawler:docs/plan.json, radiology-crawler:analysis/relabel.py, radiology-crawler:tests/test_relabel.py, radiology-crawler:docs/SCOPE.md, radiology-crawler:docs/finding-list-restructure.json, radiology-crawler:docs/held-out-relabel.json]
-reviewed: 2026-11-17T13:48Z
+reviewed: 2026-11-19T01:34Z
 memory: []
 ---
 
@@ -18,7 +18,7 @@ The command that will measure, a single time, how well the finding assistant wor
 
 The project split its teaching cases in two halves. The "tuning half" may train and tune the assistant, and every number published so far was measured on it ([[radiology-finding-engine]]). The other half, the "test half", is frozen and kept out of tuning: its files were written once, and maintenance commands may read them only to check their fingerprints and labels, without scoring a description. A number measured on the test half is honest only if nothing is changed afterwards because of it, so the test half can be scored exactly once. This page describes the program that does that scoring and the guards that keep it from happening by accident or twice.
 
-State on 2026-11-15 (commit `ee38d77` of the repository `~/dev/radiology-crawler`): the command is **ready and has not been run**. The record file `docs/one-time-test.json` says `"state": "ready"`. No description of the test half has been scored, so there is no test result of any kind. Giovanni gave the go and chose the strict parent rule. The run is blocked until the X-ray list contains findings only and the engine is retuned. Since commit `976c81a` of 2026-11-15 the program enforces part of that itself: it refuses to score while a label of the test half points to a list entry that is a diagnosis and not a finding (see "The hold after the change of scope" below).
+State on 2026-11-15 (commit `ee38d77` of the repository `~/dev/radiology-crawler`): the command is **ready and has not been run**. The record file `docs/one-time-test.json` says `"state": "ready"`. No description of the test half has been scored, so there is no test result of any kind. Giovanni gave the go and chose the strict parent rule. The run was then blocked until the X-ray list contained findings only and the engine was retuned; that block is lifted, see the update of 2026-11-18 at the end of this page. Since commit `976c81a` of 2026-11-15 the program enforces part of that itself: it refuses to score while a label of the test half points to a list entry that is a diagnosis and not a finding (see "The hold after the change of scope" below).
 
 ## Flow
 trigger t1: The X-ray tuning half reached its targets, so the single scoring of the test half is next | [[radiology-finding-engine]]
@@ -114,7 +114,7 @@ Requirements AN-98 to AN-100, AN-110 and AN-161 to AN-165 describe this. `tests/
 2. The judge runs `rehearse`. Output: scratch records that show the command completes and refuses a second run. Done on 2026-11-14.
 3. Giovanni decides the parent rule. Done on 2026-11-15: `strict`, which is what the record already said.
 4. The session that builds the finding lists (the "corpus lane") corrects the X-ray list to findings only. Done on 2026-11-16 (commit `af3afc6`). The engine is then retuned on the tuning half: measured again, at 87.2 % for hurried descriptions without the pick question (tuning half, simulated user), below the 90 % target; not done.
-5. The judge relabels the pending labels of the test half and batch 1 with `relabel.py annotate` (twice) and `join`, and commits the counts. Done for X-ray on 2026-11-16 (pair in force: Sonnet and Opus).
+5. The judge relabels the pending labels of the test half and batch 1 with `relabel.py annotate` (twice) and `join`, and commits the counts. Done for X-ray on 2026-11-16 (pair in force: Sonnet and Opus). Step 4 is done since 2026-11-18, see the update at the end of this page.
 6. Giovanni gave the go on 2026-11-15; the plan of 2026-11-16 asks for his confirmation again once X-ray is back at 90 %. Once steps 4 and 5 are done, the judge runs `run --confirm "score the xray test half once"`. Output: the scores printed once, two registry entries, state "spent". Not done.
 7. The judge commits the registry and the record and sets the plan milestone "X-ray: the one-time test" to done with the plan tool. Not done.
 
@@ -126,3 +126,5 @@ Giovanni and any reader of the plan on [[radiology-report-matcher]], through the
 
 ## Notes
 The frozen test-half files and everything under `data/` were not opened for this page. Everything here comes from the programs, their tests, the committed record, the requirement rows and the plan. The relabel tool was not run for this page, because even its `count` command reads held-out files. `python3 -I analysis/one_time_test.py status` was run on 2026-11-16; it prints the record and the hold and scores nothing.
+
+Update 2026-11-18 (status; commit `799b335`, from `PLAN.md` milestone M4 and entry H15 of `docs/results-registry.json`). The plan milestone "X-ray: the one-time test" now has the status "waiting for Giovanni" (the plan's own mark `[?]`), no longer blocked. The reason: the engine reached the target on the X-ray tuning half (proper descriptions 93.5 %, hurried ones after the questions 91.7 % without the pick from a list; tuning half, simulated user, not a test; [[radiology-finding-engine]]). Step 4 above is therefore done, and step 6 waits only for Giovanni's go. Nothing of the test half was scored: no run happened, and the record still says "ready". Not verified for this page: whether the program's own hold on relabelled labels (see "Current gate") still prints a hold, because `status` was not run.
