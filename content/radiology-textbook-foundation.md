@@ -9,7 +9,7 @@ location: radiology-crawler:analysis/books_fetch.py
 fed_by: [radiology-fulltext-resolver]
 feeds: [radiology-finding-inventory, radiology-observable-descriptions]
 sources: [radiology-crawler:analysis/books_fetch.py, radiology-crawler:analysis/books_ground.py, radiology-crawler:docs/foundational-sources.json, radiology-crawler:tests/test_books_fetch.py, radiology-crawler:tests/test_books_ground.py, radiology-crawler:analysis/books_mine.py, radiology-crawler:tests/test_books_mine.py, radiology-crawler:analysis/books_bought.py, radiology-crawler:tests/test_books_bought.py, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/finding-list-restructure.json, radiology-crawler:PLAN.md]
-reviewed: 2026-11-17T13:48Z
+reviewed: 2026-11-19T03:03Z
 memory: []
 ---
 
@@ -58,16 +58,16 @@ The result goes to `docs/foundational-sources.json`, a record beside the lists (
 
 A borderline or measured entry also gets its defining description and its measurements: what to measure, how, the criterion and the unit (AN-174). When two books give different thresholds, both are kept and the difference is written down.
 
-Result per method, from the file at commit `5183ef3` (729 entries; unchanged since `fa70aa2`):
+Result per method, from `docs/foundational-sources.json` as committed on 2026-11-19 (commit `7799c93`; 976 entries; every entry searched):
 
 | Method | Entries | Grounded | Weak | Not found | Not searched |
 |---|---|---|---|---|---|
-| X-ray | 123 | 75 | 30 | 12 | 6 |
-| Ultrasound | 161 | 74 | 80 | 7 | 0 |
-| CT | 231 | 101 | 109 | 21 | 0 |
-| MRI | 214 | 113 | 78 | 23 | 0 |
+| X-ray | 127 | 83 | 32 | 12 | 0 |
+| Ultrasound | 199 | 85 | 81 | 33 | 0 |
+| CT | 347 | 144 | 112 | 91 | 0 |
+| MRI | 303 | 168 | 81 | 54 | 0 |
 
-X-ray by kind: borderline 14 grounded and 3 weak; measured 18 grounded, 2 weak, 1 not found; targets 24 grounded, 7 weak, 4 not searched; descriptors 17 grounded, 16 weak, 9 not found, 2 not searched; other findings 2, 2 and 2. Fifteen of the 75 grounded X-ray entries are grounded only by the historical layer (see the next part). The six not searched are entries added after the last grounding run, four of them visible signs of the split post-operative entry ([[radiology-finding-inventory]]).
+Between 2026-11-16 (729 entries at commit `5183ef3`) and 2026-11-19, the entries of the lists that had not been searched were searched: the X-ray entries added since (the signs of the split post-operative entry and the findings from the old books) in commit `8c00490`, and the ultrasound, CT and MRI entries in commit `7799c93` (the plan note of that task gives about 640,000 model tokens as its cost). The by-kind split of the X-ray row (borderline, measured, targets, descriptors) was not recomputed for this page. The section "Mining the historical books" below is as of 2026-11-16.
 
 ### Mining the historical books
 `books_mine.py` (requirements AN-176 to AN-178) goes the other way: it reads each public-domain classic from start to end and keeps what it says about how a finding looks. Each of these books speaks of X-ray only, so its passages are mapped to the X-ray list only. The steps are described under "How it does it".
@@ -130,7 +130,7 @@ In all four programs the book text is untrusted input: the prompts say so and th
 **Tests.** `tests/test_books_fetch.py` (14 tests) and `tests/test_books_ground.py` (9) for AN-166 to AN-175; `tests/test_books_mine.py` (8) for AN-176 to AN-178; `tests/test_books_bought.py` (7) for AN-190 to AN-194; AN-195 is tested in `tests/test_observable.py`. They use invented samples and a simulated web and model; none touches the network or a real book. On 2026-11-16, in the working copy at commit `f35556a`, the files for mining and bought books passed together with the other new test files (63 passed).
 
 ### Known limits
-- **Searched is not grounded.** Of the 729 entries, 297 are only mentioned by the books (weak), 63 were not found and 6 not yet searched.
+- **Searched is not grounded.** Of the 976 entries (2026-11-19), 306 are only mentioned by the books (weak), 190 were not found and none is left unsearched.
 - **Only part of it has reached the lists.** For ultrasound, CT and MRI, borderline entries without an article definition took a quote from the grounding file as their defining description, and kept borderline entries took the measurements those passages state. The X-ray defining descriptions mostly come from the list's own full-text definitions ([[radiology-observable-descriptions]]). Targets, signs and the historical results have not been taken over.
 - **"Grounded" rests on two models and a word-for-word check.** The code proves the quote is in the book; that it characterises the finding is one model's reading, checked by a second. No radiologist has read the result.
 - **Old scans are machine-read**, so a correct quote can fail the word-for-word check; and old books carry old knowledge, which is why the historical layer is flagged and a contradicted quote grounds nothing.
@@ -179,3 +179,5 @@ Beside the building of the finding lists ([[radiology-finding-inventory]]): it s
 
 ## Who receives its output
 The session that builds the finding lists (the "corpus lane"). It reads the grounding file when it adds a defining description or measurements, with the book and chapter as the entry's source; it will read the bought-book candidates file in the same way. Any session of the project may search the open books with `find`.
+
+Update 2026-11-19 (commits `8c00490` and `7799c93`): grounding in the open books is complete for all four methods: no entry of `docs/foundational-sources.json` is "not searched" (X-ray 83 of 127 grounded, ultrasound 85 of 199, CT 144 of 347, MRI 168 of 303). The programs were not run for this page; the counts are those of the committed file, summed by hand and checked against the plan note of task T42 (ultrasound 85, 81, 33; CT 144, 112, 91; MRI 168, 81, 54).

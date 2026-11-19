@@ -9,7 +9,7 @@ location: radiology-crawler:analysis/real_reports.py
 fed_by: [radiology-analysis]
 feeds: [radiology-real-report-factcheck, radiology-report-matcher]
 sources: [radiology-crawler:analysis/real_reports.py, radiology-crawler:tests/test_real_reports_batch2.py, radiology-crawler:docs/real-reports-batch2.json, radiology-crawler:docs/real-reports-factcheck-batch2-xray.json, radiology-crawler:docs/real-reports-factcheck-batch2-ultrasound.json, radiology-crawler:docs/real-reports-factcheck-batch2-ct.json, radiology-crawler:docs/real-reports-factcheck-batch2-mri.json, radiology-crawler:analysis/second_check.py, radiology-crawler:tests/test_second_check.py, radiology-crawler:DESIGN.md, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:PLAN.md, radiology-crawler:docs/plan.json, radiology-crawler:analysis/relabel.py, radiology-crawler:tests/test_relabel.py, radiology-crawler:docs/held-out-relabel.json]
-reviewed: 2026-11-17T13:48Z
+reviewed: 2026-11-19T03:03Z
 memory: []
 ---
 
@@ -142,10 +142,12 @@ Twelve requirements describe this: AN-79 and AN-80 (collection and overlap), AN-
 10. Not done: Giovanni gives the go and `score2 --confirm "score batch 2 once"` runs once. Output: one result per method in the results registry of [[radiology-analysis]].
 
 ## Where it sits in the pipeline
-At the end of the project's chain: after the lists of findings and the engine ([[radiology-finding-engine]]) exist, and before the single final measurement. It is separate from the one-time test of the X-ray milestone, which scores the frozen test half of the simulated data and batch 1 and has not been run either ([[radiology-one-time-test]]). It is also separate from the open "development batch" of real reports for ultrasound, CT and MRI, which may be looked at and is never a test ([[radiology-real-report-factcheck]]); the collection of that batch excludes every article of batch 2.
+At the end of the project's chain: after the lists of findings and the engine ([[radiology-finding-engine]]) exist, and before the single final measurement. It is separate from the one-time test of the X-ray milestone, which scored the frozen test half of the simulated data and batch 1 once, on 2026-11-19 ([[radiology-one-time-test]]); batch 2 was not part of it. It is also separate from the open "development batch" of real reports for ultrasound, CT and MRI, which may be looked at and is never a test ([[radiology-real-report-factcheck]]); the collection of that batch excludes every article of batch 2.
 
 ## Who receives its output
 The fact-check ([[radiology-real-report-factcheck]]) receives the labelled batch. Giovanni and any reader of the repository receive the manifests; the plan on [[radiology-report-matcher]] shows the milestone "Final test on fresh real reports" as in progress.
 
 ## Notes
 The report texts, the labels, the decisions and every file under `data/` were not opened for this page, on purpose: they are held out. Everything here comes from the code, its tests, the committed manifests, the requirement rows, the decision log and the plan.
+
+Update 2026-11-19 (commits `f4bfc97`, `e82c86c` and `4caf417`, from `docs/one-time-test.json`, the results registry and `PLAN.md`): batch 2 is still sealed and not scored, and `PLAN.md` says it has no go (scope line 9). The X-ray one-time test, run the same day on the X-ray test half and on batch 1, did not touch it. Its numbers, for orientation only (test half, simulated user for the hurried descriptions; batch 1 is a development batch): proper descriptions 93.1 % right among three, hurried descriptions after all questions 94.2 %, batch 1 97.4 % of 39 structures ([[radiology-one-time-test]]). The blind relabel of the ultrasound, CT and MRI labels of batch 2 (plan task T8, commit `5fd3243`, counts only) was run after that, still on 2026-11-19, with Sonnet and Opus: pending labels 6 (ultrasound), 14 (CT) and 12 (MRI); both annotators agreed on 6, 13 and 12; 1, 3 and 0 were relabelled as a sign; the rest were set aside (diagnosis only 5, 10 and 11; sign not in the list 0, 0 and 1; annotators disagreed 0, 1 and 0). Nothing of batch 2 was scored. The plan milestone "Final test on fresh real reports" is still in progress.

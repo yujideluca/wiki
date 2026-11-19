@@ -8,7 +8,7 @@ status: active
 fed_by: []
 feeds: []
 sources: [radiology-crawler:.github/workflows/quality-gate.yml, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:tests/test_web.py, radiology-crawler:tests/test_real_reports.py, radiology-crawler:tools/quality_gate.sh, radiology-crawler:pipeline-check.toml, radiology-crawler:CLAUDE.md, radiology-crawler:tools/check_dependencies.py, radiology-crawler:tests/test_cli_help.py, radiology-crawler:pipeline-check.version, radiology-crawler:web/test/browser/site_check.mjs]
-reviewed: 2026-11-17T13:18Z
+reviewed: 2026-11-19T03:03Z
 ---
 
 ## What it is
@@ -55,3 +55,5 @@ Update 2026-11-16, evening (commit `5183ef3`): `docs/REQUIREMENTS.md` has 223 ro
 Update 2026-11-16, night (commit `4c7ebed`): the whole gate passed on the laptop before the commit, with 503 Python tests, and the traceability step counted 223 requirements, all covered by tagged tests. The push ran the gate again and went through. Requirement AN-182 was reworded: every diagnosis-like entry leaves the list, a defining description notwithstanding ([[radiology-finding-inventory]]).
 
 Update 2026-11-16, later that night (commits `11e4961` and `97e3a55`): requirements AN-194 and AN-195 were added (the review of bought-book lines by a third model, and the list writer taking them only into gaps; [[radiology-textbook-foundation]]). The gate passed with 505 Python tests and 225 requirements, all covered by tagged tests.
+
+Update 2026-11-19 (commit `cccd813`, the last commit that touched `docs/REQUIREMENTS.md`): the file has 244 rows (counted in the file): 149 for analysis and data (AN), 34 for the finding assistant (FA), 40 for the two websites (WS), 7 for the crawler, 9 for the translator, 4 for the translation check and 1 for dependencies; the count was 223 on 2026-11-16. The rows added since include AN-200 to AN-213 (one download per article, the old-book findings and their texts, the third reader of disagreeing annotators, the wiki hold of the plan tool, thin findings and review articles, a failing data source fetched another way, review articles for the observable lines, job bars, the own-words check, and the rehearsal that leaves out texts whose label is not on the list) and WS-41 (the finding terms and the standard form stay hidden while a question is open). New or changed test files since 2026-11-17: `tests/test_own_words.py`, `tests/test_jobs.py`, `tests/test_historical_gaps.py`, `tests/test_historical_texts.py`, `tests/test_plan.py` (AN-205: tested against the real `wiki` command), `tests/test_one_time_test.py`, `tests/test_web.py` (WS-9: questions may end before the fifth on a flat model) and the browser check `web/test/browser/site_check.mjs` (follows WS-41). The whole gate was not run for this update, so no test count and no statement about the continuous-integration state are given.
