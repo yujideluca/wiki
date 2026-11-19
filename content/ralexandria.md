@@ -9,13 +9,13 @@ location: ralexandria:
 fed_by: []
 feeds: []
 sources: [ralexandria:CLAUDE.md, ralexandria:PLAN.md, ralexandria:docs/SCOPE.md, ralexandria:DESIGN.md, ralexandria:tools/inventory.py]
-reviewed: 2026-11-19T15:31Z
+reviewed: 2026-11-19T15:46Z
 ---
 
 ## What it is
-A project, started on 2026-11-19, to build a complete radiology encyclopedia in English together with a reference bank of the literature behind it. It lives in the folder `~/dev/ralexandria` (a local git repository, no remote yet) and reads the data of the [[radiology-report-matcher]] project (the downloaded Radiopaedia articles and cases, the book texts and the reference vocabularies) without changing it.
+A project, started on 2026-11-19, to build a complete radiology encyclopedia as a website, in English together with a reference bank of the literature behind it. It lives in the folder `~/dev/ralexandria` (a local git repository, no remote yet) and reads the data of the [[radiology-report-matcher]] project (the downloaded Radiopaedia articles and cases, the book texts and the reference vocabularies) without changing it.
 
-Giovanni's decisions of 2026-11-19: the project is English only; there is one entry per concept (a disease, an imaging finding or sign, a technique, a piece of anatomy); every entry also explains the biophysics under the finding, meaning how the patient's biology and the physics of the device together produce the look of the image; all text is written in our own words with citations, so Radiopaedia is one source among many and nothing is copied from it; only whole articles count as sources, never abstracts or summaries; any source may be used, politely (it obeys each site's crawling rules, waits 10 seconds between requests and never works around a block).
+Giovanni's decisions of 2026-11-19: the project is English only; it is a website with an Elm front end and an Elixir back end (the same stack as the wiki), in the palette #deb87c, #93614b, #293497 and #342d5f, using schematic diagrams as in the wiki where they help; there is one entry per concept (a disease, an imaging finding or sign, a technique, a piece of anatomy); every entry also explains the biophysics under the finding, meaning how the patient's biology and the physics of the device together produce the look of the image; all text is written in our own words with citations, so Radiopaedia is one source among many and nothing is copied from it; only whole articles count as sources, never abstracts or summaries; any source may be used, politely (it obeys each site's crawling rules, waits 10 seconds between requests and never works around a block).
 
 ## Flow
 trigger t1: Giovanni asks for the encyclopedia
@@ -50,9 +50,15 @@ s -fetches full texts from-> w
 
 ### Containers
 person g: Giovanni | [[giovanni]]
+container web: Front end (Elm) — index and entry pages in the browser
+container api: Back end (Elixir, Plug and Bandit) — serves entries from content/ and the front end
+store md: Entry files — one Markdown file per concept in content/
 container inv: Inventory script — counts the local sources, read-only
 external r: Existing radiology data | [[radiology-report-matcher]]
 
+g -reads entries in-> web
+web -asks for entries from-> api
+api -reads-> md
 g -starts-> inv
 inv -reads-> r
 
@@ -60,19 +66,19 @@ inv -reads-> r
 How this project follows the golden path of [[project-template]]: so far only in part.
 
 ### Principles
-The rules for every session are the file `CLAUDE.md` of the repository (commit `2332626`, 2026-11-19): English only, own words with citations, whole articles as sources, read-only inputs, commit by path, never skip the pre-push check, and only a real run counts as proof.
+The rules for every session are the file `CLAUDE.md` of the repository (2026-11-19): English only, own words with citations, whole articles as sources, read-only inputs, commit by path, never skip the pre-push check, and only a real run counts as proof.
 
 ### Decisions
-One decision-log row in `DESIGN.md` (Giovanni's brief of 2026-11-19). No architecture decision records yet.
+Two decision-log rows in `DESIGN.md` (the brief and the stack, 2026-11-19) and one architecture decision record, 0002, for the Elm and Elixir stack.
 
 ### Requirements
-None yet: there is no `docs/REQUIREMENTS.md`.
+Four requirement rows in `docs/REQUIREMENTS.md` (RX-1 to RX-4: local-only server, entry list, one entry or a 404, paragraphs), each with a tagged test.
 
 ### Quality gate
-Not built yet: the repository has no gate script, no pre-push check and no tests. This is open work, to be done before real code is added.
+`tools/quality_gate.sh` has five steps: Elixir tests, Elm tests with an optimized build, requirement traceability, fitness limits (file length, gate time) and the gzipped bundle size. It passed on 2026-11-19 (about 6 seconds). The local pre-push check is switched on with `git config core.hooksPath tools/hooks`; it has not been run on a real push because there is no remote.
 
 ### Continuous integration
-None yet: the repository has no remote.
+The workflow `quality-gate.yml` is in place, but the repository has no remote, so it has never run.
 
 ### Maintenance
 Not started: no debt issues and no monthly review.
@@ -81,7 +87,7 @@ Not started: no debt issues and no monthly review.
 Gives Giovanni one place that explains every radiology concept in plain English, including the biophysics behind how it looks on an image, with a list of the full-text sources behind each statement.
 
 ## How it does it
-So far only the groundwork exists: `tools/inventory.py` opens the Radiopaedia database of [[radiology-report-matcher]] read-only and counts its tables and the files of the book and vocabulary folders. As of 2026-11-19 it found 17,361 articles, 70,527 cases, 7 book texts and the vocabulary files. No entry has been written yet; the next steps are the concept index, the source bank and a pilot chapter.
+The site runs locally on 127.0.0.1:4200 (`tools/run.sh`): an index of entries and one page per entry, shown as paragraphs; it has no entries yet and no diagrams. Also, `tools/inventory.py`: `tools/inventory.py` opens the Radiopaedia database of [[radiology-report-matcher]] read-only and counts its tables and the files of the book and vocabulary folders. As of 2026-11-19 it found 17,361 articles, 70,527 cases, 7 book texts and the vocabulary files. No entry has been written yet; the next steps are the concept index, the source bank and a pilot chapter.
 
 ## Where it sits in the pipeline
 It sits after the downloads and translations of [[radiology-report-matcher]], using their stored data as raw material, and before any reader of the finished encyclopedia.
