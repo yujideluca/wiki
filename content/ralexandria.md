@@ -8,8 +8,8 @@ status: active
 location: ralexandria:
 fed_by: []
 feeds: []
-sources: [ralexandria:CLAUDE.md, ralexandria:PLAN.md, ralexandria:docs/SCOPE.md, ralexandria:DESIGN.md, ralexandria:tools/inventory.py, ralexandria:.github/workflows/quality-gate.yml, ralexandria:docs/MAINTENANCE.md, ralexandria:docs/REQUIREMENTS.md, ralexandria:docs/TRACEABILITY.md, ralexandria:docs/adr/0002-elm-and-elixir.md, ralexandria:frontend/elm.json, ralexandria:frontend/src/Entry.elm, ralexandria:frontend/src/Main.elm, ralexandria:frontend/static/style.css, ralexandria:server/lib/ralexandria/router.ex, ralexandria:server/lib/ralexandria/entries.ex, ralexandria:tools/quality_gate.sh, ralexandria:pipeline-check.toml]
-reviewed: 2026-11-19T16:13Z
+sources: [ralexandria:CLAUDE.md, ralexandria:PLAN.md, ralexandria:docs/SCOPE.md, ralexandria:DESIGN.md, ralexandria:tools/inventory.py, ralexandria:.github/workflows/quality-gate.yml, ralexandria:docs/MAINTENANCE.md, ralexandria:docs/REQUIREMENTS.md, ralexandria:docs/TRACEABILITY.md, ralexandria:docs/adr/0002-elm-and-elixir.md, ralexandria:frontend/elm.json, ralexandria:frontend/src/Entry.elm, ralexandria:frontend/src/Main.elm, ralexandria:frontend/static/style.css, ralexandria:server/lib/ralexandria/router.ex, ralexandria:server/lib/ralexandria/entries.ex, ralexandria:tools/quality_gate.sh, ralexandria:pipeline-check.toml, ralexandria:frontend/src/Flow.elm, ralexandria:frontend/src/FlowLayout.elm, ralexandria:frontend/src/FlowView.elm, ralexandria:server/config/runtime.exs, ralexandria:docs/adr/0000-template.md, ralexandria:frontend/static/index.html, ralexandria:frontend/tests/EntryTests.elm, ralexandria:pipeline-check.version]
+reviewed: 2026-11-19T16:14Z
 ---
 
 ## What it is
