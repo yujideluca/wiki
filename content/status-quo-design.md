@@ -11,7 +11,7 @@ fed_by: []
 feeds: []
 sources: [project-template:CLAUDE.md, project-template:pipeline-check.toml, status-quo:README.md, status-quo:DESIGN.md, status-quo:Cargo.toml, status-quo:Cargo.lock, status-quo:.cargo/config.toml, status-quo:.gitignore, status-quo:crates/collector/Cargo.toml, status-quo:crates/collector/src/events.rs, status-quo:docs/2026-11-01-status-quo-design.md, status-quo:docs/REQUIREMENTS.md, status-quo:docs/TESTES-AUTOMATIZADOS.md, status-quo:docs/MAINTENANCE.md, status-quo:docs/adr/0004-host-compatibility-layer.md, status-quo:docs/adr/0005-free-canvas-layout.md, status-quo:tools/quality_gate.sh, status-quo:tools/ui_e2e.sh]
 memory: [#f1e117, #d975f2, #63efec, #c1f1f8]
-reviewed: 2026-11-19T16:49Z
+reviewed: 2026-11-19T17:53Z
 ---
 
 ## What it is
@@ -122,6 +122,8 @@ Giovanni reviews this design and [[status-quo-layout]] once before implementatio
 **Update 2026-11-18 (version 0.1.4).** Requirement SQ-48 was added after Giovanni reported that the tray opened as a floating window on Windows: the tray sits on the desktop background by default on every supported system (layer-shell, a frameless X11 window also on GNOME through XWayland, a frameless Windows window without a taskbar button), and the ordinary floating window is a setting in Customize, off by default. This keeps the rule above ("Default to behind normal application windows") and makes it hold outside KDE Plasma too. The decision is an amendment to `docs/adr/0004-host-compatibility-layer.md`; how it is built is on [[status-quo]] and how it is tested on [[status-quo-install]]. Version 0.1.4 is current.
 
 **Update 2026-11-19 (in the repository, not yet in a release).** Giovanni reported that the Windows panel of 0.1.4 still behaved like a floating window. SQ-48 was reworded: on Windows the panel is part of the desktop (not in the taskbar or the Alt+Tab window switcher, never the active window after a click, still there after *Show desktop*). SQ-49 (the panel does not depend on the terminal that started it) and SQ-50 (a window starts where it was left) were added, and SQ-37 now also follows a plain Windows background colour. After that change there were 50 requirements (SQ-1 to SQ-50). How it is built and what was run is on [[status-quo]].
+
+**Update 2026-11-19 (see-through on Windows).** Requirement SQ-52 was added when Giovanni allowed the egui upgrade: on Windows without OpenGL the panel is drawn through DirectX by way of DirectComposition and is see-through when the graphics adapter accepts alpha; only otherwise is the background solid. There are now 52 requirements (SQ-1 to SQ-52). Details on [[status-quo]].
 
 **Update 2026-11-19 (installer message, not yet in a release).** Requirement SQ-51 was added on Giovanni's request: the refusal to overwrite a file Status Quo did not install must tell the person how to go on with the installer they have, and `status-quo-setup.exe` accepts `--adopt` (see [[status-quo-install]]).
 
