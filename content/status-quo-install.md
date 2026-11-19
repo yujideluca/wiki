@@ -10,7 +10,7 @@ location: status-quo:tools/install.sh
 fed_by: []
 feeds: [status-quo]
 sources: [status-quo:tools/get.sh, status-quo:tools/get.ps1, status-quo:tools/install-prebuilt.sh, status-quo:tools/install.sh, status-quo:tools/package-linux.sh, status-quo:tools/check_binary.rs, status-quo:tools/install-test/linux-bare.sh, status-quo:tools/install-test/linux-host.sh, status-quo:tools/install-test/windows.ps1, status-quo:tools/install-test/linux-gnome.sh, status-quo:crates/desktop/src/main.rs, status-quo:crates/desktop/src/host/mod.rs, status-quo:docs/adr/0004-host-compatibility-layer.md, status-quo:tools/install-test/readme-command.sh, status-quo:crates/desktop/src/install.rs, status-quo:crates/desktop/src/doctor.rs, status-quo:crates/desktop/tests/installer.rs, status-quo:crates/desktop/tests/docs.rs, status-quo:crates/setup/src/main.rs, status-quo:crates/setup/build.rs, status-quo:.cargo/config.toml, status-quo:.github/workflows/packages.yml, status-quo:.github/workflows/release.yml, status-quo:.github/workflows/quality-gate.yml, status-quo:docs/adr/0006-installers-proven-on-bare-machines.md, status-quo:docs/REQUIREMENTS.md, status-quo:README.md, status-quo:LICENSE, status-quo:docs/guide/install.md, status-quo:crates/desktop/src/update.rs, status-quo:tools/install-test/linux-update.sh, status-quo:tools/install-test/windows-update.ps1, status-quo:tools/install-test/linux-layer-shell.sh, status-quo:docs/adr/0007-updates-through-github.md]
-reviewed: 2026-11-19T21:46Z
+reviewed: 2026-11-19T22:30Z
 ---
 
 ## What it is
