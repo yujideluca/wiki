@@ -9,7 +9,7 @@ location: workflow-memory:mem/cli.py
 fed_by: []
 feeds: [events-log]
 sources: [workflow-memory:mem/cli.py, workflow-memory:mem/core.py]
-reviewed: 2026-11-22T14:32Z
+reviewed: 2026-11-22T18:09Z
 ---
 
 ## What it is

@@ -9,7 +9,7 @@ location: workflow-memory:mem/hooks.py
 fed_by: [claude-code-settings]
 feeds: [mem-harvester]
 sources: [workflow-memory:mem/hooks.py, workflow-memory:docs/adr/0008-router-rules-as-modules.md, workflow-memory:mem/tags.py]
-reviewed: 2026-11-22T14:32Z
+reviewed: 2026-11-22T18:09Z
 ---
 
 ## What it is
