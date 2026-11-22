@@ -8,8 +8,8 @@ status: active
 location: token-thrift:src
 fed_by: [claude-code-settings]
 feeds: []
-sources: [token-thrift:README.md, token-thrift:DESIGN.md, token-thrift:CLAUDE.md, token-thrift:docs/REQUIREMENTS.md, token-thrift:docs/MAINTENANCE.md, token-thrift:docs/adr/0002-single-binary-three-subcommands.md, token-thrift:docs/adr/0003-program-measures-skill-judges.md, token-thrift:src/main.rs, token-thrift:src/report.rs, token-thrift:src/daily.rs, token-thrift:tools/systemd/token-thrift-log.service, token-thrift:tools/systemd/token-thrift-log.timer, token-thrift:src/render.rs, token-thrift:src/statusline.rs, token-thrift:src/hook.rs, token-thrift:src/args.rs, token-thrift:src/timeutil.rs, token-thrift:tools/install.sh, token-thrift:tools/quality_gate.sh, token-thrift:tools/pipeline-check.sh, token-thrift:pipeline-check.toml, token-thrift:pipeline-check.version, token-thrift:Cargo.toml, token-thrift:.github/workflows/quality-gate.yml, home:.claude/settings.json]
-reviewed: 2026-11-22T14:35Z
+sources: [token-thrift:README.md, token-thrift:DESIGN.md, token-thrift:CLAUDE.md, token-thrift:docs/REQUIREMENTS.md, token-thrift:docs/MAINTENANCE.md, token-thrift:docs/adr/0002-single-binary-three-subcommands.md, token-thrift:docs/adr/0003-program-measures-skill-judges.md, token-thrift:src/main.rs, token-thrift:src/report.rs, token-thrift:src/daily.rs, token-thrift:tools/systemd/token-thrift-log.service, token-thrift:tools/systemd/token-thrift-log.timer, token-thrift:src/render.rs, token-thrift:src/statusline.rs, token-thrift:src/hook.rs, token-thrift:src/args.rs, token-thrift:src/timeutil.rs, token-thrift:tools/install.sh, token-thrift:tools/quality_gate.sh, token-thrift:tools/pipeline-check.sh, token-thrift:pipeline-check.toml, token-thrift:pipeline-check.version, token-thrift:Cargo.toml, token-thrift:.github/workflows/quality-gate.yml, home:.claude/settings.json, token-thrift:tests/daily.rs, token-thrift:.gitignore, token-thrift:Cargo.lock, token-thrift:docs/TESTES-AUTOMATIZADOS.md, token-thrift:docs/TRACEABILITY.md, token-thrift:docs/adr/0000-template.md, token-thrift:docs/adr/0001-record-decisions.md, token-thrift:docs/adr/README.md]
+reviewed: 2026-11-22T14:38Z
 ---
 
 ## What it is
@@ -141,6 +141,8 @@ How this project follows the golden path of [[project-template]].
 
 ### Decisions
 Three files in `docs/adr/` besides the template: 0001 record decisions; 0002 one binary with three subcommands, two dependencies and price-neutral cost units (the stack decision, 2026-11-22); 0003 a program measures and a skill judges. `DESIGN.md` holds the diagrams and the decision log, which has two rows of this project's own: the start and the `log` command, both 2026-11-22.
+
+Other files in the repository: `tests/daily.rs` holds the nine tests of the `log` command; `Cargo.lock` records the exact version of every library used, so each build uses the same ones; `.gitignore` keeps the build folders `build/` and `target/` out of git; `docs/adr/README.md` and `docs/adr/0000-template.md` say how to write a decision record; `docs/TRACEABILITY.md` is the generated table of requirements and their tests. `docs/TESTES-AUTOMATIZADOS.md` came with the project template and still describes the template, not this project (as of 2026-11-22).
 
 ### Requirements
 26 requirements, TT-1 to TT-26, in `docs/REQUIREMENTS.md`: counting (TT-1 to TT-6), report contents and options (TT-7 to TT-10), the three status line cases and its safety (TT-11 to TT-14), the hook (TT-15, TT-16), the dependency limit (TT-17) timestamp parsing (TT-18), and the daily log, its merge rules, `--show` and the timer (TT-19 to TT-26). Each has a test tagged `REQ TT-N`, and the traceability check ([[check-traceability]]) fails when one has none. The test inputs are small made-up files in `tests/fixtures/`, and no test makes a temporary folder.
