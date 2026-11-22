@@ -10,7 +10,7 @@ fed_by: []
 feeds: []
 sources: [home:.claude/CLAUDE.md, home:.claude/settings.json, workflow-memory:docs/adr/0010-briefings-before-full-text.md]
 memory: [b62cf5]
-reviewed: 2026-11-22T18:09Z
+reviewed: 2026-11-22T22:52Z
 ---
 
 ## What it is

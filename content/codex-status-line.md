@@ -8,7 +8,7 @@ location: home:.codex/config.toml
 fed_by: []
 feeds: []
 sources: [home:.codex/config.toml, home:AGENTS.md, home:.codex/AGENTS.md]
-reviewed: 2026-11-06T22:03Z
+reviewed: 2026-11-22T22:52Z
 ---
 
 ## What it is
