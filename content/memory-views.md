@@ -9,7 +9,7 @@ location: workflow-memory:views
 fed_by: [mem-action, memory-fold]
 feeds: [claude-app, giovanni]
 sources: [workflow-memory:mem/project.py, workflow-memory:mem/tags.py, workflow-memory:docs/adr/0008-router-rules-as-modules.md]
-reviewed: 2026-11-18T14:23Z
+reviewed: 2026-11-22T14:32Z
 ---
 
 ## What it is

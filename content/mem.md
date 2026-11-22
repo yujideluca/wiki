@@ -9,7 +9,7 @@ location: workflow-memory:bin/mem
 fed_by: [claude-code, codex, giovanni, remote-assistant]
 feeds: [events-log]
 sources: [workflow-memory:bin/mem, workflow-memory:mem/__main__.py, workflow-memory:mem/install.py, workflow-memory:mem/cli.py, workflow-memory:mem/tags.py, workflow-memory:docs/adr/0008-router-rules-as-modules.md]
-reviewed: 2026-11-18T21:59Z
+reviewed: 2026-11-22T14:32Z
 ---
 
 ## What it is
