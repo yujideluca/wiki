@@ -9,7 +9,7 @@ location: radiology-crawler:analysis/fulltext.py
 fed_by: []
 feeds: [radiology-real-report-factcheck, radiology-textbook-foundation, radiology-observable-descriptions]
 sources: [radiology-crawler:analysis/fulltext.py, radiology-crawler:analysis/fulltext_text.py, radiology-crawler:CLAUDE.md, radiology-crawler:tests/test_fulltext.py, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/TRACEABILITY.md]
-reviewed: 2026-11-19T03:02Z
+reviewed: 2026-11-25T17:39Z
 memory: []
 ---
 
@@ -117,3 +117,5 @@ Beside the fact-check of real reports ([[radiology-real-report-factcheck]]), whi
 
 ## Who receives its output
 The session that checks labels against the literature (the project calls it the "judge": a Claude session that works only on the data kept for testing) and any other session of the project that needs an article body: they read passages with `find`, or the text file, instead of the article page. Since 2026-11-15 the tool that fetches open textbooks ([[radiology-textbook-foundation]]) uses the resolver's network code, its client name and its passage search, and fetches open book chapters through it. Giovanni receives the list `papers-to-fetch.md`, which names the papers only a person can fetch. When this page was written the list held no open paper.
+
+Update 2026-11-25 (compared with `analysis/fulltext.py`, `analysis/fulltext_text.py`, `tests/test_fulltext.py`, `CLAUDE.md`, `docs/REQUIREMENTS.md` and `docs/TRACEABILITY.md`; the test run was not repeated): `git log` shows that none of the code, the test file or `CLAUDE.md` changed after commit `bb646ff` of 2026-11-16, so the description above still matches the code. The rows AN-133 to AN-140 are unchanged in `docs/REQUIREMENTS.md` and `docs/TRACEABILITY.md` lists each with `test_fulltext.py`; the requirements file grew to 298 rows and no commit since 2026-11-19 touched these eight rows in either file. The size of the cache has changed since this page was written (counted in the cache folder `data/analysis/fulltext/` on 2026-11-25, which is not in git): 1,693 records, 1,382 obtained and 311 not obtained; of the obtained ones 1,191 came through the Europe PMC full-text file, 64 through the `efetch` service, 81 through an open copy named by OpenAlex and the rest through other open copies, article pages, one converted local file; two came from script data of an open copy; none is recorded from a hand-saved PDF of route 4. The list `data/analysis/papers-to-fetch.md` has 316 lines, so the earlier statement that it held no open paper is out of date; what the lines hold was not read. The project is on hold since 2026-11-25, after Giovanni judged the assistant's suggestions too unspecific ([[radiology-report-matcher]]); the resolver stays in the repository and nothing was deleted.

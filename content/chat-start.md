@@ -8,7 +8,7 @@ status: active
 fed_by: []
 feeds: []
 sources: [workflow-memory:mem/hooks.py, home:.claude/settings.json, status-quo:crates/desktop/src/main.rs]
-reviewed: 2026-11-22T22:52Z
+reviewed: 2026-11-25T17:36Z
 ---
 
 ## What it is
@@ -41,7 +41,7 @@ s6 -> p1
 It makes every session begin with the same standing order to load Giovanni's rules for the task at hand and the same list of unfinished items, no matter which project the chat is opened in.
 
 ## How it does it
-Claude Code runs the "session start" hooks that are configured in [[claude-code-settings]] (a hook is a small program run automatically at an event). The memory's hook prints a summary called the brief; whatever is printed at that moment becomes part of what the model reads first. Three SessionStart hooks are configured: `mem hook-session-start` (the memory's hook, allowed 40 seconds); `status-quo hook claude SessionStart` (allowed 3 seconds), which records that a session began in the state folder of the desktop tray [[status-quo]] and prints nothing for the model; and, since 2026-11-22, `token-thrift hook-session-start` (allowed 5 seconds, run only when the program is installed), which prints one warning when a resumed session's stored context has probably expired and nothing otherwise ([[token-thrift]]). The brief holds no rules: it tells Claude to sort each message from Giovanni into task tags and to load the rules of those tags with [[mem-rules]]. A second hook, `mem hook-prompt` ([[hook-prompt]]), runs at every message and prints a one-line reminder of that order.
+Claude Code runs the "session start" hooks that are configured in [[claude-code-settings]] (a hook is a small program run automatically at an event). The memory's hook prints a summary called the brief; whatever is printed at that moment becomes part of what the model reads first. Three SessionStart hooks are configured: `mem hook-session-start` (the memory's hook, allowed 40 seconds); `status-quo hook claude SessionStart` (allowed 3 seconds), which records that a session began in the state folder of the desktop tray [[status-quo]] and prints nothing for the model; and, since 2026-11-22, `token-thrift hook-session-start` (allowed 5 seconds, run only when the program is installed), which prints one warning when a resumed session's stored context has probably expired and nothing otherwise ([[token-thrift]]). The brief holds no rules: it ends with three one-line reminders of how to record a rule, how to report the entries that shaped a task (`mem use`) and how to record what is still open. Its main part tells Claude to sort each message from Giovanni into task tags and to load the rules of those tags with [[mem-rules]]. A second hook, `mem hook-prompt` ([[hook-prompt]]), runs at every message and prints a one-line reminder of that order.
 
 ## Where it sits in the pipeline
 Before any work in any project.

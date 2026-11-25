@@ -9,7 +9,7 @@ location: home:.claude/plugins
 fed_by: []
 feeds: []
 sources: [home:.claude/plugins/installed_plugins.json]
-reviewed: 2026-11-22T22:52Z
+reviewed: 2026-11-25T17:35Z
 ---
 
 ## What it is
@@ -28,7 +28,7 @@ A plugin is an add-on package for Claude Code that brings extra abilities ([plug
 ## How it does it
 They are installed under `~/.claude/plugins` (the list is in `installed_plugins.json`) and switched on or off in [[claude-code-settings]]. Switched on: pyright-lsp, kotlin-lsp, rust-analyzer-lsp, security-guidance and android-test-pilot. Installed but switched off: session-report, claude-md-management, feature-dev, pr-review-toolkit and claude-code-setup.
 
-Installed versions (from `installed_plugins.json`): pyright-lsp, kotlin-lsp, claude-md-management, claude-code-setup and rust-analyzer-lsp 1.0.0; feature-dev and pr-review-toolkit 1.0.1; security-guidance 2.0.21; android-test-pilot 0.2.2; session-report has no version number and is recorded by the commit `73c8cf3ea7e2` of its source. Claude Code last updated security-guidance on 2026-11-20 and session-report on 2026-11-21. All plugins except android-test-pilot come from the official marketplace `claude-plugins-official`; all are installed for the user (`scope: user`), so they apply in every folder.
+Installed versions (from `installed_plugins.json`): pyright-lsp, kotlin-lsp, claude-md-management, claude-code-setup and rust-analyzer-lsp 1.0.0; feature-dev and pr-review-toolkit 1.0.1; security-guidance 2.0.21; android-test-pilot 0.2.2; session-report has no version number and is recorded by the commit `6985b2d88dc0` of its source. Claude Code last updated security-guidance on 2026-11-20 and session-report on 2026-11-24. All plugins except android-test-pilot come from the official marketplace `claude-plugins-official`; all are installed for the user (`scope: user`), so they apply in every folder.
 
 ## Where it sits in the pipeline
 Inside every Claude Code session.

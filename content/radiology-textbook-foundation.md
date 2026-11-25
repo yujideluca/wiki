@@ -9,7 +9,7 @@ location: radiology-crawler:analysis/books_fetch.py
 fed_by: [radiology-fulltext-resolver]
 feeds: [radiology-finding-inventory, radiology-observable-descriptions]
 sources: [radiology-crawler:analysis/books_fetch.py, radiology-crawler:analysis/books_ground.py, radiology-crawler:docs/foundational-sources.json, radiology-crawler:tests/test_books_fetch.py, radiology-crawler:tests/test_books_ground.py, radiology-crawler:analysis/books_mine.py, radiology-crawler:tests/test_books_mine.py, radiology-crawler:analysis/books_bought.py, radiology-crawler:tests/test_books_bought.py, radiology-crawler:docs/REQUIREMENTS.md, radiology-crawler:docs/finding-list-restructure.json, radiology-crawler:PLAN.md]
-reviewed: 2026-11-19T03:03Z
+reviewed: 2026-11-25T17:36Z
 memory: []
 ---
 
@@ -127,7 +127,7 @@ Commands: `python3 -I analysis/books_bought.py convert [--book KEY]`, `run [--me
 
 In all four programs the book text is untrusted input: the prompts say so and the models get no tools.
 
-**Tests.** `tests/test_books_fetch.py` (14 tests) and `tests/test_books_ground.py` (9) for AN-166 to AN-175; `tests/test_books_mine.py` (8) for AN-176 to AN-178; `tests/test_books_bought.py` (7) for AN-190 to AN-194; AN-195 is tested in `tests/test_observable.py`. They use invented samples and a simulated web and model; none touches the network or a real book. On 2026-11-16, in the working copy at commit `f35556a`, the files for mining and bought books passed together with the other new test files (63 passed).
+**Tests.** `tests/test_books_fetch.py` (14 tests) and `tests/test_books_ground.py` (9) for AN-166 to AN-175; `tests/test_books_mine.py` (8) for AN-176 to AN-178; `tests/test_books_bought.py` (9, counted on 2026-11-25; the page said 7 at its first writing) for AN-190 to AN-194; AN-195 is tested in `tests/test_observable.py`. They use invented samples and a simulated web and model; none touches the network or a real book. On 2026-11-16, in the working copy at commit `f35556a`, the files for mining and bought books passed together with the other new test files (63 passed).
 
 ### Known limits
 - **Searched is not grounded.** Of the 976 entries (2026-11-19), 306 are only mentioned by the books (weak), 190 were not found and none is left unsearched.
@@ -181,3 +181,5 @@ Beside the building of the finding lists ([[radiology-finding-inventory]]): it s
 The session that builds the finding lists (the "corpus lane"). It reads the grounding file when it adds a defining description or measurements, with the book and chapter as the entry's source; it will read the bought-book candidates file in the same way. Any session of the project may search the open books with `find`.
 
 Update 2026-11-19 (commits `8c00490` and `7799c93`): grounding in the open books is complete for all four methods: no entry of `docs/foundational-sources.json` is "not searched" (X-ray 83 of 127 grounded, ultrasound 85 of 199, CT 144 of 347, MRI 168 of 303). The programs were not run for this page; the counts are those of the committed file, summed by hand and checked against the plan note of task T42 (ultrasound 85, 81, 33; CT 144, 112, 91; MRI 168, 81, 54).
+
+Update 2026-11-25: checked against the repository as it is now. The counts in `docs/foundational-sources.json` are unchanged from the table above (X-ray 127 entries, ultrasound 199, CT 347, MRI 303; every entry searched; historical mining: 3,079 blocks read, 2,714 quotes retained, 91 entries with a retained quote, 480 candidate gaps, 42 contradictions, 17 entries upgraded). All the requirement IDs named here (AN-166 and AN-168 to AN-178, AN-190 to AN-195) are still rows of the active list `docs/REQUIREMENTS.md`. The counts of list entries in the update of 2026-11-16 are history: on 2026-11-21 one CT entry and four MRI entries that were only two names for one finding were merged (requirement AN-221), so the lists are smaller than those numbers. The programs on this page were not run again. Giovanni put the whole project on hold on 2026-11-25 (see [[radiology-report-matcher]]); the books, the work files and the lists are kept, and plan task T25 (fold the source-centred records such as `docs/foundational-sources.json` into the source fields of the lists, then retire them) is open.
