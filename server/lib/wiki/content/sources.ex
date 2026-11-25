@@ -102,6 +102,7 @@ defmodule Wiki.Content.Sources do
     case File.lstat(path, time: :posix) do
       {:ok, %File.Stat{type: :directory, mtime: own}} ->
         names = case File.ls(path), do: ({:ok, names} -> names; _ -> [])
+        {own, names} = sync_contents(path, own, names)
         Enum.reduce(names -- [".git"], own, fn name, newest -> max(newest, newest_mtime(Path.join(path, name)) || 0) end)
 
       {:ok, %File.Stat{mtime: time}} ->
@@ -111,6 +112,33 @@ defmodule Wiki.Content.Sources do
         nil
     end
   end
+
+  # Claude rewrites these two files and the bucket directory on every sync, even when nothing changed.
+  # Its manifest preserves lastUpdated on that path, and advances it on actual sync additions/removals.
+  defp sync_contents(path, own, names) do
+    if Path.dirname(path) == Path.join(home_root(), ".claude/skills/synced") do
+      manifest = Path.join(path, "manifest.json")
+
+      with {:ok, raw} <- File.read(manifest),
+           {:ok, %{"lastUpdated" => ms, "skills" => skills}} <- JSON.decode(raw),
+           true <- is_integer(ms) and ms > 0 and ms <= System.os_time(:millisecond),
+           true <- is_list(skills) and Enum.all?(skills, &installed_skill?(&1, path)) do
+        {div(ms, 1000), names -- ["manifest.json", ".last-complete-round"]}
+      else
+        _ ->
+          IO.warn("cannot read a valid Claude sync change time or installed skill list from #{manifest}; using filesystem modification times")
+          {own, names}
+      end
+    else
+      {own, names}
+    end
+  end
+
+  # A manually removed skill must not disappear behind the unchanged manifest clock.
+  defp installed_skill?(%{"name" => name}, bucket) when is_binary(name) and name not in ["", ".", ".."] do
+    Path.basename(name) == name and File.dir?(Path.join(bucket, name))
+  end
+  defp installed_skill?(_, _), do: false
 
   @doc """
   The path with symbolic links resolved (the path as given when it cannot be resolved, for example a link loop).

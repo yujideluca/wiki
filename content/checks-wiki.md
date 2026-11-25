@@ -8,7 +8,7 @@ status: active
 fed_by: []
 feeds: []
 sources: [wiki:tools/quality_gate.sh, wiki:pipeline-check.toml, wiki:CLAUDE.md, wiki:docs/REQUIREMENTS.md, wiki:.github/workflows/quality-gate.yml, wiki:server/test/map_css_test.exs]
-reviewed: 2026-11-18T05:58Z
+reviewed: 2026-11-25T17:52Z
 ---
 
 ## What it is
@@ -29,3 +29,5 @@ It is a layer-3 page of [[code-security-pipeline]]: the shared ideas are in [[qu
 
 ## Who receives its output
 Readers who need to know what protects this project, and the session that changes it.
+
+The regressions in `server/test/sync_sources_test.exs` check ST-7: repeated cloud-sync metadata writes must not reopen a reviewed page, while real changes, removals and invalid metadata remain visible.

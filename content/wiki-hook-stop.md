@@ -9,7 +9,7 @@ location: wiki:server/lib/wiki/content/stale.ex
 fed_by: [claude-code-settings]
 feeds: [claude-code]
 sources: [wiki:server/lib/wiki/content/stale.ex, wiki:server/lib/wiki/content/memo.ex, wiki:server/lib/wiki/content/hold.ex, wiki:server/test/memo_test.exs, wiki:server/test/hold_test.exs, wiki:server/test/build_test.exs, wiki:docs/REQUIREMENTS.md, wiki:docs/adr/0009-stale-review-claims-and-shared-publish-stamp.md, home:.claude/settings.json, home:.codex/hooks.json]
-reviewed: 2026-11-25T17:36Z
+reviewed: 2026-11-25T17:52Z
 ---
 
 ## What it is
@@ -43,3 +43,5 @@ Since 2026-11-01 (ADR-0009, an architecture decision record) the stamp this hook
 The reminder explicitly routes skill pages to the complete-source rule: locate and read the complete `SKILL.md`, include its full description and all instructions with a fingerprint (a value calculated from the full text to detect changes) on the page, then run `wiki check --local`. It also says that the wiki is English only: one file per page, and no `.de` or `.pt-BR` file. It points to `AGENTS.md` and [[skill-wiki-page-writer]]. The hook reminds the writer; it does not generate page text itself.
 
 Configuration: `home:` names files under the user's home folder; other repository aliases normally name folders under `~/dev`, overridden by `WIKI_DEV_ROOT`. `WIKI_ROOT` selects the wiki folder and its `wiki:` sources; the default is `~/dev/wiki`. Claude Code invokes the command from `~/.claude/settings.json`; Codex from `~/.codex/hooks.json`. The list `content/_ignore.txt` excludes data paths from the hook's changed-file scan, not from manual source review. Requirement `UP-7` names the tested promise that publications preserve unfinished obligations; its full wording is in `docs/REQUIREMENTS.md`.
+
+The hook shares the cloud-sync metadata exception of [[wiki-stale]] (ST-7): an unchanged sync round does not make the skills page stale or hold back the publish stamp. Real source changes and malformed sync metadata still require attention.

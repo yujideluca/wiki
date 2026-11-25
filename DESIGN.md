@@ -3,7 +3,7 @@
 What the system is, how it is built and why. Living document: updated in the same commit as the change.
 The approved design and build plan of 2026-10-22 are in `docs/2026-10-22-wiki-design.md`.
 
-Last updated: 2026-11-08
+Last updated: 2026-11-25
 
 ## 1. What it is
 
@@ -82,6 +82,7 @@ Newest first. **Type** is the ISO/IEC/IEEE 14764 maintenance category: *correcti
 
 | Date | Type | Decision | Why |
 |---|---|---|---|
+| 2026-11-25 | Corrective | **Cloud skill sync freshness follows content changes** (ST-7): use the Claude bucket manifest `lastUpdated` time instead of the bucket and two sync-marker write times; keep real descendants watched, and warn/fall back on invalid metadata or missing listed skills. | A no-change sync rewrites metadata every round and repeatedly reopens a correctly reviewed skills page. The producer preserves `lastUpdated` on no-change rounds and advances it on additions/removals. |
 | 2026-11-14 | Corrective | **The Stop hook asks only for new files that still exist** (UP-9): a file added and then deleted or moved since the last publish is left out of "new files no page covers". The line was written on 2026-11-06 and ran in the installed tool since the build of 2026-11-08 without a commit; it is now recorded with its requirement and test, together with the patch-level dependency updates the installed build already used (assent 0.3.2, bandit 1.14.1, ssl_verify_fun 1.1.9). | A page cannot be written for a file that is gone; git must match what runs. |
 | 2026-11-08 | Corrective | Globe labels inherit selection suppression and the map cursor; remove label text-selection and text-cursor overrides (MP-10), with a stylesheet regression test | Dragging the globe must never select its text |
 | 2026-11-06 | Perfective | **The Stop hook asks each question once** (UP-8). `Wiki.Content.Memo` caches read-only answers (`Git.cmd`, `Sources.git_location`, `Sources.real`) for the length of one `wiki hook-stop` run only; the server and `wiki publish` never use it. `Sources.real` resolves links in-process with the same answers as `realpath -m` instead of starting `realpath`. | `wiki hook-stop` started about 4,500 programs per run (2,711 `realpath`, 1,751 `git`, mostly repeats) and took 22 to 28 s against the 30 s hook timeout at every turn end of every session; now about 1,250 `git` calls and 11 s, same message and same once-per-session signature. |

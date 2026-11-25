@@ -8,8 +8,8 @@ status: active
 location: wiki:server/lib/wiki/content/stale.ex
 fed_by: []
 feeds: [wiki-cli]
-sources: [wiki:server/lib/wiki/content/stale.ex, wiki:server/lib/wiki/content/sources.ex, wiki:server/lib/wiki/content/page.ex, wiki:docs/adr/0006-review-time-in-the-page.md, wiki:docs/adr/0009-stale-review-claims-and-shared-publish-stamp.md, wiki:docs/2026-11-01-wiki-stale-audit.md]
-reviewed: 2026-11-18T03:57Z
+sources: [wiki:server/lib/wiki/content/stale.ex, wiki:server/lib/wiki/content/sources.ex, wiki:server/test/sync_sources_test.exs, wiki:server/lib/wiki/content/page.ex, wiki:docs/adr/0006-review-time-in-the-page.md, wiki:docs/adr/0009-stale-review-claims-and-shared-publish-stamp.md, wiki:docs/2026-11-01-wiki-stale-audit.md]
+reviewed: 2026-11-25T17:51Z
 ---
 
 ## What it is
@@ -20,6 +20,8 @@ Every page records in its `reviewed` header field when it was last compared with
 
 ## How it does it
 For a source inside a git repository (git is the tool that saves every change as a commit), "changed" means the time of the last commit that touches the file or folder. For a source outside git, such as a skill or a script under the home folder, it means the newest modification time of the file, or of the folder and everything in it. To know which repository holds a source it follows symbolic links (files that point to another path) the way the `realpath -m` command does, but inside the program; since 2026-11-06 it no longer starts `realpath` for each source, and while the Stop hook runs each answer is remembered for that run (requirement UP-8, see [[wiki-hook-stop]]). The page file's own commits are never used: a rewrite of many pages, a wording fix or publication alone does not establish a review. Only the person or assistant that actually compared the page with its sources sets a new `reviewed` time, which clears the page.
+
+Claude cloud-sync buckets under `~/.claude/skills/synced/<bucket>` have one narrow exception (requirement ST-7). The sync rewrites `manifest.json`, `.last-complete-round` and the containing folder even when all skills are unchanged. The wiki uses the manifest’s `lastUpdated` value, the last actual sync change in milliseconds since 1970, for that folder and excludes the two metadata write times. It still watches every real skill file and subfolder. The producer advances `lastUpdated` when skills are added or removed, so those changes still require review. If the manifest is missing, malformed, has an invalid time, or lists a skill folder that is missing, the command prints a warning and uses ordinary filesystem times. Files with the same names inside real skills or elsewhere remain watched.
 
 The first version compared the last commit time of the source with the last commit time of the page file. On 2026-10-24 one commit rewrote all 154 pages, so that version listed nothing while 38 of the 140 pages with sources had a source change that no one had checked, and it could never list the 34 pages whose sources are outside git. The decision record `docs/adr/0006-review-time-in-the-page.md` explains the change.
 
