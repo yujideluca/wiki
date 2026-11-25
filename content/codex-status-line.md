@@ -8,7 +8,7 @@ location: home:.codex/config.toml
 fed_by: []
 feeds: []
 sources: [home:.codex/config.toml, home:AGENTS.md, home:.codex/AGENTS.md]
-reviewed: 2026-11-25T17:49Z
+reviewed: 2026-11-25T22:16Z
 ---
 
 ## What it is
@@ -27,7 +27,7 @@ It runs inside Codex, above the separate task-progress footer.
 Giovanni reads the display.
 
 ## Notes
-A capture of the running Codex 0.171.0 terminal on 2026-11-25 displayed `5h 89% left · weekly 25% left · 59.4K used · 258K window`. A second capture after further activity displayed `5h 83% left · weekly 24% left · 71.7K used · 258K window`. The saved configuration and actual display both include the tokens-used field; no setting change was needed. The current native identifier is `used-tokens`.
+A capture of the running Codex 0.171.0 terminal on 2026-11-25 displayed `5h 89% left · weekly 25% left · 59.4K used · 258K window`. A second capture after further activity displayed `5h 83% left · weekly 24% left · 71.7K used · 258K window`. A capture later that day, after the settings file was rewritten, still displayed all four values: `5h 97% left · weekly 10% left · 293K used · 475K window`. The saved configuration and actual display both include the tokens-used field; no setting change was needed. The current native identifier is `used-tokens`.
 
 A terminal test on 2026-10-25 with Codex 0.164.0, when the list still held `used-tokens`, displayed `5h 44% left · weekly 76% left · 10.5K used · 475K window`. A second fresh terminal verified the saved configuration without command-line overrides. Existing terminal processes have not been verified to reload the configuration.
 
