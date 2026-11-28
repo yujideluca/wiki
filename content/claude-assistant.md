@@ -9,7 +9,7 @@ location: home:.local/bin/claude-assistant
 fed_by: [user-space-tools]
 feeds: [remote-assistant]
 sources: [home:.local/bin/claude-assistant, home:.config/systemd/user/claude-assistant.service, ralexandria:tools/upload-progress.sh]
-reviewed: 2026-10-22T16:33Z
+reviewed: 2026-11-28T17:10Z
 ---
 
 ## What it is
